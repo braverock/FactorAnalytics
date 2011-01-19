@@ -1,6 +1,7 @@
 \name{chart.Style}
 \alias{chart.Style}
 \alias{chart.RollingStyle}
+\alias{table.RollingStyle}
 \alias{style.fit}
 \alias{style.QPfit}
 %- Also NEED an '\alias' for EACH other topic documented here.
