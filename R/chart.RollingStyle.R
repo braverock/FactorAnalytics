@@ -1,49 +1,25 @@
-`chart.RollingStyle` <-
+chart.RollingStyle <-
 function (R.fund, R.style, method = c("constrained","unconstrained","normalized"), leverage = FALSE, width = 12, main = NULL, space = 0, ...)
 { # @author Peter Carl
 
-    # DESCRIPTION:
-    # A wrapper to create a chart of relative returns through time
-
-    # R-Squared could deliver adjusted R-Squared if we wanted
-
-    # FUNCTION:
-
-    # Transform input data to a data frame
-    R.fund = checkData(R.fund[,1,drop=FALSE])
-    R.style = checkData(R.style)
-
-    method = method[1]
-
-    # Get dimensions and labels
-    columns.fund = ncol(R.fund)
-    columns.style = ncol(R.style)
-    columnnames.fund = colnames(R.fund)
-    columnnames.style = colnames(R.style)
-
-
-    # Calculate
-    merged.assets = na.omit(merge(R.fund, R.style))
-
-    result = xts:::rollapply.xts(merged.assets, FUN= function(x, method, leverage) {t(style.fit(R.fund = x[,1,drop=FALSE], R.style = x[,-1,drop=FALSE], method = method, leverage = leverage)$weights)}, width = width, method = method, leverage = leverage, by = 1, by.column = FALSE, na.pad = FALSE, align = "right")
-
+    result<-table.RollingStyle(R.fund=R.fund, R.style=R.style, method=method,leverage=leverage,width=width)
+    
     if (is.null(main)){
         freq = periodicity(R.fund)
-
+        
         switch(freq$scale,
-            minute = {freq.lab = "minute"},
-            hourly = {freq.lab = "hour"},
-            daily = {freq.lab = "day"},
-            weekly = {freq.lab = "week"},
-            monthly = {freq.lab = "month"},
-            quarterly = {freq.lab = "quarter"},
-            yearly = {freq.lab = "year"}
+                minute = {freq.lab = "minute"},
+                hourly = {freq.lab = "hour"},
+                daily = {freq.lab = "day"},
+                weekly = {freq.lab = "week"},
+                monthly = {freq.lab = "month"},
+                quarterly = {freq.lab = "quarter"},
+                yearly = {freq.lab = "year"}
         )
-
+        
         main = paste(colnames(R.fund)[1]," Rolling ", width ,"-",freq.lab," Style Weights", sep="")
     }
-    colnames(result) = columnnames.style
-
+    
     chart.StackedBar(result, main = main, space = space, ...)
 
 }
