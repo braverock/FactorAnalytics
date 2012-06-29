@@ -1,21 +1,15 @@
-## factorModelCovariance.r
-##
-## purpose: compute covariance matrix from estimated factor model
-## author: Eric Zivot
-## created: November 25, 2008
-## revised: July 20, 2009
-
-factorModelCovariance <- function(beta.mat, factor.cov, sig.e) {
+factorModelCovariance <-
+function(beta.mat, factor.cov, residVars.vec) {
 ## Inputs:
 ## beta.mat		   	n x k matrix of factor betas
-## factor.cov		  k x k factor excess return covariance matrix
-## sig.e			    n x 1 vector of residual variances from factor model
+## factor.cov		  k x k factor return covariance matrix
+## residVars.vec  n x 1 vector of residual variances from factor model
 ## Output:
-## cov.fm			    n x n excess return covariance matrix based on
-##				        estimated factor model
+## cov.fm			    n x n return covariance matrix based on
+##				        estimated factor model.
 	beta.mat = as.matrix(beta.mat)
 	factor.cov = as.matrix(factor.cov)
-	sig.e = as.vector(sig.e)
+	sig.e = as.vector(residVars.vec)
 	if (length(sig.e) > 1) {
 	 D.e = diag(as.vector(sig.e))
   } else {
@@ -31,3 +25,4 @@ factorModelCovariance <- function(beta.mat, factor.cov, sig.e) {
     warning("Covariance matrix is not positive definite")
 	return(cov.fm)
 }
+

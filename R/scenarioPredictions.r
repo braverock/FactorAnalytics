@@ -1,14 +1,8 @@
-## scenarioPredictions.r
-## purpose: Class performance prediction from user-defined scenarios
-##
-## author: Eric Zivot
-## created: May 13, 2010
-## update history
-
-scenarioPredictions <- function(fit.list, scenarioData, Betas, zero.alpha = TRUE, userBetas = FALSE) {
+scenarioPredictions <-
+function(fit.list, scenarioData, Betas, zero.alpha = TRUE, userBetas = FALSE) {
 ## inputs:
 ##  fit.list        list containing lm objects for classes with sufficient history. May not
-##                  have the same number of classes as in the matrix Betas
+##                  have the same number of classes as in the matrix Betas 
 ##  scenarioData    matrix containing factor performance for user-defined scenarios
 ##  Betas           matrix containing factor betas for all classes. May not have the same
 ##                  number of classes as in the list object fit.list
@@ -61,3 +55,4 @@ scenarioPredictions <- function(fit.list, scenarioData, Betas, zero.alpha = TRUE
   }
   return(pred.mat)
 }
+

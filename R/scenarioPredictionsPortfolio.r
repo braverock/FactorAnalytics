@@ -1,17 +1,17 @@
-## scenarioPredictionsPortfolio.r
-## purpose: Portfolio performance prediction from user-defined scenarios
-##
-## author: Eric Zivot
-## created: May 13, 2010
-## update history
-
-scenarioPredictionsPortfolio <- function(scenarioData, factorData, Betas, ResidVar,
+scenarioPredictionsPortfolio <-
+function(scenarioData, factorData, beta.mat, cov.fm, w.vec,
                                          level = 0.95, zero.alpha = TRUE, userBetas = FALSE) {
 ## inputs:
 ##  scenarioData    matrix containing factor performance for user-defined scenarios
 ##  factorData      dataframe containing historical factor performance over estimation window.
-##  Betas           k x 1 matrix containing portfolio factor betas
+##  beta.mat        n x k matrix of factor betas.
+##  cov.fm  	      n x n excess return covariance matrxi based on
+##				          estimated factor model
+##  w.vec           n x 1 vector of portfolio weights
+##  level           probablility level for confidence interval.
 ##  zero.alpha      logical flag indicating if intercept should be subtracted from predictions
+##  userBetas       logical. If userBetas=\code{FALSE}, then forecast confidence intervals are 
+##                  included; otherwise, only forecasts are included. 
 ## outputs:
 ##                  matrix containing scenario predictions. If userBetas=FALSE, then
 ##                  forecast confidence intervals are included; otherwise, only forecasts
@@ -22,6 +22,8 @@ scenarioPredictionsPortfolio <- function(scenarioData, factorData, Betas, ResidV
   level = level + (1 - level)/2
   q.z = qnorm(level)
   n.scenarios = nrow(scenarioData)
+  Betas <- t(crossprod(w.vec, beta.mat))
+  var.p = as.numeric(t(w.vec) %*% cov.fm %*% w.vec)
   factorIds = rownames(Betas)
   nonZeroBetaIds = factorIds[which(Betas != 0)]
   pred.fit.mat = t(scenarioData %*% Betas)
@@ -32,7 +34,7 @@ scenarioPredictionsPortfolio <- function(scenarioData, factorData, Betas, ResidV
     F.mat = as.matrix(factorData[, nonZeroBetaIds])
   ## use generalized inverse to deal with possibly that rank(F.mat) < k
     tmp.mat = scenarioData[, nonZeroBetaIds] %*% ginv(t(F.mat) %*% F.mat) %*% t(scenarioData[, nonZeroBetaIds])
-    pred.var = as.numeric(ResidVar) * (1 + diag(tmp.mat))
+    pred.var = as.numeric(var.p) * (1 + diag(tmp.mat))
     lwr = pred.fit.mat - q.z*sqrt(pred.var)
     colnames(lwr) = paste(rownames(scenarioData), "lwr", sep=".")
     upr = pred.fit.mat + q.z*sqrt(pred.var)
@@ -48,3 +50,4 @@ scenarioPredictionsPortfolio <- function(scenarioData, factorData, Betas, ResidV
   }
   return(pred.mat)
 }
+
