@@ -284,8 +284,12 @@ ans = list (asset.fit = reg.list,
             beta.mat  = Betas,
             r2.vec    = R2values,
             residVars.vec = ResidVars,
-            call      = this.call
+            call      = this.call,
+            ret.assets = ret.assets,
+            factors   = factors,
+            variable.selection = variable.selection
             )
+class(ans) = "MacroFactorModel"
 return(ans)
 }
 
