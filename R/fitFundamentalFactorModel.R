@@ -4,7 +4,8 @@ function (fulldata, timedates, exposures, assets, wls = FALSE, regression = "cla
           datevar = "DATE", assetvar = "PERMNO", returnsvar = "RETURN", 
           tickersvar = "TICKER.x") {
   
-
+require(zoo)
+require(robust)
 ## input
 ##  
 ## fulldata               : data.frame. data stacked by dates
@@ -32,15 +33,15 @@ function (fulldata, timedates, exposures, assets, wls = FALSE, regression = "cla
 ## 
 ## cov.returns            : covariance information for asset returns, includes
 ##                          covariance, mean, eigenvalus
-## cov.factor.rets            : covariance information for factor returns, includes
+## cov.factor.rets        : covariance information for factor returns, includes
 ##                          covariance and mean
 ## cov.resids             : covariance information for model residuals, includes
 ##                          covariance and mean
 ## resid.vars             : list of information regarding model residuals variance
-## factor.rets                : zoo time series object of factor returns
+## factor.rets            : zoo time series object of factor returns
 ## resids                 : zoo time series object of model residuals
 ## tstats                 : zoo time series object of model t-statistics
-##returns.data            : data.frame of return data including RETURN, DATE,PERMNO
+## returns.data            : data.frame of return data including RETURN, DATE,PERMNO
 ## exposure.data          : data.frame of exposure data including DATE, PERMNO
 ## assets                 : character vector of PERMNOs used in the model
 ## tickers                : character vector of tickers used in the model
@@ -338,6 +339,7 @@ function (fulldata, timedates, exposures, assets, wls = FALSE, regression = "cla
                    assets = assets, 
                    tickers = tickers, 
                    call = this.call)
+    class(output) <- "FundamentalFactorModel"
     return(output)
 }
 

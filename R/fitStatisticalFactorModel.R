@@ -55,6 +55,7 @@ require(MASS)
 		stop("Invalid choice for optional argument method.")
 	}
  return(ans)
+    
 }
 
  
@@ -167,9 +168,21 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	dimnames(f) <- list(dimnames(x)[[1]], paste("F", 1:k, sep = "."))
 	dimnames(Omega) <- list(x.names, x.names)
 	names(alpha) <- x.names
+  # create lm list for plot
+  reg.list = list()
+  for (i in x.names) {
+    reg.df = as.data.frame(cbind(x[,i],f))
+    colnames(reg.df)[1] <- i
+    fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+    fm.fit = lm(fm.formula, data=reg.df)
+    reg.list[[i]] = fm.fit
+    }
 	ans <-  list(factors = f, loadings = B, k = k, alpha = alpha, Omega = Omega,
-	            	r2 = r2, eigen = eigen.tmp$values, residuals=tmp)
- return(ans)
+	            	r2 = r2, eigen = eigen.tmp$values, residuals=tmp, asset.ret = x,
+               asset.fit=reg.list)
+ 
+  return(ans)
+ 
 }
 
   # funciont of apca
@@ -217,7 +230,7 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	res <- t(t(x) - alpha) - f %*% B
 	r2 <- (1 - colSums(res^2)/colSums(xc^2))
   ans <- 	list(factors = f, loadings = B, k = k, alpha = alpha, Omega = Omega,
-		           r2 = r2, eigen = eig.tmp$values, residuals=res)
+		           r2 = r2, eigen = eig.tmp$values, residuals=res,asset.ret = x)
  return(ans)
 }
 
@@ -265,12 +278,14 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	}	else {
 		mimic <- qr.solve(x, f)
 	}
-	mimic <- t(t(mimic)/colSums(mimic))
+	
+  mimic <- t(t(mimic)/colSums(mimic))
 	dimnames(mimic)[[1]] <- dimnames(x)[[2]]
+  
   ans$mimic <- mimic
   ans$residVars.vec <- apply(ans$residuals,2,var)
   ans$call <- call
-  oldClass(ans) <- "sfm"
+class(ans) <- "StatFactorModel"
   return(ans)
 }
 
