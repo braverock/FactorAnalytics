@@ -64,7 +64,13 @@ eigenvalues from the sample covariance matrix.
 }          
 \item{residuals}{
 T x N matrix of residuals from regression.
-}     
+}
+\item{asset.ret}{
+asset returns
+}
+\item{asset.fit}{
+List of regression lm class of individual returns on factors.  
+}
 \item{residVars.vec}{
 vector of residual variances 
 }      

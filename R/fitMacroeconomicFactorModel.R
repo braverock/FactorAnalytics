@@ -41,9 +41,8 @@ function(ret.assets, factors, factor.set = 2,
   require(leaps)
   require(lars)
   require(robust)
-  require(ellipse)
   require(MASS)
-this.call <- match.call()
+  this.call <- match.call()
   
 if (is.data.frame(ret.assets) & is.data.frame(factors) ) {
   manager.names = colnames(ret.assets)

@@ -2,12 +2,10 @@
 \alias{normalVaRReport}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-compute VaR report via nonparametric method for collection of assets in a portfolio given 
-portfolio weights, mean vector and covariance matrix.
+compute VaR report with normal distribution for collection of assets in a portfolio given  portfolio weights, mean vector and covariance matrix.
 }
 \description{
-compute VaR report via nonparametric method for collection of assets in a portfolio given 
-portfolio weights, mean vector and covariance matrix.
+compute VaR report with normal distribution for collection of assets in a portfolio given portfolio weights, mean vector and covariance matrix.
 Report format follows that of Excel VaR report.
 }
 \usage{

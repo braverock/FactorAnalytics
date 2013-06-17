@@ -6,7 +6,7 @@ fit fundamental factor model by classic OLS or Robust regression technique
 }
 \description{
 fit fundamental factor model or cross-sectional time series factor model by classic OLS or Robust regression technique.  Fundamental factor models use observable asset specific characteristics (fundamentals) like industry classification, market capitalization, style classification
-(value, growth) etc. to determine the common risk factors.
+(value, growth) etc. to determine the common risk factors. The function creates the class "FundamentalFactorModel". 
 }
 \usage{
 fitFundamentalFactorModel(fulldata, timedates, exposures, assets, wls = FALSE,    regression = "classic", covariance = "classic", full.resid.cov = TRUE, robust.scale = FALSE, datevar = "DATE", assetvar = "PERMNO", returnsvar = "RETURN", 
@@ -15,8 +15,8 @@ fitFundamentalFactorModel(fulldata, timedates, exposures, assets, wls = FALSE,  
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{fulldata}{
-data.frame. fulldata contains returns, dates, and exposures which is stacked by dates.
-}
+  data.frame, fulldata contains returns, dates, and exposures which is stacked by dates.
+  }
   \item{timedates}{
 a vector of Dates specifying the date range for the model fitting
 }
@@ -52,10 +52,10 @@ A character string giving the name of the return variable in the data.
    \item{datevar}{
 A character string giving the name of the date variable in the data.
 }
-  \item{assetvar} {
-A  character string giving the name of the asset variable in the data.
+  \item{assetvar}{
+A character string giving the name of the asset variable in the data.
   }                
- \item{tickersvar} {
+ \item{tickersvar}{
 A character string giving the name of the ticker variable in the data.
   }
 }
@@ -115,13 +115,14 @@ Guy Yullen and Yi-An Chen
 }
 
 \examples{
+\dontrun{
 # BARRA type factor model
 data(stock)
 # there are 447 assets  
 assets = unique(fulldata[,"PERMNO"])
 timedates = as.Date(unique(fulldata[,"DATE"]))
 exposures <- exposures.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
-test.fit <- fitFundamentalFactorModel(fulldata=fulld ata, timedates=timedates, exposures=exposures,covariance="classic", assets=assets,full.resid.cov=TRUE,
+test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,covariance="classic", assets=assets,full.resid.cov=TRUE,
                                       regression="classic",wls=TRUE)
 names(test.fit)
 test.fit$cov.returns
@@ -134,4 +135,5 @@ exposures <- exposures.names <- c("GICS.SECTOR")
 test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,
                                       covariance="classic", assets=assets,full.resid.cov=TRUE,
                                       regression="classic",wls=TRUE)
+}
 }

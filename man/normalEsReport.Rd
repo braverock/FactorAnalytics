@@ -2,12 +2,10 @@
 \alias{normalEsReport}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-compute ES report via nonparametric method for collection of assets in a portfolio given 
-portfolio weights, mean vector and covariance matrix.
+compute ES report with normal distribution for collection of assets in a portfolio given portfolio weights, mean vector and covariance matrix.
 }
 \description{
-compute ES report via nonparametric method for collection of assets in a portfolio given 
-portfolio weights, mean vector and covariance matrix.
+compute ES report with normal distribution for collection of assets in a portfolio given portfolio weights, mean vector and covariance matrix.
 Report format follows that of Excel VaR report.
 }
 \usage{

@@ -3,7 +3,7 @@
 \alias{dCornishFisher}
 \alias{pCornishFisher}
 \alias{qCornishFisher}
-%- Also NEED an '\alias' for EACH other topic documented here.
+ %- Also NEED an '\alias' for EACH other topic documented here. 
 \title{
 Functions for Cornish-Fisher density, CDF, random number simulation
 and quantile.

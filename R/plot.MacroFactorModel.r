@@ -1,7 +1,7 @@
  plot.MacroFactorModel <- 
   function(fit.macro,colorset=c(1:12),legend.loc=NULL,
            which.plot=c("none","1L","2L","3L","4L","5L","6L","7L"),max.show=6,
-           plot.single=FALSE, fundId, fundName="TBA",which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
+           plot.single=FALSE, fundName,which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                                                                   "7L","8L","9L","10L","11L","12L","13L")) {
       require(zoo)
       require(PerformanceAnalytics)
@@ -11,9 +11,8 @@
       ## inputs:
       ## fit.macro        lm object summarizing factor model fit. It is assumed that
       ##                  time series date information is included in the names component
-      ##                  of the residuals, fitted and model components of the object.
-      ## fundId           charater. The name of the single asset to be ploted.            
-      ## fundName         TBA
+      ##                  of the residuals, fitted and model components of the object.   
+      ## fundName         charater. The name of the single asset to be ploted.
       ## which.plot.single       integer indicating which plot to create:
       ##                  1     time series plot of actual and fitted values
       ##                  2     time series plot of residuals with standard error bands
@@ -29,7 +28,7 @@
       ##                  12    CUSUM plot of recursive estimates relative to full sample estimates
       ##                  13    rolling estimates over 24 month window
       which.plot.single<-which.plot.single[1]
-      fit.lm = fit.macro$asset.fit[[fundId]]
+      fit.lm = fit.macro$asset.fit[[fundName]]
       
       if (!(class(fit.lm) == "lm"))
         stop("Must pass a valid lm object")
@@ -37,7 +36,7 @@
       ## extract information from lm object
         
       factorNames = colnames(fit.lm$model)[-1]
-      fit.formula = as.formula(paste(fundId,"~", paste(factorNames, collapse="+"), sep=" "))
+      fit.formula = as.formula(paste(fundName,"~", paste(factorNames, collapse="+"), sep=" "))
       residuals.z = zoo(residuals(fit.lm), as.Date(names(residuals(fit.lm))))
       fitted.z = zoo(fitted(fit.lm), as.Date(names(fitted(fit.lm))))
       actual.z = zoo(fit.lm$model[,1], as.Date(rownames(fit.lm$model)))
@@ -156,7 +155,7 @@
       }
       reg.z = zoo(fit.lm$model[-length(fit.lm$model)], as.Date(rownames(fit.lm$model)))
       factorNames = colnames(fit.lm$model)[c(-1,-length(fit.lm$model))]
-      fit.formula = as.formula(paste(fundId,"~", paste(factorNames, collapse="+"), sep=" "))
+      fit.formula = as.formula(paste(fundName,"~", paste(factorNames, collapse="+"), sep=" "))
       rollReg.z = rollapply(reg.z, FUN=rollReg, fit.formula,w, width=24, by.column = FALSE, 
                             align="right")
       plot(rollReg.z, main=paste("24-month rolling regression estimates:", fundName, sep=" ")) 

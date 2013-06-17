@@ -1,7 +1,7 @@
 plot.StatFactorModel <-
-function(x, variables, cumulative = TRUE, style = "bar",
+function(fit.stat, variables, cumulative = TRUE, style = "bar",
          which.plot = c("none","1L","2L","3L","4L","5L","6L","7L","8L"),
-         hgrid = FALSE, vgrid = FALSE,plot.single=FALSE, fundId, fundName="TBA",
+         hgrid = FALSE, vgrid = FALSE,plot.single=FALSE, fundName,
          which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                              "7L","8L","9L","10L","11L","12L","13L"), ...)
 {
@@ -50,8 +50,7 @@ function(x, variables, cumulative = TRUE, style = "bar",
     ## x               lm object summarizing factor model fit. It is assumed that
     ##                  time series date information is included in the names component
     ##                  of the residuals, fitted and model components of the object.
-    ## fundId           charater. The name of the single asset to be ploted.            
-    ## fundName         TBA
+    ## fundName           charater. The name of the single asset to be ploted. 
     ## which.plot.single       integer indicating which plot to create:
     ##                  1     time series plot of actual and fitted values
     ##                  2     time series plot of residuals with standard error bands
@@ -67,22 +66,32 @@ function(x, variables, cumulative = TRUE, style = "bar",
     ##                  12    CUSUM plot of recursive estimates relative to full sample estimates
     ##                  13    rolling estimates over 24 month window
     which.plot.single<-which.plot.single[1]
-    fit.lm = x$asset.fit[[fundId]]
+    
+    
+    
+    
+    if (which.plot.single=="none")
+     
+   
+    # pca method
+    
+    if ( dim(fit$asset.ret)[1] > dim(fit$asset.ret)[2] ) {
+      
+      
+      fit.lm = fit.stat$asset.fit[[fundName]]
     
     if (!(class(fit.lm) == "lm"))
       stop("Must pass a valid lm object")
     
-    ## extract information from lm object
+    ## exact information from lm object
     
     factorNames = colnames(fit.lm$model)[-1]
-    fit.formula = as.formula(paste(fundId,"~", paste(factorNames, collapse="+"), sep=" "))
+    fit.formula = as.formula(paste(fundName,"~", paste(factorNames, collapse="+"), sep=" "))
     residuals.z = zoo(residuals(fit.lm), as.Date(names(residuals(fit.lm))))
     fitted.z = zoo(fitted(fit.lm), as.Date(names(fitted(fit.lm))))
     actual.z = zoo(fit.lm$model[,1], as.Date(rownames(fit.lm$model)))
     tmp.summary = summary(fit.lm)
     
-    
-    if (which.plot.single=="none")
       which.plot.single<-menu(c("time series plot of actual and fitted values",
                                 "time series plot of residuals with standard error bands",
                                 "time series plot of squared residuals",
@@ -97,6 +106,7 @@ function(x, variables, cumulative = TRUE, style = "bar",
                                 "CUSUM plot of recursive estimates relative to full sample estimates",
                                 "rolling estimates over 24 month window"),
                               title="\nMake a plot selection (or 0 to exit):\n")
+    
     switch(which.plot.single,
            "1L" =  {
              ##  time series plot of actual and fitted values
@@ -181,7 +191,78 @@ function(x, variables, cumulative = TRUE, style = "bar",
            },
            invisible()
     )
-    
+    } else {
+      dates <- rownames(fit$factors) 
+       actual.z <- zoo(fit$asset.ret,as.Date(dates))
+       residuals.z <- zoo(fit$residuals,as.Date(dates))
+       fitted.z <- actual.z - residuals.z
+      t <- length(dates)
+      k <- fit$k
+      
+      which.plot.single<-menu(c("time series plot of actual and fitted values",
+                                "time series plot of residuals with standard error bands",
+                                "time series plot of squared residuals",
+                                "time series plot of absolute residuals",
+                                "SACF and PACF of residuals",
+                                "SACF and PACF of squared residuals",
+                                "SACF and PACF of absolute residuals",
+                                "histogram of residuals with normal curve overlayed",
+                                "normal qq-plot of residuals"),
+                              title="\nMake a plot selection (or 0 to exit):\n")
+      switch(which.plot.single,
+             "1L" =  {
+#       "time series plot of actual and fitted values",
+       
+       plot(actual.z[,fundName], main=fundName, ylab="Monthly performance", lwd=2, col="black")
+       lines(fitted.z[,fundName], lwd=2, col="blue")
+       abline(h=0)
+       legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","blue"))
+             },
+          "2L"={    
+#       "time series plot of residuals with standard error bands"
+        plot(residuals.z[,fundName], main=fundName, ylab="Monthly performance", lwd=2, col="black")
+        abline(h=0)
+        sigma = (sum(residuals.z[,fundName]^2)*(t-k)^-1)^(1/2)
+        abline(h=2*sigma, lwd=2, lty="dotted", col="red")
+        abline(h=-2*sigma, lwd=2, lty="dotted", col="red")
+        legend(x="bottomleft", legend=c("Residual", "+/ 2*SE"), lwd=2,
+                   lty=c("solid","dotted"), col=c("black","red"))     
+            
+          },   
+        "3L"={
+        #       "time series plot of squared residuals"
+          plot(residuals.z[,fundName]^2, main=fundName, ylab="Squared residual", lwd=2, col="black")
+          abline(h=0)
+          legend(x="topleft", legend="Squared Residuals", lwd=2, col="black")   
+        },                
+          "4L" = {
+           ## time series plot of absolute residuals
+               plot(abs(residuals.z[,fundName]), main=fundName, ylab="Absolute residual", lwd=2, col="black")
+               abline(h=0)
+               legend(x="topleft", legend="Absolute Residuals", lwd=2, col="black")
+             },
+             "5L" = {
+               ## SACF and PACF of residuals
+           chart.ACFplus(residuals.z[,fundName], main=paste("Residuals: ", fundName, sep=""))
+             },
+             "6L" = {
+               ## SACF and PACF of squared residuals
+               chart.ACFplus(residuals.z[,fundName]^2, main=paste("Residuals^2: ", fundName, sep=""))
+             },
+             "7L" = {
+               ## SACF and PACF of absolute residuals
+               chart.ACFplus(abs(residuals.z[,fundName]), main=paste("|Residuals|: ", fundName, sep=""))
+             },
+             "8L" = {
+               ## histogram of residuals with normal curve overlayed
+               chart.Histogram(residuals.z[,fundName], methods="add.normal", main=paste("Residuals: ", fundName, sep=""))
+             },
+             "9L" = {
+               ##  normal qq-plot of residuals
+               chart.QQPlot(residuals.z[,fundName], envelope=0.95, main=paste("Residuals: ", fundName, sep=""))
+             },          
+             invisible()  )
+             }  
     
     
   } else {    
@@ -209,12 +290,12 @@ function(x, variables, cumulative = TRUE, style = "bar",
   ##             1. screeplot.
   ##
   if(missing(variables)) {
-    vars <- x$eigen
+    vars <- fit.stat$eigen
     n90 <- which(cumsum(vars)/
       sum(vars) > 0.9)[1]
-    variables <- 1:max(x$k, min(10, n90))
+    variables <- 1:max(fit.stat$k, min(10, n90))
   }
-  screeplot(x, variables, cumulative,
+  screeplot(fit.stat, variables, cumulative,
             style, "Screeplot")
             },
     "2L" = {
@@ -222,13 +303,13 @@ function(x, variables, cumulative = TRUE, style = "bar",
   ##             2. factor returns
   ##
   if(missing(variables)) {
-    f.ret <- x$factors
+    f.ret <- fit.stat$factors
         }
     plot.ts(f.ret)
   
 } ,
    "3L" = {
-     cov.fm<- factorModelCovariance(t(x$loadings),var(x$factors),x$residVars.vec)    
+     cov.fm<- factorModelCovariance(t(fit.stat$loadings),var(fit.stat$factors),fit.stat$residVars.vec)    
      cor.fm = cov2cor(cov.fm)
      rownames(cor.fm) = colnames(cor.fm)
      ord <- order(cor.fm[1,])
@@ -236,27 +317,27 @@ function(x, variables, cumulative = TRUE, style = "bar",
      plotcorr(ordered.cor.fm, col=cm.colors(11)[5*ordered.cor.fm + 6])  
    },
    "4L" ={
-     barplot(x$r2)
+     barplot(fit.stat$r2)
       },
     "5L" = {
-     barplot(x$residVars.vec)  
+     barplot(fit.stat$residVars.vec)  
      },
     "6L" = {
-      cov.factors = var(x$factors)
-      names = colnames(x$asset.ret)
+      cov.factors = var(fit.stat$factors)
+      names = colnames(fit.stat$asset.ret)
       factor.sd.decomp.list = list()
       for (i in names) {
         factor.sd.decomp.list[[i]] =
-          factorModelSdDecomposition(x$loadings[,i],
-                                     cov.factors, x$residVars.vec[i])
+          factorModelSdDecomposition(fit.stat$loadings[,i],
+                                     cov.factors, fit.stat$residVars.vec[i])
       }
-      # function to extract contribution to sd from list
+      # function to efit.stattract contribution to sd from list
       getCSD = function(x) {
         x$cr.fm
       }
       # extract contributions to SD from list
       cr.sd = sapply(factor.sd.decomp.list, getCSD)
-      rownames(cr.sd) = c(colnames(x$factors), "residual")
+      rownames(cr.sd) = c(colnames(fit.stat$factors), "residual")
       # create stacked barchart
       barplot(cr.sd, main="Factor Contributions to SD",
               legend.text=T, args.legend=list(x="topleft"),
@@ -264,17 +345,17 @@ function(x, variables, cumulative = TRUE, style = "bar",
     } ,
     "7L" ={
       factor.es.decomp.list = list()
-      names = colnames(x$asset.ret)
+      names = colnames(fit.stat$asset.ret)
       for (i in names) {
         # check for missing values in fund data
-        idx = which(!is.na(x$asset.ret[,i]))
-        tmpData = cbind(x$asset.ret[idx,i], x$factors,
-                        x$residuals[,i]/sqrt(x$residVars.vec[i]))
+        idx = which(!is.na(fit.stat$asset.ret[,i]))
+        tmpData = cbind(fit.stat$asset.ret[idx,i], fit.stat$factors,
+                        fit.stat$residuals[,i]/sqrt(fit.stat$residVars.vec[i]))
         colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
         factor.es.decomp.list[[i]] = 
           factorModelEsDecomposition(tmpData, 
-                                     x$loadings[,i],
-                                     x$residVars.vec[i], tail.prob=0.05)
+                                     fit.stat$loadings[,i],
+                                     fit.stat$residVars.vec[i], tail.prob=0.05)
       }
          
              
@@ -284,24 +365,24 @@ function(x, variables, cumulative = TRUE, style = "bar",
              }
              # report as positive number
              cr.etl = sapply(factor.es.decomp.list, getCETL)
-             rownames(cr.etl) = c(colnames(x$factors), "residual")
+             rownames(cr.etl) = c(colnames(fit.stat$factors), "residual")
              barplot(cr.etl, main="Factor Contributions to ES",
                      legend.text=T, args.legend=list(x="topleft"),
                      col=c(1:50) )
     },
       "8L" =  {
              factor.VaR.decomp.list = list()
-             names = colnames(x$asset.ret)
+             names = colnames(fit.stat$asset.ret)
              for (i in names) {
                # check for missing values in fund data
-               idx = which(!is.na(x$asset.ret[,i]))
-               tmpData = cbind(x$asset.ret[idx,i], x$factors,
-                               x$residuals[,i]/sqrt(x$residVars.vec[i]))
+               idx = which(!is.na(fit.stat$asset.ret[,i]))
+               tmpData = cbind(fit.stat$asset.ret[idx,i], fit.stat$factors,
+                               fit.stat$residuals[,i]/sqrt(fit.stat$residVars.vec[i]))
                colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
                factor.VaR.decomp.list[[i]] = 
                  factorModelVaRDecomposition(tmpData, 
-                                            x$loadings[,i],
-                                            x$residVars.vec[i], tail.prob=0.05)
+                                            fit.stat$loadings[,i],
+                                            fit.stat$residVars.vec[i], tail.prob=0.05)
              }
              
                                
@@ -311,13 +392,13 @@ function(x, variables, cumulative = TRUE, style = "bar",
              }
              # report as positive number
              cr.var = sapply(factor.VaR.decomp.list, getCVaR)
-             rownames(cr.var) = c(colnames(x$factors), "residual")
+             rownames(cr.var) = c(colnames(fit.stat$factors), "residual")
              barplot(cr.var, main="Factor Contributions to VaR",
                      legend.text=T, args.legend=list(x="topleft"),
                      col=c(1:50) )
-      }
+      }, invisible()
                  
      )
-  invisible()
+ 
 }
 }

@@ -78,7 +78,7 @@ require(robust)
     # [1] 42912   117  
     # dimnames(fulldata)
     # PERMNO"      "DATE"        "RETURN"      "TICKER.x"    "BOOK2MARKET" "TICKER.y"
-        # check if exposures are numeric, if not, create exposures. factors by dummy variables
+    # check if exposures are numeric, if not, create exposures. factors by dummy variables
     which.numeric <- sapply(fulldata[, exposures, drop = FALSE],is.numeric)
     exposures.numeric <- exposures[which.numeric]
     # industry factor model
@@ -334,8 +334,8 @@ require(robust)
                    factor.rets = f.hat, 
                    resids = E.hat, 
                    tstats = tstats, 
-                   returns.data = fulldata[,c(datevar, assetvar, returnsvar)], 
-                                           exposure.data = fulldata[,c(datevar, assetvar, exposures)], 
+                   returns.data = fulldata[,c(datevar, assetvar, returnsvar)],               
+                   exposure.data = fulldata[,c(datevar, assetvar, exposures)],                   
                    assets = assets, 
                    tickers = tickers, 
                    call = this.call)

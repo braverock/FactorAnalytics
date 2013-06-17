@@ -25,16 +25,16 @@ factorModelCovariance(beta.mat, factor.cov, residVars.vec)
 }
 \details{
 The return on asset \code{i} (\code{i = 1,...,N}) is assumed to follow the factor model \cr
-\code{R(i,t) = alpha + beta'F(t) + e(i,t), e(i,t) ~ iid (0, sig(i)^2)} \cr
+\code{R(i,t) = alpha + t(beta)*F(t) + e(i,t), e(i,t) ~ iid (0, sig(i)^2)} \cr
 where \code{beta} is a \code{K x 1} vector of factor exposures. The return variance
 is then \cr
-\code{var(R(i,t)} = beta'var(F(t))*beta + sig(i)^2}, \cr
+\code{var(R(i,t) = t(beta)*var(F(t))*beta + sig(i)^2}, \cr
 and the \code{N x N} covariance matrix of the return vector \code{R} is \cr
-\code{var(R) = B*var(F(t))*B' + D} \cr
+\code{var(R) = B*var(F(t))*t(B) + D} \cr
 where B is the \code{N x K} matrix of asset betas and \code{D} is a diagonal matrix with
 \code{sig(i)^2} values along the diagonal.
 }
-\value{
+\value{ 
 \code{N x N} return covariance matrix based on factor model parameters.
 }
 \references{

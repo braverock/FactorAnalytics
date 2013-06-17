@@ -5,7 +5,7 @@
 Compute portfolio VaR decomposition given historical or simulated data and portfolio weights.
 }
 \description{
-ompute portfolio VaR decomposition given historical or simulated data and portfolio weights.
+Compute portfolio VaR decomposition given historical or simulated data and portfolio weights.
 The partial derivative of VaR wrt factor beta is computed
 as the expected factor return given fund return is equal to its VaR and approximated by kernel estimator.
 VaR is compute as an estimated quantile using the Cornish-Fisher expansion.

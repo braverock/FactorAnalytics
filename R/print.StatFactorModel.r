@@ -1,16 +1,16 @@
 print.StatFactorModel <-
-function(x, digits = max(3, .Options$digits - 3), ...)
+function(fit.stat, digits = max(3, .Options$digits - 3), ...)
 {
-  if(!is.null(cl <- x$call)) {
+  if(!is.null(cl <- fit.stat$call)) {
     cat("\nCall:\n")
     dput(cl)
   }
   cat("\nFactor Model:\n")
-  tmp <- c(dim(x$loadings), nrow(x$factors))
+  tmp <- c(dim(fit.stat$loadings), nrow(fit.stat$factors))
   names(tmp) <- c("Factors", "Variables", "Periods")
   print(tmp)
   cat("\nFactor Loadings:\n")
-  print(x$loadings, digits = digits, ...)
+  print(fit.stat$loadings, digits = digits, ...)
   cat("\nRegression R-squared:\n")
-  print(x$r2, digits = digits, ...)
+  print(fit.stat$r2, digits = digits, ...)
 }

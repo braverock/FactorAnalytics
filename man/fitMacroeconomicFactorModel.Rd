@@ -5,7 +5,7 @@
 Fit macroeconomic factor model by time series regression techniques.
 }
 \description{
-Fit macroeconomic factor model by time series regression techniques.
+Fit macroeconomic factor model by time series regression techniques. It creates the class of "MacroFactorModel".
 }
 \usage{
 fitMacroeconomicFactorModel(ret.assets, factors, factor.set = 2, fit.method =
@@ -78,6 +78,15 @@ Cp is defined in http://www-stat.stanford.edu/~hastie/Papers/LARS/LeastAngle_200
   }
   \item{call}{
   function call.
+  }
+  \item{ret.assets}{
+  Assets returns of input data.
+  }
+  \item{factors}{
+  Factors of input data.
+  }
+  \item{variable.selection}{
+  variables selected by the user.
   }
 }
 \references{
