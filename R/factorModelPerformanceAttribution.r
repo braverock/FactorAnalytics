@@ -2,6 +2,47 @@
 # Yi-An Chen
 # July 30, 2012
 
+
+
+#' Compute BARRA-type performance attribution
+#' 
+#' Decompose total returns or active returns into returns attributed to factors
+#' and specific returns. Class of FM.attribution is generated and generic
+#' function \code{plot} and \code{summary} can be used.
+#' 
+#' total returns can be decomposed into returns attributed to factors and
+#' specific returns. \eqn{R_t = \sum_j e_{jt} * f_{jt} +
+#' u_t},t=1..T,\eqn{e_{jt}} is exposure to factor j and \eqn{f_{jt}} is factor
+#' j. The returns attributed to factor j is \eqn{e_{jt} * f_{jt}} and portfolio
+#' specific returns is \eqn{u_t}
+#' 
+#' @param fit Class of "MacroFactorModel", "FundamentalFactorModel" or
+#' "statFactorModel".
+#' @param benchmark a zoo, vector or data.frame provides benchmark time series
+#' returns.
+#' @param ...  Other controled variables for fit methods.
+#' @return an object of class \code{FM.attribution} containing
+#' @returnItem cum.ret.attr.f N X J matrix of cumulative return attributed to
+#' factors.
+#' @returnItem cum.spec.ret 1 x N vector of cumulative specific returns.
+#' @returnItem attr.list list of time series of attributed returns for every
+#' portfolio.
+#' @author Yi-An Chen.
+#' @references Grinold,R and Kahn R, \emph{Active Portfolio Management},
+#' McGraw-Hill.
+#' @examples
+#' 
+#' \dontrun{
+#' data(managers.df)
+#' ret.assets = managers.df[,(1:6)]
+#' factors    = managers.df[,(7:9)]
+#' fit.macro <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS", factor.set = 3,
+#'                                          variable.selection="all subsets",decay.factor = 0.95)
+#' # withoud benchmark
+#' fm.attr <- factorModelPerformanceAttribution(fit.macro)
+#' 
+#' }
+#' 
 factorModelPerformanceAttribution <- 
   function(fit,benchmark=NULL,...) {
    

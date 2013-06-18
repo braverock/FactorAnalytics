@@ -1,3 +1,93 @@
+#' fit fundamental factor model by classic OLS or Robust regression technique
+#' 
+#' fit fundamental factor model or cross-sectional time series factor model by
+#' classic OLS or Robust regression technique.  Fundamental factor models use
+#' observable asset specific characteristics (fundamentals) like industry
+#' classification, market capitalization, style classification (value, growth)
+#' etc. to determine the common risk factors. The function creates the class
+#' "FundamentalFactorModel".
+#' 
+#' The original function was designed by Doug Martin and originally implemented
+#' in S-PLUS by a number of UW Ph.D. students:Christopher Green, Eric Aldrich,
+#' and Yindeng Jiang. Guy Yullen re-implemented the function in R and requires
+#' the following additional R libraries: zoo time series library, robust
+#' Insightful robust library ported to R and robustbase Basic robust statistics
+#' package for R
+#' 
+#' @param fulldata data.frame, fulldata contains returns, dates, and exposures
+#' which is stacked by dates.
+#' @param timedates a vector of Dates specifying the date range for the model
+#' fitting
+#' @param exposures a character vector of exposure names for the factor model
+#' @param assets a list of PERMNOs to be used for the factor model
+#' @param wls logical flag, TRUE for weighted least squares, FALSE for ordinary
+#' least squares
+#' @param regression A character string, "robust" for regression via lmRob,
+#' "classic" for regression with lm()
+#' @param covariance A character string, "robust" for covariance matrix
+#' computed with covRob(), "classic" for covariance matrix with ccov()
+#' @param full.resid.cov logical flag, TRUE for full residual covariance matrix
+#' calculation, FALSE for diagonal residual covarinace matrix
+#' @param robust.scale logical flag, TRUE for exposure scaling via robust scale
+#' and location, FALSE for scaling via mean and sd
+#' @param returnsvar A character string giving the name of the return variable
+#' in the data.
+#' @param datevar A character string giving the name of the date variable in
+#' the data.
+#' @param assetvar A character string giving the name of the asset variable in
+#' the data.
+#' @param tickersvar A character string giving the name of the ticker variable
+#' in the data.
+#' @return an S3 object containing
+#' @returnItem cov.returns A "list" object contains covariance information for
+#' asset returns, includes covariance, mean and eigenvalus.
+#' @returnItem cov.factor.rets An object of class "cov" or "covRob" which
+#' contains the covariance matrix of the factor returns (including intercept).
+#' @returnItem cov.resids An object of class "cov" or "covRob" which contains
+#' the covariance matrix of the residuals, if "full.resid.cov" is TRUE.  NULL
+#' if "full.resid.cov" is FALSE.
+#' @returnItem resid.vars A vector of variances estimated from the OLS
+#' residuals for each asset. If "wls" is TRUE, these are the weights used in
+#' the weighted least squares regressions.  If "cov = robust" these values are
+#' computed with "scale.tau".  Otherwise they are computed with "var".
+#' @returnItem factor.rets A "zoo" object containing the times series of
+#' estimated factor returns and intercepts.
+#' @returnItem resids A "zoo" object containing the time series of residuals
+#' for each asset.
+#' @returnItem tstats A "zoo" object containing the time series of t-statistics
+#' for each exposure.
+#' @returnItem returns.data A "data.frame" object containing the returns data
+#' for the assets in the factor model, including RETURN, DATE,PERMNO.
+#' @returnItem exposure.data A "data.frame" object containing the data for the
+#' variables in the factor model, including DATE, PERMNO.
+#' @returnItem assets A character vector of PERMNOs used in the model
+#' @returnItem tickers A character vector of tickers used in the model
+#' @returnItem call function call
+#' @author Guy Yullen and Yi-An Chen
+#' @examples
+#' 
+#' \dontrun{
+#' # BARRA type factor model
+#' data(stock)
+#' # there are 447 assets  
+#' assets = unique(fulldata[,"PERMNO"])
+#' timedates = as.Date(unique(fulldata[,"DATE"]))
+#' exposures <- exposures.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
+#' test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,covariance="classic", assets=assets,full.resid.cov=TRUE,
+#'                                       regression="classic",wls=TRUE)
+#' names(test.fit)
+#' test.fit$cov.returns
+#' test.fit$cov.facrets
+#' test.fit$facrets
+#' 
+#' # BARRA type Industry Factor Model
+#' exposures <- exposures.names <- c("GICS.SECTOR") 
+#' # the rest keep the same
+#' test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,
+#'                                       covariance="classic", assets=assets,full.resid.cov=TRUE,
+#'                                       regression="classic",wls=TRUE)
+#' }
+#' 
 fitFundamentalFactorModel <-
 function (fulldata, timedates, exposures, assets, wls = FALSE, regression = "classic", 
           covariance = "classic", full.resid.cov = TRUE, robust.scale = FALSE, 

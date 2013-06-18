@@ -1,28 +1,17 @@
 \name{summary.MacroFactorModel}
 \alias{summary.MacroFactorModel}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-summary MacrofactorModel object.
+\title{summary MacrofactorModel object.}
+\usage{
+  summary.MacroFactorModel(fit.macro)
+}
+\arguments{
+  \item{fit.macro}{fit object created by
+  fitMacroeconomicFactorModel.}
 }
 \description{
-Generic function of summary method for fitMacroeconomicFactorModel. 
+  Generic function of summary method for
+  fitMacroeconomicFactorModel.
 }
-\usage{
-\method{summary}{MacroFactorModel}(fit.macro)
-}
-
-\arguments{
-  \item{fit.macro}{
-fit object created by fitMacroeconomicFactorModel.
-}
-}
-
-
-
-\author{
-Eric Zivot and Yi-An Chen.
-}
-
 \examples{
 # load data from the database
 data(managers.df)
@@ -32,5 +21,8 @@ factors    = managers.df[,(7:9)]
 fit.macro <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
                                  variable.selection="all subsets")
 summary(fit.macro)
-
 }
+\author{
+  Eric Zivot and Yi-An Chen.
+}
+

@@ -1,48 +1,35 @@
 \name{factorModelPerformanceAttribution}
 \alias{factorModelPerformanceAttribution}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-Compute BARRA-type performance attribution
-}
-\description{
-Decompose total returns or active returns into returns attributed to factors and specific returns. Class of FM.attribution is generated and generic function \code{plot} and \code{summary} can be used.   
-}
+\title{Compute BARRA-type performance attribution}
 \usage{
-factorModelPerformanceAttribution(fit,benchmark=NULL,...)
+  factorModelPerformanceAttribution(fit, benchmark = NULL,
+    ...)
 }
-
 \arguments{
-  \item{fit}{
-Class of "MacroFactorModel", "FundamentalFactorModel" or "statFactorModel".
-}
-  \item{benchmark}{
-a zoo, vector or data.frame provides benchmark time series returns.
-}
- \item{...}{
- Other controled variables for fit methods.  
- }
-  
-}
-\details{
-total returns can be decomposed into returns attributed to factors and specific returns.
-\eqn{R_t = \sum_j e_{jt} * f_{jt} + u_t},t=1..T,\eqn{e_{jt}} is exposure to factor j and \eqn{f_{jt}} is factor j. The returns attributed to factor j is \eqn{e_{jt} * f_{jt}} and portfolio specific returns is \eqn{u_t}  
+  \item{fit}{Class of "MacroFactorModel",
+  "FundamentalFactorModel" or "statFactorModel".}
+
+  \item{benchmark}{a zoo, vector or data.frame provides
+  benchmark time series returns.}
+
+  \item{...}{Other controled variables for fit methods.}
 }
 \value{
-\item{cum.ret.attr.f}{
-N X J matrix of cumulative return attributed to factors. 
+  an object of class \code{FM.attribution} containing
 }
-\item{cum.spec.ret}{
-1 x N vector of cumulative specific returns.
+\description{
+  Decompose total returns or active returns into returns
+  attributed to factors and specific returns. Class of
+  FM.attribution is generated and generic function
+  \code{plot} and \code{summary} can be used.
 }
-\item{attr.list}{
-list of time series of attributed returns for every portfolio.
-}
-}
-\references{
-Grinold,R and Kahn R, \emph{Active Portfolio Management}, McGraw-Hill.
-}
-\author{
-Yi-An Chen.
+\details{
+  total returns can be decomposed into returns attributed
+  to factors and specific returns. \eqn{R_t = \sum_j e_{jt}
+  * f_{jt} + u_t},t=1..T,\eqn{e_{jt}} is exposure to factor
+  j and \eqn{f_{jt}} is factor j. The returns attributed to
+  factor j is \eqn{e_{jt} * f_{jt}} and portfolio specific
+  returns is \eqn{u_t}
 }
 \examples{
 \dontrun{
@@ -56,3 +43,11 @@ fm.attr <- factorModelPerformanceAttribution(fit.macro)
 
 }
 }
+\author{
+  Yi-An Chen.
+}
+\references{
+  Grinold,R and Kahn R, \emph{Active Portfolio Management},
+  McGraw-Hill.
+}
+

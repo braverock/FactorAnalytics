@@ -1,3 +1,22 @@
+#' compute normal incremental VaR given portfolio weights, mean vector and
+#' covariance matrix.
+#' 
+#' compute normal incremental VaR given portfolio weights, mean vector and
+#' covariance matrix. Incremental VaR is defined as the change in portfolio VaR
+#' that occurs when an asset is removed from the portfolio.
+#' 
+#' 
+#' @param mu n x 1 vector of expected returns.
+#' @param Sigma n x n return covariance matrix.
+#' @param w n x 1 vector of portfolio weights.
+#' @param tail.prob scalar tail probability.
+#' @return n x 1 vector of incremental VaR values
+#' @author Eric Zivot and Yi-An Chen
+#' @references Jorian (2007) pg. 168
+#' @examples
+#' 
+#' normalIncrementalVaR(mu=c(1,2),Sigma=matrix(c(1,0.5,0.5,2),2,2),w=c(0.5,0.5),tail.prob = 0.01)
+#' 
 normalIncrementalVaR <-
 function(mu, Sigma, w, tail.prob = 0.01) {
 ## compute normal incremental VaR given portfolio weights, mean vector and

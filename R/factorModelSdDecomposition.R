@@ -1,3 +1,40 @@
+#' Compute factor model factor risk (sd) decomposition for individual fund.
+#' 
+#' Compute factor model factor risk (sd) decomposition for individual fund.
+#' 
+#' 
+#' @param beta.vec k x 1 vector of factor betas with factor names in the
+#' rownames.
+#' @param factor.cov k x k factor excess return covariance matrix.
+#' @param sig2.e scalar, residual variance from factor model.
+#' @return an S3 object containing
+#' @returnItem sd.fm Scalar, std dev based on factor model.
+#' @returnItem mcr.fm (K+1) x 1 vector of factor marginal contributions to risk
+#' (sd).
+#' @returnItem cr.fm (K+1) x 1 vector of factor component contributions to risk
+#' (sd).
+#' @returnItem pcr.fm (K+1) x 1 vector of factor percent contributions to risk
+#' (sd).
+#' @author Eric Zivot and Yi-An Chen
+#' @examples
+#' 
+#' # load data from the database
+#' data(managers.df)
+#' ret.assets = managers.df[,(1:6)]
+#' factors    = managers.df[,(7:9)]
+#' # fit the factor model with OLS
+#' fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS", 
+#'                                  variable.selection="all subsets",
+#'                                  factor.set = 3)
+#' # factor SD decomposition for HAM1
+#' cov.factors = var(factors)
+#' manager.names = colnames(managers.df[,(1:6)])
+#' factor.names  = colnames(managers.df[,(7:9)])
+#' factor.sd.decomp.HAM1 = factorModelSdDecomposition(fit$beta.mat["HAM1",],
+#'                                                    cov.factors, fit$residVars.vec["HAM1"])
+#'  
+#'                                                         
+#' 
 factorModelSdDecomposition <-
 function(beta.vec, factor.cov, sig2.e) {
 ## Inputs:

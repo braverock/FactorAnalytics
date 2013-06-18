@@ -1,3 +1,79 @@
+#' Fit statistical factor model using principle components
+#' 
+#' Fit statistical factor model using principle components. This function is
+#' mainly adapted from S+FinMetric function mfactor.
+#' 
+#' 
+#' @param x T x N assets returns data which is saved as data.frame class.
+#' @param k numbers of factors if it is scalar or method of choosing optimal
+#' number of factors. "bn" represents Bai and Ng (2002) method and "ck"
+#' represents Connor and korajczyk (1993) method. Default is k = 1.
+#' @param refine \code{TRUE} By default, the APCA fit will use the
+#' Connor-Korajczyk refinement.
+#' @param check check if some variables has identical values. Default is FALSE.
+#' @param max.k scalar, select the number that maximum number of factors to be
+#' considered.
+#' @param sig significant level when ck method uses.
+#' @param na.rm if allow missing values. Default is FALSE.
+#' @return
+#' 
+#' :
+#' @returnItem factors T x K the estimated factors.
+#' @returnItem loadings K x N the asset specific factor loadings beta_i
+#' estimated from regress the asset returns on factors.
+#' @returnItem alpha 1 x N the estimated intercepts alpha_i
+#' @returnItem Omega N x N asset returns sample variance covariance matrix.
+#' @returnItem r2 regression r square value from regress the asset returns on
+#' factors.
+#' @returnItem k the number of the facotrs.
+#' @returnItem eigen eigenvalues from the sample covariance matrix.
+#' @returnItem residuals T x N matrix of residuals from regression.
+#' @returnItem asset.ret asset returns
+#' @returnItem asset.fit List of regression lm class of individual returns on
+#' factors.
+#' @returnItem residVars.vec vector of residual variances
+#' @returnItem mimic N x K matrix of factor mimicking portfolio returns.
+#' @author Eric Zivot and Yi-An Chen
+#' @examples
+#' 
+#' # load data for fitStatisticalFactorModel.r
+#' # data from finmetric berndt.dat and folio.dat
+#' 
+#' data(stat.fm.data)
+#' ##
+#' # sfm.dat is for pca
+#' # sfm.apca.dat is for apca
+#' class(sfm.dat)
+#' class(sfm.apca.dat)
+#' 
+#' # pca
+#' args(fitStatisticalFactorModel)
+#' sfm.pca.fit <- fitStatisticalFactorModel(sfm.dat,k=2)
+#' class(sfm.pca.fit)
+#' names(sfm.pca.fit)
+#' sfm.pca.fit$factors
+#' sfm.pca.fit$loadings
+#' sfm.pca.fit$r2
+#' sfm.pca.fit$residuals
+#' sfm.pca.fit$residVars.vec
+#' sfm.pca.fit$mimic
+#' # apca
+#' sfm.apca.fit <- fitStatisticalFactorModel(sfm.apca.dat,k=1)
+#' names(sfm.apca.fit)
+#' sfm.apca.res <- sfm.apca.fit$residuals
+#' sfm.apca.mimic <- sfm.apca.fit$mimic
+#' # apca with bai and Ng method
+#' sfm.apca.fit.bn <- fitStatisticalFactorModel(sfm.apca.dat,k="bn")
+#' class(sfm.apca.fit.bn)
+#' names(sfm.apca.fit.bn)
+#' sfm.apca.fit.bn$mimic
+#' 
+#' # apca with ck method
+#' sfm.apca.fit.ck <- fitStatisticalFactorModel(sfm.apca.dat,k="ck")
+#' class(sfm.apca.fit.ck)
+#' names(sfm.apca.fit.ck)
+#' sfm.apca.fit.ck$mimic
+#' 
 fitStatisticalFactorModel <-
 function(x, k = 1, refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE){
 	

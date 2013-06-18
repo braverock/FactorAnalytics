@@ -1,46 +1,20 @@
 \name{portfolioSdDecomposition}
 \alias{portfolioSdDecomposition}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-Compute portfolio sd (risk) decomposition by asset.
+\title{Compute portfolio sd (risk) decomposition by asset.}
+\usage{
+  portfolioSdDecomposition(w.vec, cov.assets)
+}
+\arguments{
+  \item{w.vec}{N x 1 vector of portfolio weights}
+
+  \item{cov.assets}{N x N asset covariance matrix}
+}
+\value{
+  an S3 list containing
 }
 \description{
-Compute portfolio sd (risk) decomposition by asset.
+  Compute portfolio sd (risk) decomposition by asset.
 }
-\usage{
-portfolioSdDecomposition(w.vec, cov.assets)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{w.vec}{
-    N x 1 vector of portfolio weights
-}
-  \item{cov.assets}{
-    N x N asset covariance matrix
-}
-}
-
-\value{
-   \item{sd.p}{
-   Scalar, portfolio standard deviation.
-   }          
-   \item{mcsd.p}{
-    1 x N vector, marginal contributions to portfolio standard deviation.
-}        
-   \item{csd.p}{
-   1 x N vector, contributions to portfolio standard deviation.
-   }         
-   \item{pcsd.p}{
-   1 x N vector, percent contribution to portfolio standard deviation.
-}
-}
-\references{
-Qian, Hua and Sorensen (2007) Quantitative Equity Portfolio Management, chapter 3.
-}
-\author{
-Eric Zivot and Yi-An Chen
-}
-
 \examples{
 # load data from the database
 data(managers.df)
@@ -66,7 +40,13 @@ barplot(port.sd.decomp.sample$pcsd.p,
 
 # compute with factor model covariance matrix
 returnCov.mat<- factorModelCovariance(fit$beta.mat,var(factors),fit$residVars.vec)
-port.sd.decomp.fm = portfolioSdDecomposition(w.vec, returnCov.mat)                                                         
-
+port.sd.decomp.fm = portfolioSdDecomposition(w.vec, returnCov.mat)
+}
+\author{
+  Eric Zivot and Yi-An Chen
+}
+\references{
+  Qian, Hua and Sorensen (2007) Quantitative Equity
+  Portfolio Management, chapter 3.
 }
 
