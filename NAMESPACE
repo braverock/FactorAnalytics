@@ -1,7 +1,0 @@
-exportPattern("^[^\\.]")
-S3method(print, MacroFactorModel)
-S3method(print, StatFactorModel)
-S3method(plot, MacroFactorModel)
-S3method(plot, StatFactorModel)
-S3method(plot, FundamentalFactorModel)
-S3method(summary, MacroFactorModel)
