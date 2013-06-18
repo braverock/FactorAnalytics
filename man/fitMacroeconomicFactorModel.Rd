@@ -2,26 +2,24 @@
 \alias{fitMacroeconomicFactorModel}
 \title{Fit macroeconomic factor model by time series regression techniques.}
 \usage{
-  fitMacroeconomicFactorModel(ret.assets, factors,
-    factor.set = 2, fit.method = c("OLS", "DLS", "Robust"),
+  fitMacroeconomicFactorModel(assets.names, factors.names,
+    data = data, factor.set = 3,
+    fit.method = c("OLS", "DLS", "Robust"),
     variable.selection = c("stepwise", "all subsets", "lar", "lasso"),
     decay.factor = 0.95, nvmax = 8, force.in = NULL,
     subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
     lars.criteria = c("Cp", "cv"))
 }
 \arguments{
-  \item{ret.assets}{N x T Numerical returns data,
-  univariate or multivariate, where N is the number of
-  assets return and T is the length of time period. data
-  has to be saved as class "data.frame" so that lm function
-  can be used and must have column names.}
+  \item{assets.names}{names of assets returns.}
 
-  \item{factors}{K x T Numerical factors data, where K is
-  the number of factors and T is the length of the time
-  period. Data has to be saved as class "data.frame" so
-  that lm function can be used and must have column names.}
+  \item{factors.names}{names of factors returns.}
 
   \item{factor.set}{scalar, number of factors}
+
+  \item{data}{a vector, matrix, data.frame, xts, timeSeries
+  or zoo object with asset returns and factors retunrs
+  rownames}
 
   \item{fit.method}{"OLS" is ordinary least squares method,
   "DLS" is discounted least squares method. Discounted
@@ -59,7 +57,16 @@
   cross-validation. See detail.}
 }
 \value{
-  an S3 object containing
+  an S3 object containing \item{asset.fit}{Fit objects for
+  each asset. This is the class "lm" for each object.}
+  \item{alpha.vec}{N x 1 Vector of estimated alphas.}
+  \item{beta.mat}{N x K Matrix of estimated betas.}
+  \item{r2.vec}{N x 1 Vector of R-square values.}
+  \item{residVars.vec}{N x 1 Vector of residual variances.}
+  \item{call}{function call.} \item{ret.assets}{Assets
+  returns of input data.} \item{factors Factors of input
+  data.} \item{variable.selection variables selected by the
+  user.}
 }
 \description{
   Fit macroeconomic factor model by time series regression
@@ -72,6 +79,7 @@
   p17.
 }
 \examples{
+\dontrun{
 # load data from the database
 data(managers.df)
 ret.assets = managers.df[,(1:6)]
@@ -87,6 +95,7 @@ dataToPlot = cbind(fitted(fit$asset.fit$HAM1), na.omit(managers.df$HAM1))
 colnames(dataToPlot) = c("Fitted","Actual")
 chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
                  colorset=c("black","blue"), legend.loc="bottomleft")
+ }
 }
 \author{
   Eric Zivot and Yi-An Chen.
