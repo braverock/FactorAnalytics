@@ -75,31 +75,6 @@
 fitStatisticalFactorModel <-
 function(x, k = 1, refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE){
 	
-## Inputs:  
-## 
-## x      :  T x N assets returns data which is saved as data.frame class. 
-## k      :  numbers of factors if it is scalar or method of choosing optimal number of factors.
-##           "bn" represents Bai and Ng (2002) method and "ck" represents  Connor and korajczyk
-##          (1993) method. Default is k = 1.
-## refine :      : TRUE By default, the APCA fit will use the Connor-Korajczyk refinement. 
-## check         : check if some variables has identical values. Default is FALSE.
-## max.k         : scalar, select the number that maximum number of factors to be considered.
-## sig           : significant level than ck method uses.
-## na.rm         : if allow missing values. Default is FALSE.
-## Outputs:
-## 
-## factors       : T x K the estimated factors.
-## loadings      : K x N   the asset specific factor loadings beta_i estimated from regress the asset
-##                 returns on factors.
-## alpha         : 1 x N  the estimated intercepts alpha_i
-## Omega         : N x N asset returns sample variance covariance matrix.
-## r2            : regression r square value from regress the asset returns on factors.
-## k             : the number of the facotrs.
-## eigen         : eigenvalues from the sample covariance matrix.
-## residuals     : T x N matrix of residuals from regression.
-# residVars.vec  : vector of residual variances    
-# mimic          : N x K matrix of factor mimicking portfolio returns.   
- 
 # load package
 require(MASS)  
   
@@ -208,7 +183,7 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 
   
   # function of pca
-  mfactor.pca <- function(x, k, check = FALSE, Omega = NULL) {
+  mfactor.pca <- function(x, k, check = FALSE, ret.cov = NULL) {
   
   if(check) {
 		if(mfactor.check(x)) {
@@ -223,10 +198,10 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	}
 	x.names <- dimnames(x)[[2]]
 	xc <- t(t(x) - colMeans(x))
-	if(is.null(Omega)) {
-		Omega <- crossprod(xc)/m
+	if(is.null(ret.cov)) {
+		ret.cov <- crossprod(xc)/m
 	}
-	eigen.tmp <- eigen(Omega, symm = TRUE)
+	eigen.tmp <- eigen(ret.cov, symm = TRUE)
   # compute loadings beta
 	B <- t(eigen.tmp$vectors[, 1:k, drop = FALSE])
   # compute estimated factors
@@ -236,11 +211,11 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
   # compute residuals
 	tmp <- t(t(tmp) - alpha)
 	r2 <- (1 - colSums(tmp^2)/colSums(xc^2))
-	Omega <- t(B) %*% var(f) %*% B
-	diag(Omega) <- diag(Omega) + colSums(tmp^2)/(m - k - 1)
+	ret.cov <- t(B) %*% var(f) %*% B
+	diag(ret.cov) <- diag(ret.cov) + colSums(tmp^2)/(m - k - 1)
 	dimnames(B) <- list(paste("F", 1:k, sep = "."), x.names)
 	dimnames(f) <- list(dimnames(x)[[1]], paste("F", 1:k, sep = "."))
-	dimnames(Omega) <- list(x.names, x.names)
+	dimnames(ret.cov) <- list(x.names, x.names)
 	names(alpha) <- x.names
   # create lm list for plot
   reg.list = list()
@@ -251,7 +226,7 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
     fm.fit = lm(fm.formula, data=reg.df)
     reg.list[[i]] = fm.fit
     }
-	ans <-  list(factors = f, loadings = B, k = k, alpha = alpha, Omega = Omega,
+	ans <-  list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
 	            	r2 = r2, eigen = eigen.tmp$values, residuals=tmp, asset.ret = x,
                asset.fit=reg.list)
  
@@ -260,7 +235,7 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 }
 
   # funciont of apca
-  mfactor.apca <- function(x, k, refine = TRUE, check = FALSE, Omega = NULL) {
+  mfactor.apca <- function(x, k, refine = TRUE, check = FALSE, ret.cov = NULL) {
   
   if(check) {
 		if(mfactor.check(x)) {
@@ -275,10 +250,10 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	}
 	x.names <- dimnames(x)[[2]]
 	xc <- t(t(x) - colMeans(x))
-	if(is.null(Omega)) {
-		Omega <- crossprod(t(xc))/n
+	if(is.null(ret.cov)) {
+		ret.cov <- crossprod(t(xc))/n
 	}
-	eig.tmp <- eigen(Omega, symmetric = TRUE)
+	eig.tmp <- eigen(ret.cov, symmetric = TRUE)
 	f <- eig.tmp$vectors[, 1:k, drop = FALSE]
 	f1 <- cbind(1, f)
 	B <- backsolve(chol(crossprod(f1)), diag(k + 1))
@@ -286,8 +261,8 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	sigma <- colSums((x - f1 %*% B)^2)/(m - k - 1)
 	if(refine) {
 		xs <- t(xc)/sqrt(sigma)
-		Omega <- crossprod(xs)/n
-		eig.tmp <- eigen(Omega, symm = TRUE)
+		ret.cov <- crossprod(xs)/n
+		eig.tmp <- eigen(ret.cov, symm = TRUE)
 		f <- eig.tmp$vectors[, 1:k, drop = FALSE]
 		f1 <- cbind(1, f)
 		B <- backsolve(chol(crossprod(f1)), diag(k + 1))
@@ -296,14 +271,14 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	}
 	alpha <- B[1,  ]
 	B <- B[-1,  , drop = FALSE]
-	Omega <- t(B) %*% var(f) %*% B
-	diag(Omega) <- diag(Omega) + sigma
+	ret.cov <- t(B) %*% var(f) %*% B
+	diag(ret.cov) <- diag(ret.cov) + sigma
 	dimnames(B) <- list(paste("F", 1:k, sep = "."), x.names)
 	dimnames(f) <- list(dimnames(x)[[1]], paste("F", 1:k, sep = "."))
 	names(alpha) <- x.names
 	res <- t(t(x) - alpha) - f %*% B
 	r2 <- (1 - colSums(res^2)/colSums(xc^2))
-  ans <- 	list(factors = f, loadings = B, k = k, alpha = alpha, Omega = Omega,
+  ans <- 	list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
 		           r2 = r2, eigen = eig.tmp$values, residuals=res,asset.ret = x)
  return(ans)
 }
