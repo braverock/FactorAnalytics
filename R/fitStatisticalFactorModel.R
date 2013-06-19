@@ -16,23 +16,21 @@
 #' @param sig significant level when ck method uses.
 #' @param na.rm if allow missing values. Default is FALSE.
 #' @return
-#' 
-#' :
-#' @returnItem factors T x K the estimated factors.
-#' @returnItem loadings K x N the asset specific factor loadings beta_i
-#' estimated from regress the asset returns on factors.
-#' @returnItem alpha 1 x N the estimated intercepts alpha_i
-#' @returnItem Omega N x N asset returns sample variance covariance matrix.
-#' @returnItem r2 regression r square value from regress the asset returns on
-#' factors.
-#' @returnItem k the number of the facotrs.
-#' @returnItem eigen eigenvalues from the sample covariance matrix.
-#' @returnItem residuals T x N matrix of residuals from regression.
-#' @returnItem asset.ret asset returns
-#' @returnItem asset.fit List of regression lm class of individual returns on
-#' factors.
-#' @returnItem residVars.vec vector of residual variances
-#' @returnItem mimic N x K matrix of factor mimicking portfolio returns.
+#' \item{factors}{T x K the estimated factors.}
+#' \item{loadings}{K x N the asset specific factor loadings beta_i.
+#' estimated from regress the asset returns on factors.}
+#' \item{alpha}{1 x N the estimated intercepts alpha_i}
+#' \item{ret.cov}{N x N asset returns sample variance covariance matrix.}
+#' \item{r2}{regression r square value from regress the asset returns on
+#' factors.}
+#' \item{k}{the number of the facotrs.}
+#' \item{eigen}{eigenvalues from the sample covariance matrix.}
+#' \item{residuals}{T x N matrix of residuals from regression.}
+#' \item{asset.ret}{asset returns}
+#' \item{asset.fit}{List of regression lm class of individual returns on
+#' factors.}
+#' \item{residVars.vec}{vector of residual variances.}
+#' \item{mimic}{N x K matrix of factor mimicking portfolio returns.}
 #' @author Eric Zivot and Yi-An Chen
 #' @examples
 #' 
