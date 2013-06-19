@@ -20,11 +20,11 @@
 #' "stepwise" is traditional forward/backward #' stepwise OLS regression, starting from the initial set of factors, that adds
 #' factors only if the regression fit as measured by the Bayesian Information
 #' Criteria (BIC) or Akaike Information Criteria (AIC) can be done using the R
-#' function step() from the stats package. If \code{Robust} is chosen, the
+#' function step() from the stats package. If "Robust" is chosen, the
 #' function step.lmRob in Robust package will be used. "all subsets" is
 #' Traditional all subsets regression can be done using the R function
 #' regsubsets() from the package leaps. "lar" , "lasso" is based on package
-#' "lars", linear angle regression.
+#' "lars", linear angle regression. If "lar" or "lasso" is chose. fit.method will be ignored. 
 #' @param decay.factor for DLS. Default is 0.95.
 #' @param nvmax control option for all subsets. maximum size of subsets to
 #' examine
@@ -331,7 +331,7 @@ for (i in assets.names) {
 } else if (variable.selection == "lar" | variable.selection == "lasso") {
   # use min Cp as criteria to choose predictors
   
-    for (i in assets.names) {
+  for (i in assets.names) {
  reg.df = na.omit(reg.xts[, c(i, factors.names)])
  reg.df = as.matrix(reg.df)
  lars.fit = lars(reg.df[,factors.names],reg.df[,i],type=variable.selection,trace=FALSE)
