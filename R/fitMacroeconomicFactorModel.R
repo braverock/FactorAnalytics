@@ -128,7 +128,7 @@ if (variable.selection == "none") {
       # sum weigth to unitary  
       w <- w/sum(w) 
       fm.formula = as.formula(paste(i,"~", ".", sep=""))                              
-      fm.fit = lm(fm.formula, data=reg.xts,weight=w)
+      fm.fit = lm(fm.formula, data=reg.df,weight=w)
       fm.summary = summary(fm.fit)
       reg.list[[i]] = fm.fit
       Alphas[i] = coef(fm.fit)[1]
