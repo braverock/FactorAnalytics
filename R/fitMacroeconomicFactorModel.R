@@ -9,15 +9,15 @@
 #' 
 #' @param assets.names  names of assets returns.
 #' @param factors.names names of factors returns.
-#' @param factor.set scalar, number of factors
+#' @param num.factor.subset scalar. Number of factors selected by all subsets.
 #' @param data a vector, matrix, data.frame, xts, timeSeries or zoo object with asset returns 
 #' and factors retunrs rownames 
 #' @param fit.method "OLS" is ordinary least squares method, "DLS" is
 #' discounted least squares method. Discounted least squares (DLS) estimation
 #' is weighted least squares estimation with exponentially declining weights
 #' that sum to unity. "Robust"
-#' @param variable.selection "stepwise" is traditional forward/backward
-#' stepwise OLS regression, starting from the initial set of factors, that adds
+#' @param variable.selection "none" will not activate variables sellection. Default is "none".
+#' "stepwise" is traditional forward/backward #' stepwise OLS regression, starting from the initial set of factors, that adds
 #' factors only if the regression fit as measured by the Bayesian Information
 #' Criteria (BIC) or Akaike Information Criteria (AIC) can be done using the R
 #' function step() from the stats package. If \code{Robust} is chosen, the
@@ -70,9 +70,9 @@
 #'                  colorset=c("black","blue"), legend.loc="bottomleft")
 #'  }
 fitMacroeconomicFactorModel <-
-function(assets.names, factors.names, data=data, factor.set = 3, 
+function(assets.names, factors.names, data=data, num.factor.subset = 1, 
           fit.method=c("OLS","DLS","Robust"),
-          variable.selection=c("stepwise", "all subsets", "lar", "lasso"),
+         variable.selection="none",
           decay.factor = 0.95,nvmax=8,force.in=NULL,
           subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
           lars.criteria = c("Cp","cv")) {
@@ -86,22 +86,9 @@ function(assets.names, factors.names, data=data, factor.set = 3,
   
   # convert data into xts and hereafter compute in xts
   data.xts <- checkData(data) 
-  #assets.names <- colnames(data.xts)[1:6] # erase later 
-  #factors.names <- colnames(data.xts)[7:9]
   reg.xts <- merge(data.xts[,assets.names],data.xts[,factors.names])
   
-# if (is.data.frame(ret.assets) & is.data.frame(factors) ) {
-#   assets.names = colnames(ret.assets)
-#   factors.names  = colnames(factors)
-#   reg.xts   = cbind(ret.assets,factors)
-# } else {
-#   stop("ret.assets and beta.mat must be in class data.frame")
-# }
-                                          
-
-
-
-# initialize list object to hold regression objects
+  # initialize list object to hold regression objects
 reg.list = list()
 
 
@@ -116,18 +103,66 @@ colnames(Betas) = factors.names
 rownames(Betas) = assets.names
 
 
-
-
-
-
-if (variable.selection == "all subsets") {
+if (variable.selection == "none") {
+  if (fit.method == "OLS") {
+          for (i in assets.names) {
+        reg.df = na.omit(reg.xts[, c(i, factors.names)])    
+        fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+        fm.fit = lm(fm.formula, data=reg.df)
+        fm.summary = summary(fm.fit)
+        reg.list[[i]] = fm.fit
+        Alphas[i] = coef(fm.fit)[1]
+        Betas.names = names(coef(fm.fit)[-1])
+        Betas[i,Betas.names] = coef(fm.fit)[-1]
+        ResidVars[i] = fm.summary$sigma^2
+        R2values[i] =  fm.summary$r.squared
+      }
+  } else if (fit.method == "DLS") {
+    for (i in assets.names) {
+      reg.df = na.omit(reg.xts[, c(i, factors.names)])
+      t.length <- nrow(reg.df)
+      w <- rep(decay.factor^(t.length-1),t.length)
+      for (k in 2:t.length) {
+        w[k] = w[k-1]/decay.factor 
+      }   
+      # sum weigth to unitary  
+      w <- w/sum(w) 
+      fm.formula = as.formula(paste(i,"~", ".", sep=""))                              
+      fm.fit = lm(fm.formula, data=reg.xts,weight=w)
+      fm.summary = summary(fm.fit)
+      reg.list[[i]] = fm.fit
+      Alphas[i] = coef(fm.fit)[1]
+      Betas.names = names(coef(fm.fit)[-1])
+      Betas[i,Betas.names] = coef(fm.fit)[-1]
+      ResidVars[i] = fm.summary$sigma^2
+      R2values[i] =  fm.summary$r.squared
+    } 
+  } else if (fit.method=="Robust") {
+    for (i in assets.names) {
+      reg.df = na.omit(reg.xts[, c(i, factors.names)])
+      fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+      fm.fit = lmRob(fm.formula, data=reg.df)
+      fm.summary = summary(fm.fit)
+      reg.list[[i]] = fm.fit
+      Alphas[i] = coef(fm.fit)[1]
+      Betas[i, ] = coef(fm.fit)[-1]
+      ResidVars[i] = fm.summary$sigma^2
+      R2values[i] =  fm.summary$r.squared
+    }
+    
+  }  else {
+    stop("invalid method")
+  }
+  
+  
+} else if (variable.selection == "all subsets") {
 # estimate multiple factor model using loop b/c of unequal histories for the hedge funds
 
 
 
 if (fit.method == "OLS") {
 
-if (factor.set == length(force.in)) {
+if (num.factor.subset == length(force.in)) {
   for (i in assets.names) {
  reg.df = na.omit(reg.xts[, c(i, force.in)])
  fm.formula = as.formula(paste(i,"~", ".", sep=" "))
@@ -140,7 +175,7 @@ if (factor.set == length(force.in)) {
  ResidVars[i] = fm.summary$sigma^2
  R2values[i] =  fm.summary$r.squared
   }
-}  else if (factor.set > length(force.in)) {
+}  else if (num.factor.subset > length(force.in)) {
     
 for (i in assets.names) {
  reg.df = na.omit(reg.xts[, c(i, factors.names)])
@@ -148,7 +183,7 @@ for (i in assets.names) {
  fm.subsets <- regsubsets(fm.formula,data=reg.df,nvmax=nvmax,force.in=force.in,
                           method=subsets.method)
  sum.sub <- summary(fm.subsets)
- reg.df <- na.omit(reg.xts[,c(i,names(which(sum.sub$which[as.character(factor.set),-1]==TRUE))  )])
+ reg.df <- na.omit(reg.xts[,c(i,names(which(sum.sub$which[as.character(num.factor.subset),-1]==TRUE))  )])
  fm.fit = lm(fm.formula, data=reg.df)
  fm.summary = summary(fm.fit)
  reg.list[[i]] = fm.fit
@@ -159,7 +194,7 @@ for (i in assets.names) {
  R2values[i] =  fm.summary$r.squared
   }
 } else {
-  stop("ERROR! number of force.in should less or equal to factor.set")
+  stop("ERROR! number of force.in should less or equal to num.factor.subset")
 }
   
 
@@ -168,7 +203,7 @@ for (i in assets.names) {
 } else if (fit.method == "DLS"){
   
 
-  if (factor.set == length(force.in)) {  
+  if (num.factor.subset == length(force.in)) {  
   # define weight matrix 
 for (i in assets.names) {
   reg.df = na.omit(reg.xts[, c(i, force.in)])
@@ -189,7 +224,7 @@ for (i in assets.names) {
  ResidVars[i] = fm.summary$sigma^2
  R2values[i] =  fm.summary$r.squared
  } 
-} else if  (factor.set > length(force.in)) {
+} else if  (num.factor.subset > length(force.in)) {
   for (i in assets.names) {
   reg.df = na.omit(reg.xts[, c(i, factors.names)])
   t.length <- nrow(reg.df)
@@ -202,7 +237,7 @@ for (i in assets.names) {
  fm.subsets <- regsubsets(fm.formula,data=reg.df,nvmax=nvmax,force.in=force.in,
                           method=subsets.method,weights=w) # w is called from global envio
  sum.sub <- summary(fm.subsets)
- reg.df <- na.omit(reg.xts[,c(i,names(which(sum.sub$which[as.character(factor.set),-1]==TRUE))  )])
+ reg.df <- na.omit(reg.xts[,c(i,names(which(sum.sub$which[as.character(num.factor.subset),-1]==TRUE))  )])
  fm.fit = lm(fm.formula, data=reg.df,weight=w)
  fm.summary = summary(fm.fit)
  reg.list[[i]] = fm.fit
@@ -213,7 +248,7 @@ for (i in assets.names) {
  R2values[i] =  fm.summary$r.squared
  }
 } else {
-  stop("ERROR! number of force.in should less or equal to factor.set")
+  stop("ERROR! number of force.in should less or equal to num.factor.subset")
 }
 
 
@@ -293,7 +328,7 @@ for (i in assets.names) {
 
 }
   
-} else if (variable.selection == "lar" || variable.selection == "lasso") {
+} else if (variable.selection == "lar" | variable.selection == "lasso") {
   # use min Cp as criteria to choose predictors
   
     for (i in assets.names) {
