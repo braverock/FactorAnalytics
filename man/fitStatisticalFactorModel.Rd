@@ -30,7 +30,7 @@
   \item{na.rm}{if allow missing values. Default is FALSE.}
 }
 \value{
-  \item{factors}{T x K the estimated factors.}
+  \itemize{ \item{factors}{T x K the estimated factors.}
   \item{loadings}{K x N the asset specific factor loadings
   beta_i. estimated from regress the asset returns on
   factors.} \item{alpha}{1 x N the estimated intercepts
@@ -45,7 +45,7 @@
   individual returns on factors.}
   \item{resid.variance}{vector of residual variances.}
   \item{mimic}{N x K matrix of factor mimicking portfolio
-  returns.}
+  returns.} }
 }
 \description{
   Fit statistical factor model using principle components.

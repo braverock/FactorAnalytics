@@ -35,6 +35,7 @@
 #' @param lars.criteria either choose minimum "Cp": unbiased estimator of the
 #' true rist or "cv" 10 folds cross-validation. See detail.
 #' @return an S3 object containing
+#' \itemize{
 #'   \item{asset.fit}{Fit objects for each asset. This is the class "lm" for
 #' each object.}
 #'   \item{alpha}{N x 1 Vector of estimated alphas.}
@@ -42,6 +43,7 @@
 #'   \item{r2}{N x 1 Vector of R-square values.}
 #'   \item{resid.variance}{N x 1 Vector of residual variances.}
 #'   \item{call}{function call.}
+#' }
 #' @author Eric Zivot and Yi-An Chen.
 #' @references 1. Efron, Hastie, Johnstone and Tibshirani (2002) "Least Angle
 #' Regression" (with discussion) Annals of Statistics; see also

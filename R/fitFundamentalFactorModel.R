@@ -25,7 +25,8 @@
 #' @param regression A character string, "robust" for regression via lmRob,
 #' "classic" for regression with lm()
 #' @param covariance A character string, "robust" for covariance matrix
-#' computed with covRob(), "classic" for covariance matrix with ccov()
+#' computed with covRob(), "classic" for covariance matrix with covClassic() in 
+#' robust package. 
 #' @param full.resid.cov logical flag, TRUE for full residual covariance matrix
 #' calculation, FALSE for diagonal residual covarinace matrix
 #' @param robust.scale logical flag, TRUE for exposure scaling via robust scale
@@ -39,30 +40,32 @@
 #' @param tickersvar A character string giving the name of the ticker variable
 #' in the data.
 #' @return an S3 object containing
-#' @returnItem cov.returns A "list" object contains covariance information for
+#' \itemize{
+#' \item cov.returns A "list" object contains covariance information for
 #' asset returns, includes covariance, mean and eigenvalus.
-#' @returnItem cov.factor.rets An object of class "cov" or "covRob" which
+#' \item cov.factor.rets An object of class "cov" or "covRob" which
 #' contains the covariance matrix of the factor returns (including intercept).
-#' @returnItem cov.resids An object of class "cov" or "covRob" which contains
+#' \item cov.resids An object of class "cov" or "covRob" which contains
 #' the covariance matrix of the residuals, if "full.resid.cov" is TRUE.  NULL
 #' if "full.resid.cov" is FALSE.
-#' @returnItem resid.vars A vector of variances estimated from the OLS
+#' \item resid.varianceb A vector of variances estimated from the OLS
 #' residuals for each asset. If "wls" is TRUE, these are the weights used in
 #' the weighted least squares regressions.  If "cov = robust" these values are
 #' computed with "scale.tau".  Otherwise they are computed with "var".
-#' @returnItem factor.rets A "zoo" object containing the times series of
+#' \item factor.rets A "zoo" object containing the times series of
 #' estimated factor returns and intercepts.
-#' @returnItem resids A "zoo" object containing the time series of residuals
+#' \item resids A "zoo" object containing the time series of residuals
 #' for each asset.
-#' @returnItem tstats A "zoo" object containing the time series of t-statistics
+#' \item tstats A "zoo" object containing the time series of t-statistics
 #' for each exposure.
-#' @returnItem returns.data A "data.frame" object containing the returns data
+#' \item returns.data A "data.frame" object containing the returns data
 #' for the assets in the factor model, including RETURN, DATE,PERMNO.
-#' @returnItem exposure.data A "data.frame" object containing the data for the
+#' \item exposure.data A "data.frame" object containing the data for the
 #' variables in the factor model, including DATE, PERMNO.
-#' @returnItem assets A character vector of PERMNOs used in the model
-#' @returnItem tickers A character vector of tickers used in the model
-#' @returnItem call function call
+#' \item assets A character vector of PERMNOs used in the model
+#' \item tickers A character vector of tickers used in the model
+#' \item call function call
+#' }
 #' @author Guy Yullen and Yi-An Chen
 #' @examples
 #' 
@@ -77,8 +80,8 @@
 #'                                       regression="classic",wls=TRUE)
 #' names(test.fit)
 #' test.fit$cov.returns
-#' test.fit$cov.facrets
-#' test.fit$facrets
+#' test.fit$cov.factor.rets
+#' test.fit$factor.rets
 #' 
 #' # BARRA type Industry Factor Model
 #' exposures <- exposures.names <- c("GICS.SECTOR") 
@@ -96,46 +99,7 @@ function (fulldata, timedates, exposures, assets, wls = FALSE, regression = "cla
   
 require(zoo)
 require(robust)
-## input
-##  
-## fulldata               : data.frame. data stacked by dates
-## timedates              : a vector of Dates specifying the date range for the model
-##                          fitting
-## exposures              : a character vector of exposure names for the factor model
-## assets                 : a list of PERMNOs to be used for the factor model
-## Optional parameters:
-## wls                    : logical flag, TRUE for weighted least squares, FALSE for
-##                          ordinary least squares
-## regression             : character string, "robust" for regression via lmRob, "classic"
-##                          for regression via lm
-## covariance             : character string, "robust" for covariance matrix computed via
-##                          covRob, "classic" for covariance matrix via ccov
-## full.resid.cov         : logical flag, TRUE for full residual covariance matrix
-##                          calculation, FALSE for diagonal residual covarinace matrix
-## robust.scale           : logical flag, TRUE for exposure scaling via robust scale and
-##                          location, FALSE for scaling via mean and sd
-## datevar                : character string giving the name of the date variable in the data.
-## assetvar               : character string giving the name of the asset variable in the data.
-## returnsvar             : character string giving the name of the return variable in the data.               
-## tickersvar             : character string giving the name of the ticker variable in the data.
-  
-## output
-## 
-## cov.returns            : covariance information for asset returns, includes
-##                          covariance, mean, eigenvalus
-## cov.factor.rets        : covariance information for factor returns, includes
-##                          covariance and mean
-## cov.resids             : covariance information for model residuals, includes
-##                          covariance and mean
-## resid.vars             : list of information regarding model residuals variance
-## factor.rets            : zoo time series object of factor returns
-## resids                 : zoo time series object of model residuals
-## tstats                 : zoo time series object of model t-statistics
-## returns.data            : data.frame of return data including RETURN, DATE,PERMNO
-## exposure.data          : data.frame of exposure data including DATE, PERMNO
-## assets                 : character vector of PERMNOs used in the model
-## tickers                : character vector of tickers used in the model
-## call                   : function call
+
   
    # if (dim(dataArray)[1] < 2) 
    #      stop("At least two time points, t and t-1, are needed for fitting the factor model.")
@@ -383,10 +347,10 @@ require(robust)
         else 
           diag(resid.vars)
     }   else {
-        Cov.facrets <- ccov(coredata(f.hat), distance = FALSE,na.action = na.omit)
+        Cov.facrets <- covClassic(coredata(f.hat), distance = FALSE,na.action = na.omit)
         resid.vars <- apply(coredata(E.hat), 2, var, na.rm = TRUE)
         D.hat <- if (full.resid.cov) 
-            ccov(coredata(E.hat), distance = FALSE, na.action = na.omit)
+            covClassic(coredata(E.hat), distance = FALSE, na.action = na.omit)
         else 
           diag(resid.vars)
     }
@@ -420,7 +384,7 @@ require(robust)
     output <- list(cov.returns = Cov.returns, 
                    cov.factor.rets = Cov.facrets, 
                    cov.resids = Cov.resids, 
-                   resid.vars = resid.vars, 
+                   resid.variance = resid.vars, 
                    factor.rets = f.hat, 
                    resids = E.hat, 
                    tstats = tstats, 

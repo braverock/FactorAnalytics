@@ -60,13 +60,13 @@
   cross-validation. See detail.}
 }
 \value{
-  an S3 object containing \item{asset.fit}{Fit objects for
-  each asset. This is the class "lm" for each object.}
-  \item{alpha}{N x 1 Vector of estimated alphas.}
+  an S3 object containing \itemize{ \item{asset.fit}{Fit
+  objects for each asset. This is the class "lm" for each
+  object.} \item{alpha}{N x 1 Vector of estimated alphas.}
   \item{beta}{N x K Matrix of estimated betas.} \item{r2}{N
   x 1 Vector of R-square values.} \item{resid.variance}{N x
   1 Vector of residual variances.} \item{call}{function
-  call.}
+  call.} }
 }
 \description{
   Fit time series factor model by time series regression

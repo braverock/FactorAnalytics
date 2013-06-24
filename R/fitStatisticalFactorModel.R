@@ -17,6 +17,7 @@
 #' @param sig significant level when ck method uses.
 #' @param na.rm if allow missing values. Default is FALSE.
 #' @return
+#' \itemize{
 #' \item{factors}{T x K the estimated factors.}
 #' \item{loadings}{K x N the asset specific factor loadings beta_i.
 #' estimated from regress the asset returns on factors.}
@@ -32,6 +33,7 @@
 #' factors.}
 #' \item{resid.variance}{vector of residual variances.}
 #' \item{mimic}{N x K matrix of factor mimicking portfolio returns.}
+#' }
 #' @author Eric Zivot and Yi-An Chen
 #' @examples
 #' 

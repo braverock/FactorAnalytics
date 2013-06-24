@@ -30,7 +30,7 @@
 
   \item{covariance}{A character string, "robust" for
   covariance matrix computed with covRob(), "classic" for
-  covariance matrix with ccov()}
+  covariance matrix with covClassic() in robust package.}
 
   \item{full.resid.cov}{logical flag, TRUE for full
   residual covariance matrix calculation, FALSE for
@@ -53,7 +53,33 @@
   the ticker variable in the data.}
 }
 \value{
-  an S3 object containing
+  an S3 object containing \itemize{ \item cov.returns A
+  "list" object contains covariance information for asset
+  returns, includes covariance, mean and eigenvalus. \item
+  cov.factor.rets An object of class "cov" or "covRob"
+  which contains the covariance matrix of the factor
+  returns (including intercept). \item cov.resids An object
+  of class "cov" or "covRob" which contains the covariance
+  matrix of the residuals, if "full.resid.cov" is TRUE.
+  NULL if "full.resid.cov" is FALSE. \item resid.varianceb
+  A vector of variances estimated from the OLS residuals
+  for each asset. If "wls" is TRUE, these are the weights
+  used in the weighted least squares regressions.  If "cov
+  = robust" these values are computed with "scale.tau".
+  Otherwise they are computed with "var". \item factor.rets
+  A "zoo" object containing the times series of estimated
+  factor returns and intercepts. \item resids A "zoo"
+  object containing the time series of residuals for each
+  asset. \item tstats A "zoo" object containing the time
+  series of t-statistics for each exposure. \item
+  returns.data A "data.frame" object containing the returns
+  data for the assets in the factor model, including
+  RETURN, DATE,PERMNO. \item exposure.data A "data.frame"
+  object containing the data for the variables in the
+  factor model, including DATE, PERMNO. \item assets A
+  character vector of PERMNOs used in the model \item
+  tickers A character vector of tickers used in the model
+  \item call function call }
 }
 \description{
   fit fundamental factor model or cross-sectional time
@@ -86,8 +112,8 @@ test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, ex
                                       regression="classic",wls=TRUE)
 names(test.fit)
 test.fit$cov.returns
-test.fit$cov.facrets
-test.fit$facrets
+test.fit$cov.factor.rets
+test.fit$factor.rets
 
 # BARRA type Industry Factor Model
 exposures <- exposures.names <- c("GICS.SECTOR")
