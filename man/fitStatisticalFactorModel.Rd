@@ -2,12 +2,14 @@
 \alias{fitStatisticalFactorModel}
 \title{Fit statistical factor model using principle components}
 \usage{
-  fitStatisticalFactorModel(x, k = 1, refine = TRUE,
-    check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE)
+  fitStatisticalFactorModel(data, k = 1, refine = TRUE,
+    check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE,
+    ckeckData.method = "xts")
 }
 \arguments{
-  \item{x}{T x N assets returns data which is saved as
-  data.frame class.}
+  \item{data}{a vector, matrix, data.frame, xts, timeSeries
+  or zoo object with asset returns and factors retunrs
+  rownames}
 
   \item{k}{numbers of factors if it is scalar or method of
   choosing optimal number of factors. "bn" represents Bai
@@ -28,7 +30,22 @@
   \item{na.rm}{if allow missing values. Default is FALSE.}
 }
 \value{
-  :
+  \item{factors}{T x K the estimated factors.}
+  \item{loadings}{K x N the asset specific factor loadings
+  beta_i. estimated from regress the asset returns on
+  factors.} \item{alpha}{1 x N the estimated intercepts
+  alpha_i} \item{ret.cov}{N x N asset returns sample
+  variance covariance matrix.} \item{r2}{regression r
+  square value from regress the asset returns on factors.}
+  \item{k}{the number of the facotrs.}
+  \item{eigen}{eigenvalues from the sample covariance
+  matrix.} \item{residuals}{T x N matrix of residuals from
+  regression.} \item{asset.ret}{asset returns}
+  \item{asset.fit}{List of regression lm class of
+  individual returns on factors.}
+  \item{resid.variance}{vector of residual variances.}
+  \item{mimic}{N x K matrix of factor mimicking portfolio
+  returns.}
 }
 \description{
   Fit statistical factor model using principle components.
@@ -55,7 +72,7 @@ sfm.pca.fit$factors
 sfm.pca.fit$loadings
 sfm.pca.fit$r2
 sfm.pca.fit$residuals
-sfm.pca.fit$residVars.vec
+sfm.pca.fit$resid.variance
 sfm.pca.fit$mimic
 # apca
 sfm.apca.fit <- fitStatisticalFactorModel(sfm.apca.dat,k=1)

@@ -4,7 +4,8 @@
 #' mainly adapted from S+FinMetric function mfactor.
 #' 
 #' 
-#' @param x T x N assets returns data which is saved as data.frame class.
+#' @param data a vector, matrix, data.frame, xts, timeSeries or zoo object with asset returns 
+#' and factors retunrs rownames
 #' @param k numbers of factors if it is scalar or method of choosing optimal
 #' number of factors. "bn" represents Bai and Ng (2002) method and "ck"
 #' represents Connor and korajczyk (1993) method. Default is k = 1.
@@ -29,7 +30,7 @@
 #' \item{asset.ret}{asset returns}
 #' \item{asset.fit}{List of regression lm class of individual returns on
 #' factors.}
-#' \item{residVars.vec}{vector of residual variances.}
+#' \item{resid.variance}{vector of residual variances.}
 #' \item{mimic}{N x K matrix of factor mimicking portfolio returns.}
 #' @author Eric Zivot and Yi-An Chen
 #' @examples
@@ -53,7 +54,7 @@
 #' sfm.pca.fit$loadings
 #' sfm.pca.fit$r2
 #' sfm.pca.fit$residuals
-#' sfm.pca.fit$residVars.vec
+#' sfm.pca.fit$resid.variance
 #' sfm.pca.fit$mimic
 #' # apca
 #' sfm.apca.fit <- fitStatisticalFactorModel(sfm.apca.dat,k=1)
@@ -73,32 +74,41 @@
 #' sfm.apca.fit.ck$mimic
 #' 
 fitStatisticalFactorModel <-
-function(x, k = 1, refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE){
+function(data, k = 1, refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE, 
+         ckeckData.method = "xts" ){
 	
 # load package
 require(MASS)  
-  
+require(PerformanceAnalytics)
+
+
+# check data 
+data.xts <- checkData(data,method=ckeckData.method) 
+
+# convert it to coredata
+
+
   
  # function of test
- mfactor.test <- function(x, method = "bn", refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05){
+ mfactor.test <- function(data, method = "bn", refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05){
   
     if(is.null(max.k)) {
-		max.k <- min(10, nrow(x) - 1)
-	} 	else if (max.k >= nrow(x)) {
+		max.k <- min(10, nrow(data) - 1)
+	} 	else if (max.k >= nrow(data)) {
 		stop("max.k must be less than the number of observations.")
 	}
 	if(check) {
-		if(mfactor.check(x)) {
+		if(mfactor.check(data)) {
 			warning("Some variables have identical observations.")
 			return(list(factors = NA, loadings = NA, k = NA))
 		}
 	}
 	method <- casefold(method)
 	if(method == "bn") {
-		ans <- mfactor.bn(x, max.k, refine = refine)
+		ans <- mfactor.bn(data, max.k, refine = refine)
 	}
 	else if(method == "ck") {
-		ans <- mfactor.ck(x, max.k, refine = refine, sig = sig)
+		ans <- mfactor.ck(data, max.k, refine = refine, sig = sig)
 	}
 	else {
 		stop("Invalid choice for optional argument method.")
@@ -109,25 +119,25 @@ require(MASS)
 
  
 # function of ck
-mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
+mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
   
-  n <- ncol(x)
-  m <- nrow(x)
+  n <- ncol(data)
+  m <- nrow(data)
 	idx <- 2 * (1:(m/2))
 	#
-	f <- mfactor.apca(x, k = 1, refine = refine, check = FALSE)
+	f <- mfactor.apca(data, k = 1, refine = refine, check = FALSE)
 	f1 <- cbind(1, f$factors)
 	B <- backsolve(chol(crossprod(f1)), diag(2))
-	eps <- x - f1 %*% crossprod(t(B)) %*% crossprod(f1, x)
+	eps <- data - f1 %*% crossprod(t(B)) %*% crossprod(f1, data)
 	s <- eps^2/(1 - 2/m - 1/n)
 	#	
 	for(i in 2:max.k) {
 		f.old <- f
 		s.old <- s
-		f <- mfactor.apca(x, k = i, refine = refine, check = FALSE)
+		f <- mfactor.apca(data, k = i, refine = refine, check = FALSE)
 		f1 <- cbind(1, f$factors)
 		B <- backsolve(chol(crossprod(f1)), diag(i + 1))
-		eps <- x - f1 %*% crossprod(t(B)) %*% crossprod(f1, x)
+		eps <- data - f1 %*% crossprod(t(B)) %*% crossprod(f1, data)
 		s <- eps^2/(1 - (i + 1)/m - i/n)
 		delta <- rowMeans(s.old[idx - 1,  , drop = FALSE]) - rowMeans(
 			s[idx,  , drop = FALSE])
@@ -139,8 +149,8 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 }
 
 # funciton of check  
-  mfactor.check <- function(x) {
-  temp <- apply(x, 2, range)
+  mfactor.check <- function(data) {
+  temp <- apply(data, 2, range)
   if(any(abs(temp[2,  ] - temp[1,  ]) < .Machine$single.eps)) {
 		TRUE
 	}
@@ -150,21 +160,21 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 }
 
   # function of bn
-  mfactor.bn <- function(x, max.k, refine = TRUE) {
+  mfactor.bn <- function(data, max.k, refine = TRUE) {
   
   # Parameters:
-	#         x : T x N return matrix
+	#         data : T x N return matrix
 	#     max.k : maxinum number of factors to be considered
 		# Returns:
 	#      k : the optimum number of factors
-	n <- ncol(x)
-	m <- nrow(x)
+	n <- ncol(data)
+	m <- nrow(data)
 	s <- vector("list", max.k) 
 	for(i in 1:max.k) {
-		f <- cbind(1, mfactor.apca(x, k = i, refine = refine, check = 
+		f <- cbind(1, mfactor.apca(data, k = i, refine = refine, check = 
 			FALSE)$factors)
 		B <- backsolve(chol(crossprod(f)), diag(i + 1))
-		eps <- x - f %*% crossprod(t(B)) %*% crossprod(f, x)
+		eps <- data - f %*% crossprod(t(B)) %*% crossprod(f, data)
 		sigma <- colSums(eps^2)/(m - i - 1)
 		s[[i]] <- mean(sigma)
 	}
@@ -177,27 +187,27 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 		warning("Cp1 and Cp2 did not yield same result. The smaller one is used."	)
 	}
 	k <- min(order(Cp1)[1], order(Cp2)[1])
-	f <- mfactor.apca(x, k = k, refine = refine, check = FALSE)
+	f <- mfactor.apca(data, k = k, refine = refine, check = FALSE)
  return(f)  
  }
 
   
   # function of pca
-  mfactor.pca <- function(x, k, check = FALSE, ret.cov = NULL) {
+  mfactor.pca <- function(data, k, check = FALSE, ret.cov = NULL) {
   
   if(check) {
-		if(mfactor.check(x)) {
+		if(mfactor.check(data)) {
 			warning("Some variables have identical observations.")
 			return(list(factors = NA, loadings = NA, k = NA))
 		}
 	}
-	n <- ncol(x)
-	m <- nrow(x)
-	if(is.null(dimnames(x))) {
-		dimnames(x) <- list(1:m, paste("V", 1:n, sep = "."))
+	n <- ncol(data)
+	m <- nrow(data)
+	if(is.null(dimnames(data))) {
+		dimnames(data) <- list(1:m, paste("V", 1:n, sep = "."))
 	}
-	x.names <- dimnames(x)[[2]]
-	xc <- t(t(x) - colMeans(x))
+	data.names <- dimnames(data)[[2]]
+	xc <- t(t(data) - colMeans(data))
 	if(is.null(ret.cov)) {
 		ret.cov <- crossprod(xc)/m
 	}
@@ -205,29 +215,29 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
   # compute loadings beta
 	B <- t(eigen.tmp$vectors[, 1:k, drop = FALSE])
   # compute estimated factors
-	f <- x %*% eigen.tmp$vectors[, 1:k, drop = FALSE]
-	tmp <- x - f %*% B
+	f <- data %*% eigen.tmp$vectors[, 1:k, drop = FALSE]
+	tmp <- data - f %*% B
 	alpha <- colMeans(tmp)
   # compute residuals
 	tmp <- t(t(tmp) - alpha)
 	r2 <- (1 - colSums(tmp^2)/colSums(xc^2))
 	ret.cov <- t(B) %*% var(f) %*% B
 	diag(ret.cov) <- diag(ret.cov) + colSums(tmp^2)/(m - k - 1)
-	dimnames(B) <- list(paste("F", 1:k, sep = "."), x.names)
-	dimnames(f) <- list(dimnames(x)[[1]], paste("F", 1:k, sep = "."))
-	dimnames(ret.cov) <- list(x.names, x.names)
-	names(alpha) <- x.names
+	dimnames(B) <- list(paste("F", 1:k, sep = "."), data.names)
+	dimnames(f) <- list(dimnames(data)[[1]], paste("F", 1:k, sep = "."))
+	dimnames(ret.cov) <- list(data.names, data.names)
+	names(alpha) <- data.names
   # create lm list for plot
   reg.list = list()
-  for (i in x.names) {
-    reg.df = as.data.frame(cbind(x[,i],f))
+  for (i in data.names) {
+    reg.df = as.data.frame(cbind(data[,i],f))
     colnames(reg.df)[1] <- i
     fm.formula = as.formula(paste(i,"~", ".", sep=" "))
     fm.fit = lm(fm.formula, data=reg.df)
     reg.list[[i]] = fm.fit
     }
 	ans <-  list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
-	            	r2 = r2, eigen = eigen.tmp$values, residuals=tmp, asset.ret = x,
+	            	r2 = r2, eigen = eigen.tmp$values, residuals=tmp, asset.ret = data,
                asset.fit=reg.list)
  
   return(ans)
@@ -235,21 +245,21 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 }
 
   # funciont of apca
-  mfactor.apca <- function(x, k, refine = TRUE, check = FALSE, ret.cov = NULL) {
+  mfactor.apca <- function(data, k, refine = TRUE, check = FALSE, ret.cov = NULL) {
   
   if(check) {
-		if(mfactor.check(x)) {
+		if(mfactor.check(data)) {
 			warning("Some variables have identical observations.")
 			return(list(factors = NA, loadings = NA, k = NA))
 		}
 	}
-	n <- ncol(x)
-	m <- nrow(x)
-	if(is.null(dimnames(x))) {
-		dimnames(x) <- list(1:m, paste("V", 1:n, sep = "."))
+	n <- ncol(data)
+	m <- nrow(data)
+	if(is.null(dimnames(data))) {
+		dimnames(data) <- list(1:m, paste("V", 1:n, sep = "."))
 	}
-	x.names <- dimnames(x)[[2]]
-	xc <- t(t(x) - colMeans(x))
+	data.names <- dimnames(data)[[2]]
+	xc <- t(t(data) - colMeans(data))
 	if(is.null(ret.cov)) {
 		ret.cov <- crossprod(t(xc))/n
 	}
@@ -257,8 +267,8 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 	f <- eig.tmp$vectors[, 1:k, drop = FALSE]
 	f1 <- cbind(1, f)
 	B <- backsolve(chol(crossprod(f1)), diag(k + 1))
-	B <- crossprod(t(B)) %*% crossprod(f1, x)
-	sigma <- colSums((x - f1 %*% B)^2)/(m - k - 1)
+	B <- crossprod(t(B)) %*% crossprod(f1, data)
+	sigma <- colSums((data - f1 %*% B)^2)/(m - k - 1)
 	if(refine) {
 		xs <- t(xc)/sqrt(sigma)
 		ret.cov <- crossprod(xs)/n
@@ -266,52 +276,52 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 		f <- eig.tmp$vectors[, 1:k, drop = FALSE]
 		f1 <- cbind(1, f)
 		B <- backsolve(chol(crossprod(f1)), diag(k + 1))
-		B <- crossprod(t(B)) %*% crossprod(f1, x)
-		sigma <- colSums((x - f1 %*% B)^2)/(m - k - 1)
+		B <- crossprod(t(B)) %*% crossprod(f1, data)
+		sigma <- colSums((data - f1 %*% B)^2)/(m - k - 1)
 	}
 	alpha <- B[1,  ]
 	B <- B[-1,  , drop = FALSE]
 	ret.cov <- t(B) %*% var(f) %*% B
 	diag(ret.cov) <- diag(ret.cov) + sigma
-	dimnames(B) <- list(paste("F", 1:k, sep = "."), x.names)
-	dimnames(f) <- list(dimnames(x)[[1]], paste("F", 1:k, sep = "."))
-	names(alpha) <- x.names
-	res <- t(t(x) - alpha) - f %*% B
+	dimnames(B) <- list(paste("F", 1:k, sep = "."), data.names)
+	dimnames(f) <- list(dimnames(data)[[1]], paste("F", 1:k, sep = "."))
+	names(alpha) <- data.names
+	res <- t(t(data) - alpha) - f %*% B
 	r2 <- (1 - colSums(res^2)/colSums(xc^2))
   ans <- 	list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
-		           r2 = r2, eigen = eig.tmp$values, residuals=res,asset.ret = x)
+		           r2 = r2, eigen = eig.tmp$values, residuals=res,asset.ret = data)
  return(ans)
 }
 
   call <- match.call()  
-  pos <- rownames(x)
-	x <- as.matrix(x)
-	if(any(is.na(x))) {
+  pos <- rownames(data)
+	data <- as.matrix(data)
+	if(any(is.na(data))) {
 		if(na.rm) {
-			x <- na.omit(x)
+			data <- na.omit(data)
 		}		else {
 			stop("Missing values are not allowed if na.rm=F.")
 		}
 	}
 	# use PCA if T > N
-	if(ncol(x) < nrow(x)) {
+	if(ncol(data) < nrow(data)) {
 		if(is.character(k)) {
 			stop("k must be the number of factors for PCA.")
 		}
-		if(k >= ncol(x)) {
+		if(k >= ncol(data)) {
 			stop("Number of factors must be smaller than number of variables."
 				)
 		}
-		ans <- mfactor.pca(x, k, check = check)
+		ans <- mfactor.pca(data, k, check = check)
 	}	else if(is.character(k)) {
-		ans <- mfactor.test(x, k, refine = refine, check = 
+		ans <- mfactor.test(data, k, refine = refine, check = 
 			check, max.k = max.k, sig = sig)
 	}	else { # use aPCA if T <= N
-		if(k >= ncol(x)) {
+		if(k >= ncol(data)) {
 			stop("Number of factors must be smaller than number of variables."
 				)
 		}
-		ans <- mfactor.apca(x, k, refine = refine, check = 
+		ans <- mfactor.apca(data, k, refine = refine, check = 
 			check)
 	}
   
@@ -322,17 +332,17 @@ mfactor.ck <- function(x, max.k, sig = 0.05, refine = TRUE) {
 		f <- as.matrix(f)
 	}
 
-	if(nrow(x) < ncol(x)) {
-		mimic <- ginv(x) %*% f
+	if(nrow(data) < ncol(data)) {
+		mimic <- ginv(data) %*% f
 	}	else {
-		mimic <- qr.solve(x, f)
+		mimic <- qr.solve(data, f)
 	}
 	
   mimic <- t(t(mimic)/colSums(mimic))
-	dimnames(mimic)[[1]] <- dimnames(x)[[2]]
+	dimnames(mimic)[[1]] <- dimnames(data)[[2]]
   
   ans$mimic <- mimic
-  ans$residVars.vec <- apply(ans$residuals,2,var)
+  ans$resid.variance <- apply(ans$residuals,2,var)
   ans$call <- call
 class(ans) <- "StatFactorModel"
   return(ans)
