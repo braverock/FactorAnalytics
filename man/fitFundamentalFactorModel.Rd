@@ -2,25 +2,19 @@
 \alias{fitFundamentalFactorModel}
 \title{fit fundamental factor model by classic OLS or Robust regression technique}
 \usage{
-  fitFundamentalFactorModel(fulldata, timedates, exposures,
-    assets, wls = FALSE, regression = "classic",
-    covariance = "classic", full.resid.cov = TRUE,
-    robust.scale = FALSE, datevar = "DATE",
-    assetvar = "PERMNO", returnsvar = "RETURN",
-    tickersvar = "TICKER.x")
+  fitFundamentalFactorModel(data, exposure.names, datevar,
+    returnsvar, assetvar, wls = TRUE,
+    regression = "classic", covariance = "classic",
+    full.resid.cov = TRUE, robust.scale = FALSE)
 }
 \arguments{
-  \item{fulldata}{data.frame, fulldata contains returns,
-  dates, and exposures which is stacked by dates.}
+  \item{data}{data.frame, data must have \emph{assetvar},
+  \emph{returnvar}, \emph{datevar} , and exposure.names.
+  Generally, data is panel data setup, so it needs firm
+  variabales and time variables.}
 
-  \item{timedates}{a vector of Dates specifying the date
-  range for the model fitting}
-
-  \item{exposures}{a character vector of exposure names for
-  the factor model}
-
-  \item{assets}{a list of PERMNOs to be used for the factor
-  model}
+  \item{exposure.names}{a character vector of exposure
+  names for the factor model}
 
   \item{wls}{logical flag, TRUE for weighted least squares,
   FALSE for ordinary least squares}
@@ -48,38 +42,28 @@
 
   \item{assetvar}{A character string giving the name of the
   asset variable in the data.}
-
-  \item{tickersvar}{A character string giving the name of
-  the ticker variable in the data.}
 }
 \value{
   an S3 object containing \itemize{ \item cov.returns A
   "list" object contains covariance information for asset
   returns, includes covariance, mean and eigenvalus. \item
-  cov.factor.rets An object of class "cov" or "covRob"
-  which contains the covariance matrix of the factor
-  returns (including intercept). \item cov.resids An object
-  of class "cov" or "covRob" which contains the covariance
+  cov.factor Anobject of class "cov" or "covRob" which
+  contains the covariance matrix of the factor returns
+  (including intercept). \item cov.resids An object of
+  class "cov" or "covRob" which contains the covariance
   matrix of the residuals, if "full.resid.cov" is TRUE.
-  NULL if "full.resid.cov" is FALSE. \item resid.varianceb
-  A vector of variances estimated from the OLS residuals
-  for each asset. If "wls" is TRUE, these are the weights
-  used in the weighted least squares regressions.  If "cov
-  = robust" these values are computed with "scale.tau".
+  NULL if "full.resid.cov" is FALSE. \item resid.variance A
+  vector of variances estimated from the OLS residuals for
+  each asset. If "wls" is TRUE, these are the weights used
+  in the weighted least squares regressions.  If "cov =
+  robust" these values are computed with "scale.tau".
   Otherwise they are computed with "var". \item factor.rets
-  A "zoo" object containing the times series of estimated
-  factor returns and intercepts. \item resids A "zoo"
+  A "xts" object containing the times series of estimated
+  factor returns and intercepts. \item resids A "xts"
   object containing the time series of residuals for each
-  asset. \item tstats A "zoo" object containing the time
-  series of t-statistics for each exposure. \item
-  returns.data A "data.frame" object containing the returns
-  data for the assets in the factor model, including
-  RETURN, DATE,PERMNO. \item exposure.data A "data.frame"
-  object containing the data for the variables in the
-  factor model, including DATE, PERMNO. \item assets A
-  character vector of PERMNOs used in the model \item
-  tickers A character vector of tickers used in the model
-  \item call function call }
+  asset. \item tstats A "xts" object containing the time
+  series of t-statistics for each exposure. \item call
+  function call }
 }
 \description{
   fit fundamental factor model or cross-sectional time
@@ -105,22 +89,48 @@
 # BARRA type factor model
 data(stock)
 # there are 447 assets
-assets = unique(fulldata[,"PERMNO"])
-timedates = as.Date(unique(fulldata[,"DATE"]))
-exposures <- exposures.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
-test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,covariance="classic", assets=assets,full.resid.cov=TRUE,
-                                      regression="classic",wls=TRUE)
+exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
+ttest.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+                                       datevar = "DATE", returnsvar = "RETURN",
+                                       assetvar = "TICKER", wls = TRUE,
+                                       regression = "classic",
+                                       covariance = "classic", full.resid.cov = TRUE,
+                                       robust.scale = TRUE)
+
 names(test.fit)
 test.fit$cov.returns
-test.fit$cov.factor.rets
-test.fit$factor.rets
+test.fit$cov.resids
+names(test.fit$cov.factor)
+test.fit$cov.factor$cov
+test.fit$factor
+test.fit$resid.variance
+test.fit$resids
+test.fit$tstats
+test.fit$call
 
 # BARRA type Industry Factor Model
-exposures <- exposures.names <- c("GICS.SECTOR")
+exposure.names <- c("GICS.SECTOR")
 # the rest keep the same
-test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,
-                                      covariance="classic", assets=assets,full.resid.cov=TRUE,
-                                      regression="classic",wls=TRUE)
+test.fit2 <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+                                       datevar = "DATE", returnsvar = "RETURN",
+                                       assetvar = "TICKER", wls = TRUE,
+                                       regression = "classic",
+                                       covariance = "classic", full.resid.cov = TRUE,
+                                       robust.scale = TRUE)
+
+names(test.fit2)
+test.fit2$cov.returns
+test.fit2$cov.resids
+names(test.fit2$cov.factor)
+test.fit2$cov.factor$cov
+test.fit2$factor
+test.fit2$resid.variance
+test.fit2$resids
+test.fit2$tstats
+test.fit2$call
+
+
+
 }
 }
 \author{

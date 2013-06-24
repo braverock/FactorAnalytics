@@ -14,12 +14,10 @@
 #' Insightful robust library ported to R and robustbase Basic robust statistics
 #' package for R
 #' 
-#' @param fulldata data.frame, fulldata contains returns, dates, and exposures
-#' which is stacked by dates.
-#' @param timedates a vector of Dates specifying the date range for the model
-#' fitting
-#' @param exposures a character vector of exposure names for the factor model
-#' @param assets a list of PERMNOs to be used for the factor model
+#' @param data data.frame, data must have \emph{assetvar}, \emph{returnvar}, \emph{datevar}
+#' , and exposure.names. Generally, data is panel data setup, so it needs firm variabales 
+#' and time variables.  
+#' @param exposure.names a character vector of exposure names for the factor model
 #' @param wls logical flag, TRUE for weighted least squares, FALSE for ordinary
 #' least squares
 #' @param regression A character string, "robust" for regression via lmRob,
@@ -37,33 +35,25 @@
 #' the data.
 #' @param assetvar A character string giving the name of the asset variable in
 #' the data.
-#' @param tickersvar A character string giving the name of the ticker variable
-#' in the data.
 #' @return an S3 object containing
 #' \itemize{
 #' \item cov.returns A "list" object contains covariance information for
 #' asset returns, includes covariance, mean and eigenvalus.
-#' \item cov.factor.rets An object of class "cov" or "covRob" which
+#' \item cov.factor Anobject of class "cov" or "covRob" which
 #' contains the covariance matrix of the factor returns (including intercept).
 #' \item cov.resids An object of class "cov" or "covRob" which contains
 #' the covariance matrix of the residuals, if "full.resid.cov" is TRUE.  NULL
 #' if "full.resid.cov" is FALSE.
-#' \item resid.varianceb A vector of variances estimated from the OLS
+#' \item resid.variance A vector of variances estimated from the OLS
 #' residuals for each asset. If "wls" is TRUE, these are the weights used in
 #' the weighted least squares regressions.  If "cov = robust" these values are
 #' computed with "scale.tau".  Otherwise they are computed with "var".
-#' \item factor.rets A "zoo" object containing the times series of
+#' \item factor.rets A "xts" object containing the times series of
 #' estimated factor returns and intercepts.
-#' \item resids A "zoo" object containing the time series of residuals
+#' \item resids A "xts" object containing the time series of residuals
 #' for each asset.
-#' \item tstats A "zoo" object containing the time series of t-statistics
+#' \item tstats A "xts" object containing the time series of t-statistics
 #' for each exposure.
-#' \item returns.data A "data.frame" object containing the returns data
-#' for the assets in the factor model, including RETURN, DATE,PERMNO.
-#' \item exposure.data A "data.frame" object containing the data for the
-#' variables in the factor model, including DATE, PERMNO.
-#' \item assets A character vector of PERMNOs used in the model
-#' \item tickers A character vector of tickers used in the model
 #' \item call function call
 #' }
 #' @author Guy Yullen and Yi-An Chen
@@ -73,39 +63,68 @@
 #' # BARRA type factor model
 #' data(stock)
 #' # there are 447 assets  
-#' assets = unique(fulldata[,"PERMNO"])
-#' timedates = as.Date(unique(fulldata[,"DATE"]))
-#' exposures <- exposures.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
-#' test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,covariance="classic", assets=assets,full.resid.cov=TRUE,
-#'                                       regression="classic",wls=TRUE)
-#' names(test.fit)
-#' test.fit$cov.returns
-#' test.fit$cov.factor.rets
-#' test.fit$factor.rets
+#' exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
+#' ttest.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+#'                                        datevar = "DATE", returnsvar = "RETURN",
+#'                                        assetvar = "TICKER", wls = TRUE, 
+#'                                        regression = "classic", 
+#'                                        covariance = "classic", full.resid.cov = TRUE, 
+#'                                        robust.scale = TRUE)
+#' 
+#' names(test.fit) 
+#' test.fit$cov.returns 
+#' test.fit$cov.resids  
+#' names(test.fit$cov.factor)  
+#' test.fit$cov.factor$cov  
+#' test.fit$factor  
+#' test.fit$resid.variance  
+#' test.fit$resids 
+#' test.fit$tstats 
+#' test.fit$call
 #' 
 #' # BARRA type Industry Factor Model
-#' exposures <- exposures.names <- c("GICS.SECTOR") 
+#' exposure.names <- c("GICS.SECTOR")  
 #' # the rest keep the same
-#' test.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,
-#'                                       covariance="classic", assets=assets,full.resid.cov=TRUE,
-#'                                       regression="classic",wls=TRUE)
+#' test.fit2 <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+#'                                        datevar = "DATE", returnsvar = "RETURN",
+#'                                        assetvar = "TICKER", wls = TRUE, 
+#'                                        regression = "classic", 
+#'                                        covariance = "classic", full.resid.cov = TRUE, 
+#'                                        robust.scale = TRUE)
+#' 
+#' names(test.fit2) 
+#' test.fit2$cov.returns 
+#' test.fit2$cov.resids  
+#' names(test.fit2$cov.factor)  
+#' test.fit2$cov.factor$cov  
+#' test.fit2$factor  
+#' test.fit2$resid.variance  
+#' test.fit2$resids 
+#' test.fit2$tstats 
+#' test.fit2$call
+#' 
+#' 
+#' 
 #' }
 #' 
+
+
 fitFundamentalFactorModel <-
-function (fulldata, timedates, exposures, assets, wls = FALSE, regression = "classic", 
-          covariance = "classic", full.resid.cov = TRUE, robust.scale = FALSE, 
-          datevar = "DATE", assetvar = "PERMNO", returnsvar = "RETURN", 
-          tickersvar = "TICKER.x") {
+function(data,exposure.names, datevar, returnsvar, assetvar,
+          wls = TRUE, regression = "classic", 
+          covariance = "classic", full.resid.cov = TRUE, robust.scale = FALSE) {
   
-require(zoo)
+require(xts)
 require(robust)
 
   
-   # if (dim(dataArray)[1] < 2) 
-   #      stop("At least two time points, t and t-1, are needed for fitting the factor model.")
+assets = unique(data[,assetvar])
+timedates = as.Date(unique(data[,datevar]))    
+
+
     if (length(timedates) < 2) 
         stop("At least two time points, t and t-1, are needed for fitting the factor model.")
-    if (!is(exposures, "vector") || !is.character(exposures)) 
+    if (!is(exposure.names, "vector") || !is.character(exposure.names)) 
         stop("exposure argument invalid---must be character vector.")
     if (!is(assets, "vector") || !is.character(assets)) 
         stop("assets argument invalid---must be character vector.")
@@ -120,34 +139,34 @@ require(robust)
         stop("covariance must one of 'robust', 'classic'.")
     this.call <- match.call()
     
-    if (match(returnsvar, exposures, FALSE)) 
+    if (match(returnsvar, exposure.names, FALSE)) 
         stop(paste(returnsvar, "cannot be used as an exposure."))
     
-    
+    assets = unique(data[,assetvar])
+    timedates = as.Date(unique(data[,datevar]))   
     numTimePoints <- length(timedates)
-    numExposures <- length(exposures)
+    numExposures <- length(exposure.names)
     numAssets <- length(assets)
-    tickers   <- fulldata[1:numAssets,tickersvar]
-    # dim(fulldata)
-    # [1] 42912   117  
-    # dimnames(fulldata)
-    # PERMNO"      "DATE"        "RETURN"      "TICKER.x"    "BOOK2MARKET" "TICKER.y"
-    # check if exposures are numeric, if not, create exposures. factors by dummy variables
-    which.numeric <- sapply(fulldata[, exposures, drop = FALSE],is.numeric)
-    exposures.numeric <- exposures[which.numeric]
+ #   tickers   <- data[1:numAssets,tickersvar]
+ 
+
+
+    # check if exposure.names are numeric, if not, create exposures. factors by dummy variables
+    which.numeric <- sapply(data[, exposure.names, drop = FALSE],is.numeric)
+    exposures.numeric <- exposure.names[which.numeric]
     # industry factor model
-    exposures.factor <- exposures[!which.numeric]
+    exposures.factor <- exposure.names[!which.numeric]
     if (length(exposures.factor) > 1) {
        stop("Only one nonnumeric variable can be used at this time.")
     }
        
-    regression.formula <- paste("~", paste(exposures, collapse = "+"))
+    regression.formula <- paste("~", paste(exposure.names, collapse = "+"))
     #  "~ BOOK2MARKET"
     if (length(exposures.factor)) {
         regression.formula <- paste(regression.formula, "- 1")
-        fulldata[, exposures.factor] <- as.factor(fulldata[, 
+        data[, exposures.factor] <- as.factor(data[, 
             exposures.factor])
-        exposuresToRecode <- names(fulldata[, exposures, drop = FALSE])[!which.numeric]
+        exposuresToRecode <- names(data[, exposure.names, drop = FALSE])[!which.numeric]
         contrasts.list <- lapply(seq(length(exposuresToRecode)), 
             function(i) function(n, m) contr.treatment(n, contrasts = FALSE))
         names(contrasts.list) <- exposuresToRecode
@@ -241,55 +260,55 @@ require(robust)
     if (!wls) {
         if (regression == "robust") {
             # ols.robust    
-            FE.hat <- by(data = fulldata, INDICES = as.numeric(fulldata[[datevar]]), 
+            FE.hat <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                 FUN = ols.robust, modelterms = regression.formula, 
                 conlist = contrasts.list)
         } else {
             # ols.classic
-            FE.hat <- by(data = fulldata, INDICES = as.numeric(fulldata[[datevar]]), 
+            FE.hat <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                 FUN = ols.classic, modelterms = regression.formula, 
                 conlist = contrasts.list)
         }
     } else {
         if (regression == "robust") {
             # wls.robust
-            E.hat <- by(data = fulldata, INDICES = as.numeric(fulldata[[datevar]]), 
+            resids <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                         FUN = function(xdf, modelterms, conlist) {
                               lmRob(modelterms, data = xdf, contrasts = conlist, 
                               control = lmRob.control(mxr = 200, mxf = 200, 
                               mxs = 200))$resid
                               }, modelterms = regression.formula, conlist = contrasts.list)
-            E.hat <- apply(E.hat, 1, unlist)
+            resids <- apply(resids, 1, unlist)
             weights <- if (covariance == "robust") 
-                            apply(E.hat, 1, scaleTau2)^2
-                       else apply(E.hat, 1, var)
-            FE.hat <- by(data = fulldata, INDICES = as.numeric(fulldata[[datevar]]), 
+                            apply(resids, 1, scaleTau2)^2
+                       else apply(resids, 1, var)
+            FE.hat <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                          FUN = wls.robust, modelterms = regression.formula, 
                                conlist = contrasts.list, w = weights)
         } else { 
             # wls.classic
-            E.hat <- by(data = fulldata, INDICES = as.numeric(fulldata[[datevar]]), 
+            resids <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                         FUN = function(xdf, modelterms, conlist) {
                         lm(formula = modelterms, data = xdf, contrasts = conlist, 
                            singular.ok = TRUE)$resid
                            },
                          modelterms = regression.formula, conlist = contrasts.list)
-            E.hat <- apply(E.hat, 1, unlist)
+            resids <- apply(resids, 1, unlist)
             weights <- if (covariance == "robust") 
-                           apply(E.hat, 1, scaleTau2)^2
-                      else apply(E.hat, 1, var)
-            FE.hat <- by(data = fulldata, INDICES = as.numeric(fulldata[[datevar]]), 
+                           apply(resids, 1, scaleTau2)^2
+                      else apply(resids, 1, var)
+            FE.hat <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                 FUN = wls.classic, modelterms = regression.formula, 
                 conlist = contrasts.list, w = weights)
         }
     }
     # if there is industry dummy variables
     if (length(exposures.factor)) {
-        numCoefs <- length(exposures.numeric) + length(levels(fulldata[, 
+        numCoefs <- length(exposures.numeric) + length(levels(data[, 
             exposures.factor]))
         ncols <- 1 + 2 * numCoefs + numAssets
         fnames <- c(exposures.numeric, paste(exposures.factor, 
-            levels(fulldata[, exposures.factor]), sep = ""))
+            levels(data[, exposures.factor]), sep = ""))
         cnames <- c("numCoefs", fnames, paste("t", fnames, sep = "."), 
             assets)
     } else {
@@ -318,7 +337,7 @@ require(robust)
     timedates <- as.Date(as.numeric(dimnames(FE.hat)[[1]]), origin = "1970-01-01")
     coefs.names <- colnames(FE.hat.mat)[2:(1 + numCoefs)]
     # estimated factors ordered by time
-    f.hat <- zoo(x = FE.hat.mat[, 2:(1 + numCoefs)], order.by = timedates)
+    f.hat <- xts(x = FE.hat.mat[, 2:(1 + numCoefs)], order.by = timedates)
     # check for outlier
     gomat <- apply(coredata(f.hat), 2, function(x) abs(x - median(x, 
                                       na.rm = TRUE)) > 4 * mad(x, na.rm = TRUE))
@@ -327,30 +346,30 @@ require(robust)
         for (i in which(apply(gomat, 1, any, na.rm = TRUE))) print(f.hat[i, 
             gomat[i, ], drop = FALSE])
     }
-    tstats <- zoo(x = FE.hat.mat[, (2 + nc):(1 + 2 * nc)], order.by = timedates)
+    tstats <- xts(x = FE.hat.mat[, (2 + nc):(1 + 2 * nc)], order.by = timedates)
     # residuals for every asset ordered by time
-    E.hat <- zoo(x = FE.hat.mat[, (2 + 2 * numCoefs):(1 + 2 * 
+    resids <- xts(x = FE.hat.mat[, (2 + 2 * numCoefs):(1 + 2 * 
         numCoefs + numAssets)], order.by = timedates)
-    colnames(E.hat) <- tickers
-    if (covariance == "robust") {
+   
+if (covariance == "robust") {
         if (kappa(na.exclude(coredata(f.hat))) < 1e+10) {
-            Cov.facrets <- covRob(coredata(f.hat), estim = "pairwiseGK", 
+            Cov.factors <- covRob(coredata(f.hat), estim = "pairwiseGK", 
                             distance = FALSE, na.action = na.omit)
         } else {
             cat("Covariance matrix of factor returns is singular.\n")
-            Cov.facrets <- covRob(coredata(f.hat), distance = FALSE, 
+            Cov.factors <- covRob(coredata(f.hat), distance = FALSE, 
                                   na.action = na.omit)
         }
-        resid.vars <- apply(coredata(E.hat), 2, scaleTau2, na.rm = T)^2
+        resid.vars <- apply(coredata(resids), 2, scaleTau2, na.rm = T)^2
         D.hat <- if (full.resid.cov) 
-            covOGK(coredata(E.hat), sigmamu = scaleTau2, n.iter = 1)
+            covOGK(coredata(resids), sigmamu = scaleTau2, n.iter = 1)
         else 
           diag(resid.vars)
     }   else {
-        Cov.facrets <- covClassic(coredata(f.hat), distance = FALSE,na.action = na.omit)
-        resid.vars <- apply(coredata(E.hat), 2, var, na.rm = TRUE)
+        Cov.factors <- covClassic(coredata(f.hat), distance = FALSE,na.action = na.omit)
+        resid.vars <- apply(coredata(resids), 2, var, na.rm = TRUE)
         D.hat <- if (full.resid.cov) 
-            covClassic(coredata(E.hat), distance = FALSE, na.action = na.omit)
+            covClassic(coredata(resids), distance = FALSE, na.action = na.omit)
         else 
           diag(resid.vars)
     }
@@ -359,39 +378,32 @@ require(robust)
     colnames <-  coefs.names
     B.final[, match("(Intercept)", colnames, 0)] <- 1
     numeric.columns <- match(exposures.numeric, colnames, 0)
-    B.final[, numeric.columns] <- as.matrix(fulldata[as.numeric(fulldata[[datevar]]) == 
+    B.final[, numeric.columns] <- as.matrix(data[as.numeric(data[[datevar]]) == 
         timedates[numTimePoints], exposures.numeric])
     if (length(exposures.factor)) 
         B.final[, grep(exposures.factor, x = colnames)][cbind(seq(numAssets), 
-            as.numeric(fulldata[fulldata[[datevar]] == timedates[numTimePoints], 
+            as.numeric(data[data[[datevar]] == timedates[numTimePoints], 
                 exposures.factor]))] <- 1
-    cov.returns <- B.final %*% Cov.facrets$cov %*% t(B.final) + 
+    cov.returns <- B.final %*% Cov.factors$cov %*% t(B.final) + 
         if (full.resid.cov) 
             D.hat$cov
         else D.hat
-    dimnames(cov.returns) <- list(tickers, tickers)
-    mean.cov.returns = tapply(fulldata[[returnsvar]],fulldata[[assetvar]], mean)
-    dimnames(mean.cov.returns) = list(tickers)
+    mean.cov.returns = tapply(data[[returnsvar]],data[[assetvar]], mean)
     Cov.returns <- list(cov = cov.returns, mean=mean.cov.returns, eigenvalues = eigen(cov.returns, 
         only.values = TRUE, symmetric = TRUE)$values)
     if (full.resid.cov) {
         Cov.resids <- D.hat
-        dimnames(Cov.resids$cov) <- list(tickers, tickers)
         }
     else {
       Cov.resids <- NULL
     }
     output <- list(cov.returns = Cov.returns, 
-                   cov.factor.rets = Cov.facrets, 
+                   cov.factor = Cov.factors, 
                    cov.resids = Cov.resids, 
                    resid.variance = resid.vars, 
                    factor.rets = f.hat, 
-                   resids = E.hat, 
-                   tstats = tstats, 
-                   returns.data = fulldata[,c(datevar, assetvar, returnsvar)],               
-                   exposure.data = fulldata[,c(datevar, assetvar, exposures)],                   
-                   assets = assets, 
-                   tickers = tickers, 
+                   resids = resids, 
+                   tstats = tstats,                   
                    call = this.call)
     class(output) <- "FundamentalFactorModel"
     return(output)
