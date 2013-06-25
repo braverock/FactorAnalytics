@@ -84,10 +84,6 @@ require(MASS)
 require(PerformanceAnalytics)
 
 
-# check data 
-data.xts <- checkData(data,method=ckeckData.method) 
-data <- coredata(data.xts)
-
 
   
  # function of test
@@ -306,12 +302,44 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	dimnames(B) <- list(paste("F", 1:k, sep = "."), data.names)
 	dimnames(f) <- list(dimnames(data)[[1]], paste("F", 1:k, sep = "."))
 	names(alpha) <- data.names
-	res <- t(t(data) - alpha) - f %*% B
+	resid <- t(t(data) - alpha) - f %*% B
 	r2 <- (1 - colSums(res^2)/colSums(xc^2))
+  
+  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+    f <- xts(f,index(data.xts))
+    resid <- xts(resid,index(data.xts))
+  }
+  
+  # create lm list for plot
+  reg.list = list()
+  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+    for (i in data.names) {
+      reg.xts = merge(data.xts[,i],f)
+      colnames(reg.xts)[1] <- i
+      fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+      fm.fit = lm(fm.formula, data=reg.xts)
+      reg.list[[i]] = fm.fit
+    }
+  } else {
+    for (i in data.names) {
+      reg.df = as.data.frame(cbind(data[,i],coredata(f)))
+      colnames(reg.df)[1] <- i
+      fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+      fm.fit = lm(fm.formula, data=reg.df)
+      reg.list[[i]] = fm.fit
+    }
+  }
+  
+  
   ans <- 	list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
-		           r2 = r2, eigen = eig.tmp$values, residuals=res,asset.ret = data)
+		           r2 = r2, eigen = eig.tmp$values, residuals=resid,asset.ret = data,
+               asset.fit=reg.list)
  return(ans)
 }
+
+# check data 
+data.xts <- checkData(data,method=ckeckData.method) 
+data <- coredata(data.xts)
 
   call <- match.call()  
   pos <- rownames(data)

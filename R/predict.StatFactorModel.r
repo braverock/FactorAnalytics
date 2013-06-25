@@ -18,6 +18,7 @@
 #' @export
 #' 
 
+
 predict.StatFactorModel <- function(fit,...){
   lapply(fit$asset.fit, predict,...)
 }
