@@ -1,16 +1,16 @@
 \name{summary.TimeSeriesFactorModel}
 \alias{summary.TimeSeriesFactorModel}
-\title{summary TimeSeriesModel object.}
+\title{summary method for TimeSeriesModel object.}
 \usage{
-  summary.TimeSeriesFactorModel(fit.macro)
+  summary.TimeSeriesFactorModel(fit)
 }
 \arguments{
-  \item{fit.macro}{fit object created by
-  fitMacroeconomicFactorModel.}
+  \item{fit}{fit object created by
+  fitTimeSeiresFactorModel.}
 }
 \description{
   Generic function of summary method for
-  fitMacroeconomicFactorModel.
+  fitTimeSeriesFactorModel.
 }
 \examples{
 # load data from the database
@@ -18,11 +18,12 @@ data(managers.df)
 ret.assets = managers.df[,(1:6)]
 factors    = managers.df[,(7:9)]
 # fit the factor model with OLS
-fit.macro <- fitTimeSeriesFactorModel(ret.assets,factors,fit.method="OLS",
-                                 variable.selection="all subsets")
-summary(fit.macro)
+fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+                               factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+                               data=managers.df,fit.method="OLS")
+summary(fit)
 }
 \author{
-  Eric Zivot and Yi-An Chen.
+  Yi-An Chen.
 }
 
