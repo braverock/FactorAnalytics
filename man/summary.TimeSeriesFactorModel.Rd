@@ -2,15 +2,17 @@
 \alias{summary.TimeSeriesFactorModel}
 \title{summary method for TimeSeriesModel object.}
 \usage{
-  summary.TimeSeriesFactorModel(fit)
+  summary.TimeSeriesFactorModel(fit, ...)
 }
 \arguments{
   \item{fit}{fit object created by
   fitTimeSeiresFactorModel.}
+
+  \item{...}{other option used in \code{summary.lm}}
 }
 \description{
   Generic function of summary method for
-  fitTimeSeriesFactorModel.
+  fitTimeSeriesFactorModel. It utilizes \code{summary.lm}
 }
 \examples{
 # load data from the database

@@ -1,9 +1,11 @@
 #' summary method for TimeSeriesModel object.
 #' 
-#' Generic function of summary method for fitTimeSeriesFactorModel.
+#' Generic function of summary method for fitTimeSeriesFactorModel. 
+#' It utilizes \code{summary.lm}
 #' 
 #' 
 #' @param fit fit object created by fitTimeSeiresFactorModel.
+#' @param ... other option used in \code{summary.lm}
 #' @author Yi-An Chen.
 #' @examples
 #' 
@@ -19,8 +21,7 @@
 #' 
 #' @export
 #' 
-summary.TimeSeriesFactorModel <- 
-  function(fit){
-     lapply(fit[[1]], summary)
+summary.TimeSeriesFactorModel <- function(fit,...){
+     lapply(fit[[1]], summary,...)
   }
     

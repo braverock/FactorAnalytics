@@ -6,7 +6,7 @@
 }
 \arguments{
   \item{fit}{"StatFactorModel" object created by
-  fitTimeSeiresFactorModel.}
+  fitStatisticalFactorModel.}
 
   \item{newdata}{An optional data frame in which to look
   for variables with which to predict. If omitted, the
