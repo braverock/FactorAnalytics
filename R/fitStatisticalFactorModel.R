@@ -86,8 +86,7 @@ require(PerformanceAnalytics)
 
 # check data 
 data.xts <- checkData(data,method=ckeckData.method) 
-
-# convert it to coredata
+data <- coredata(data.xts)
 
 
   
@@ -209,6 +208,7 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 		dimnames(data) <- list(1:m, paste("V", 1:n, sep = "."))
 	}
 	data.names <- dimnames(data)[[2]]
+  # demean
 	xc <- t(t(data) - colMeans(data))
 	if(is.null(ret.cov)) {
 		ret.cov <- crossprod(xc)/m
@@ -221,25 +221,43 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	tmp <- data - f %*% B
 	alpha <- colMeans(tmp)
   # compute residuals
-	tmp <- t(t(tmp) - alpha)
-	r2 <- (1 - colSums(tmp^2)/colSums(xc^2))
+	resid <- t(t(tmp) - alpha)
+	r2 <- (1 - colSums(resid^2)/colSums(xc^2))
 	ret.cov <- t(B) %*% var(f) %*% B
 	diag(ret.cov) <- diag(ret.cov) + colSums(tmp^2)/(m - k - 1)
 	dimnames(B) <- list(paste("F", 1:k, sep = "."), data.names)
 	dimnames(f) <- list(dimnames(data)[[1]], paste("F", 1:k, sep = "."))
 	dimnames(ret.cov) <- list(data.names, data.names)
 	names(alpha) <- data.names
+  
+  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+    f <- xts(f,index(data.xts))
+    resid <- xts(resid,index(data.xts))
+    }
+  
+  
   # create lm list for plot
   reg.list = list()
-  for (i in data.names) {
-    reg.df = as.data.frame(cbind(data[,i],f))
+  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+    for (i in data.names) {
+      reg.xts = merge(data.xts[,i],f)
+      colnames(reg.xts)[1] <- i
+      fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+      fm.fit = lm(fm.formula, data=reg.xts)
+      reg.list[[i]] = fm.fit
+    }
+      } else {
+    for (i in data.names) {
+    reg.df = as.data.frame(cbind(data[,i],coredata(f)))
     colnames(reg.df)[1] <- i
     fm.formula = as.formula(paste(i,"~", ".", sep=" "))
     fm.fit = lm(fm.formula, data=reg.df)
     reg.list[[i]] = fm.fit
     }
+  }
+  
 	ans <-  list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
-	            	r2 = r2, eigen = eigen.tmp$values, residuals=tmp, asset.ret = data,
+	            	r2 = r2, eigen = eigen.tmp$values, residuals=resid, asset.ret = data,
                asset.fit=reg.list)
  
   return(ans)
