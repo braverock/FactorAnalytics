@@ -48,9 +48,9 @@
 #' residuals for each asset. If "wls" is TRUE, these are the weights used in
 #' the weighted least squares regressions.  If "cov = robust" these values are
 #' computed with "scale.tau".  Otherwise they are computed with "var".
-#' \item factor.rets A "xts" object containing the times series of
+#' \item factors A "xts" object containing the times series of
 #' estimated factor returns and intercepts.
-#' \item resids A "xts" object containing the time series of residuals
+#' \item residuals A "xts" object containing the time series of residuals
 #' for each asset.
 #' \item tstats A "xts" object containing the time series of t-statistics
 #' for each exposure.
@@ -142,8 +142,7 @@ timedates = as.Date(unique(data[,datevar]))
     if (match(returnsvar, exposure.names, FALSE)) 
         stop(paste(returnsvar, "cannot be used as an exposure."))
     
-    assets = unique(data[,assetvar])
-    timedates = as.Date(unique(data[,datevar]))   
+    
     numTimePoints <- length(timedates)
     numExposures <- length(exposure.names)
     numAssets <- length(assets)
@@ -318,10 +317,12 @@ timedates = as.Date(unique(data[,datevar]))
                     paste("t", c("(Intercept)", exposures.numeric), sep = "."), 
                     assets)
     }
+
+# create matrix for fit
     FE.hat.mat <- matrix(NA, ncol = ncols, nrow = numTimePoints, 
                          dimnames = list(as.character(as.Date(as.numeric(names(FE.hat)), origin = "1970-01-01")), 
                          cnames))
-    # give each element t names and PERMNO
+    # give each element t names 
     for (i in 1:length(FE.hat)) {
         names(FE.hat[[i]])[1] <- "numCoefs"
         nc <- FE.hat[[i]][1]
@@ -401,10 +402,11 @@ if (covariance == "robust") {
                    cov.factor = Cov.factors, 
                    cov.resids = Cov.resids, 
                    resid.variance = resid.vars, 
-                   factor.rets = f.hat, 
-                   resids = resids, 
+                   factors = f.hat, 
+                   residuals = resids, 
                    tstats = tstats,                   
-                   call = this.call)
+                   call = this.call,
+                   data = data)
     class(output) <- "FundamentalFactorModel"
     return(output)
 }

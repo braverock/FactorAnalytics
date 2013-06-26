@@ -57,9 +57,9 @@
   each asset. If "wls" is TRUE, these are the weights used
   in the weighted least squares regressions.  If "cov =
   robust" these values are computed with "scale.tau".
-  Otherwise they are computed with "var". \item factor.rets
-  A "xts" object containing the times series of estimated
-  factor returns and intercepts. \item resids A "xts"
+  Otherwise they are computed with "var". \item factors A
+  "xts" object containing the times series of estimated
+  factor returns and intercepts. \item residuals A "xts"
   object containing the time series of residuals for each
   asset. \item tstats A "xts" object containing the time
   series of t-statistics for each exposure. \item call
