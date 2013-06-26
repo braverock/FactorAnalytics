@@ -367,7 +367,9 @@ ans = list (asset.fit = reg.list,
             beta  = Betas,
             r2    = R2values,
             resid.variance = ResidVars,
-            call      = this.call   )
+            call      = this.call,
+            data = data,
+            factors.names = factors.names)
 class(ans) = "TimeSeriesFactorModel"
 return(ans)
 }
