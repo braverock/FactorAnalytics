@@ -303,7 +303,7 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	dimnames(f) <- list(dimnames(data)[[1]], paste("F", 1:k, sep = "."))
 	names(alpha) <- data.names
 	resid <- t(t(data) - alpha) - f %*% B
-	r2 <- (1 - colSums(res^2)/colSums(xc^2))
+	r2 <- (1 - colSums(resid^2)/colSums(xc^2))
   
   if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
     f <- xts(f,index(data.xts))
