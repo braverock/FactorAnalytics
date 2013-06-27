@@ -6,14 +6,14 @@
     residVars.vec)
 }
 \arguments{
-  \item{beta.mat}{\code{N x K} matrix of factor betas,
-  where \code{N} is the number of assets and \code{K} is
-  the number of factors.}
+  \item{beta}{\code{N x K} matrix of factor betas, where
+  \code{N} is the number of assets and \code{K} is the
+  number of factors.}
 
   \item{factor.cov}{\code{K x K} factor return covariance
   matrix.}
 
-  \item{residVars.vec}{\code{N x 1} vector of asset
+  \item{resid.variance}{\code{N x 1} vector of asset
   specific residual variances from the factor model.}
 }
 \value{
@@ -38,13 +38,27 @@
   values along the diagonal.
 }
 \examples{
-# factorModelCovariance
+# Time Series model
+
 data(managers.df)
 factors    = managers.df[,(7:9)]
-ret.assets = managers.df[,(1:6)]
-fit <-fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
-                                  variable.selection="all subsets", factor.set = 3)
-factorModelCovariance(fit$beta.mat,var(factors),fit$residVars.vec)
+fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+                                data=managers.df,fit.method="OLS")
+factorModelCovariance(fit$beta,var(factors),fit$resid.variance)
+
+# Statistical Model
+data(stat.fm.data)
+fit <- fitStatisticalFactorModel(sfm.dat,k=2,
+                                  ckeckData.method="data.frame")
+
+factorModelCovariance(t(sfm.pca.fit$loadings),var(sfm.pca.fit$factors),sfm.pca.fit$resid.variance)
+
+sfm.apca.fit <- fitStatisticalFactorModel(sfm.apca.dat,k=2
+,ckeckData.method="data.frame")
+
+factorModelCovariance(t(sfm.apca.fit$loadings),
+                       var(sfm.apca.fit$factors),sfm.apca.fit$resid.variance)
 }
 \author{
   Eric Zivot and Yi-An Chen.

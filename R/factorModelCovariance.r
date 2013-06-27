@@ -47,14 +47,8 @@
 #'
 factorModelCovariance <-
 function(beta.mat, factor.cov, residVars.vec) {
-## Inputs:
-## beta.mat		   	n x k matrix of factor betas
-## factor.cov		  k x k factor return covariance matrix
-## residVars.vec  n x 1 vector of residual variances from factor model
-## Output:
-## cov.fm			    n x n return covariance matrix based on
-##				        estimated factor model.
-	beta.mat = as.matrix(beta.mat)
+
+  beta.mat = as.matrix(beta.mat)
 	factor.cov = as.matrix(factor.cov)
 	sig.e = as.vector(residVars.vec)
 	if (length(sig.e) > 1) {
