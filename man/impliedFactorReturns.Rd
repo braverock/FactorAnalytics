@@ -6,9 +6,8 @@
     cov.factors)
 }
 \arguments{
-  \item{factor.scenarios}{\code{m x 1} vector of factor
-  mean returns of scenario. m is a subset of the n, where n
-  is risk factors and \code{n > m}.}
+  \item{factor.scenarios}{m x 1 vector of scenario values
+  for a subset of the n > m risk factors}
 
   \item{mu.factors}{\code{n x 1} vector of factor mean
   returns.}
@@ -41,7 +40,7 @@
 data(managers.df)
 factors    = managers.df[,(7:9)]
 # make up a factor mean returns scenario for factor SP500.TR
-factor.scenarios <- 0.001
+factor.scenarios <- 0.1
 names(factor.scenarios) <- "SP500.TR"
 mu.factors <- mean(factors)
 cov.factors <- var(factors)

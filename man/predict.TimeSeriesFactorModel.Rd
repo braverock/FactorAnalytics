@@ -2,7 +2,7 @@
 \alias{predict.TimeSeriesFactorModel}
 \title{predict method for TimeSeriesModel object.}
 \usage{
-  predict.TimeSeriesFactorModel(fit, ...)
+  predict.TimeSeriesFactorModel(fit, newdata, ...)
 }
 \arguments{
   \item{fit}{"TimeSeriesFactorModel" object created by

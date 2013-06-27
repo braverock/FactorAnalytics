@@ -29,30 +29,30 @@ predict.TimeSeriesFactorModel <- function(fit,newdata,...){
   if (missing(newdata) || is.null(newdata)  ) {
   lapply(fit$asset.fit, predict,...)
   } 
-  if (  !(missing(newdata) && !is.null(newdata) )) {
-   numAssets <- length(names(fit$asset.fit))
-   
-   data <- fit$data
-  factors <-   data[,fit$factors.names]
-   mu.factors <- apply(factors,2,mean)
-   cov.factors <- cov(factors)
-   
-   for (i in 1:numAssets) 
-   if (dim(newdata)[1] < length(residuals(fit$asset.fit[[1]])) ){
-     
-    
-     newdata <- data.frame(EDHEC.LS.EQ = rnorm(n=100), SP500.TR = rnorm(n=100) )
-     newdata.mat <- as.matrix(newdata)
-     factor.scenarios <- 0.001 
-     names(factor.scenarios) <- "SP500.TR"
-     
-     impliedFactorReturns(factor.scenarios, mu.factors, cov.factors)
-     
-   }
-    
-    
-    
-  }
-  
+#   if (  !(missing(newdata) && !is.null(newdata) )) {
+#    numAssets <- length(names(fit$asset.fit))
+#    
+#    data <- fit$data
+#   factors <-   data[,fit$factors.names]
+#    mu.factors <- apply(factors,2,mean)
+#    cov.factors <- cov(factors)
+#    
+#    for (i in 1:numAssets) 
+#    if (dim(newdata)[1] < length(residuals(fit$asset.fit[[1]])) ){
+#      
+#     
+#      newdata <- data.frame(EDHEC.LS.EQ = rnorm(n=100), SP500.TR = rnorm(n=100) )
+#      newdata.mat <- as.matrix(newdata)
+#      factor.scenarios <- 0.001 
+#      names(factor.scenarios) <- "SP500.TR"
+#      
+#      impliedFactorReturns(factor.scenarios, mu.factors, cov.factors)
+#      
+#    }
+#     
+#     
+#     
+#   }
+#   
   
 }
