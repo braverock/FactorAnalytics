@@ -112,7 +112,7 @@
 fitFundamentalFactorModel <-
 function(data,exposure.names, datevar, returnsvar, assetvar,
           wls = TRUE, regression = "classic", 
-          covariance = "classic", full.resid.cov = TRUE, robust.scale = FALSE) {
+          covariance = "classic", full.resid.cov = FALSE, robust.scale = FALSE) {
   
 require(xts)
 require(robust)
@@ -369,30 +369,33 @@ if (covariance == "robust") {
     }   else {
         Cov.factors <- covClassic(coredata(f.hat), distance = FALSE,na.action = na.omit)
         resid.vars <- apply(coredata(resids), 2, var, na.rm = TRUE)
-        D.hat <- if (full.resid.cov) 
+        D.hat <- if (full.resid.cov) {
             covClassic(coredata(resids), distance = FALSE, na.action = na.omit)
-        else 
-          diag(resid.vars)
+      }  else { diag(resid.vars) }
     }
     # create betas from origial database  
     B.final <- matrix(0, nrow = numAssets, ncol = numCoefs)
     colnames <-  coefs.names
     B.final[, match("(Intercept)", colnames, 0)] <- 1
     numeric.columns <- match(exposures.numeric, colnames, 0)
-    B.final[, numeric.columns] <- as.matrix(data[as.numeric(data[[datevar]]) == 
-        timedates[numTimePoints], exposures.numeric])
-    if (length(exposures.factor)) 
+# only take the latest beta to compute FM covariance
+# should we let user choose which beta to use ?
+    B.final[, numeric.columns] <- as.matrix(data[ (as.numeric(data[[datevar]]) == 
+        timedates[numTimePoints]), exposures.numeric])
+    if (length(exposures.factor)) {
         B.final[, grep(exposures.factor, x = colnames)][cbind(seq(numAssets), 
             as.numeric(data[data[[datevar]] == timedates[numTimePoints], 
                 exposures.factor]))] <- 1
+    }
     cov.returns <- B.final %*% Cov.factors$cov %*% t(B.final) + 
-        if (full.resid.cov) 
-            D.hat$cov
-        else D.hat
+        if (full.resid.cov) { D.hat$cov
+        }  else { D.hat  }
     mean.cov.returns = tapply(data[[returnsvar]],data[[assetvar]], mean)
     Cov.returns <- list(cov = cov.returns, mean=mean.cov.returns, eigenvalues = eigen(cov.returns, 
         only.values = TRUE, symmetric = TRUE)$values)
-    if (full.resid.cov) {
+  
+# report residual covaraince if full.resid.cov is true. 
+if (full.resid.cov) {
         Cov.resids <- D.hat
         }
     else {
