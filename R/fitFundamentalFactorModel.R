@@ -37,11 +37,12 @@
 #' the data.
 #' @return an S3 object containing
 #' \itemize{
-#' \item cov.returns A "list" object contains covariance information for
-#' asset returns, includes covariance, mean and eigenvalus.
-#' \item cov.factor Anobject of class "cov" or "covRob" which
+#' \item returns.cov A "list" object contains covariance information for
+#' asset returns, includes covariance, mean and eigenvalus. Beta of taken as latest
+#' date input. 
+#' \item factor.cov An object of class "cov" or "covRob" which
 #' contains the covariance matrix of the factor returns (including intercept).
-#' \item cov.resids An object of class "cov" or "covRob" which contains
+#' \item resids.cov An object of class "cov" or "covRob" which contains
 #' the covariance matrix of the residuals, if "full.resid.cov" is TRUE.  NULL
 #' if "full.resid.cov" is FALSE.
 #' \item resid.variance A vector of variances estimated from the OLS
@@ -72,10 +73,10 @@
 #'                                        robust.scale = TRUE)
 #' 
 #' names(test.fit) 
-#' test.fit$cov.returns 
-#' test.fit$cov.resids  
+#' test.fit$returns.cov 
+#' test.fit$resids.cov  
 #' names(test.fit$cov.factor)  
-#' test.fit$cov.factor$cov  
+#' test.fit$factor.cov$cov  
 #' test.fit$factor  
 #' test.fit$resid.variance  
 #' test.fit$resids 
@@ -401,9 +402,9 @@ if (full.resid.cov) {
     else {
       Cov.resids <- NULL
     }
-    output <- list(cov.returns = Cov.returns, 
-                   cov.factor = Cov.factors, 
-                   cov.resids = Cov.resids, 
+    output <- list(returns.cov = Cov.returns, 
+                   factor.cov = Cov.factors, 
+                   resids.cov = Cov.resids, 
                    resid.variance = resid.vars, 
                    factors = f.hat, 
                    residuals = resids, 
@@ -413,4 +414,3 @@ if (full.resid.cov) {
     class(output) <- "FundamentalFactorModel"
     return(output)
 }
-
