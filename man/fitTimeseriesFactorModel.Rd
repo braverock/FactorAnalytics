@@ -8,7 +8,7 @@
     variable.selection = "none", decay.factor = 0.95,
     nvmax = 8, force.in = NULL,
     subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
-    lars.criteria = c("Cp", "cv"))
+    lars.criteria = "Cp")
 }
 \arguments{
   \item{assets.names}{names of assets returns.}
@@ -57,7 +57,7 @@
 
   \item{lars.criteria}{either choose minimum "Cp": unbiased
   estimator of the true rist or "cv" 10 folds
-  cross-validation. See detail.}
+  cross-validation. Default is "Cp". See detail.}
 }
 \value{
   an S3 object containing \itemize{ \item{asset.fit}{Fit
@@ -83,11 +83,9 @@
 \dontrun{
 # load data from the database
 data(managers.df)
-ret.assets = managers.df[,(1:6)]
-factors    = managers.df[,(7:9)]
-# fit the factor model with OLS
-fit <- fitTimeseriesFactorModel(ret.assets,factors,fit.method="OLS",
-                                 variable.selection="all subsets")
+fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+                                data=managers.df,fit.method="OLS")
 # summary of HAM1
 summary(fit$asset.fit$HAM1)
 # plot actual vs. fitted over time for HAM1

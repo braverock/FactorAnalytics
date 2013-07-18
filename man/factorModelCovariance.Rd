@@ -59,6 +59,29 @@ sfm.apca.fit <- fitStatisticalFactorModel(sfm.apca.dat,k=2
 
 factorModelCovariance(t(sfm.apca.fit$loadings),
                        var(sfm.apca.fit$factors),sfm.apca.fit$resid.variance)
+
+ # fundamental factor model example
+
+
+ data(stock)
+# there are 447 assets
+exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
+test.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+                                       datevar = "DATE", returnsvar = "RETURN",
+                                       assetvar = "TICKER", wls = TRUE,
+                                       regression = "classic",
+                                       covariance = "classic", full.resid.cov = FALSE,
+                                       robust.scale = TRUE)
+
+ # compute return covariance
+ # take beta as latest date input
+ beta.mat.fundm <- subset(data,DATE == "2003-12-31")[,exposure.names]
+ beta.mat.fundm <- cbind(rep(1,447),beta.mat.fundm) # add intercept
+FM return covariance
+ret.cov.fundm <- factorModelCovariance(beta.mat.fundm,test.fit$factor.cov$cov,
+                                         test.fit$resid.variance)
+ # the result is exactly the same
+test.fit$returns.cov$cov == ret.cov.fundm
 }
 \author{
   Eric Zivot and Yi-An Chen.

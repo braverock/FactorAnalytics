@@ -14,7 +14,7 @@
 #' Contributions to VaR"
 #' @param max.show Maximum assets to plot. Default is 6.
 #' @param plot.single Plot a single asset of lm class. Defualt is FALSE.
-#' @param fundName Name of the asset to be plotted.
+#' @param asset.name Name of the asset to be plotted.
 #' @param which.plot.single integer indicating which plot to create: "none"
 #' will create a menu to choose. Defualt is none. 1 = time series plot of
 #' actual and fitted values 2 = time series plot of residuals with standard
@@ -37,13 +37,13 @@
 #' # plot of all assets and show only first 4 assets.
 #' plot(fit.macro,max.show=4)
 #' # single plot of HAM1 asset 
-#' plot(fit.macro, plot.single=TRUE, fundName="HAM1")
+#' plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
 #' }
 #' 
  plot.TimeSeriesFactorModel <- 
   function(fit.macro,colorset=c(1:12),legend.loc=NULL,
            which.plot=c("none","1L","2L","3L","4L","5L","6L","7L"),max.show=6,
-           plot.single=FALSE, fundName,which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
+           plot.single=FALSE, asset.name,which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                                                                   "7L","8L","9L","10L","11L","12L","13L")) {
       require(zoo)
       require(PerformanceAnalytics)
@@ -55,7 +55,7 @@
       ## fit.macro        lm object summarizing factor model fit. It is assumed that
       ##                  time series date information is included in the names component
       ##                  of the residuals, fitted and model components of the object.   
-      ## fundName         charater. The name of the single asset to be ploted.
+      ## asset.name         charater. The name of the single asset to be ploted.
       ## which.plot.single       integer indicating which plot to create:
       ##                  1     time series plot of actual and fitted values
       ##                  2     time series plot of residuals with standard error bands
@@ -71,7 +71,10 @@
       ##                  12    CUSUM plot of recursive estimates relative to full sample estimates
       ##                  13    rolling estimates over 24 month window
       which.plot.single<-which.plot.single[1]
-      fit.lm = fit.macro$asset.fit[[fundName]]
+      if (missing(asset.name) == TRUE) {
+        stop("Neet to specify an asset to plot if plot.single is TRUE.")
+      }
+      fit.lm = fit.macro$asset.fit[[asset.name]]
       
       if (!(class(fit.lm) == "lm"))
         stop("Must pass a valid lm object")
@@ -79,7 +82,7 @@
       ## extract information from lm object
         
       factorNames = colnames(fit.lm$model)[-1]
-      fit.formula = as.formula(paste(fundName,"~", paste(factorNames, collapse="+"), sep=" "))
+      fit.formula = as.formula(paste(asset.name,"~", paste(factorNames, collapse="+"), sep=" "))
       residuals.z = zoo(residuals(fit.lm), as.Date(names(residuals(fit.lm))))
       fitted.z = zoo(fitted(fit.lm), as.Date(names(fitted(fit.lm))))
       actual.z = zoo(fit.lm$model[,1], as.Date(rownames(fit.lm$model)))
@@ -104,7 +107,7 @@
       switch(which.plot.single,
              "1L" =  {
         ##  time series plot of actual and fitted values
-        plot(actual.z, main=fundName, ylab="Monthly performance", lwd=2, col="black")
+        plot(actual.z, main=asset.name, ylab="Monthly performance", lwd=2, col="black")
         lines(fitted.z, lwd=2, col="blue")
         abline(h=0)
         legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","blue"))
@@ -112,7 +115,7 @@
       
              "2L" = {
         ## time series plot of residuals with standard error bands
-        plot(residuals.z, main=fundName, ylab="Monthly performance", lwd=2, col="black")
+        plot(residuals.z, main=asset.name, ylab="Monthly performance", lwd=2, col="black")
         abline(h=0)
         abline(h=2*tmp.summary$sigma, lwd=2, lty="dotted", col="red")
         abline(h=-2*tmp.summary$sigma, lwd=2, lty="dotted", col="red")
@@ -121,41 +124,41 @@
       },
              "3L" = {
         ## time series plot of squared residuals
-        plot(residuals.z^2, main=fundName, ylab="Squared residual", lwd=2, col="black")
+        plot(residuals.z^2, main=asset.name, ylab="Squared residual", lwd=2, col="black")
         abline(h=0)
         legend(x="topleft", legend="Squared Residuals", lwd=2, col="black")
       },
              "4L" = {
         ## time series plot of absolute residuals
-        plot(abs(residuals.z), main=fundName, ylab="Absolute residual", lwd=2, col="black")
+        plot(abs(residuals.z), main=asset.name, ylab="Absolute residual", lwd=2, col="black")
         abline(h=0)
         legend(x="topleft", legend="Absolute Residuals", lwd=2, col="black")
       },
              "5L" = {
         ## SACF and PACF of residuals
-        chart.ACFplus(residuals.z, main=paste("Residuals: ", fundName, sep=""))
+        chart.ACFplus(residuals.z, main=paste("Residuals: ", asset.name, sep=""))
       },
              "6L" = {
         ## SACF and PACF of squared residuals
-        chart.ACFplus(residuals.z^2, main=paste("Residuals^2: ", fundName, sep=""))
+        chart.ACFplus(residuals.z^2, main=paste("Residuals^2: ", asset.name, sep=""))
       },
              "7L" = {
         ## SACF and PACF of absolute residuals
-        chart.ACFplus(abs(residuals.z), main=paste("|Residuals|: ", fundName, sep=""))
+        chart.ACFplus(abs(residuals.z), main=paste("|Residuals|: ", asset.name, sep=""))
       },
              "8L" = {
         ## histogram of residuals with normal curve overlayed
-        chart.Histogram(residuals.z, methods="add.normal", main=paste("Residuals: ", fundName, sep=""))
+        chart.Histogram(residuals.z, methods="add.normal", main=paste("Residuals: ", asset.name, sep=""))
       },
              "9L" = {
         ##  normal qq-plot of residuals
-        chart.QQPlot(residuals.z, envelope=0.95, main=paste("Residuals: ", fundName, sep=""))
+        chart.QQPlot(residuals.z, envelope=0.95, main=paste("Residuals: ", asset.name, sep=""))
       },
              "10L"= {
         ##  CUSUM plot of recursive residuals
    if (as.character(fit.macro$call["fit.method"]) == "OLS") {
         cusum.rec = efp(fit.formula, type="Rec-CUSUM", data=fit.lm$model)
-        plot(cusum.rec, sub=fundName)
+        plot(cusum.rec, sub=asset.name)
    } else 
      stop("CUMSUM applies only on OLS method")
       },
@@ -163,7 +166,7 @@
         ##  CUSUM plot of OLS residuals
                if (as.character(fit.macro$call["fit.method"]) == "OLS") {        
         cusum.ols = efp(fit.formula, type="OLS-CUSUM", data=fit.lm$model)
-        plot(cusum.ols, sub=fundName)
+        plot(cusum.ols, sub=asset.name)
                } else 
                  stop("CUMSUM applies only on OLS method")   
       },
@@ -171,7 +174,7 @@
         ##  CUSUM plot of recursive estimates relative to full sample estimates
                if (as.character(fit.macro$call["fit.method"]) == "OLS") {        
         cusum.est = efp(fit.formula, type="fluctuation", data=fit.lm$model)
-        plot(cusum.est, functional=NULL, sub=fundName)
+        plot(cusum.est, functional=NULL, sub=asset.name)
                } else 
                  stop("CUMSUM applies only on OLS method")
       },
@@ -184,7 +187,7 @@
         reg.z = zoo(fit.lm$model, as.Date(rownames(fit.lm$model)))
         rollReg.z = rollapply(reg.z, FUN=rollReg, fit.formula, width=24, by.column = FALSE, 
                               align="right")
-        plot(rollReg.z, main=paste("24-month rolling regression estimates:", fundName, sep=" "))
+        plot(rollReg.z, main=paste("24-month rolling regression estimates:", asset.name, sep=" "))
     } else if (as.character(fit.macro$call["fit.method"]) == "DLS") {
       decay.factor <- as.numeric(as.character(fit.macro$call["decay.factor"]))
       t.length <- 24
@@ -198,10 +201,10 @@
       }
       reg.z = zoo(fit.lm$model[-length(fit.lm$model)], as.Date(rownames(fit.lm$model)))
       factorNames = colnames(fit.lm$model)[c(-1,-length(fit.lm$model))]
-      fit.formula = as.formula(paste(fundName,"~", paste(factorNames, collapse="+"), sep=" "))
+      fit.formula = as.formula(paste(asset.name,"~", paste(factorNames, collapse="+"), sep=" "))
       rollReg.z = rollapply(reg.z, FUN=rollReg, fit.formula,w, width=24, by.column = FALSE, 
                             align="right")
-      plot(rollReg.z, main=paste("24-month rolling regression estimates:", fundName, sep=" ")) 
+      plot(rollReg.z, main=paste("24-month rolling regression estimates:", asset.name, sep=" ")) 
     } 
         },
              invisible()

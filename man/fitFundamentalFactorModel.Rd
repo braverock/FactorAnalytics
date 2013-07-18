@@ -5,7 +5,7 @@
   fitFundamentalFactorModel(data, exposure.names, datevar,
     returnsvar, assetvar, wls = TRUE,
     regression = "classic", covariance = "classic",
-    full.resid.cov = TRUE, robust.scale = FALSE)
+    full.resid.cov = FALSE, robust.scale = FALSE)
 }
 \arguments{
   \item{data}{data.frame, data must have \emph{assetvar},
@@ -44,26 +44,26 @@
   asset variable in the data.}
 }
 \value{
-  an S3 object containing \itemize{ \item cov.returns A
+  an S3 object containing \itemize{ \item returns.cov A
   "list" object contains covariance information for asset
-  returns, includes covariance, mean and eigenvalus. \item
-  cov.factor Anobject of class "cov" or "covRob" which
-  contains the covariance matrix of the factor returns
-  (including intercept). \item cov.resids An object of
-  class "cov" or "covRob" which contains the covariance
-  matrix of the residuals, if "full.resid.cov" is TRUE.
-  NULL if "full.resid.cov" is FALSE. \item resid.variance A
-  vector of variances estimated from the OLS residuals for
-  each asset. If "wls" is TRUE, these are the weights used
-  in the weighted least squares regressions.  If "cov =
-  robust" these values are computed with "scale.tau".
-  Otherwise they are computed with "var". \item factors A
-  "xts" object containing the times series of estimated
-  factor returns and intercepts. \item residuals A "xts"
-  object containing the time series of residuals for each
-  asset. \item tstats A "xts" object containing the time
-  series of t-statistics for each exposure. \item call
-  function call }
+  returns, includes covariance, mean and eigenvalus. Beta
+  of taken as latest date input. \item factor.cov An object
+  of class "cov" or "covRob" which contains the covariance
+  matrix of the factor returns (including intercept). \item
+  resids.cov An object of class "cov" or "covRob" which
+  contains the covariance matrix of the residuals, if
+  "full.resid.cov" is TRUE.  NULL if "full.resid.cov" is
+  FALSE. \item resid.variance A vector of variances
+  estimated from the OLS residuals for each asset. If "wls"
+  is TRUE, these are the weights used in the weighted least
+  squares regressions.  If "cov = robust" these values are
+  computed with "scale.tau".  Otherwise they are computed
+  with "var". \item factors A "xts" object containing the
+  times series of estimated factor returns and intercepts.
+  \item residuals A "xts" object containing the time series
+  of residuals for each asset. \item tstats A "xts" object
+  containing the time series of t-statistics for each
+  exposure. \item call function call }
 }
 \description{
   fit fundamental factor model or cross-sectional time
@@ -98,10 +98,10 @@ ttest.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
                                        robust.scale = TRUE)
 
 names(test.fit)
-test.fit$cov.returns
-test.fit$cov.resids
+test.fit$returns.cov
+test.fit$resids.cov
 names(test.fit$cov.factor)
-test.fit$cov.factor$cov
+test.fit$factor.cov$cov
 test.fit$factor
 test.fit$resid.variance
 test.fit$resids

@@ -5,7 +5,7 @@
   plot.TimeSeriesFactorModel(fit.macro, colorset = c(1:12),
     legend.loc = NULL,
     which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L"),
-    max.show = 6, plot.single = FALSE, fundName,
+    max.show = 6, plot.single = FALSE, asset.name,
     which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L", "10L", "11L", "12L", "13L"))
 }
 \arguments{
@@ -29,7 +29,7 @@
   \item{plot.single}{Plot a single asset of lm class.
   Defualt is FALSE.}
 
-  \item{fundName}{Name of the asset to be plotted.}
+  \item{asset.name}{Name of the asset to be plotted.}
 
   \item{which.plot.single}{integer indicating which plot to
   create: "none" will create a menu to choose. Defualt is
@@ -54,15 +54,13 @@
 \dontrun{
 # load data from the database
 data(managers.df)
-ret.assets = managers.df[,(1:6)]
-factors    = managers.df[,(7:9)]
-# fit the factor model with OLS
-fit <- fitTimeSeriesFactorModel(ret.assets,factors,fit.method="OLS",
-                                 variable.selection="all subsets")
+fit.macro <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+                                data=managers.df,fit.method="OLS")
 # plot of all assets and show only first 4 assets.
 plot(fit.macro,max.show=4)
 # single plot of HAM1 asset
-plot(fit.macro, plot.single=TRUE, fundName="HAM1")
+plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
 }
 }
 \author{
