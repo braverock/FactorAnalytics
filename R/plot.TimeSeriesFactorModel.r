@@ -31,11 +31,9 @@
 #' \dontrun{
 #' # load data from the database
 #' data(managers.df)
-#' ret.assets = managers.df[,(1:6)]
-#' factors    = managers.df[,(7:9)]
-#' # fit the factor model with OLS
-#' fit <- fitTimeSeriesFactorModel(ret.assets,factors,fit.method="OLS",
-#'                                  variable.selection="all subsets")
+#' fit.macro <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+#'                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                                 data=managers.df,fit.method="OLS")
 #' # plot of all assets and show only first 4 assets.
 #' plot(fit.macro,max.show=4)
 #' # single plot of HAM1 asset 
@@ -50,6 +48,7 @@
       require(zoo)
       require(PerformanceAnalytics)
       require(strucchange)
+      require(ellipse)
     
     if (plot.single==TRUE) {
       ## inputs:
@@ -223,17 +222,18 @@
                          "Factor Contributions to VaR"),
                   title="Factor Analytics Plot \nMake a plot selection (or 0 to exit):\n") 
     
+  
     variable.selection = fit.macro$variable.selection
-    manager.names = colnames(fit.macro$ret.assets)
-    factor.names  = colnames(fit.macro$factors)
-    managers.df   = cbind(fit.macro$ret.assets,fit.macro$factors)
-    cov.factors = var(fit.macro$factors)
-    n <- length(manager.names)
+    asset.names = fit.macro$assets.names
+    factor.names  = fit.macro$factors.names
+    plot.data   = fit.macro$data[,c(asset.names,factor.names)]
+    cov.factors = var(plot.data[,factor.names])
+    n <- length(asset.names)
     
     switch(which.plot,
            
            "1L" = {
-     if (n >= max.show) {
+     if (n > max.show) {
       cat(paste("numbers of assets are greater than",max.show,", show only first",
                 max.show,"assets",sep=" "))
     n <- max.show 
@@ -241,33 +241,33 @@
     par(mfrow=c(n/2,2))
     if (variable.selection == "lar" || variable.selection == "lasso") {
      for (i in 1:n) {
-     alpha = fit.macro$alpha.vec[i]
-     beta = as.matrix(fit.macro$beta.mat[i,])        
-     fitted = alpha+as.matrix(fit.macro$factors)%*%beta  
-     dataToPlot = cbind(fitted, na.omit(fit.macro$ret.assets[,i]))
+     alpha = fit.macro$alpha[i]
+     beta = as.matrix(fit.macro$beta[i,])        
+     fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta  
+     dataToPlot = cbind(fitted, plot.data[,i])
      colnames(dataToPlot) = c("Fitted","Actual")
-     main = paste("Factor Model fit for",manager.names[i],seq="")
+     main = paste("Factor Model fit for",asset.names[i],seq="")
      chart.TimeSeries(dataToPlot,colorset = colorset, legend.loc = legend.loc,main=main)
     }
      } else {
     for (i in 1:n) {
-    dataToPlot = cbind(fitted(fit.macro$asset.fit[[i]]), na.omit(fit.macro$ret.assets[,i]))
+    dataToPlot = cbind(fitted(fit.macro$asset.fit[[i]]), na.omit(plot.data[,i]))
     colnames(dataToPlot) = c("Fitted","Actual")
-    main = paste("Factor Model fit for",manager.names[i],seq="")
+    main = paste("Factor Model fit for",asset.names[i],seq="")
     chart.TimeSeries(dataToPlot,colorset = colorset, legend.loc = legend.loc,main=main)
     }
     }
     par(mfrow=c(1,1))
     },
       "2L" ={
-      barplot(fit.macro$r2.vec)
+      barplot(fit.macro$r2)
      },
       "3L" = {
-      barplot(fit.macro$residVars.vec)  
+      barplot(fit.macro$resid.variance)  
       },    
            
      "4L" = {
-      cov.fm<- factorModelCovariance(fit.macro$beta.mat,var(fit.macro$factors),fit.macro$residVars.vec)    
+      cov.fm<- factorModelCovariance(fit.macro$beta,cov.factors,fit.macro$resid.variance)    
       cor.fm = cov2cor(cov.fm)
       rownames(cor.fm) = colnames(cor.fm)
       ord <- order(cor.fm[1,])
@@ -276,10 +276,10 @@
            },
     "5L" = {
        factor.sd.decomp.list = list()
-       for (i in manager.names) {
+       for (i in asset.names) {
          factor.sd.decomp.list[[i]] =
-           factorModelSdDecomposition(fit.macro$beta.mat[i,],
-                                      cov.factors, fit.macro$residVars.vec[i])
+           factorModelSdDecomposition(fit.macro$beta[i,],
+                                      cov.factors, fit.macro$resid.variance[i])
          }
             # function to extract contribution to sd from list
        getCSD = function(x) {
@@ -298,33 +298,33 @@
         factor.es.decomp.list = list()
        if (variable.selection == "lar" || variable.selection == "lasso") {
         
-         for (i in manager.names) {
-           idx = which(!is.na(managers.df[,i]))
-           alpha = fit.macro$alpha.vec[i]
-           beta = as.matrix(fit.macro$beta.mat[i,])        
-           fitted = alpha+as.matrix(fit.macro$factors)%*%beta
-           residual = fit.macro$ret.assets[,i]-fitted
-           tmpData = cbind(managers.df[idx,i], managers.df[idx,factor.names],
-                           (residual[idx,]/sqrt(fit.macro$residVars.vec[i])) )
+         for (i in asset.names) {
+           idx = which(!is.na(plot.data[,i]))
+           alpha = fit.macro$alpha[i]
+           beta = as.matrix(fit.macro$beta[i,])        
+           fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
+           residual = plot.data[,i]-fitted
+           tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                           (residual[idx,]/sqrt(fit.macro$resid.variance[i])) )
            colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
            factor.es.decomp.list[[i]] = 
           factorModelEsDecomposition(tmpData, 
-                                        fit.macro$beta.mat[i,],
-                                        fit.macro$residVars.vec[i], tail.prob=0.05)
+                                        fit.macro$beta[i,],
+                                        fit.macro$resid.variance[i], tail.prob=0.05)
            
          }
        } else {
             
-       for (i in manager.names) {
+       for (i in asset.names) {
          # check for missing values in fund data
-         idx = which(!is.na(managers.df[,i]))
-         tmpData = cbind(managers.df[idx,i], managers.df[idx,factor.names],
-                         residuals(fit.macro$asset.fit[[i]])/sqrt(fit.macro$residVars.vec[i]))
+         idx = which(!is.na(plot.data[,i]))
+         tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                         residuals(fit.macro$asset.fit[[i]])/sqrt(fit.macro$resid.variance[i]))
          colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
          factor.es.decomp.list[[i]] = 
            factorModelEsDecomposition(tmpData, 
-                                      fit.macro$beta.mat[i,],
-                                      fit.macro$residVars.vec[i], tail.prob=0.05)
+                                      fit.macro$beta[i,],
+                                      fit.macro$resid.variance[i], tail.prob=0.05)
        }
        }     
        
@@ -345,32 +345,32 @@
       
       if (variable.selection == "lar" || variable.selection == "lasso") {
         
-        for (i in manager.names) {
-          idx = which(!is.na(managers.df[,i]))
-          alpha = fit.macro$alpha.vec[i]
-          beta = as.matrix(fit.macro$beta.mat[i,])        
-          fitted = alpha+as.matrix(fit.macro$factors)%*%beta
-          residual = fit.macro$ret.assets[,i]-fitted
-          tmpData = cbind(managers.df[idx,i], managers.df[idx,factor.names],
-                          (residual[idx,]/sqrt(fit.macro$residVars.vec[i])) )
+        for (i in asset.names) {
+          idx = which(!is.na(plot.data[,i]))
+          alpha = fit.macro$alpha[i]
+          beta = as.matrix(fit.macro$beta[i,])        
+          fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
+          residual = plot.data[,i]-fitted
+          tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                          (residual[idx,]/sqrt(fit.macro$resid.variance[i])) )
           colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
           factor.VaR.decomp.list[[i]] = 
             factorModelVaRDecomposition(tmpData, 
-                                       fit.macro$beta.mat[i,],
-                                       fit.macro$residVars.vec[i], tail.prob=0.05)
+                                       fit.macro$beta[i,],
+                                       fit.macro$resid.variance[i], tail.prob=0.05)
           
         }
       } else {
-      for (i in manager.names) {
+      for (i in asset.names) {
         # check for missing values in fund data
-        idx = which(!is.na(managers.df[,i]))
-        tmpData = cbind(managers.df[idx,i], managers.df[idx,factor.names],
-                        residuals(fit.macro$asset.fit[[i]])/sqrt(fit.macro$residVars.vec[i]))
+        idx = which(!is.na(plot.data[,i]))
+        tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                        residuals(fit.macro$asset.fit[[i]])/sqrt(fit.macro$resid.variance[i]))
         colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
         factor.VaR.decomp.list[[i]] = 
           factorModelVaRDecomposition(tmpData, 
-                                     fit.macro$beta.mat[i,],
-                                     fit.macro$residVars.vec[i], tail.prob=0.05,
+                                     fit.macro$beta[i,],
+                                     fit.macro$resid.variance[i], tail.prob=0.05,
                                       VaR.method="HS")
       }
       }

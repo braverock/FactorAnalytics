@@ -33,7 +33,7 @@
 #' @param subsets.method control option for all subsets. se exhaustive search,
 #' forward selection, backward selection or sequential replacement to search.
 #' @param lars.criteria either choose minimum "Cp": unbiased estimator of the
-#' true rist or "cv" 10 folds cross-validation. See detail.
+#' true rist or "cv" 10 folds cross-validation. Default is "Cp". See detail.
 #' @return an S3 object containing
 #' \itemize{
 #'   \item{asset.fit}{Fit objects for each asset. This is the class "lm" for
@@ -54,11 +54,9 @@
 #'  \dontrun{
 #' # load data from the database
 #' data(managers.df)
-#' ret.assets = managers.df[,(1:6)]
-#' factors    = managers.df[,(7:9)]
-#' # fit the factor model with OLS
-#' fit <- fitTimeseriesFactorModel(ret.assets,factors,fit.method="OLS",
-#'                                  variable.selection="all subsets")
+#' fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+#'                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                                 data=managers.df,fit.method="OLS")
 #' # summary of HAM1 
 #' summary(fit$asset.fit$HAM1)
 #' # plot actual vs. fitted over time for HAM1
@@ -74,7 +72,7 @@ function(assets.names, factors.names, data=data, num.factor.subset = 1,
          variable.selection="none",
           decay.factor = 0.95,nvmax=8,force.in=NULL,
           subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
-          lars.criteria = c("Cp","cv")) {
+          lars.criteria = "Cp") {
   
   require(PerformanceAnalytics)
   require(leaps)
@@ -369,7 +367,9 @@ ans = list (asset.fit = reg.list,
             resid.variance = ResidVars,
             call      = this.call,
             data = data,
-            factors.names = factors.names)
+            factors.names = factors.names,
+            variable.selection = variable.selection,
+            assets.names = assets.names)
 class(ans) = "TimeSeriesFactorModel"
 return(ans)
 }
