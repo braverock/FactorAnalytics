@@ -6,9 +6,9 @@
     cumulative = TRUE, style = "bar",
     which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L"),
     hgrid = FALSE, vgrid = FALSE, plot.single = FALSE,
-    fundName,
+    asset.name,
     which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L", "10L", "11L", "12L", "13L"),
-    ...)
+    max.show = 6, ...)
 }
 \arguments{
   \item{fit.stat}{fit object created by
@@ -42,7 +42,7 @@
   \item{plot.single}{Plot a single asset of lm class.
   Defualt is FALSE.}
 
-  \item{fundName}{Name of the asset to be plotted.}
+  \item{asset.name}{Name of the asset to be plotted.}
 
   \item{which.plot.single}{integer indicating which plot to
   create: "none" will create a menu to choose. Defualt is
@@ -57,6 +57,8 @@
   OLS residuals 12= CUSUM plot of recursive estimates
   relative to full sample estimates 13= rolling estimates
   over 24 month window}
+
+  \item{max.show}{Maximum assets to plot. Default is 6.}
 
   \item{...}{other variables for barplot method.}
 }
@@ -80,7 +82,7 @@ args(plot.StatFactorModel)
 # plot all
 plot(sfm.pca.fit)
 # plot single asset
-plot(sfm.pca.fit,plot.single=TRUE,fundName="CITCRP")
+plot(sfm.pca.fit,plot.single=TRUE,asset.name="CITCRP")
 }
 }
 \author{

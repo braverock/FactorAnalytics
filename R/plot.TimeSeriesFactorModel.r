@@ -74,11 +74,11 @@
       if (missing(asset.name) == TRUE) {
         stop("Neet to specify an asset to plot if plot.single is TRUE.")
       }
+      
       fit.lm = fit.macro$asset.fit[[asset.name]]
       
-      if (!(class(fit.lm) == "lm"))
-        stop("Must pass a valid lm object")
-      
+      if (fit.macro$variable.selection == "none") {
+            
       ## extract information from lm object
         
       factorNames = colnames(fit.lm$model)[-1]
@@ -210,8 +210,85 @@
              invisible()
              )
       
-      
-      
+      } else {
+  # lar or lasso
+          
+          factor.names  = fit.macro$factors.names
+          plot.data   = fit.macro$data[,c(asset.name,factor.names)]
+          alpha = fit.macro$alpha[asset.name]
+          beta = as.matrix(fit.macro$beta[asset.name,])        
+          fitted.z = zoo(alpha+as.matrix(plot.data[,factor.names])%*%beta,as.Date(rownames(plot.data)))
+          residuals.z = plot.data[,asset.name]-fitted.z
+          actual.z = zoo(plot.data[,asset.name],as.Date(rownames(plot.data)))       
+          t = length(residuals.z)
+          k = length(factor.names)
+        
+        which.plot.single<-menu(c("time series plot of actual and fitted values",
+                                  "time series plot of residuals with standard error bands",
+                                  "time series plot of squared residuals",
+                                  "time series plot of absolute residuals",
+                                  "SACF and PACF of residuals",
+                                  "SACF and PACF of squared residuals",
+                                  "SACF and PACF of absolute residuals",
+                                  "histogram of residuals with normal curve overlayed",
+                                  "normal qq-plot of residuals"),
+                                title="\nMake a plot selection (or 0 to exit):\n")
+        switch(which.plot.single,
+               "1L" =  {
+                 #       "time series plot of actual and fitted values",
+                 
+                 plot(actual.z[,asset.name], main=asset.name, ylab="Monthly performance", lwd=2, col="black")
+                 lines(fitted.z, lwd=2, col="blue")
+                 abline(h=0)
+                 legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","blue"))
+               },
+               "2L"={    
+                 #       "time series plot of residuals with standard error bands"
+                 plot(residuals.z, main=asset.name, ylab="Monthly performance", lwd=2, col="black")
+                 abline(h=0)
+                 sigma = (sum(residuals.z^2)*(t-k)^-1)^(1/2)
+                 abline(h=2*sigma, lwd=2, lty="dotted", col="red")
+                 abline(h=-2*sigma, lwd=2, lty="dotted", col="red")
+                 legend(x="bottomleft", legend=c("Residual", "+/ 2*SE"), lwd=2,
+                        lty=c("solid","dotted"), col=c("black","red"))     
+                 
+               },   
+               "3L"={
+                 #       "time series plot of squared residuals"
+                 plot(residuals.z^2, main=asset.name, ylab="Squared residual", lwd=2, col="black")
+                 abline(h=0)
+                 legend(x="topleft", legend="Squared Residuals", lwd=2, col="black")   
+               },                
+               "4L" = {
+                 ## time series plot of absolute residuals
+                 plot(abs(residuals.z), main=asset.name, ylab="Absolute residual", lwd=2, col="black")
+                 abline(h=0)
+                 legend(x="topleft", legend="Absolute Residuals", lwd=2, col="black")
+               },
+               "5L" = {
+                 ## SACF and PACF of residuals
+                 chart.ACFplus(residuals.z, main=paste("Residuals: ", asset.name, sep=""))
+               },
+               "6L" = {
+                 ## SACF and PACF of squared residuals
+                 chart.ACFplus(residuals.z^2, main=paste("Residuals^2: ", asset.name, sep=""))
+               },
+               "7L" = {
+                 ## SACF and PACF of absolute residuals
+                 chart.ACFplus(abs(residuals.z), main=paste("|Residuals|: ", asset.name, sep=""))
+               },
+               "8L" = {
+                 ## histogram of residuals with normal curve overlayed
+                 chart.Histogram(residuals.z, methods="add.normal", main=paste("Residuals: ", asset.name, sep=""))
+               },
+               "9L" = {
+                 ##  normal qq-plot of residuals
+                 chart.QQPlot(residuals.z, envelope=0.95, main=paste("Residuals: ", asset.name, sep=""))
+               },          
+               invisible()  )
+        
+      }  
+# plot group data      
     } else {    
     which.plot<-which.plot[1]
     

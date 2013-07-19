@@ -392,6 +392,7 @@ data <- coredata(data.xts)
   ans$mimic <- mimic
   ans$resid.variance <- apply(ans$residuals,2,var)
   ans$call <- call
+  ans$data <- data
 class(ans) <- "StatFactorModel"
   return(ans)
 }
