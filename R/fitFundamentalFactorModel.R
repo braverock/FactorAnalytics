@@ -383,6 +383,8 @@ if (covariance == "robust") {
 # should we let user choose which beta to use ?
     B.final[, numeric.columns] <- as.matrix(data[ (as.numeric(data[[datevar]]) == 
         timedates[numTimePoints]), exposures.numeric])
+    rownames(B.final) = assets
+    colnames(B.final) = colnames(f.hat)
     if (length(exposures.factor)) {
         B.final[, grep(exposures.factor, x = colnames)][cbind(seq(numAssets), 
             as.numeric(data[data[[datevar]] == timedates[numTimePoints], 
@@ -410,7 +412,9 @@ if (full.resid.cov) {
                    residuals = resids, 
                    tstats = tstats,                   
                    call = this.call,
-                   data = data)
+                   data = data,
+                   asset.names = assets,
+                   beta = B.final)
     class(output) <- "FundamentalFactorModel"
     return(output)
 }
