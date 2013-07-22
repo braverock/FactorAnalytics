@@ -115,6 +115,13 @@ require(PerformanceAnalytics)
 #            names = fit.fund$asset.names
 #            for (i in names) {
 #              # check for missing values in fund data
+#             asset.n = which( colnames(fit.fund$data) ==  as.name(fit.fund$assetvar))
+#             as.symbol(fit.fund$assetvar)
+#             subset(fit.fund$data,fit.fund$assetvar == "STI")
+#              
+#              subset(fit.fund$data,TICKER == "STI")[[fit.fund$returnsvar]]
+#              
+#              [,fit.fund$returnsvar]
 #              idx = which(!is.na(fit.fund$data[,i]))
 #              tmpData = cbind(fit.stat$asset.ret[idx,i], fit.stat$factors,
 #                              fit.stat$residuals[,i]/sqrt(fit.stat$resid.variance[i]))

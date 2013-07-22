@@ -404,6 +404,7 @@ if (full.resid.cov) {
     else {
       Cov.resids <- NULL
     }
+
     output <- list(returns.cov = Cov.returns, 
                    factor.cov = Cov.factors, 
                    resids.cov = Cov.resids, 
@@ -414,7 +415,10 @@ if (full.resid.cov) {
                    call = this.call,
                    data = data,
                    asset.names = assets,
-                   beta = B.final)
+                   beta = B.final,
+                   datevar = datevar,
+                   returnsvar = returnsvar,
+                   assetvar = assetvar)
     class(output) <- "FundamentalFactorModel"
     return(output)
 }
