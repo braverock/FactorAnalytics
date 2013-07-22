@@ -63,9 +63,9 @@ require(PerformanceAnalytics)
            
            "1L" = {
             factor.names <- colnames(fit.fund$factors)
-            nn <- length(factor.names)
-            par(mfrow=c(nn,1))
-            for (i in factor.names) {
+#             nn <- length(factor.names)
+            par(mfrow=c(n/2,2))
+            for (i in factor.names[1:n]) {
             plot(fit.fund$factors[,i],main=paste(i," Factor Returns",sep="") )
             }
             par(mfrow=c(1,1))

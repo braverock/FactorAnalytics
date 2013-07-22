@@ -13,24 +13,38 @@
 #' @export
 #' @author Yi-An Chen
 #' 
-predict.FundamentalFactorModel <- function(fit,newdata,new.assetvar,new.datevar){
+predict.FundamentalFactorModel <- function(fit.fund,newdata,new.assetvar,new.datevar){
  
   # if there is no newdata provided
   # calculate fitted values
-  datevar <- as.character(fit$call)[4]
-  assetvar <- as.character(fit$call)[6]
-  assets = unique(data[,assetvar])
-  timedates = as.Date(unique(data[,datevar]))
-  
+   datevar <- as.character(fit.fund$datevar)
+   assetvar <- as.character(fit.fund$assetvar)
+   assets = unique(fit.fund$data[,assetvar])
+   timedates = as.Date(unique(fit.fund$data[,datevar]))
+   exposure.names <- fit.fund$exposure.names
+   
   numTimePoints <- length(timedates)
   numExposures <- length(exposure.names)
   numAssets <- length(assets)
   
-  f <-  fit$factors # T X 3 
-  exposure.names <- colnames(f)[-1]
+  f <-  fit.fund$factors # T X 3 
+  
  
-  predictor <- function(data,datevar,assetvar) {
-    
+  predictor <- function(data) {
+    fitted <- rep(NA,numAssets)
+    for (i in 1:numTimePoints) {
+      fit.tmp <- fit.fund$beta %*% t(f[i,])
+      fitted <- rbind(fitted,t(fit.tmp))
+    }
+    fitted <- fitted[-1,]
+    colnames(fitted) <- assets
+    return(fitted)
+  } 
+
+  
+  
+  predictor.new <- function(data,datevar,assetvar) {
+  
   beta.all <- data[,c(datevar,assetvar,exposure.names)] #  (N * T ) X 4
   names(beta.all)[1:2] <- c("time","assets.names")  
   
@@ -49,7 +63,7 @@ predict.FundamentalFactorModel <- function(fit,newdata,new.assetvar,new.datevar)
   }
   
   if (missing(newdata) || is.null(newdata)) {
-   ans <- predictor(fit$data,datevar,assetvar)
+   ans <- predictor(fit.fund$data)
  } 
   
   # predict returns by newdata
@@ -65,7 +79,7 @@ else  if (dim(newdata)[1] != numAssets*numTimePoints ) {
   } else if( length(setdiff(intersect(names(newdata),exposure.names),exposure.names))!=0 ) {
   stop("newdata must have exact the same exposure.names")    
   } else {
-  ans <- predictor(newdata,new.datevar,new.assetvar) 
+  ans <- predictor.new(newdata,new.datevar,new.assetvar) 
   }
  }
 

@@ -4,11 +4,9 @@
 #' function \code{predict.lm}.
 #' 
 #' @param fit "TimeSeriesFactorModel" object created by fitTimeSeiresFactorModel.
-#' @param newdata An optional data frame in which to look for variables with which to predict. 
-#' If omitted, the fitted values are used.
-#' @param ... Any other arguments used in \code{predict.lm}
+#' @param ... Any other arguments used in \code{predict.lm}. for example newdata and se.fit.
 #' @author Yi-An Chen.
-#' ' 
+#' 
 #' @examples
 #' 
 #' # load data from the database
@@ -25,15 +23,17 @@
 #' @export
 #' 
 
-predict.TimeSeriesFactorModel <- function(fit,newdata,...){
-  if (missing(newdata) || is.null(newdata)  ) {
-  lapply(fit$asset.fit, predict,...)
-  } 
+predict.TimeSeriesFactorModel <- function(fit.macro,...){
+#   if (missing(newdata) || is.null(newdata)  ) {
+  lapply(fit.macro$asset.fit, predict,...)
+#   } 
+  
+#   
 #   if (  !(missing(newdata) && !is.null(newdata) )) {
-#    numAssets <- length(names(fit$asset.fit))
+#    numAssets <- length(names(fit.macro$asset.fit))
 #    
-#    data <- fit$data
-#   factors <-   data[,fit$factors.names]
+#    data <- fit.macro$data
+#   factors <-   data[,fit.macro$factors.names]
 #    mu.factors <- apply(factors,2,mean)
 #    cov.factors <- cov(factors)
 #    
@@ -53,6 +53,6 @@ predict.TimeSeriesFactorModel <- function(fit,newdata,...){
 #     
 #     
 #   }
-#   
+  
   
 }

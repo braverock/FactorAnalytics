@@ -135,9 +135,7 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
       
       fit.lm = fit.stat$asset.fit[[asset.name]]
              
-    if (!(class(fit.lm) == "lm"))
-      stop("Must pass a valid lm object")
-    
+     
     ## exact information from lm object
     
     factorNames = colnames(fit.lm$model)[-1]
@@ -250,8 +248,8 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
     )
     } else {  #apca method
       
-      dates <- rownames(fit.stat$factors) 
-       actual.z <- zoo(fit.stat$asset.ret,as.Date(dates))
+      dates <- names(fit.stat$data[,asset.name]) 
+       actual.z <- zoo(fit.stat$asset.ret[,asset.name],as.Date(dates))
        residuals.z <- zoo(fit.stat$residuals,as.Date(dates))
        fitted.z <- actual.z - residuals.z
       t <- length(dates)

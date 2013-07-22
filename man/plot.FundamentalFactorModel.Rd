@@ -2,12 +2,12 @@
 \alias{plot.FundamentalFactorModel}
 \title{plot FundamentalFactorModel object.}
 \usage{
-  plot.FundamentalFactorModel(fund.fit,
+  plot.FundamentalFactorModel(fit.fund,
     which.plot = c("none", "1L", "2L", "3L", "4L"),
-    max.show = 12)
+    max.show = 10)
 }
 \arguments{
-  \item{fund.fit}{fit object created by
+  \item{fit.fund}{fit object created by
   fitFundamentalFactorModel.}
 
   \item{which.plot}{integer indicating which plot to
@@ -26,13 +26,18 @@
 # BARRA type factor model
 # there are 447 assets
 data(stock)
-assets = unique(fulldata[,"PERMNO"])
-timedates = as.Date(unique(fulldata[,"DATE"]))
-exposures <- exposures.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
-fund.fit <- fitFundamentalFactorModel(fulldata=fulldata, timedates=timedates, exposures=exposures,covariance="classic", assets=assets,full.resid.cov=TRUE,
-                                      regression="classic",wls=TRUE)
+# BARRA type factor model
+data(stock)
+# there are 447 assets
+exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
+fit.fund <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+                                       datevar = "DATE", returnsvar = "RETURN",
+                                       assetvar = "TICKER", wls = TRUE,
+                                       regression = "classic",
+                                       covariance = "classic", full.resid.cov = TRUE,
+                                       robust.scale = TRUE)
 
-plot(fund.fit)
+plot(fit.fund)
 }
 }
 \author{

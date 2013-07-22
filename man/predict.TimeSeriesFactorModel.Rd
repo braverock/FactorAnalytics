@@ -2,17 +2,14 @@
 \alias{predict.TimeSeriesFactorModel}
 \title{predict method for TimeSeriesModel object.}
 \usage{
-  predict.TimeSeriesFactorModel(fit, newdata, ...)
+  predict.TimeSeriesFactorModel(fit.macro, ...)
 }
 \arguments{
   \item{fit}{"TimeSeriesFactorModel" object created by
   fitTimeSeiresFactorModel.}
 
-  \item{newdata}{An optional data frame in which to look
-  for variables with which to predict. If omitted, the
-  fitted values are used.}
-
-  \item{...}{Any other arguments used in \code{predict.lm}}
+  \item{...}{Any other arguments used in \code{predict.lm}.
+  for example newdata and se.fit.}
 }
 \description{
   Generic function of predict method for
@@ -32,6 +29,6 @@ predict(fit)
 predict(fit,newdata,interval="confidence")
 }
 \author{
-  Yi-An Chen. '
+  Yi-An Chen.
 }
 

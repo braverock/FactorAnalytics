@@ -35,6 +35,8 @@
 #' the data.
 #' @param assetvar A character string giving the name of the asset variable in
 #' the data.
+#' @param exposure.names A character string giving the name of the exposure variable in
+#' the data.
 #' @return an S3 object containing
 #' \itemize{
 #' \item returns.cov A "list" object contains covariance information for
@@ -418,7 +420,8 @@ if (full.resid.cov) {
                    beta = B.final,
                    datevar = datevar,
                    returnsvar = returnsvar,
-                   assetvar = assetvar)
+                   assetvar = assetvar,
+                   exposure.names = exposure.names)
     class(output) <- "FundamentalFactorModel"
     return(output)
 }
