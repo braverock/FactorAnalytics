@@ -72,11 +72,9 @@
 \examples{
 # load data from the database
 data(managers.df)
-ret.assets = managers.df[,(1:6)]
-factors    = managers.df[,(7:9)]
-# fit the factor model with OLS
-fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
-                                 variable.selection="all subsets",factor.set=3)
+fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+                                data=managers.df,fit.method="OLS")
 factorData=factors
 Beta.mat=fit$beta.mat
 residualData=as.matrix(fit$residVars.vec,1,6)

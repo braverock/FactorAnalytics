@@ -48,11 +48,9 @@
 #' 
 #' # load data from the database
 #' data(managers.df)
-#' ret.assets = managers.df[,(1:6)]
-#' factors    = managers.df[,(7:9)]
-#' # fit the factor model with OLS
-#' fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
-#'                                  variable.selection="all subsets",factor.set=3)
+#' fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+#'                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                                 data=managers.df,fit.method="OLS")
 #' factorData=factors  
 #' Beta.mat=fit$beta.mat
 #' residualData=as.matrix(fit$residVars.vec,1,6) 
@@ -88,40 +86,12 @@ function(n.boot=1000, factorData, Beta.mat, Alpha.mat=NULL,
                                   residualData, residual.dist = c("normal", "Cornish-Fisher", "skew-t"),
                                   boot.method = c("random", "block"),
                                   seed=123, return.factors= FALSE , return.residuals= FALSE ) {
-## inputs:
-## n.boot         number of bootstrap samples
-## factorData     n.months x n.funds matrix or data.frame of factor returns
-## Beta.mat       n.funds x n.factors matrix of factor betas
-## Alpha.mat      n.funds x 1 matrix of factor alphas (intercepts). If NULL then
-##                assume that all alphas are zero.
-## residualData   n.funds x n.parms matrix of residual distribution parameters. The
-##                columns of residualData depend on the value of residual.dist. If
-##                residual.dist = "normal", then residualData has one column vector
-##                containing variance values; if residual.dist = "Cornish-Fisher",
-##                then residualData has three columns containing variance,
-##                skewness and excess kurtosis values; if residual.dist="skew-t",
-##                then residualData has four columns containing location, scale,
-##                shape and df values.
-## residual.dist  character vector specifying the residual distribution. Choices are
-##                "normal" for the normal distribution; "Cornish-Fisher" for the
-##                Cornish-Fisher distribution based on the Cornish-Fisher expansion
-##                of the normal distribution quantile; "skew-t" for the skewed Student's
-##                t distribution of Azzalini and Captiano.
-## boot.method    character vector specifying the resampling method. Choices are
-##                "random" for random sampling with replacement (non-parametric bootstrap);
-##                "block" for stationary block bootstrapping.
-## seed           integer random number seed.
-## return.factors logical; if TRUE then return resampled factors
-## return.residuals logical; if TRUE then return simulated residuals
-##
-## output: A list with the following components:
-## returns        n.boot x n.funds matrix of simulated fund returns
-## factors        n.boot x n.factors matrix of resampled factor returns. Returned 
-##                only if return.factors = TRUE.
-## residuals      n.boot x n.funds matrix of simulated fund residuals. Returned only
-##                if return.residuals = TRUE.
+
+  
  require(tseries) # for function tsbootstrap()
  require(sn) # for function rst()
+ require(PerformanceAnalytics)
+ 
  boot.method = boot.method[1]
  residual.dist = residual.dist[1]
  set.seed(seed)

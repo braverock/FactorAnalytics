@@ -55,6 +55,17 @@ tmpData = cbind(ret.assets[,1], factors,
 colnames(tmpData)[c(1,5)] = c("HAM1", "residual")
 factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit$beta.mat[1,],
                                            fit$residVars.vec[1], tail.prob=0.05)
+
+# fundamental factor model
+# try to find factor contribution to ES for STI
+ idx <- fit.fund$data[,fit.fund$assetvar]  == "STI"
+ asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
+ tmpData = cbind(asset.ret, fit.fund$factors,
+                 fit.fund$residuals[,"STI"]/sqrt(fit.fund$resid.variance["STI"]) )
+  colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
+  factorModelEsDecomposition(tmpData,
+                          fit.fund$beta["STI",],
+                          fit.fund$resid.variance["STI"], tail.prob=0.05)
 }
 \author{
   Eric Zviot and Yi-An Chen.

@@ -2,7 +2,7 @@
 \alias{predict.FundamentalFactorModel}
 \title{predict method for FundamentalFactorModel object}
 \usage{
-  predict.FundamentalFactorModel(fit, newdata,
+  predict.FundamentalFactorModel(fit.fund, newdata,
     new.assetvar, new.datevar)
 }
 \arguments{

@@ -42,6 +42,9 @@
 
   \item{assetvar}{A character string giving the name of the
   asset variable in the data.}
+
+  \item{exposure.names}{A character string giving the name
+  of the exposure variable in the data.}
 }
 \value{
   an S3 object containing \itemize{ \item returns.cov A
