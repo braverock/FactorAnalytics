@@ -110,67 +110,63 @@ require(PerformanceAnalytics)
                      legend.text=T, args.legend=list(x="topleft"),
                      col=c(1:50) )
            } ,
-#            "6L" = {
-#            factor.es.decomp.list = list()
-#            names = fit.fund$asset.names
-#            for (i in names) {
-#              # check for missing values in fund data
-#             asset.n = which( colnames(fit.fund$data) ==  as.name(fit.fund$assetvar))
-#             as.symbol(fit.fund$assetvar)
-#             subset(fit.fund$data,fit.fund$assetvar == "STI")
-#              
-#              subset(fit.fund$data,TICKER == "STI")[[fit.fund$returnsvar]]
-#              
-#              [,fit.fund$returnsvar]
-#              idx = which(!is.na(fit.fund$data[,i]))
-#              tmpData = cbind(fit.stat$asset.ret[idx,i], fit.stat$factors,
-#                              fit.stat$residuals[,i]/sqrt(fit.stat$resid.variance[i]))
-#              colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
-#              factor.es.decomp.list[[i]] = 
-#                factorModelEsDecomposition(tmpData, 
-#                                           fit.stat$loadings[,i],
-#                                           fit.stat$resid.variance[i], tail.prob=0.05)
-#            }
-#            
-#            
-#            # stacked bar charts of percent contributions to ES 
-#            getCETL = function(x) {
-#              x$cES
-#            }
-#            # report as positive number
-#            cr.etl = sapply(factor.es.decomp.list, getCETL)
-#            rownames(cr.etl) = c(colnames(fit.stat$factors), "residual")
-#            barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",
-#                    legend.text=T, args.legend=list(x="topleft"),
-#                    col=c(1:50) )
-#            },
-#            "7L" =  {
-#              factor.VaR.decomp.list = list()
-#              names = colnames(fit.stat$asset.ret)
-#              for (i in names) {
-#                # check for missing values in fund data
-#                idx = which(!is.na(fit.stat$asset.ret[,i]))
-#                tmpData = cbind(fit.stat$asset.ret[idx,i], fit.stat$factors,
-#                                fit.stat$residuals[,i]/sqrt(fit.stat$resid.variance[i]))
-#                colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
-#                factor.VaR.decomp.list[[i]] = 
-#                  factorModelVaRDecomposition(tmpData, 
-#                                              fit.stat$loadings[,i],
-#                                              fit.stat$resid.variance[i], tail.prob=0.05)
-#              }
-#              
-#              
-#              # stacked bar charts of percent contributions to VaR
-#              getCVaR = function(x) {
-#                x$cVaR.fm
-#              }
-#              # report as positive number
-#              cr.var = sapply(factor.VaR.decomp.list, getCVaR)
-#              rownames(cr.var) = c(colnames(fit.stat$factors), "residual")
-#              barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",
-#                      legend.text=T, args.legend=list(x="topleft"),
-#                      col=c(1:50) )
-#            },
+           "6L" = {
+           factor.es.decomp.list = list()
+           names = fit.fund$asset.names
+           for (i in names) {
+             # check for missing values in fund data
+#             idx = which(!is.na(fit.fund$data[,i]))
+             idx <- fit.fund$data[,fit.fund$assetvar]  == i  
+             asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
+             tmpData = cbind(asset.ret, fit.fund$factors,
+                             fit.fund$residuals[,i]/sqrt(fit.fund$resid.variance[i]) )
+             colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
+             factor.es.decomp.list[[i]] = 
+               factorModelEsDecomposition(tmpData, 
+                                          fit.fund$beta[i,],
+                                          fit.fund$resid.variance[i], tail.prob=0.05)
+           }
+          
+           # stacked bar charts of percent contributions to ES 
+           getCETL = function(x) {
+             x$cES
+           }
+           # report as positive number
+           cr.etl = sapply(factor.es.decomp.list, getCETL)
+           rownames(cr.etl) = c(colnames(fit.fund$factors), "residual")
+           barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",
+                   legend.text=T, args.legend=list(x="topleft"),
+                   col=c(1:50) )
+           },
+           "7L" =  {
+             factor.VaR.decomp.list = list()
+             names = fit.fund$asset.names
+             for (i in names) {
+               # check for missing values in fund data
+               #             idx = which(!is.na(fit.fund$data[,i]))
+               idx <- fit.fund$data[,fit.fund$assetvar]  == i  
+               asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
+               tmpData = cbind(asset.ret, fit.fund$factors,
+                               fit.fund$residuals[,i]/sqrt(fit.fund$resid.variance[i]) )
+               colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
+               factor.VaR.decomp.list[[i]] = 
+                 factorModelVaRDecomposition(tmpData, 
+                                            fit.fund$beta[i,],
+                                            fit.fund$resid.variance[i], tail.prob=0.05)
+             }
+             
+             
+             # stacked bar charts of percent contributions to VaR
+             getCVaR = function(x) {
+               x$cVaR.fm
+             }
+             # report as positive number
+             cr.var = sapply(factor.VaR.decomp.list, getCVaR)
+             rownames(cr.var) = c(colnames(fit.fund$factors), "residual")
+             barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",
+                     legend.text=T, args.legend=list(x="topleft"),
+                     col=c(1:50) )
+           },
            invisible()       
     )         
  
