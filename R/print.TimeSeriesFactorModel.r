@@ -34,14 +34,5 @@ print.TimeSeriesFactorModel <- function(fit.macro,digits=max(3, .Options$digits 
   print(fit.macro$r2, digits = digits, ...)
   cat("\nResidual Variance:\n")
   print(fit.macro$resid.variance, digits = digits, ...)
-  
-# n <- length(fit.macro$beta)
-# table.macro <-  as.matrix(fit.macro$alpha,nrow=n[1])
-# table.macro <- cbind(table.macro,fit.macro$beta,fit.macro$r2,fit.macro$resid.variance)
-# beta.names <- colnames(fit.macro$beta)
-# for (i in 1:length(beta.names)) {
-# beta.names[i] <- paste("beta.",beta.names[i],sep="")
-# }
-# colnames(table.macro) <- c("alpha",beta.names,"r2","resid.var")
-# print(round(table.macro,digits=digits))
+
 }

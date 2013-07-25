@@ -11,8 +11,6 @@
 #' 
 #' # load data from the database
 #' data(managers.df)
-#' ret.assets = managers.df[,(1:6)]
-#' factors    = managers.df[,(7:9)]
 #' # fit the factor model with OLS
 #' fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
 #'                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
@@ -21,7 +19,21 @@
 #' 
 #' @export
 #' 
-summary.TimeSeriesFactorModel <- function(fit,...){
-     lapply(fit[[1]], summary,...)
+summary.TimeSeriesFactorModel <- function(fit,digits=3){
+  if(!is.null(cl <- fit.macro$call)) {
+    cat("\nCall:\n")
+    dput(cl)
   }
+  cat("\nFactor Betas\n")
+  n <- length(fit.macro$assets.names)
+  for (i in 1:n) {
+  options(digits = digits)  
+  cat("\n", fit.macro$assets.names[i], "\n")  
+  table.macro <- t(summary(fit.macro$asset.fit[[i]])$coefficients)
+  colnames(table.macro)[1] <- "alpha"
+  print(table.macro,digits = digits)
+  cat("\nR-square =", fit.macro$r2[i] ,",residual variance ="
+      , fit.macro$resid.variance[i],"\n")
+  }
+}
     
