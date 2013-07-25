@@ -51,7 +51,7 @@
 #' residuals for each asset. If "wls" is TRUE, these are the weights used in
 #' the weighted least squares regressions.  If "cov = robust" these values are
 #' computed with "scale.tau".  Otherwise they are computed with "var".
-#' \item factors A "xts" object containing the times series of
+#' \item factor.returns A "xts" object containing the times series of
 #' estimated factor returns and intercepts.
 #' \item residuals A "xts" object containing the time series of residuals
 #' for each asset.
@@ -67,7 +67,7 @@
 #' data(stock)
 #' # there are 447 assets  
 #' exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
-#' ttest.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+#' test.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
 #'                                        datevar = "DATE", returnsvar = "RETURN",
 #'                                        assetvar = "TICKER", wls = TRUE, 
 #'                                        regression = "classic", 
@@ -340,7 +340,7 @@ timedates = as.Date(unique(data[,datevar]))
     # give back the names of timedates
     timedates <- as.Date(as.numeric(dimnames(FE.hat)[[1]]), origin = "1970-01-01")
     coefs.names <- colnames(FE.hat.mat)[2:(1 + numCoefs)]
-    # estimated factors ordered by time
+    # estimated factors returns ordered by time
     f.hat <- xts(x = FE.hat.mat[, 2:(1 + numCoefs)], order.by = timedates)
     # check for outlier
     gomat <- apply(coredata(f.hat), 2, function(x) abs(x - median(x, 
@@ -406,12 +406,18 @@ if (full.resid.cov) {
     else {
       Cov.resids <- NULL
     }
+# 
+# # r-square for each asset = 1 - SSE/SST
+#    SSE <-  apply(fit.fund$residuals^2,2,sum) 
+#    SST <- tapply(data[,returnsvar],data[,assetvar],function(x) sum((x-mean(x))^2))
+#   r2 <- 1- SSE/SST                                  
+                                    
 
     output <- list(returns.cov = Cov.returns, 
                    factor.cov = Cov.factors, 
                    resids.cov = Cov.resids, 
                    resid.variance = resid.vars, 
-                   factors = f.hat, 
+                   factor.returns = f.hat, 
                    residuals = resids, 
                    tstats = tstats,                   
                    call = this.call,

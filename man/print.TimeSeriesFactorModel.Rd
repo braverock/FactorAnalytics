@@ -27,6 +27,6 @@ fit.macro <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)])
 print(fit.macro)
 }
 \author{
-  Eric Zivot and Yi-An Chen.
+  Yi-An Chen.
 }
 

@@ -7,7 +7,7 @@
 }
 \arguments{
   \item{fit.stat}{fit object created by
-  fitMacroeconomicFactorModel.}
+  fitStatisticalFactorModel.}
 
   \item{digits}{integer indicating the number of decimal
   places. Default is 3.}

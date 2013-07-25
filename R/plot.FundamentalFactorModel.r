@@ -57,7 +57,7 @@
 #' }
 #' 
 plot.FundamentalFactorModel <- 
-function(fit.fund,which.plot=c("none","1L","2L","3L","4L"),max.show=4,
+function(fit.fund,which.plot=c("none","1L","2L","3L","4L","5L","6L"),max.show=4,
          plot.single=FALSE, asset.name,
          which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                              "7L","8L","9L"),legend.txt=TRUE,...) 

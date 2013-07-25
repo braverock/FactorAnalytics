@@ -3,7 +3,7 @@
 #' Generic function of print method for fitStatFactorModel.
 #' 
 #' 
-#' @param fit.stat fit object created by fitMacroeconomicFactorModel.
+#' @param fit.stat fit object created by fitStatisticalFactorModel.
 #' @param digits integer indicating the number of decimal places. Default is 3.
 #' @param ...  Other arguments for print methods.
 #' @author Eric Zivot and Yi-An Chen.
@@ -17,7 +17,7 @@
 #' sfm.pca.fit <- fitStatisticalFactorModel(sfm.dat,k=10)
 #' print(sfm.pca.fit)
 #' 
-#' 
+#' @export
 print.StatFactorModel <-
 function(fit.stat, digits = max(3, .Options$digits - 3), ...)
 {

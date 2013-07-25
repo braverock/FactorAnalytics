@@ -61,12 +61,12 @@
   is TRUE, these are the weights used in the weighted least
   squares regressions.  If "cov = robust" these values are
   computed with "scale.tau".  Otherwise they are computed
-  with "var". \item factors A "xts" object containing the
-  times series of estimated factor returns and intercepts.
-  \item residuals A "xts" object containing the time series
-  of residuals for each asset. \item tstats A "xts" object
-  containing the time series of t-statistics for each
-  exposure. \item call function call }
+  with "var". \item factor.returns A "xts" object
+  containing the times series of estimated factor returns
+  and intercepts. \item residuals A "xts" object containing
+  the time series of residuals for each asset. \item tstats
+  A "xts" object containing the time series of t-statistics
+  for each exposure. \item call function call }
 }
 \description{
   fit fundamental factor model or cross-sectional time
@@ -93,7 +93,7 @@
 data(stock)
 # there are 447 assets
 exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
-ttest.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+test.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
                                        datevar = "DATE", returnsvar = "RETURN",
                                        assetvar = "TICKER", wls = TRUE,
                                        regression = "classic",

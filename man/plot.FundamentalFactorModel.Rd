@@ -3,7 +3,7 @@
 \title{plot FundamentalFactorModel object.}
 \usage{
   plot.FundamentalFactorModel(fit.fund,
-    which.plot = c("none", "1L", "2L", "3L", "4L"),
+    which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L"),
     max.show = 4, plot.single = FALSE, asset.name,
     which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L"),
     legend.txt = TRUE, ...)

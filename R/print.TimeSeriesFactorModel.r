@@ -6,7 +6,7 @@
 #' @param fit.macro fit object created by fitTimeSeriesFactorModel.
 #' @param digits. integer indicating the number of decimal places. Default is 3.
 #' @param ... arguments to be passed to print method.   
-#' @author Eric Zivot and Yi-An Chen.
+#' @author Yi-An Chen.
 #' @examples
 #' 
 #' # load data from the database
