@@ -9,9 +9,10 @@
   \item{fit.stat}{fit object created by
   fitMacroeconomicFactorModel.}
 
-  \item{digits}{maximum digits. Default is 3.}
+  \item{digits}{integer indicating the number of decimal
+  places. Default is 3.}
 
-  \item{...}{Other variables for print methods.}
+  \item{...}{Other arguments for print methods.}
 }
 \description{
   Generic function of print method for fitStatFactorModel.

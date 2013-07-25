@@ -2,14 +2,17 @@
 \alias{print.TimeSeriesFactorModel}
 \title{print TimeSeriesfactorModel object}
 \usage{
-  print.TimeSeriesFactorModel(fit.macro, digits = 3)
+  print.TimeSeriesFactorModel(fit.macro,
+    digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
   \item{fit.macro}{fit object created by
   fitTimeSeriesFactorModel.}
 
   \item{digits.}{integer indicating the number of decimal
-  places.}
+  places. Default is 3.}
+
+  \item{...}{arguments to be passed to print method.}
 }
 \description{
   Generic function of print method for

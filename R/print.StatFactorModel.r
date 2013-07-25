@@ -4,8 +4,8 @@
 #' 
 #' 
 #' @param fit.stat fit object created by fitMacroeconomicFactorModel.
-#' @param digits maximum digits. Default is 3.
-#' @param ...  Other variables for print methods.
+#' @param digits integer indicating the number of decimal places. Default is 3.
+#' @param ...  Other arguments for print methods.
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples
 #' 
@@ -29,8 +29,12 @@ function(fit.stat, digits = max(3, .Options$digits - 3), ...)
   tmp <- c(dim(fit.stat$loadings), nrow(fit.stat$factors))
   names(tmp) <- c("Factors", "Variables", "Periods")
   print(tmp)
+  cat("\nRegression alphas:\n")
+  print(fit.stat$alpha , digits = digits, ...)
   cat("\nFactor Loadings:\n")
   print(fit.stat$loadings, digits = digits, ...)
   cat("\nRegression R-squared:\n")
   print(fit.stat$r2, digits = digits, ...)
+  cat("\nResidual Variance:\n")
+  print(fit.stat$resid.variance, digits = digits, ...)
 }
