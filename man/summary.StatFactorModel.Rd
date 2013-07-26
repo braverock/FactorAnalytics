@@ -2,30 +2,30 @@
 \alias{summary.StatFactorModel}
 \title{summary method for StatFactorModel object.}
 \usage{
-  summary.StatFactorModel(fit, ...)
+  summary.StatFactorModel(fit.stat, digits = 3)
 }
 \arguments{
-  \item{fit}{"StatFactorModel" object created by
+  \item{fit.stat}{fit.stat object created by
   fitStatisticalFactorModel.}
 
-  \item{newdata}{An optional data frame in which to look
-  for variables with which to predict. If omitted, the
-  fitted values are used.}
+  \item{digits}{Integer indicating the number of decimal
+  places. Default is 3.}
 
-  \item{...}{Any other arguments used in \code{summary.lm}}
+  \item{...}{other option used in \code{summary.lm}}
 }
 \description{
   Generic function of summary method for
-  fitStatisticalFactorModel. It utilizes function
-  \code{summary.lm}.
+  fitStatisticalFactorModel.
 }
 \examples{
-data(stat.fm.data)
-.fit <- fitStatisticalFactorModel(sfm.dat,k=2,
-
+# load data from the database
+data(managers.df)
+# fit the factor model with OLS
+fit <- fitStatisticalFactorModel(fitStatisticalFactorModel(sfm.dat,k=2,
+                                  ckeckData.method="data.frame"))
 summary(fit)
 }
 \author{
-  Yi-An Chen. '
+  Yi-An Chen.
 }
 

@@ -5,7 +5,7 @@
 #' 
 #' 
 #' @param data a vector, matrix, data.frame, xts, timeSeries or zoo object with asset returns 
-#' and factors retunrs rownames
+#' and factors retunrs names
 #' @param k numbers of factors if it is scalar or method of choosing optimal
 #' number of factors. "bn" represents Bai and Ng (2002) method and "ck"
 #' represents Connor and korajczyk (1993) method. Default is k = 1.
@@ -393,6 +393,7 @@ data <- coredata(data.xts)
   ans$resid.variance <- apply(ans$residuals,2,var)
   ans$call <- call
   ans$data <- data
+  ans$assets.names  <- colnames(data)
 class(ans) <- "StatFactorModel"
   return(ans)
 }

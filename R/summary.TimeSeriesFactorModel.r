@@ -1,10 +1,10 @@
 #' summary method for TimeSeriesModel object.
 #' 
 #' Generic function of summary method for fitTimeSeriesFactorModel. 
-#' It utilizes \code{summary.lm}
 #' 
 #' 
-#' @param fit fit object created by fitTimeSeiresFactorModel.
+#' @param fit.macro fit.macro object created by fitTimeSeiresFactorModel.
+#' @param digits Integer indicating the number of decimal places. Default is 3.
 #' @param ... other option used in \code{summary.lm}
 #' @author Yi-An Chen.
 #' @examples
@@ -19,7 +19,7 @@
 #' 
 #' @export
 #' 
-summary.TimeSeriesFactorModel <- function(fit,digits=3){
+summary.TimeSeriesFactorModel <- function(fit.macro,digits=3){
   if(!is.null(cl <- fit.macro$call)) {
     cat("\nCall:\n")
     dput(cl)

@@ -9,7 +9,7 @@
 \arguments{
   \item{data}{a vector, matrix, data.frame, xts, timeSeries
   or zoo object with asset returns and factors retunrs
-  rownames}
+  names}
 
   \item{k}{numbers of factors if it is scalar or method of
   choosing optimal number of factors. "bn" represents Bai

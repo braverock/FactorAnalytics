@@ -1,8 +1,8 @@
-\name{fitTimeseriesFactorModel}
-\alias{fitTimeseriesFactorModel}
+\name{fitTimeSeriesFactorModel}
+\alias{fitTimeSeriesFactorModel}
 \title{Fit time series factor model by time series regression techniques.}
 \usage{
-  fitTimeseriesFactorModel(assets.names, factors.names,
+  fitTimeSeriesFactorModel(assets.names, factors.names,
     data = data, num.factor.subset = 1,
     fit.method = c("OLS", "DLS", "Robust"),
     variable.selection = "none", decay.factor = 0.95,
