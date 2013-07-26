@@ -411,7 +411,9 @@ if (full.resid.cov) {
 #    SSE <-  apply(fit.fund$residuals^2,2,sum) 
 #    SST <- tapply(data[,returnsvar],data[,assetvar],function(x) sum((x-mean(x))^2))
 #   r2 <- 1- SSE/SST                                  
-                                    
+
+# change names for intercept
+colnames(f.hat)[1] <- "Intercept"
 
     output <- list(returns.cov = Cov.returns, 
                    factor.cov = Cov.factors, 
