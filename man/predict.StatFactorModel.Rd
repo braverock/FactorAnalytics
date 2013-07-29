@@ -2,11 +2,14 @@
 \alias{predict.StatFactorModel}
 \title{predict method for StatFactorModel object.}
 \usage{
-  predict.StatFactorModel(fit, ...)
+  predict.StatFactorModel(fit.stat, newdata = NULL, ...)
 }
 \arguments{
-  \item{fit}{"StatFactorModel" object created by
+  \item{fit.stat}{"StatFactorModel" object created by
   fitStatisticalFactorModel.}
+
+  \item{newdata}{a vector, matrix, data.frame, xts,
+  timeSeries or zoo object to be coerced.}
 
   \item{...}{Any other arguments used in \code{predict.lm}.
   For example like newdata and fit.se.}

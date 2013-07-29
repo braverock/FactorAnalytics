@@ -2,11 +2,15 @@
 \alias{predict.TimeSeriesFactorModel}
 \title{predict method for TimeSeriesModel object.}
 \usage{
-  predict.TimeSeriesFactorModel(fit.macro, ...)
+  predict.TimeSeriesFactorModel(fit.macro, newdata = NULL,
+    ...)
 }
 \arguments{
   \item{fit}{"TimeSeriesFactorModel" object created by
   fitTimeSeiresFactorModel.}
+
+  \item{newdata}{a vector, matrix, data.frame, xts,
+  timeSeries or zoo object to be coerced.}
 
   \item{...}{Any other arguments used in \code{predict.lm}.
   for example newdata and se.fit.}
