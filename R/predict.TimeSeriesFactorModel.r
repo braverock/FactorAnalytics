@@ -4,6 +4,7 @@
 #' function \code{predict.lm}.
 #' 
 #' @param fit "TimeSeriesFactorModel" object created by fitTimeSeiresFactorModel.
+#' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
 #' @param ... Any other arguments used in \code{predict.lm}. for example newdata and se.fit.
 #' @author Yi-An Chen.
 #' 
@@ -23,11 +24,17 @@
 #' @export
 #' 
 
-predict.TimeSeriesFactorModel <- function(fit.macro,...){
-#   if (missing(newdata) || is.null(newdata)  ) {
+predict.TimeSeriesFactorModel <- function(fit.macro,newdata = NULL,...){
+  require(PerformanceAnalytics)
+ 
+  if (missing(newdata) || is.null(newdata)  ) {
   lapply(fit.macro$asset.fit, predict,...)
-#   } 
-  
+   } else  {
+    newdata <- checkData(newdata,method = "data.frame")
+    lapply(fit.macro$asset.fit, predict ,newdata,... )
+    } 
+
+}
 #   
 #   if (  !(missing(newdata) && !is.null(newdata) )) {
 #    numAssets <- length(names(fit.macro$asset.fit))
@@ -55,4 +62,3 @@ predict.TimeSeriesFactorModel <- function(fit.macro,...){
 #   }
   
   
-}
