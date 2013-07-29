@@ -370,8 +370,7 @@
        rownames(cr.sd) = c(factor.names, "residual")
       # create stacked barchart
        barplot(cr.sd, main="Factor Contributions to SD",
-                 legend.text=T, args.legend=list(x="topleft"),
-                 col=c(1:50) )
+                 legend.text=T, args.legend=list(x="topleft"))
       
     },
      "6L"={
@@ -416,8 +415,7 @@
        cr.etl = sapply(factor.es.decomp.list, getCETL)
        rownames(cr.etl) = c(factor.names, "residual")
        barplot(cr.etl, main="Factor Contributions to ES",
-               legend.text=T, args.legend=list(x="topleft"),
-               col=c(1:50) ) 
+               legend.text=T, args.legend=list(x="topleft")) 
      },
     "7L" ={
       
@@ -463,8 +461,7 @@
       cr.VaR = sapply(factor.VaR.decomp.list, getCVaR)
       rownames(cr.VaR) = c(factor.names, "residual")
       barplot(cr.VaR, main="Factor Contributions to VaR",
-              legend.text=T, args.legend=list(x="topleft"),
-              col=c(1:50) )
+              legend.text=T, args.legend=list(x="topleft"))
     },
     invisible()       
     )         

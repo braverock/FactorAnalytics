@@ -27,7 +27,7 @@ predict.FundamentalFactorModel <- function(fit.fund,newdata,new.assetvar,new.dat
   numExposures <- length(exposure.names)
   numAssets <- length(assets)
   
-  f <-  fit.fund$factors # T X 3 
+  f <-  fit.fund$factor.returns # T X 3 
   
  
   predictor <- function(data) {

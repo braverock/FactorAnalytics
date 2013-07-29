@@ -91,9 +91,9 @@ if (plot.single == TRUE) {
            #       "time series plot of actual and fitted values",
          
            plot(actual.z[,asset.name], main=asset.name, ylab="Monthly performance", lwd=2, col="black")
-           lines(fitted.z[,asset.name], lwd=2, col="blue")
+           lines(fitted.z[,asset.name], lwd=2, col="red")
            abline(h=0)
-           legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","blue"))
+           legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","red"))
          },
          "2L"={    
            #       "time series plot of residuals with standard error bands"
@@ -164,12 +164,12 @@ if (plot.single == TRUE) {
     switch(which.plot,
            
            "1L" = {
-            factor.names <- colnames(fit.fund$factors)
+            factor.names <- colnames(fit.fund$factor.returns)
 #             nn <- length(factor.names)
             par(mfrow=c(n,1))
             options(show.error.messages=FALSE) 
             for (i in factor.names[1:n]) {
-            plot(fit.fund$factors[,i],main=paste(i," Factor Returns",sep="") )
+            plot(fit.fund$factor.returns[,i],main=paste(i," Factor Returns",sep="") )
             }
             par(mfrow=c(1,1))
            }, 
@@ -193,7 +193,7 @@ if (plot.single == TRUE) {
              plotcorr(ordered.cor.fm[c(1:n),c(1:n)], col=cm.colors(11)[5*ordered.cor.fm + 6])
            },
            "5L" = {
-             cov.factors = var(fit.fund$factors)
+             cov.factors = var(fit.fund$factor.returns)
              names = fit.fund$asset.names
              factor.sd.decomp.list = list()
              for (i in names) {
@@ -207,11 +207,11 @@ if (plot.single == TRUE) {
              }
              # extract contributions to SD from list
              cr.sd = sapply(factor.sd.decomp.list, getCSD)
-             rownames(cr.sd) = c(colnames(fit.fund$factors), "residual")
-             # create stacked barchart
-             barplot(cr.sd[,(1:max.show)], main="Factor Contributions to SD",
-                     legend.text=legend.txt, args.legend=list(x="topleft"),
-                     col=c(1:50),...)
+             rownames(cr.sd) = c(colnames(fit.fund$factor.returns), "residual")
+             # create stacked barchart 
+             # discard intercept 
+             barplot(cr.sd[-1,(1:max.show)], main="Factor Contributions to SD",
+                     legend.text=legend.txt, args.legend=list(x="topleft"),...)
            } ,
            "6L" = {
            factor.es.decomp.list = list()
@@ -221,7 +221,7 @@ if (plot.single == TRUE) {
 #             idx = which(!is.na(fit.fund$data[,i]))
              idx <- fit.fund$data[,fit.fund$assetvar]  == i  
              asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
-             tmpData = cbind(asset.ret, fit.fund$factors,
+             tmpData = cbind(asset.ret, fit.fund$factor.returns,
                              fit.fund$residuals[,i]/sqrt(fit.fund$resid.variance[i]) )
              colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
              factor.es.decomp.list[[i]] = 
@@ -236,10 +236,9 @@ if (plot.single == TRUE) {
            }
            # report as positive number
            cr.etl = sapply(factor.es.decomp.list, getCETL)
-           rownames(cr.etl) = c(colnames(fit.fund$factors), "residual")
-           barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",
-                   legend.text=legend.txt, args.legend=list(x="topleft"),
-                   col=c(1:50),...)
+           rownames(cr.etl) = c(colnames(fit.fund$factor.returns), "residual")
+           barplot(cr.etl[-1,(1:max.show)], main="Factor Contributions to ES",
+                   legend.text=legend.txt, args.legend=list(x="topleft"),...)
            },
            "7L" =  {
              factor.VaR.decomp.list = list()
@@ -249,7 +248,7 @@ if (plot.single == TRUE) {
                #             idx = which(!is.na(fit.fund$data[,i]))
                idx <- fit.fund$data[,fit.fund$assetvar]  == i  
                asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
-               tmpData = cbind(asset.ret, fit.fund$factors,
+               tmpData = cbind(asset.ret, fit.fund$factor.returns,
                                fit.fund$residuals[,i]/sqrt(fit.fund$resid.variance[i]) )
                colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
                factor.VaR.decomp.list[[i]] = 
@@ -265,10 +264,9 @@ if (plot.single == TRUE) {
              }
              # report as positive number
              cr.var = sapply(factor.VaR.decomp.list, getCVaR)
-             rownames(cr.var) = c(colnames(fit.fund$factors), "residual")
-             barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",
-                     legend.text=legend.txt, args.legend=list(x="topleft"),
-                     col=c(1:50),...)
+             rownames(cr.var) = c(colnames(fit.fund$factor.returns), "residual")
+             barplot(cr.var[-1,(1:max.show)], main="Factor Contributions to VaR",
+                     legend.text=legend.txt, args.legend=list(x="topleft"),...)
            },
            invisible()       
     )         

@@ -166,9 +166,9 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
            "1L" =  {
              ##  time series plot of actual and fitted values
              plot(actual.z, main=asset.name, ylab="Monthly performance", lwd=2, col="black")
-             lines(fitted.z, lwd=2, col="blue")
+             lines(fitted.z, lwd=2, col="red")
              abline(h=0)
-             legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","blue"))
+             legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","red"))
            }, 
            
            "2L" = {
@@ -270,9 +270,9 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
 #       "time series plot of actual and fitted values",
        
        plot(actual.z[,asset.name], main=asset.name, ylab="Monthly performance", lwd=2, col="black")
-       lines(fitted.z[,asset.name], lwd=2, col="blue")
+       lines(fitted.z[,asset.name], lwd=2, col="red")
        abline(h=0)
-       legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","blue"))
+       legend(x="bottomleft", legend=c("Actual", "Fitted"), lwd=2, col=c("black","red"))
              },
           "2L"={    
 #       "time series plot of residuals with standard error bands"
@@ -397,8 +397,7 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
       rownames(cr.sd) = c(colnames(fit.stat$factors), "residual")
       # create stacked barchart
       barplot(cr.sd[,(1:max.show)], main="Factor Contributions to SD",
-              legend.text=T, args.legend=list(x="topleft"),
-              col=c(1:50) )
+              legend.text=T, args.legend=list(x="topleft"))
     } ,
     "7L" ={
       factor.es.decomp.list = list()
@@ -424,8 +423,7 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
              cr.etl = sapply(factor.es.decomp.list, getCETL)
              rownames(cr.etl) = c(colnames(fit.stat$factors), "residual")
              barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",
-                     legend.text=T, args.legend=list(x="topleft"),
-                     col=c(1:50) )
+                     legend.text=T, args.legend=list(x="topleft") )
     },
       "8L" =  {
              factor.VaR.decomp.list = list()
@@ -451,8 +449,7 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
              cr.var = sapply(factor.VaR.decomp.list, getCVaR)
              rownames(cr.var) = c(colnames(fit.stat$factors), "residual")
              barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",
-                     legend.text=T, args.legend=list(x="topleft"),
-                     col=c(1:50) )
+                     legend.text=T, args.legend=list(x="topleft"))
       }, invisible()
                  
      )
