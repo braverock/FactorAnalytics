@@ -8,7 +8,8 @@
     variable.selection = "none", decay.factor = 0.95,
     nvmax = 8, force.in = NULL,
     subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
-    lars.criteria = "Cp")
+    lars.criteria = "Cp", add.up.market.returns = FALSE,
+    add.quadratic.term = FALSE, excess.market.returns.name)
 }
 \arguments{
   \item{assets.names}{names of assets returns.}
@@ -19,8 +20,9 @@
   selected by all subsets.}
 
   \item{data}{a vector, matrix, data.frame, xts, timeSeries
-  or zoo object with asset returns and factors retunrs
-  rownames}
+  or zoo object with \code{assets.names} and
+  \code{factors.names} or \code{excess.market.returns.name}
+  if necassary.}
 
   \item{fit.method}{"OLS" is ordinary least squares method,
   "DLS" is discounted least squares method. Discounted
@@ -55,18 +57,33 @@
   exhaustive search, forward selection, backward selection
   or sequential replacement to search.}
 
-  \item{lars.criteria}{either choose minimum "Cp": unbiased
+  \item{lars.criteria}{either choose minimum "cp": unbiased
   estimator of the true rist or "cv" 10 folds
   cross-validation. Default is "Cp". See detail.}
+
+  \item{add.up.market.returns}{Logical. If \code{TRUE},
+  max(0,Rm-Rf) will be added as a regressor.  Default is
+  \code{FALSE}. \code{excess.market.returns.nam} is
+  required if \code{TRUE}. See Detail.}
+
+  \item{add.quadratic.term}{Logical. If \code{TRUE},
+  (Rm-Rf)^2 will be added as a regressor.
+  \code{excess.market.returns.name} is required if
+  \code{TRUE}. Default is \code{FALSE}.}
+
+  \item{excess.market.returns.name}{colnames market returns
+  minus risk free rate. (Rm-Rf).}
 }
 \value{
-  an S3 object containing \itemize{ \item{asset.fit}{Fit
+  an S3 object containing \itemize{ \item{asset.fit} {Fit
   objects for each asset. This is the class "lm" for each
-  object.} \item{alpha}{N x 1 Vector of estimated alphas.}
-  \item{beta}{N x K Matrix of estimated betas.} \item{r2}{N
-  x 1 Vector of R-square values.} \item{resid.variance}{N x
-  1 Vector of residual variances.} \item{call}{function
-  call.} }
+  object.} \item{alpha} {N x 1 Vector of estimated alphas.}
+  \item{beta} {N x K Matrix of estimated betas.} \item{r2}
+  {N x 1 Vector of R-square values.} \item{resid.variance}
+  {N x 1 Vector of residual variances.} \item{call}
+  {function call.} }
+
+  interpreted as number
 }
 \description{
   Fit time series factor model by time series regression
@@ -74,6 +91,11 @@
   "TimeSeriesFactorModel".
 }
 \details{
+  add.up.market.returns adds a max(0,Rm-Rf) term in the
+  regression as suggested by Merton-Henriksson Model (1981)
+  to measure market timing. The coefficient can be
+  interpreted as number of free put options.
+
   If \code{Robust} is chosen, there is no subsets but all
   factors will be used.  Cp is defined in
   http://www-stat.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf.
@@ -100,11 +122,13 @@ chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
   Eric Zivot and Yi-An Chen.
 }
 \references{
-  1. Efron, Hastie, Johnstone and Tibshirani (2002) "Least
-  Angle Regression" (with discussion) Annals of Statistics;
-  see also
+  \enumerate{ \item Efron, Hastie, Johnstone and Tibshirani
+  (2002) "Least Angle Regression" (with discussion) Annals
+  of Statistics; see also
   http://www-stat.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf.
-  2. Hastie, Tibshirani and Friedman (2008) Elements of
-  Statistical Learning 2nd edition, Springer, NY.
+  \item Hastie, Tibshirani and Friedman (2008) Elements of
+  Statistical Learning 2nd edition, Springer, NY. \item
+  Christopherson, Carino and Ferson (2009). Portfolio
+  Performance Measurement and Benchmarking, McGraw Hill. }
 }
 
