@@ -25,6 +25,9 @@
 #' CUSUM plot of recursive residuals 11= CUSUM plot of OLS residuals 12= CUSUM
 #' plot of recursive estimates relative to full sample estimates 13= rolling
 #' estimates over 24 month window
+#' @param VaR.method haracter, method for computing VaR. Valid choices are
+#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' in the PerformanceAnalytics package. Default is "historical".
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples
 #' 
@@ -45,7 +48,8 @@
   function(x,colorset=c(1:12),legend.loc=NULL,
            which.plot=c("none","1L","2L","3L","4L","5L","6L","7L"),max.show=6,
            plot.single=FALSE, asset.name,which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
-                                                                  "7L","8L","9L","10L","11L","12L","13L")) {
+                                                                  "7L","8L","9L","10L","11L","12L","13L"),
+           VaR.method = "historical") {
       require(zoo)
       require(PerformanceAnalytics)
       require(strucchange)
@@ -436,7 +440,7 @@
           factor.VaR.decomp.list[[i]] = 
             factorModelVaRDecomposition(tmpData, 
                                        x$beta[i,],
-                                       x$resid.variance[i], tail.prob=0.05)
+                                       x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
           
         }
       } else {
@@ -450,7 +454,7 @@
           factorModelVaRDecomposition(tmpData, 
                                      x$beta[i,],
                                      x$resid.variance[i], tail.prob=0.05,
-                                      VaR.method="HS")
+                                      VaR.method=VaR.method)
       }
       }
       

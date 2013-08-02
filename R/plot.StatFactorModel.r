@@ -33,6 +33,9 @@
 #' plot of recursive estimates relative to full sample estimates 13= rolling
 #' estimates over 24 month window
 #' @param max.show  Maximum assets to plot. Default is 6.
+#' @param VaR.method haracter, method for computing VaR. Valid choices are
+#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' in the PerformanceAnalytics package. Default is "historical".
 #' @param ...  other variables for barplot method.
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples
@@ -58,7 +61,7 @@ function(x, variables, cumulative = TRUE, style = "bar",
          hgrid = FALSE, vgrid = FALSE,plot.single=FALSE, asset.name,
          which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                              "7L","8L","9L","10L","11L","12L","13L"),
-         max.show=6, ...)
+         max.show=6, VaR.method = "historical",...)
 {
   require(strucchange)
   require(ellipse)
@@ -412,7 +415,7 @@ function(x, variables, cumulative = TRUE, style = "bar",
         factor.es.decomp.list[[i]] = 
           factorModelEsDecomposition(tmpData, 
                                      x$loadings[,i],
-                                     x$resid.variance[i], tail.prob=0.05)
+                                     x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
       }
          
              
@@ -438,7 +441,7 @@ function(x, variables, cumulative = TRUE, style = "bar",
                factor.VaR.decomp.list[[i]] = 
                  factorModelVaRDecomposition(tmpData, 
                                             x$loadings[,i],
-                                            x$resid.variance[i], tail.prob=0.05)
+                                            x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
              }
              
                                

@@ -34,6 +34,9 @@
 #' 8 = histogram of residuals with normal curve overlayed,
 #' 9 = normal qq-plot of residuals.
 #' @param legend.txt  Logical. TRUE will plot legend on barplot. Defualt is \code{TRUE}. 
+#' @param VaR.method haracter, method for computing VaR. Valid choices are
+#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' in the PerformanceAnalytics package. Default is "historical".
 #' @param ...  other variables for barplot method.
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples
@@ -62,7 +65,7 @@ plot.FundamentalFactorModel <-
 function(x,which.plot=c("none","1L","2L","3L","4L","5L","6L"),max.show=4,
          plot.single=FALSE, asset.name,
          which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
-                             "7L","8L","9L"),legend.txt=TRUE,...) 
+                             "7L","8L","9L"),legend.txt=TRUE,VaR.method="historical",...) 
   {
 require(ellipse)
 require(PerformanceAnalytics)  
@@ -229,7 +232,7 @@ if (plot.single == TRUE) {
              factor.es.decomp.list[[i]] = 
                factorModelEsDecomposition(tmpData, 
                                           x$beta[i,],
-                                          x$resid.variance[i], tail.prob=0.05)
+                                          x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
            }
           
            # stacked bar charts of percent contributions to ES 
@@ -256,7 +259,7 @@ if (plot.single == TRUE) {
                factor.VaR.decomp.list[[i]] = 
                  factorModelVaRDecomposition(tmpData, 
                                             x$beta[i,],
-                                            x$resid.variance[i], tail.prob=0.05)
+                                            x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
              }
              
              
