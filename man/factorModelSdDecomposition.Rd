@@ -15,7 +15,12 @@
   model.}
 }
 \value{
-  an S3 object containing
+  an S3 object containing \itemize{ \item{sd.fm} Scalar,
+  std dev based on factor model. \item{mcr.fm} (K+1) x 1
+  vector of factor marginal contributions to risk sd.
+  \item{cr.fm} (K+1) x 1 vector of factor component
+  contributions to risk sd. \item{pcr.fm} (K+1) x 1 vector
+  of factor percent contributions to risk sd. }
 }
 \description{
   Compute factor model factor risk (sd) decomposition for

@@ -26,10 +26,20 @@
   Valid choices are one of
   "modified","gaussian","historical", "kernel". computation
   is done with the \code{VaR} in the PerformanceAnalytics
-  package. package.}
+  package.}
 }
 \value{
-  A list with the following components:
+  A list with the following components: \itemize{
+  \item{VaR} {Scalar, nonparametric VaR value for fund
+  reported as a positive number.} \item{n.exceed} Scalar,
+  number of observations beyond VaR. \item{idx.exceed}
+  \code{n.exceed x 1} vector giving index values of
+  exceedences. \item{ES scalar} nonparametric ES value for
+  fund reported as a positive number. \item{mcES}
+  \code{(K+1) x 1} vector of factor marginal contributions
+  to ES. \item{cES} \code{(K+1) x 1} vector of factor
+  component contributions to ES. \item{pcES} \code{(K+1) x
+  1} vector of factor percent contributions to ES. }
 }
 \description{
   Compute the factor model factor expected shortfall (ES)
@@ -59,7 +69,8 @@ tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
 residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
 colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
-                                                  fit.macro$resid.variance[1], tail.prob=0.05)
+                                                  fit.macro$resid.variance[1], tail.prob=0.05,
+                                                  VaR.method="historical" )
 
 # fundamental factor model
 # try to find factor contribution to ES for STI
@@ -70,7 +81,8 @@ factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
   colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
   factorModelEsDecomposition(tmpData,
                           fit.fund$beta["STI",],
-                          fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method = "HS)
+                          fit.fund$resid.variance["STI"], tail.prob=0.05,
+                          VaR.method = "historical" )
 }
 \author{
   Eric Zviot and Yi-An Chen.

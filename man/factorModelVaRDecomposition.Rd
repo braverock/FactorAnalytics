@@ -26,7 +26,15 @@
   package.}
 }
 \value{
-  an S3 object containing
+  an S3 object containing \itemize{ \item{VaR.fm} Scalar,
+  bootstrap VaR value for fund reported as a positive
+  number. \item{n.exceed} Scalar, number of observations
+  beyond VaR. \item{idx.exceed} n.exceed x 1 vector giving
+  index values of exceedences. \item{mVaR.fm} (K+1) x 1
+  vector of factor marginal contributions to VaR.
+  \item{cVaR.fm} (K+1) x 1 vector of factor component
+  contributions to VaR. \item{pcVaR.fm} (K+1) x 1 vector of
+  factor percent contributions to VaR. }
 }
 \description{
   Compute factor model factor VaR decomposition based on
@@ -56,7 +64,7 @@ residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
 colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 factor.VaR.decomp.HAM1 = factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],
                                                   fit.macro$resid.variance[1], tail.prob=0.05,
-                                                  VaR.method="historical)
+                                                  VaR.method="historical")
 }
 \author{
   Eric Zivot and Yi-An Chen

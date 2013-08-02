@@ -8,13 +8,12 @@
 #' @param factor.cov k x k factor excess return covariance matrix.
 #' @param sig2.e scalar, residual variance from factor model.
 #' @return an S3 object containing
-#' @returnItem sd.fm Scalar, std dev based on factor model.
-#' @returnItem mcr.fm (K+1) x 1 vector of factor marginal contributions to risk
-#' (sd).
-#' @returnItem cr.fm (K+1) x 1 vector of factor component contributions to risk
-#' (sd).
-#' @returnItem pcr.fm (K+1) x 1 vector of factor percent contributions to risk
-#' (sd).
+#' \itemize{
+#' \item{sd.fm} Scalar, std dev based on factor model.
+#' \item{mcr.fm} (K+1) x 1 vector of factor marginal contributions to risk sd.
+#' \item{cr.fm} (K+1) x 1 vector of factor component contributions to risk sd.
+#' \item{pcr.fm} (K+1) x 1 vector of factor percent contributions to risk sd.
+#' }
 #' @author Eric Zivot and Yi-An Chen
 #' @examples
 #' 

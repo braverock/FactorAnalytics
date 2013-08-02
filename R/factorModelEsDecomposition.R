@@ -23,21 +23,19 @@
 #' @param VaR.method character, method for computing VaR. Valid choices are
 #' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
 #' in the PerformanceAnalytics package.
-#' package.
+#' 
+#' 
 #' @return A list with the following components:
-#' @returnItem VaR Scalar, nonparametric VaR value for fund reported as a
-#' positive number.
-#' @returnItem n.exceed Scalar, number of observations beyond VaR.
-#' @returnItem idx.exceed \code{n.exceed x 1} vector giving index values of
-#' exceedences.
-#' @returnItem ES scalar, nonparametric ES value for fund reported as a
-#' positive number.
-#' @returnItem mcES \code{(K+1) x 1} vector of factor marginal contributions to
-#' ES.
-#' @returnItem cES \code{(K+1) x 1} vector of factor component contributions to
-#' ES.
-#' @returnItem pcES \code{(K+1) x 1} vector of factor percent contributions to
-#' ES.
+#' \itemize{
+#' \item{VaR} {Scalar, nonparametric VaR value for fund reported as a
+#' positive number.}
+#' \item{n.exceed} Scalar, number of observations beyond VaR.
+#' \item{idx.exceed} \code{n.exceed x 1} vector giving index values of exceedences.
+#' \item{ES scalar} nonparametric ES value for fund reported as a positive number.
+#' \item{mcES} \code{(K+1) x 1} vector of factor marginal contributions to ES.
+#' \item{cES} \code{(K+1) x 1} vector of factor component contributions to ES.
+#' \item{pcES} \code{(K+1) x 1} vector of factor percent contributions to ES.
+#' }
 #' @author Eric Zviot and Yi-An Chen.
 #' @references 1. Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A
 #' General Analysis", \emph{The Journal of Risk} 5/2. \cr 2. Yamai and Yoshiba
@@ -57,7 +55,8 @@
 #' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
 #' colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 #' factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
-#'                                                   fit.macro$resid.variance[1], tail.prob=0.05)
+#'                                                   fit.macro$resid.variance[1], tail.prob=0.05,
+#'                                                   VaR.method="historical" )
 #' 
 #' # fundamental factor model
 #' # try to find factor contribution to ES for STI 
@@ -68,7 +67,8 @@
 #'   colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
 #'   factorModelEsDecomposition(tmpData, 
 #'                           fit.fund$beta["STI",],
-#'                           fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method = "HS)
+#'                           fit.fund$resid.variance["STI"], tail.prob=0.05,
+#'                           VaR.method = "historical" )
 #' 
 #' @export
 #' 
