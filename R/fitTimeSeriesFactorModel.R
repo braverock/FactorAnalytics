@@ -176,7 +176,7 @@ if (variable.selection == "none") {
       # sum weigth to unitary  
       w <- w/sum(w) 
       fm.formula = as.formula(paste(i,"~", ".", sep=""))                              
-      fm.fit = lm(fm.formula, data=reg.df,weight=w)
+      fm.fit = lm(fm.formula, data=reg.df,weights=w)
       fm.summary = summary(fm.fit)
       reg.list[[i]] = fm.fit
       Alphas[i] = coef(fm.fit)[1]
@@ -301,7 +301,7 @@ for (i in assets.names) {
 # sum weigth to unitary  
  w <- w/sum(w) 
  fm.formula = as.formula(paste(i,"~", ".", sep=""))                              
- fm.fit = lm(fm.formula, data=reg.df,weight=w)
+ fm.fit = lm(fm.formula, data=reg.df,weights=w)
  fm.summary = summary(fm.fit)
  reg.list[[i]] = fm.fit
  Alphas[i] = coef(fm.fit)[1]
@@ -333,7 +333,7 @@ for (i in assets.names) {
     reg.df = merge(reg.df,quadratic.term)
     colnames(reg.df)[dim(reg.df)[2]] <- "quadratic.term"
   }
- fm.fit = lm(fm.formula, data=reg.df,weight=w)
+ fm.fit = lm(fm.formula, data=reg.df,weights=w)
  fm.summary = summary(fm.fit)
  reg.list[[i]] = fm.fit
  Alphas[i] = coef(fm.fit)[1]
@@ -425,7 +425,7 @@ for (i in assets.names) {
 # sum weigth to unitary  
  w <- w/sum(w) 
  fm.formula = as.formula(paste(i,"~", ".", sep=""))                              
- fm.fit = step(lm(fm.formula, data=reg.df,weight=w),trace=0)
+ fm.fit = step(lm(fm.formula, data=reg.df,weights=w),trace=0)
  fm.summary = summary(fm.fit)
  reg.list[[i]] = fm.fit
  Alphas[i] = coef(fm.fit)[1]

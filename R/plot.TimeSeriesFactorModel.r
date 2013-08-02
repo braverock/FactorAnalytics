@@ -197,7 +197,7 @@
       }   
       w <- w/sum(w)
       rollReg <- function(data.z, formula,w) {
-        coef(lm(formula,weight=w, data = as.data.frame(data.z)))  
+        coef(lm(formula,weights=w, data = as.data.frame(data.z)))  
       }
       reg.z = zoo(fit.lm$model[-length(fit.lm$model)], as.Date(rownames(fit.lm$model)))
       factorNames = colnames(fit.lm$model)[c(-1,-length(fit.lm$model))]

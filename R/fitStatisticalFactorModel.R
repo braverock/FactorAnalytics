@@ -209,7 +209,7 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	if(is.null(ret.cov)) {
 		ret.cov <- crossprod(xc)/m
 	}
-	eigen.tmp <- eigen(ret.cov, symm = TRUE)
+	eigen.tmp <- eigen(ret.cov, symmetric = TRUE)
   # compute loadings beta
 	B <- t(eigen.tmp$vectors[, 1:k, drop = FALSE])
   # compute estimated factors
@@ -288,7 +288,7 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	if(refine) {
 		xs <- t(xc)/sqrt(sigma)
 		ret.cov <- crossprod(xs)/n
-		eig.tmp <- eigen(ret.cov, symm = TRUE)
+		eig.tmp <- eigen(ret.cov, symmetric = TRUE)
 		f <- eig.tmp$vectors[, 1:k, drop = FALSE]
 		f1 <- cbind(1, f)
 		B <- backsolve(chol(crossprod(f1)), diag(k + 1))
