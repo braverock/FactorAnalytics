@@ -16,6 +16,8 @@
 #' considered.
 #' @param sig significant level when ck method uses.
 #' @param na.rm if allow missing values. Default is FALSE.
+#' 
+#' 
 #' @return
 #' \itemize{
 #' \item{factors}{T x K the estimated factors.}
@@ -75,9 +77,10 @@
 #' names(sfm.apca.fit.ck)
 #' sfm.apca.fit.ck$mimic
 #' 
+#' @export
+#' 
 fitStatisticalFactorModel <-
-function(data, k = 1, refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE, 
-         ckeckData.method = "xts" ){
+function(data, k = 1, refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE){
 	
 # load package
 require(MASS)  
@@ -226,15 +229,15 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	dimnames(ret.cov) <- list(data.names, data.names)
 	names(alpha) <- data.names
   
-  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+#   if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
     f <- xts(f,index(data.xts))
     resid <- xts(resid,index(data.xts))
-    }
+#     }
   
   
   # create lm list for plot
   reg.list = list()
-  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+#   if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
     for (i in data.names) {
       reg.xts = merge(data.xts[,i],f)
       colnames(reg.xts)[1] <- i
@@ -242,15 +245,15 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
       fm.fit = lm(fm.formula, data=reg.xts)
       reg.list[[i]] = fm.fit
     }
-      } else {
-    for (i in data.names) {
-    reg.df = as.data.frame(cbind(data[,i],coredata(f)))
-    colnames(reg.df)[1] <- i
-    fm.formula = as.formula(paste(i,"~", ".", sep=" "))
-    fm.fit = lm(fm.formula, data=reg.df)
-    reg.list[[i]] = fm.fit
-    }
-  }
+#       } else {
+#     for (i in data.names) {
+#     reg.df = as.data.frame(cbind(data[,i],coredata(f)))
+#     colnames(reg.df)[1] <- i
+#     fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+#     fm.fit = lm(fm.formula, data=reg.df)
+#     reg.list[[i]] = fm.fit
+#     }
+#   }
   
 	ans <-  list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
 	            	r2 = r2, eigen = eigen.tmp$values, residuals=resid, asset.ret = data,
@@ -305,14 +308,14 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	resid <- t(t(data) - alpha) - f %*% B
 	r2 <- (1 - colSums(resid^2)/colSums(xc^2))
   
-  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+#   if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
     f <- xts(f,index(data.xts))
     resid <- xts(resid,index(data.xts))
-  }
+#   }
   
   # create lm list for plot
   reg.list = list()
-  if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
+#   if (ckeckData.method == "xts" | ckeckData.method == "zoo" ) {
     for (i in data.names) {
       reg.xts = merge(data.xts[,i],f)
       colnames(reg.xts)[1] <- i
@@ -320,15 +323,15 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
       fm.fit = lm(fm.formula, data=reg.xts)
       reg.list[[i]] = fm.fit
     }
-  } else {
-    for (i in data.names) {
-      reg.df = as.data.frame(cbind(data[,i],coredata(f)))
-      colnames(reg.df)[1] <- i
-      fm.formula = as.formula(paste(i,"~", ".", sep=" "))
-      fm.fit = lm(fm.formula, data=reg.df)
-      reg.list[[i]] = fm.fit
-    }
-  }
+#   } else {
+#     for (i in data.names) {
+#       reg.df = as.data.frame(cbind(data[,i],coredata(f)))
+#       colnames(reg.df)[1] <- i
+#       fm.formula = as.formula(paste(i,"~", ".", sep=" "))
+#       fm.fit = lm(fm.formula, data=reg.df)
+#       reg.list[[i]] = fm.fit
+#     }
+#   }
   
   
   ans <- 	list(factors = f, loadings = B, k = k, alpha = alpha, ret.cov = ret.cov,
@@ -338,7 +341,7 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 }
 
 # check data 
-data.xts <- checkData(data,method=ckeckData.method) 
+data.xts <- checkData(data,method="xts") 
 data <- coredata(data.xts)
 
   call <- match.call()  

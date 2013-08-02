@@ -35,8 +35,6 @@
 #' the data.
 #' @param assetvar A character string giving the name of the asset variable in
 #' the data.
-#' @param exposure.names A character string giving the name of the exposure variable in
-#' the data.
 #' @return an S3 object containing
 #' \itemize{
 #' \item returns.cov A "list" object contains covariance information for
@@ -58,6 +56,8 @@
 #' \item tstats A "xts" object containing the time series of t-statistics
 #' for each exposure.
 #' \item call function call
+#' \item exposure.names A character string giving the name of the exposure variable in
+#' the data.
 #' }
 #' @author Guy Yullen and Yi-An Chen
 #' @examples
@@ -109,7 +109,7 @@
 #' 
 #' 
 #' }
-#' 
+#' @export
 
 
 fitFundamentalFactorModel <-

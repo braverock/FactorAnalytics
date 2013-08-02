@@ -3,8 +3,7 @@
 \title{Fit statistical factor model using principle components}
 \usage{
   fitStatisticalFactorModel(data, k = 1, refine = TRUE,
-    check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE,
-    ckeckData.method = "xts")
+    check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE)
 }
 \arguments{
   \item{data}{a vector, matrix, data.frame, xts, timeSeries

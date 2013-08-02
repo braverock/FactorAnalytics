@@ -8,7 +8,7 @@
 \arguments{
   \item{x}{fit object created by fitTimeSeriesFactorModel.}
 
-  \item{digits.}{integer indicating the number of decimal
+  \item{digits}{integer indicating the number of decimal
   places. Default is 3.}
 
   \item{...}{arguments to be passed to print method.}

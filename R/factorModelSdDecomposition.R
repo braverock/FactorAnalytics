@@ -33,7 +33,7 @@
 #' factor.sd.decomp.HAM1 = factorModelSdDecomposition(fit$beta.mat["HAM1",],
 #'                                                    cov.factors, fit$residVars.vec["HAM1"])
 #'  
-#'                                                         
+#' @export                                       
 #' 
 factorModelSdDecomposition <-
 function(beta.vec, factor.cov, sig2.e) {

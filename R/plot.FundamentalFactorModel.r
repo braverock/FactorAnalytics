@@ -33,7 +33,7 @@
 #' 7 = SACF and PACF of absolute residuals,
 #' 8 = histogram of residuals with normal curve overlayed,
 #' 9 = normal qq-plot of residuals.
-#' @param legend  Logical. TRUE will plot legend on barplot. Defualt is \code{TRUE}. 
+#' @param legend.txt  Logical. TRUE will plot legend on barplot. Defualt is \code{TRUE}. 
 #' @param ...  other variables for barplot method.
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples

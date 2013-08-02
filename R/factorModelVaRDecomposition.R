@@ -64,7 +64,7 @@
 #' factor.VaR.decomp.HAM1 <- factorModelVaRDecomposition(tmpData, fit$beta.mat[1,],
 #'                                                       fit$residVars.vec[1], tail.prob=0.05,VaR.method="HS")
 #' 
-#' 
+#' @export
 factorModelVaRDecomposition <-
 function(bootData, beta.vec, sig2.e, tail.prob = 0.01,
                                         VaR.method=c("HS", "CornishFisher")) {

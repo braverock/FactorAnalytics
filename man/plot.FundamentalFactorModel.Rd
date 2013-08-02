@@ -37,8 +37,8 @@
   residuals with normal curve overlayed, 9 = normal qq-plot
   of residuals.}
 
-  \item{legend}{Logical. TRUE will plot legend on barplot.
-  Defualt is \code{TRUE}.}
+  \item{legend.txt}{Logical. TRUE will plot legend on
+  barplot. Defualt is \code{TRUE}.}
 
   \item{...}{other variables for barplot method.}
 }

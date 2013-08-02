@@ -68,7 +68,7 @@
 #'                           fit.fund$beta["STI",],
 #'                           fit.fund$resid.variance["STI"], tail.prob=0.05)
 #' 
-#' 
+#' @export
 #' 
 factorModelEsDecomposition <-
 function(Data, beta.vec, sig2.e, tail.prob = 0.05) {

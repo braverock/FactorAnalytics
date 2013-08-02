@@ -2,8 +2,7 @@
 \alias{factorModelCovariance}
 \title{Compute Factor Model Covariance Matrix.}
 \usage{
-  factorModelCovariance(beta.mat, factor.cov,
-    residVars.vec)
+  factorModelCovariance(beta, factor.cov, resid.variance)
 }
 \arguments{
   \item{beta}{\code{N x K} matrix of factor betas, where
@@ -38,50 +37,42 @@
   values along the diagonal.
 }
 \examples{
+\dontrun{
 # Time Series model
 
 data(managers.df)
 factors    = managers.df[,(7:9)]
-fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
                                 data=managers.df,fit.method="OLS")
+factors    = managers.df[,(7:8)]
 factorModelCovariance(fit$beta,var(factors),fit$resid.variance)
 
 # Statistical Model
 data(stat.fm.data)
-fit <- fitStatisticalFactorModel(sfm.dat,k=2,
-                                  ckeckData.method="data.frame")
+sfm.pca.fit <- fitStatisticalFactorModel(sfm.dat,k=2)
+#' factorModelCovariance(t(sfm.pca.fit$loadings),var(sfm.pca.fit$factors),sfm.pca.fit$resid.variance)
 
-factorModelCovariance(t(sfm.pca.fit$loadings),var(sfm.pca.fit$factors),sfm.pca.fit$resid.variance)
-
-sfm.apca.fit <- fitStatisticalFactorModel(sfm.apca.dat,k=2
-,ckeckData.method="data.frame")
+sfm.apca.fit <- fitStatisticalFactorModel(sfm.apca.dat,k=2)
 
 factorModelCovariance(t(sfm.apca.fit$loadings),
                        var(sfm.apca.fit$factors),sfm.apca.fit$resid.variance)
 
  # fundamental factor model example
-
-
+ #'
  data(stock)
 # there are 447 assets
 exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
-test.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
-                                       datevar = "DATE", returnsvar = "RETURN",
-                                       assetvar = "TICKER", wls = TRUE,
-                                       regression = "classic",
-                                       covariance = "classic", full.resid.cov = FALSE,
-                                       robust.scale = TRUE)
-
- # compute return covariance
- # take beta as latest date input
- beta.mat.fundm <- subset(data,DATE == "2003-12-31")[,exposure.names]
- beta.mat.fundm <- cbind(rep(1,447),beta.mat.fundm) # add intercept
-FM return covariance
-ret.cov.fundm <- factorModelCovariance(beta.mat.fundm,test.fit$factor.cov$cov,
-                                         test.fit$resid.variance)
- # the result is exactly the same
-test.fit$returns.cov$cov == ret.cov.fundm
+beta.mat <- subset(stock,DATE == "2003-12-31")[,exposure.names]
+beta.mat1 <- cbind(rep(1,447),beta.mat1)
+fit.fund <- fitFundamentalFactorModel(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP")
+                                     , data=stock,returnsvar = "RETURN",datevar = "DATE",
+                                     assetvar = "TICKER",
+                                     wls = TRUE, regression = "classic",
+                                     covariance = "classic", full.resid.cov = FALSE)
+ret.cov.fundm <- factorModelCovariance(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.variance)
+fit.fund$returns.cov$cov == ret.cov.fundm
+}
 }
 \author{
   Eric Zivot and Yi-An Chen.
