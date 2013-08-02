@@ -13,6 +13,22 @@
 #' @method predict FundamentalFactorModel               
 #' @export
 #' @author Yi-An Chen
+#' @examples
+#' data(stock.df)
+#' fit.fund <- fitFundamentalFactorModel(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP")
+#'                                      , data=stock,returnsvar = "RETURN",datevar = "DATE",  
+#'                                      assetvar = "TICKER",
+#'                                      wls = TRUE, regression = "classic", 
+#'                                      covariance = "classic", full.resid.cov = FALSE)
+#' # If not specify anything, predict() will give fitted value
+#' predict(fit.fund)
+#' 
+#' # generate random data
+#' testdata <- data[,c("DATE","TICKER")]
+#' testdata$BOOK2MARKET <- rnorm(n=42465)
+#' testdata$LOG.MARKETCAP <- rnorm(n=42465)
+#' predict(fit.fund,testdata,new.assetvar="TICKER",new.datevar="DATE")
+#' 
 #' 
 predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datevar){
  

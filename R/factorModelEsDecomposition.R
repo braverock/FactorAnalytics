@@ -60,7 +60,7 @@
 #' 
 #' # fundamental factor model
 #' # try to find factor contribution to ES for STI 
-#' data(stock)
+#' data(stock.df)
 #' fit.fund <- fitFundamentalFactorModel(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP")
 #'                                       , data=stock,returnsvar = "RETURN",datevar = "DATE",  
 #'                                      assetvar = "TICKER",
