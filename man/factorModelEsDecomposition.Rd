@@ -3,7 +3,8 @@
 \title{Compute Factor Model Factor ES Decomposition}
 \usage{
   factorModelEsDecomposition(Data, beta.vec, sig2.e,
-    tail.prob = 0.05)
+    tail.prob = 0.05,
+    VaR.method = c("HS", "CornishFisher"))
 }
 \arguments{
   \item{Data}{\code{B x (k+2)} matrix of historic or
@@ -20,6 +21,13 @@
 
   \item{tail.prob}{scalar, tail probability for VaR
   quantile. Typically 0.01 or 0.05.}
+
+  \item{VaR.method}{character, method for computing VaR.
+  Valid choices are "HS" for historical simulation
+  (empirical quantile); "CornishFisher" for modified VaR
+  based on Cornish-Fisher quantile estimate. Cornish-Fisher
+  computation is done with the VaR.CornishFisher in the
+  PerformanceAnalytics package.}
 }
 \value{
   A list with the following components:
@@ -43,18 +51,16 @@
 }
 \examples{
 data(managers.df)
-ret.assets = managers.df[,(1:6)]
-factors    = managers.df[,(7:9)]
-# fit the factor model with OLS
-fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
-                                 variable.selection="all subsets",factor.set=3)
+fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+                                     factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+                                     data=managers.df,fit.method="OLS")
 # risk factor contribution to ETL
 # combine fund returns, factor returns and residual returns for HAM1
-tmpData = cbind(ret.assets[,1], factors,
-               residuals(fit$asset.fit$HAM1)/sqrt(fit$residVars.vec[1]))
-colnames(tmpData)[c(1,5)] = c("HAM1", "residual")
-factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit$beta.mat[1,],
-                                           fit$residVars.vec[1], tail.prob=0.05)
+tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
+residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
+factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
+                                                  fit.macro$resid.variance[1], tail.prob=0.05)
 
 # fundamental factor model
 # try to find factor contribution to ES for STI
@@ -65,7 +71,7 @@ factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit$beta.mat[1,],
   colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
   factorModelEsDecomposition(tmpData,
                           fit.fund$beta["STI",],
-                          fit.fund$resid.variance["STI"], tail.prob=0.05)
+                          fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method = "HS)
 }
 \author{
   Eric Zviot and Yi-An Chen.

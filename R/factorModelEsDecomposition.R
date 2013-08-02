@@ -20,6 +20,10 @@
 #' @param sig2.e scalar, residual variance from factor model.
 #' @param tail.prob scalar, tail probability for VaR quantile. Typically 0.01
 #' or 0.05.
+#' @param VaR.method character, method for computing VaR. Valid choices are
+#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' in the PerformanceAnalytics package.
+#' package.
 #' @return A list with the following components:
 #' @returnItem VaR Scalar, nonparametric VaR value for fund reported as a
 #' positive number.
@@ -44,18 +48,16 @@
 #' @examples
 #' 
 #' data(managers.df)
-#' ret.assets = managers.df[,(1:6)]
-#' factors    = managers.df[,(7:9)]
-#' # fit the factor model with OLS
-#' fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
-#'                                  variable.selection="all subsets",factor.set=3)
+#' fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+#'                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                                      data=managers.df,fit.method="OLS")
 #' # risk factor contribution to ETL
 #' # combine fund returns, factor returns and residual returns for HAM1
-#' tmpData = cbind(ret.assets[,1], factors,
-#'                residuals(fit$asset.fit$HAM1)/sqrt(fit$residVars.vec[1]))
-#' colnames(tmpData)[c(1,5)] = c("HAM1", "residual")
-#' factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit$beta.mat[1,],
-#'                                            fit$residVars.vec[1], tail.prob=0.05)
+#' tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
+#' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+#' colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
+#' factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
+#'                                                   fit.macro$resid.variance[1], tail.prob=0.05)
 #' 
 #' # fundamental factor model
 #' # try to find factor contribution to ES for STI 
@@ -66,47 +68,15 @@
 #'   colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
 #'   factorModelEsDecomposition(tmpData, 
 #'                           fit.fund$beta["STI",],
-#'                           fit.fund$resid.variance["STI"], tail.prob=0.05)
+#'                           fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method = "HS)
 #' 
 #' @export
 #' 
 factorModelEsDecomposition <-
-function(Data, beta.vec, sig2.e, tail.prob = 0.05) {
-## Compute factor model factor ES decomposition based on Euler's theorem given historic 
-## or simulated data and factor model parameters.
-## The partial derivative of ES wrt factor beta is computed
-## as the expected factor return given fund return is less than or equal to its VaR
-## VaR is compute either as the sample quantile or as an estimated quantile
-## using the Cornish-Fisher expansion
-## inputs:
-## Data       B x (k+2) matrix of data. First column contains the fund returns,
-##            second through k+1 columns contain factor returns, (k+2)nd column contain residuals
-##            scaled to have variance 1.
-## beta.vec   k x 1 vector of factor betas
-## sig2.e			scalar, residual variance from factor model
-## tail.prob  scalar tail probability
-## output:
-## A list with the following components:
-## VaR              scalar, nonparametric VaR value for fund reported as a positive number
-## n.exceed         scalar, number of observations beyond VaR
-## idx.exceed       n.exceed x 1 vector giving index values of exceedences
-## ES               scalar, nonparametric ES value for fund reported as a positive number
-## mcES             k+1 x 1 vector of factor marginal contributions to ES
-## cES              k+1 x 1 vector of factor component contributions to ES
-## pcES             k+1 x 1 vector of factor percent contributions to ES
-## Remarks:
-## The factor model has the form
-## R(t) = beta'F(t) + e(t) = beta.star'F.star(t)
-## where beta.star = (beta, sig.e)' and F.star(t) = (F(t)', z(t))'
-## By Euler's theorem
-## ES.fm = sum(cES.fm) = sum(beta.star*mcES.fm)
-## References:
-## 1. Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A General Analysis",
-##    The Journal of Risk 5/2.
-## 2. Yamai and Yoshiba (2002). "Comparative Analyses of Expected Shortfall and
-##    Value-at-Risk: Their Estimation Error, Decomposition, and Optimization
-##    Bank of Japan.
-## 3. Meucci (2007). "Risk Contributions from Generic User-Defined Factors," Risk.
+function(Data, beta.vec, sig2.e, tail.prob = 0.05,
+         VaR.method=c("modified", "gaussian", "historical", "kernel")) {
+
+  require(PerformanceAnalytics)
   Data = as.matrix(Data)
   ncol.Data = ncol(Data)
   if(is.matrix(beta.vec)) {
@@ -120,8 +90,13 @@ function(Data, beta.vec, sig2.e, tail.prob = 0.05) {
 	beta.star.vec = c(beta.vec, sqrt(sig2.e))
 	names(beta.star.vec) = beta.names
 
-  VaR.fm = quantile(Data[, 1], prob=tail.prob)
-  idx = which(Data[, 1] <= VaR.fm)
+   ## epsilon is calculated in the sense of minimizing mean square error by Silverman 1986
+  epi <- 2.575*sd(Data[,1]) * (nrow(Data)^(-1/5))
+  VaR.fm = as.numeric(VaR(Data[, 1], p=(1-tail.prob),method=VaR.method))
+  idx = which(Data[, 1] <= VaR.fm + epi & Data[,1] >= VaR.fm - epi)
+  
+  
+ 
   ES.fm = -mean(Data[idx, 1])
   
   ##

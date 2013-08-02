@@ -47,25 +47,16 @@
 }
 \examples{
 data(managers.df)
-ret.assets = managers.df[,(1:6)]
-factors    = managers.df[,(7:9)]
-# fit the factor model with OLS
-fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
-                                 variable.selection="all subsets",
-                                 factor.set = 3)
-
-residualData=as.matrix(fit$residVars.vec,1,6)
-bootData <- factorModelMonteCarlo(n.boot=100, factors ,fit$beta.mat, residual.dist="normal",
-                                  residualData, Alpha.mat=NULL, boot.method="random",
-                                  seed = 123, return.factors = "TRUE", return.residuals = "TRUE")
-
-# compute risk factor contribution to VaR using bootstrap data
+fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+                                     factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+                                     data=managers.df,fit.method="OLS")
+# risk factor contribution to ETL
 # combine fund returns, factor returns and residual returns for HAM1
-tmpData = cbind(bootData$returns[,1], bootData$factors,
-               bootData$residuals[,1]/sqrt(fit$residVars.vec[1]))
-colnames(tmpData)[c(1,5)] = c("HAM1", "residual")
-factor.VaR.decomp.HAM1 <- factorModelVaRDecomposition(tmpData, fit$beta.mat[1,],
-                                                      fit$residVars.vec[1], tail.prob=0.05,VaR.method="HS")
+tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
+residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
+factor.VaR.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
+                                                  fit.macro$resid.variance[1], tail.prob=0.05)
 }
 \author{
   Eric Zivot and Yi-An Chen

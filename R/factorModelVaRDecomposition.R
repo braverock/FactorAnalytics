@@ -11,17 +11,15 @@
 #' where beta.star = (beta, sig.e)' and F.star(t) = (F(t)', z(t))' By Euler's
 #' theorem VaR.fm = sum(cVaR.fm) = sum(beta.star*mVaR.fm)
 #' 
-#' @param bootData B x (k+2) matrix of bootstrap data. First column contains
+#' @param Data B x (k+2) matrix of bootstrap data. First column contains
 #' the fund returns, second through k+1 columns contain factor returns, (k+2)nd
 #' column contain residuals scaled to have unit variance .
 #' @param beta.vec k x 1 vector of factor betas.
 #' @param sig2.e scalar, residual variance from factor model.
 #' @param tail.prob scalar, tail probability
 #' @param VaR.method character, method for computing VaR. Valid choices are
-#' "HS" for historical simulation (empirical quantile); "CornishFisher" for
-#' modified VaR based on Cornish-Fisher quantile estimate. Cornish-Fisher
-#' computation is done with the VaR.CornishFisher in the PerformanceAnalytics
-#' package.
+#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' in the PerformanceAnalytics package.
 #' @return an S3 object containing
 #' @returnItem VaR.fm Scalar, bootstrap VaR value for fund reported as a
 #' positive number.
@@ -44,77 +42,27 @@
 #' @examples
 #' 
 #' data(managers.df)
-#' ret.assets = managers.df[,(1:6)]
-#' factors    = managers.df[,(7:9)]
-#' # fit the factor model with OLS
-#' fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS", 
-#'                                  variable.selection="all subsets",
-#'                                  factor.set = 3)
-#' 
-#' residualData=as.matrix(fit$residVars.vec,1,6)
-#' bootData <- factorModelMonteCarlo(n.boot=100, factors ,fit$beta.mat, residual.dist="normal",
-#'                                   residualData, Alpha.mat=NULL, boot.method="random",
-#'                                   seed = 123, return.factors = "TRUE", return.residuals = "TRUE")
-#' 
-#' # compute risk factor contribution to VaR using bootstrap data
+#' fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+#'                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                                      data=managers.df,fit.method="OLS")
+#' # risk factor contribution to ETL
 #' # combine fund returns, factor returns and residual returns for HAM1
-#' tmpData = cbind(bootData$returns[,1], bootData$factors,
-#'                bootData$residuals[,1]/sqrt(fit$residVars.vec[1]))
-#' colnames(tmpData)[c(1,5)] = c("HAM1", "residual")
-#' factor.VaR.decomp.HAM1 <- factorModelVaRDecomposition(tmpData, fit$beta.mat[1,],
-#'                                                       fit$residVars.vec[1], tail.prob=0.05,VaR.method="HS")
+#' tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
+#' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+#' colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
+#' factor.VaR.decomp.HAM1 = factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],
+#'                                                   fit.macro$resid.variance[1], tail.prob=0.05,
+#'                                                   VaR.method="historical)
 #' 
 #' @export
 factorModelVaRDecomposition <-
-function(bootData, beta.vec, sig2.e, tail.prob = 0.01,
-                                        VaR.method=c("HS", "CornishFisher")) {
-## Compute factor model factor VaR decomposition based on Euler's theorem given historic 
-## or simulated data and factor model parameters.
-## The partial derivative of VaR wrt factor beta is computed
-## as the expected factor return given fund return is equal to its VaR and approximated by kernel estimator.
-## VaR is compute either as the sample quantile or as an estimated quantile
-## using the Cornish-Fisher expansion.
-## inputs:
-## bootData   B x (k+2) matrix of bootstrap data. First column contains the fund returns,
-##            second through k+1 columns contain factor returns, (k+2)nd column contain residuals
-##            scaled to have variance 1.
-## beta.vec   k x 1 vector of factor betas
-## sig2.e  		scalar, residual variance from factor model
-## tail.prob  scalar tail probability
-## method     character, method for computing marginal ES. Valid choices are
-##            "average" for approximating E[Fj | R=VaR]
-## VaR.method character, method for computing VaR. Valid choices are "HS" for
-##            historical simulation (empirical quantile); "CornishFisher" for
-##            modified VaR based on Cornish-Fisher quantile estimate. Cornish-Fisher
-##            computation is done with the VaR.CornishFisher in the PerformanceAnalytics
-##            package
-## output:
-## A list with the following components:
-## VaR.fm              scalar, bootstrap VaR value for fund reported as a positive number
-## n.exceed            scalar, number of observations beyond VaR
-## idx.exceed          n.exceed x 1 vector giving index values of exceedences
-## mcES.fm             k+1 x 1 vector of factor marginal contributions to ES
-## cES.fm              k+1 x 1 vector of factor component contributions to ES
-## pcES.fm             k+1 x 1 vector of factor percent contributions to ES
-## Remarks:
-## The factor model has the form
-## R(t) = beta'F(t) + e(t) = beta.star'F.star(t)
-## where beta.star = (beta, sig.e)' and F.star(t) = (F(t)', z(t))'
-## By Euler's theorem
-## ES.fm = sum(cES.fm) = sum(beta.star*mcES.fm)
-## References:
-## 1. Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A General Analysis",
-##    The Journal of Risk 5/2.
-## 2. Yamai and Yoshiba (2002). "Comparative Analyses of Expected Shortfall and
-##    Value-at-Risk: Their Estimation Error, Decomposition, and Optimization
-##    Bank of Japan.
-## 3. Meucci (2007). "Risk Contributions from Generic User-Defined Factors," Risk.
-  
+function(Data, beta.vec, sig2.e, tail.prob = 0.01,
+         VaR.method=c("modified", "gaussian", "historical", "kernel")) {
   
 require(PerformanceAnalytics)
   VaR.method = VaR.method[1]
-  bootData = as.matrix(bootData)
-  ncol.bootData = ncol(bootData)
+  Data = as.matrix(Data)
+  ncol.Data = ncol(Data)
   if(is.matrix(beta.vec)) {
     beta.names = c(rownames(beta.vec), "residual")
   } else if(is.vector(beta.vec)) {
@@ -127,20 +75,16 @@ require(PerformanceAnalytics)
 	names(beta.star.vec) = beta.names
 
    ## epsilon is calculated in the sense of minimizing mean square error by Silverman 1986
-   epi <- 2.575*sd(bootData[,1]) * (nrow(bootData)^(-1/5))
-   if (VaR.method == "HS") {
-    VaR.fm = quantile(bootData[, 1], prob=tail.prob)
-    idx = which(bootData[, 1] <= VaR.fm + epi & bootData[,1] >= VaR.fm - epi)
-    } else {
-    VaR.fm = as.numeric(VaR(bootData[, 1], p=(1-tail.prob),method="modified"))
-    idx = which(bootData[, 1] <= VaR.fm + epi & bootData[,1] >= VaR.fm - epi)
-    }
+   epi <- 2.575*sd(Data[,1]) * (nrow(Data)^(-1/5))
+   VaR.fm = as.numeric(VaR(Data[, 1], p=(1-tail.prob),method=VaR.method))
+    idx = which(Data[, 1] <= VaR.fm + epi & Data[,1] >= VaR.fm - epi)
+   
   ##
   ## compute marginal contribution to VaR
   ##
   ## compute marginal VaR as expected value of factor return given 
   ## triangler kernel  
-    mVaR.fm = -as.matrix(colMeans(bootData[idx, -1]))
+    mVaR.fm = -as.matrix(colMeans(Data[idx, -1]))
     
 ## compute correction factor so that sum of weighted marginal VaR adds to portfolio VaR
 cf = as.numeric( -VaR.fm / sum(mVaR.fm*beta.star.vec) )
