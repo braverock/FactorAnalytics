@@ -21,7 +21,7 @@
 #' predict(fit)
 #' predict(fit,newdata,interval="confidence")
 #' 
-#' @method TimeSeriesFactorModel
+#' @method predict TimeSeriesFactorModel
 #' @export
 #' 
 

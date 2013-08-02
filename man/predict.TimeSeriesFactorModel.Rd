@@ -2,8 +2,8 @@
 \alias{predict.TimeSeriesFactorModel}
 \title{predict method for TimeSeriesModel object.}
 \usage{
-  \method{TimeSeriesFactorModel}{} (object, newdata = NULL,
-    ...)
+  \method{predict}{TimeSeriesFactorModel} (object,
+    newdata = NULL, ...)
 }
 \arguments{
   \item{object}{A fit object created by
