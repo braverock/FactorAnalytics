@@ -2,11 +2,11 @@
 \alias{predict.TimeSeriesFactorModel}
 \title{predict method for TimeSeriesModel object.}
 \usage{
-  predict.TimeSeriesFactorModel(fit.macro, newdata = NULL,
+  \method{TimeSeriesFactorModel}{} (object, newdata = NULL,
     ...)
 }
 \arguments{
-  \item{fit}{"TimeSeriesFactorModel" object created by
+  \item{object}{A fit object created by
   fitTimeSeiresFactorModel.}
 
   \item{newdata}{a vector, matrix, data.frame, xts,

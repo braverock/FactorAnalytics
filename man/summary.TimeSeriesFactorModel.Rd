@@ -2,10 +2,11 @@
 \alias{summary.TimeSeriesFactorModel}
 \title{summary method for TimeSeriesModel object.}
 \usage{
-  summary.TimeSeriesFactorModel(fit.macro, digits = 3)
+  \method{summary}{TimeSeriesFactorModel} (object,
+    digits = 3)
 }
 \arguments{
-  \item{fit.macro}{fit.macro object created by
+  \item{object}{An object created by
   fitTimeSeiresFactorModel.}
 
   \item{digits}{Integer indicating the number of decimal

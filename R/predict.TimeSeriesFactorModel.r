@@ -3,7 +3,7 @@
 #' Generic function of predict method for fitTimeSeriesFactorModel. It utilizes
 #' function \code{predict.lm}.
 #' 
-#' @param fit "TimeSeriesFactorModel" object created by fitTimeSeiresFactorModel.
+#' @param object A fit object created by fitTimeSeiresFactorModel.
 #' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
 #' @param ... Any other arguments used in \code{predict.lm}. for example newdata and se.fit.
 #' @author Yi-An Chen.
@@ -21,17 +21,18 @@
 #' predict(fit)
 #' predict(fit,newdata,interval="confidence")
 #' 
+#' @method TimeSeriesFactorModel
 #' @export
 #' 
 
-predict.TimeSeriesFactorModel <- function(fit.macro,newdata = NULL,...){
+predict.TimeSeriesFactorModel <- function(object,newdata = NULL,...){
   require(PerformanceAnalytics)
  
   if (missing(newdata) || is.null(newdata)  ) {
-  lapply(fit.macro$asset.fit, predict,...)
+  lapply(object$asset.fit, predict,...)
    } else  {
     newdata <- checkData(newdata,method = "data.frame")
-    lapply(fit.macro$asset.fit, predict ,newdata,... )
+    lapply(object$asset.fit, predict ,newdata,... )
     } 
 
 }

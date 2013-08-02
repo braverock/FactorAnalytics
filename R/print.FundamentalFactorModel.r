@@ -3,7 +3,7 @@
 #' Generic function of print method for fitFundamentalFactorModel.
 #' 
 #' 
-#' @param fit.fund fit object created by fitFundamentalFactorModel.
+#' @param x fit object created by fitFundamentalFactorModel.
 #' @param digits integer indicating the number of decimal places. Default is 3.
 #' @param ...  Other arguments for print methods.
 #' @author Yi-An Chen.
@@ -20,21 +20,22 @@
 #'                                        robust.scale = TRUE)
 #' 
 #' print(test.fit)
-#' 
+#' @method print FundamentalFactorModel
 #' @export 
 print.FundamentalFactorModel <-
-  function(fit.fund, digits = max(3, .Options$digits - 3), ...)
+  function(x, digits = max(3, .Options$digits - 3), ...)
   {
-    if(!is.null(cl <- fit.fund$call)) {
+    if(!is.null(cl <- x$call)) {
       cat("\nCall:\n")
       dput(cl)
     }
     cat("\nFactor Model:\n")
-    tmp <- c(dim(fit.fund$beta)[2]-1,length(fit.fund$asset.names), nrow(fit.fund$factor.returns))
+    tmp <- c(dim(x$beta)[2]-1,length(x$asset.names), nrow(x$factor.returns))
     names(tmp) <- c("Exposures", "Variables", "Periods")
     print(tmp)
     cat("\nFactor Returns:\n")
-    print(fit.fund$factor.returns, digits = digits, ...)
+    print(x$factor.returns, digits = digits, ...)
     cat("\nResidual Variance:\n")
-    print(fit.fund$resid.variance, digits = digits, ...)
+    print(x$resid.variance, digits = digits, ...)
+    
   }

@@ -2,10 +2,11 @@
 \alias{predict.StatFactorModel}
 \title{predict method for StatFactorModel object.}
 \usage{
-  predict.StatFactorModel(fit.stat, newdata = NULL, ...)
+  \method{predict}{StatFactorModel} (object,
+    newdata = NULL, ...)
 }
 \arguments{
-  \item{fit.stat}{"StatFactorModel" object created by
+  \item{object}{A fit object created by
   fitStatisticalFactorModel.}
 
   \item{newdata}{a vector, matrix, data.frame, xts,

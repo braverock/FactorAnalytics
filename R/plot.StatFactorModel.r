@@ -5,7 +5,7 @@
 #' 
 #' PCA works well. APCA is underconstruction.
 #' 
-#' @param fit.stat fit object created by fitStatisticalFactorModel.
+#' @param x fit object created by fitStatisticalFactorModel.
 #' @param variables Optional. an integer vector telling which variables are to
 #' be plotted. The default is to plot all the variables, or the number of
 #' variables explaining 90 percent of the variance, whichever is bigger.
@@ -50,9 +50,10 @@
 #' # plot single asset
 #' plot(sfm.pca.fit,plot.single=TRUE,asset.name="CITCRP")
 #' }
-#' 
+#' @method plot StatFactorModel
+#' @export
 plot.StatFactorModel <-
-function(fit.stat, variables, cumulative = TRUE, style = "bar",
+function(x, variables, cumulative = TRUE, style = "bar",
          which.plot = c("none","1L","2L","3L","4L","5L","6L","7L","8L"),
          hgrid = FALSE, vgrid = FALSE,plot.single=FALSE, asset.name,
          which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
@@ -130,10 +131,10 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
    
     # pca method
     
-    if ( dim(fit.stat$asset.ret)[1] > dim(fit.stat$asset.ret)[2] ) {
+    if ( dim(x$asset.ret)[1] > dim(x$asset.ret)[2] ) {
       
       
-      fit.lm = fit.stat$asset.fit[[asset.name]]
+      fit.lm = x$asset.fit[[asset.name]]
              
      
     ## exact information from lm object
@@ -248,12 +249,12 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
     )
     } else {  #apca method
       
-      dates <- names(fit.stat$data[,asset.name]) 
-       actual.z <- zoo(fit.stat$asset.ret[,asset.name],as.Date(dates))
-       residuals.z <- zoo(fit.stat$residuals,as.Date(dates))
+      dates <- names(x$data[,asset.name]) 
+       actual.z <- zoo(x$asset.ret[,asset.name],as.Date(dates))
+       residuals.z <- zoo(x$residuals,as.Date(dates))
        fitted.z <- actual.z - residuals.z
       t <- length(dates)
-      k <- fit.stat$k
+      k <- x$k
       
       which.plot.single<-menu(c("time series plot of actual and fitted values",
                                 "time series plot of residuals with standard error bands",
@@ -346,12 +347,12 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
   ##             1. screeplot.
   ##
   if(missing(variables)) {
-    vars <- fit.stat$eigen
+    vars <- x$eigen
     n90 <- which(cumsum(vars)/
       sum(vars) > 0.9)[1]
-    variables <- 1:max(fit.stat$k, min(10, n90))
+    variables <- 1:max(x$k, min(10, n90))
   }
-  screeplot(fit.stat, variables, cumulative,
+  screeplot(x, variables, cumulative,
             style, "Screeplot")
             },
     "2L" = {
@@ -359,14 +360,14 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
   ##             2. factor returns
   ##
   if(missing(variables)) {
-    f.ret <- fit.stat$factors
+    f.ret <- x$factors
         }
     plot.ts(f.ret)
   
 } ,
    "3L" = {
-     cov.fm<- factorModelCovariance(t(fit.stat$loadings),var(fit.stat$factors),
-                                    fit.stat$resid.variance)    
+     cov.fm<- factorModelCovariance(t(x$loadings),var(x$factors),
+                                    x$resid.variance)    
      cor.fm = cov2cor(cov.fm)
      rownames(cor.fm) = colnames(cor.fm)
      ord <- order(cor.fm[1,])
@@ -374,44 +375,44 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
      plotcorr(ordered.cor.fm[(1:max.show),(1:max.show)], col=cm.colors(11)[5*ordered.cor.fm + 6])  
    },
    "4L" ={
-     barplot(fit.stat$r2[1:max.show])
+     barplot(x$r2[1:max.show])
       },
     "5L" = {
-     barplot(fit.stat$resid.variance[1:max.show])  
+     barplot(x$resid.variance[1:max.show])  
      },
     "6L" = {
-      cov.factors = var(fit.stat$factors)
-      names = colnames(fit.stat$asset.ret)
+      cov.factors = var(x$factors)
+      names = colnames(x$asset.ret)
       factor.sd.decomp.list = list()
       for (i in names) {
         factor.sd.decomp.list[[i]] =
-          factorModelSdDecomposition(fit.stat$loadings[,i],
-                                     cov.factors, fit.stat$resid.variance[i])
+          factorModelSdDecomposition(x$loadings[,i],
+                                     cov.factors, x$resid.variance[i])
       }
-      # function to efit.stattract contribution to sd from list
+      # function to extract contribution to sd from list
       getCSD = function(x) {
         x$cr.fm
       }
       # extract contributions to SD from list
       cr.sd = sapply(factor.sd.decomp.list, getCSD)
-      rownames(cr.sd) = c(colnames(fit.stat$factors), "residual")
+      rownames(cr.sd) = c(colnames(x$factors), "residual")
       # create stacked barchart
       barplot(cr.sd[,(1:max.show)], main="Factor Contributions to SD",
               legend.text=T, args.legend=list(x="topleft"))
     } ,
     "7L" ={
       factor.es.decomp.list = list()
-      names = colnames(fit.stat$asset.ret)
+      names = colnames(x$asset.ret)
       for (i in names) {
         # check for missing values in fund data
-        idx = which(!is.na(fit.stat$asset.ret[,i]))
-        tmpData = cbind(fit.stat$asset.ret[idx,i], fit.stat$factors,
-                        fit.stat$residuals[,i]/sqrt(fit.stat$resid.variance[i]))
+        idx = which(!is.na(x$asset.ret[,i]))
+        tmpData = cbind(x$asset.ret[idx,i], x$factors,
+                        x$residuals[,i]/sqrt(x$resid.variance[i]))
         colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
         factor.es.decomp.list[[i]] = 
           factorModelEsDecomposition(tmpData, 
-                                     fit.stat$loadings[,i],
-                                     fit.stat$resid.variance[i], tail.prob=0.05)
+                                     x$loadings[,i],
+                                     x$resid.variance[i], tail.prob=0.05)
       }
          
              
@@ -421,23 +422,23 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
              }
              # report as positive number
              cr.etl = sapply(factor.es.decomp.list, getCETL)
-             rownames(cr.etl) = c(colnames(fit.stat$factors), "residual")
+             rownames(cr.etl) = c(colnames(x$factors), "residual")
              barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",
                      legend.text=T, args.legend=list(x="topleft") )
     },
       "8L" =  {
              factor.VaR.decomp.list = list()
-             names = colnames(fit.stat$asset.ret)
+             names = colnames(x$asset.ret)
              for (i in names) {
                # check for missing values in fund data
-               idx = which(!is.na(fit.stat$asset.ret[,i]))
-               tmpData = cbind(fit.stat$asset.ret[idx,i], fit.stat$factors,
-                               fit.stat$residuals[,i]/sqrt(fit.stat$resid.variance[i]))
+               idx = which(!is.na(x$asset.ret[,i]))
+               tmpData = cbind(x$asset.ret[idx,i], x$factors,
+                               x$residuals[,i]/sqrt(x$resid.variance[i]))
                colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
                factor.VaR.decomp.list[[i]] = 
                  factorModelVaRDecomposition(tmpData, 
-                                            fit.stat$loadings[,i],
-                                            fit.stat$resid.variance[i], tail.prob=0.05)
+                                            x$loadings[,i],
+                                            x$resid.variance[i], tail.prob=0.05)
              }
              
                                
@@ -447,7 +448,7 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
              }
              # report as positive number
              cr.var = sapply(factor.VaR.decomp.list, getCVaR)
-             rownames(cr.var) = c(colnames(fit.stat$factors), "residual")
+             rownames(cr.var) = c(colnames(x$factors), "residual")
              barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",
                      legend.text=T, args.legend=list(x="topleft"))
       }, invisible()
@@ -455,4 +456,5 @@ function(fit.stat, variables, cumulative = TRUE, style = "bar",
      )
  
 }
+
 }

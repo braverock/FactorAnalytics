@@ -44,6 +44,7 @@
 #' residuals. Returned only if \code{return.residuals = TRUE}.
 #' @author Eric Zivot and Yi-An Chen.
 #' @references Jiang, Y. (2009). UW PhD Thesis.
+#' @export
 #' @examples
 #' 
 #' # load data from the database

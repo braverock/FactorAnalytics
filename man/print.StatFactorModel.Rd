@@ -2,11 +2,11 @@
 \alias{print.StatFactorModel}
 \title{print StatFactorModel object}
 \usage{
-  print.StatFactorModel(fit.stat,
+  \method{print}{StatFactorModel} (x,
     digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
-  \item{fit.stat}{fit object created by
+  \item{x}{fit object created by
   fitStatisticalFactorModel.}
 
   \item{digits}{integer indicating the number of decimal

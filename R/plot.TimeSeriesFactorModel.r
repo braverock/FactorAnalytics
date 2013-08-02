@@ -4,7 +4,7 @@
 #' all fit models or choose a single asset to plot.
 #' 
 #' 
-#' @param fit.macro fit object created by fitTimeSeriesFactorModel.
+#' @param x fit object created by fitTimeSeriesFactorModel.
 #' @param colorset Defualt colorset is c(1:12).
 #' @param legend.loc plot legend or not. Defualt is \code{NULL}.
 #' @param which.plot integer indicating which plot to create: "none" will
@@ -39,9 +39,10 @@
 #' # single plot of HAM1 asset 
 #' plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
 #' }
-#' 
+#' @method plot TimeSeriesFactorModel
+#' @export
  plot.TimeSeriesFactorModel <- 
-  function(fit.macro,colorset=c(1:12),legend.loc=NULL,
+  function(x,colorset=c(1:12),legend.loc=NULL,
            which.plot=c("none","1L","2L","3L","4L","5L","6L","7L"),max.show=6,
            plot.single=FALSE, asset.name,which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                                                                   "7L","8L","9L","10L","11L","12L","13L")) {
@@ -75,9 +76,9 @@
         stop("Neet to specify an asset to plot if plot.single is TRUE.")
       }
       
-      fit.lm = fit.macro$asset.fit[[asset.name]]
+      fit.lm = x$asset.fit[[asset.name]]
       
-      if (fit.macro$variable.selection == "none") {
+      if (x$variable.selection == "none") {
             
       ## extract information from lm object
         
@@ -156,7 +157,7 @@
       },
              "10L"= {
         ##  CUSUM plot of recursive residuals
-   if (as.character(fit.macro$call["fit.method"]) == "OLS") {
+   if (as.character(x$call["fit.method"]) == "OLS") {
         cusum.rec = efp(fit.formula, type="Rec-CUSUM", data=fit.lm$model)
         plot(cusum.rec, sub=asset.name)
    } else 
@@ -164,7 +165,7 @@
       },
              "11L"= {
         ##  CUSUM plot of OLS residuals
-               if (as.character(fit.macro$call["fit.method"]) == "OLS") {        
+               if (as.character(x$call["fit.method"]) == "OLS") {        
         cusum.ols = efp(fit.formula, type="OLS-CUSUM", data=fit.lm$model)
         plot(cusum.ols, sub=asset.name)
                } else 
@@ -172,7 +173,7 @@
       },
              "12L"= {
         ##  CUSUM plot of recursive estimates relative to full sample estimates
-               if (as.character(fit.macro$call["fit.method"]) == "OLS") {        
+               if (as.character(x$call["fit.method"]) == "OLS") {        
         cusum.est = efp(fit.formula, type="fluctuation", data=fit.lm$model)
         plot(cusum.est, functional=NULL, sub=asset.name)
                } else 
@@ -180,7 +181,7 @@
       },
              "13L"= {
         ##  rolling regression over 24 month window
-    if (as.character(fit.macro$call["fit.method"]) == "OLS") {   
+    if (as.character(x$call["fit.method"]) == "OLS") {   
           rollReg <- function(data.z, formula) {
           coef(lm(formula, data = as.data.frame(data.z)))  
         }
@@ -188,8 +189,8 @@
         rollReg.z = rollapply(reg.z, FUN=rollReg, fit.formula, width=24, by.column = FALSE, 
                               align="right")
         plot(rollReg.z, main=paste("24-month rolling regression estimates:", asset.name, sep=" "))
-    } else if (as.character(fit.macro$call["fit.method"]) == "DLS") {
-      decay.factor <- as.numeric(as.character(fit.macro$call["decay.factor"]))
+    } else if (as.character(x$call["fit.method"]) == "DLS") {
+      decay.factor <- as.numeric(as.character(x$call["decay.factor"]))
       t.length <- 24
       w <- rep(decay.factor^(t.length-1),t.length)
       for (k in 2:t.length) {
@@ -213,10 +214,10 @@
       } else {
   # lar or lasso
           
-          factor.names  = fit.macro$factors.names
-          plot.data   = fit.macro$data[,c(asset.name,factor.names)]
-          alpha = fit.macro$alpha[asset.name]
-          beta = as.matrix(fit.macro$beta[asset.name,])        
+          factor.names  = x$factors.names
+          plot.data   = x$data[,c(asset.name,factor.names)]
+          alpha = x$alpha[asset.name]
+          beta = as.matrix(x$beta[asset.name,])        
           fitted.z = zoo(alpha+as.matrix(plot.data[,factor.names])%*%beta,as.Date(rownames(plot.data)))
           residuals.z = plot.data[,asset.name]-fitted.z
           actual.z = zoo(plot.data[,asset.name],as.Date(rownames(plot.data)))       
@@ -303,10 +304,10 @@
                   title="Factor Analytics Plot \nMake a plot selection (or 0 to exit):\n") 
     
   
-    variable.selection = fit.macro$variable.selection
-    asset.names = fit.macro$assets.names
-    factor.names  = fit.macro$factors.names
-    plot.data   = fit.macro$data[,c(asset.names,factor.names)]
+    variable.selection = x$variable.selection
+    asset.names = x$assets.names
+    factor.names  = x$factors.names
+    plot.data   = x$data[,c(asset.names,factor.names)]
     cov.factors = var(plot.data[,factor.names])
     n <- length(asset.names)
     
@@ -321,8 +322,8 @@
     par(mfrow=c(n/2,2))
     if (variable.selection == "lar" || variable.selection == "lasso") {
      for (i in 1:n) {
-     alpha = fit.macro$alpha[i]
-     beta = as.matrix(fit.macro$beta[i,])        
+     alpha = x$alpha[i]
+     beta = as.matrix(x$beta[i,])        
      fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta  
      dataToPlot = cbind(fitted, plot.data[,i])
      colnames(dataToPlot) = c("Fitted","Actual")
@@ -331,7 +332,7 @@
     }
      } else {
     for (i in 1:n) {
-    dataToPlot = cbind(fitted(fit.macro$asset.fit[[i]]), na.omit(plot.data[,i]))
+    dataToPlot = cbind(fitted(x$asset.fit[[i]]), na.omit(plot.data[,i]))
     colnames(dataToPlot) = c("Fitted","Actual")
     main = paste("Factor Model fit for",asset.names[i],seq="")
     chart.TimeSeries(dataToPlot,colorset = colorset, legend.loc = legend.loc,main=main)
@@ -340,14 +341,14 @@
     par(mfrow=c(1,1))
     },
       "2L" ={
-      barplot(fit.macro$r2)
+      barplot(x$r2)
      },
       "3L" = {
-      barplot(fit.macro$resid.variance)  
+      barplot(x$resid.variance)  
       },    
            
      "4L" = {
-      cov.fm<- factorModelCovariance(fit.macro$beta,cov.factors,fit.macro$resid.variance)    
+      cov.fm<- factorModelCovariance(x$beta,cov.factors,x$resid.variance)    
       cor.fm = cov2cor(cov.fm)
       rownames(cor.fm) = colnames(cor.fm)
       ord <- order(cor.fm[1,])
@@ -358,8 +359,8 @@
        factor.sd.decomp.list = list()
        for (i in asset.names) {
          factor.sd.decomp.list[[i]] =
-           factorModelSdDecomposition(fit.macro$beta[i,],
-                                      cov.factors, fit.macro$resid.variance[i])
+           factorModelSdDecomposition(x$beta[i,],
+                                      cov.factors, x$resid.variance[i])
          }
             # function to extract contribution to sd from list
        getCSD = function(x) {
@@ -379,17 +380,17 @@
         
          for (i in asset.names) {
            idx = which(!is.na(plot.data[,i]))
-           alpha = fit.macro$alpha[i]
-           beta = as.matrix(fit.macro$beta[i,])        
+           alpha = x$alpha[i]
+           beta = as.matrix(x$beta[i,])        
            fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
            residual = plot.data[,i]-fitted
            tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
-                           (residual[idx,]/sqrt(fit.macro$resid.variance[i])) )
+                           (residual[idx,]/sqrt(x$resid.variance[i])) )
            colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
            factor.es.decomp.list[[i]] = 
           factorModelEsDecomposition(tmpData, 
-                                        fit.macro$beta[i,],
-                                        fit.macro$resid.variance[i], tail.prob=0.05)
+                                        x$beta[i,],
+                                        x$resid.variance[i], tail.prob=0.05)
            
          }
        } else {
@@ -398,12 +399,12 @@
          # check for missing values in fund data
          idx = which(!is.na(plot.data[,i]))
          tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
-                         residuals(fit.macro$asset.fit[[i]])/sqrt(fit.macro$resid.variance[i]))
+                         residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
          colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
          factor.es.decomp.list[[i]] = 
            factorModelEsDecomposition(tmpData, 
-                                      fit.macro$beta[i,],
-                                      fit.macro$resid.variance[i], tail.prob=0.05)
+                                      x$beta[i,],
+                                      x$resid.variance[i], tail.prob=0.05)
        }
        }     
        
@@ -425,17 +426,17 @@
         
         for (i in asset.names) {
           idx = which(!is.na(plot.data[,i]))
-          alpha = fit.macro$alpha[i]
-          beta = as.matrix(fit.macro$beta[i,])        
+          alpha = x$alpha[i]
+          beta = as.matrix(x$beta[i,])        
           fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
           residual = plot.data[,i]-fitted
           tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
-                          (residual[idx,]/sqrt(fit.macro$resid.variance[i])) )
+                          (residual[idx,]/sqrt(x$resid.variance[i])) )
           colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
           factor.VaR.decomp.list[[i]] = 
             factorModelVaRDecomposition(tmpData, 
-                                       fit.macro$beta[i,],
-                                       fit.macro$resid.variance[i], tail.prob=0.05)
+                                       x$beta[i,],
+                                       x$resid.variance[i], tail.prob=0.05)
           
         }
       } else {
@@ -443,12 +444,12 @@
         # check for missing values in fund data
         idx = which(!is.na(plot.data[,i]))
         tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
-                        residuals(fit.macro$asset.fit[[i]])/sqrt(fit.macro$resid.variance[i]))
+                        residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
         colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
         factor.VaR.decomp.list[[i]] = 
           factorModelVaRDecomposition(tmpData, 
-                                     fit.macro$beta[i,],
-                                     fit.macro$resid.variance[i], tail.prob=0.05,
+                                     x$beta[i,],
+                                     x$resid.variance[i], tail.prob=0.05,
                                       VaR.method="HS")
       }
       }
@@ -466,5 +467,5 @@
     invisible()       
     )         
     }       
- 
+
 }

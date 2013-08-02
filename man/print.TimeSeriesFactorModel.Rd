@@ -2,12 +2,11 @@
 \alias{print.TimeSeriesFactorModel}
 \title{print TimeSeriesfactorModel object}
 \usage{
-  print.TimeSeriesFactorModel(fit.macro,
+  \method{print}{TimeSeriesFactorModel} (x,
     digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
-  \item{fit.macro}{fit object created by
-  fitTimeSeriesFactorModel.}
+  \item{x}{fit object created by fitTimeSeriesFactorModel.}
 
   \item{digits.}{integer indicating the number of decimal
   places. Default is 3.}

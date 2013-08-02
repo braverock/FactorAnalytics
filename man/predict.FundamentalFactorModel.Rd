@@ -2,11 +2,11 @@
 \alias{predict.FundamentalFactorModel}
 \title{predict method for FundamentalFactorModel object}
 \usage{
-  predict.FundamentalFactorModel(fit.fund, newdata,
-    new.assetvar, new.datevar)
+  \method{predict}{FundamentalFactorModel} (object,
+    newdata, new.assetvar, new.datevar)
 }
 \arguments{
-  \item{fit}{"FundamentalFactorModel" object}
+  \item{object}{fit "FundamentalFactorModel" object}
 
   \item{newdata}{An optional data frame in which to look
   for variables with which to predict.  If omitted, the

@@ -84,6 +84,7 @@
 #' chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
 #'                  colorset=c("black","blue"), legend.loc="bottomleft")
 #'  }
+#'  @export
 fitTimeSeriesFactorModel <-
 function(assets.names, factors.names, data=data, num.factor.subset = 1, 
           fit.method=c("OLS","DLS","Robust"),

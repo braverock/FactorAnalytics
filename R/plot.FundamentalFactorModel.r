@@ -9,7 +9,7 @@
 #' Generic function of plot method for fitFundamentalFactorModel.
 #' 
 #' 
-#' @param fit.fund fit object created by fitFundamentalFactorModel.
+#' @param x fit object created by fitFundamentalFactorModel.
 #' @param which.plot integer indicating which plot to create: "none" will
 #' create a menu to choose. Defualt is none. 
 #' 1 = "Factor returns",
@@ -55,9 +55,11 @@
 #' 
 #' plot(fit.fund)
 #' }
+#' @method plot FundamentalFactorModel
+#' @export
 #' 
 plot.FundamentalFactorModel <- 
-function(fit.fund,which.plot=c("none","1L","2L","3L","4L","5L","6L"),max.show=4,
+function(x,which.plot=c("none","1L","2L","3L","4L","5L","6L"),max.show=4,
          plot.single=FALSE, asset.name,
          which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                              "7L","8L","9L"),legend.txt=TRUE,...) 
@@ -67,14 +69,14 @@ require(PerformanceAnalytics)
  
 if (plot.single == TRUE) {
   
-  idx <- fit.fund$data[,fit.fund$assetvar]  == asset.name  
-  asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
-  dates <- fit.fund$data[idx,fit.fund$datevar] 
+  idx <- x$data[,x$assetvar]  == asset.name  
+  asset.ret <- x$data[idx,x$returnsvar]
+  dates <- x$data[idx,x$datevar] 
   actual.z <- zoo(asset.ret,as.Date(dates))
-  residuals.z <- zoo(fit.fund$residuals[,asset.name],as.Date(dates))
+  residuals.z <- zoo(x$residuals[,asset.name],as.Date(dates))
   fitted.z <- actual.z - residuals.z
   t <- length(dates)
-  k <- length(fit.fund$exposure.names)
+  k <- length(x$exposure.names)
   
   which.plot.single<-menu(c("time series plot of actual and fitted values",
                             "time series plot of residuals with standard error bands",
@@ -155,7 +157,7 @@ if (plot.single == TRUE) {
                          "Factor Contributions to VaR"),
                        title="Factor Analytics Plot \nMake a plot selection (or 0 to exit):\n") 
     
-    n <- length(fit.fund$asset.names)
+    n <- length(x$asset.names)
     if (n >= max.show) {
       cat(paste("numbers of assets are greater than",max.show,", show only first",
                 max.show,"assets",sep=" "))
@@ -164,42 +166,42 @@ if (plot.single == TRUE) {
     switch(which.plot,
            
            "1L" = {
-            factor.names <- colnames(fit.fund$factor.returns)
+            factor.names <- colnames(x$factor.returns)
 #             nn <- length(factor.names)
             par(mfrow=c(n,1))
             options(show.error.messages=FALSE) 
             for (i in factor.names[1:n]) {
-            plot(fit.fund$factor.returns[,i],main=paste(i," Factor Returns",sep="") )
+            plot(x$factor.returns[,i],main=paste(i," Factor Returns",sep="") )
             }
             par(mfrow=c(1,1))
            }, 
           "2L" ={
             par(mfrow=c(n,1))
-            names <- colnames(fit.fund$residuals[,1:n])
+            names <- colnames(x$residuals[,1:n])
             for (i in names) {
-            plot(fit.fund$residuals[,i],main=paste(i," Residuals", sep=""))
+            plot(x$residuals[,i],main=paste(i," Residuals", sep=""))
             }
             par(mfrow=c(1,1))
            },
            "3L" = {
-             barplot(fit.fund$resid.variance[c(1:n)],...)  
+             barplot(x$resid.variance[c(1:n)],...)  
            },    
            
            "4L" = {
-             cor.fm = cov2cor(fit.fund$returns.cov$cov)
+             cor.fm = cov2cor(x$returns.cov$cov)
              rownames(cor.fm) = colnames(cor.fm)
              ord <- order(cor.fm[1,])
              ordered.cor.fm <- cor.fm[ord, ord]
              plotcorr(ordered.cor.fm[c(1:n),c(1:n)], col=cm.colors(11)[5*ordered.cor.fm + 6])
            },
            "5L" = {
-             cov.factors = var(fit.fund$factor.returns)
-             names = fit.fund$asset.names
+             cov.factors = var(x$factor.returns)
+             names = x$asset.names
              factor.sd.decomp.list = list()
              for (i in names) {
                factor.sd.decomp.list[[i]] =
-                 factorModelSdDecomposition(fit.fund$beta[i,],
-                                            cov.factors, fit.fund$resid.variance[i])
+                 factorModelSdDecomposition(x$beta[i,],
+                                            cov.factors, x$resid.variance[i])
              }
              # function to efit.stattract contribution to sd from list
              getCSD = function(x) {
@@ -207,7 +209,7 @@ if (plot.single == TRUE) {
              }
              # extract contributions to SD from list
              cr.sd = sapply(factor.sd.decomp.list, getCSD)
-             rownames(cr.sd) = c(colnames(fit.fund$factor.returns), "residual")
+             rownames(cr.sd) = c(colnames(x$factor.returns), "residual")
              # create stacked barchart 
              # discard intercept 
              barplot(cr.sd[-1,(1:max.show)], main="Factor Contributions to SD",
@@ -215,19 +217,19 @@ if (plot.single == TRUE) {
            } ,
            "6L" = {
            factor.es.decomp.list = list()
-           names = fit.fund$asset.names
+           names = x$asset.names
            for (i in names) {
              # check for missing values in fund data
-#             idx = which(!is.na(fit.fund$data[,i]))
-             idx <- fit.fund$data[,fit.fund$assetvar]  == i  
-             asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
-             tmpData = cbind(asset.ret, fit.fund$factor.returns,
-                             fit.fund$residuals[,i]/sqrt(fit.fund$resid.variance[i]) )
+#             idx = which(!is.na(x$data[,i]))
+             idx <- x$data[,x$assetvar]  == i  
+             asset.ret <- x$data[idx,x$returnsvar]
+             tmpData = cbind(asset.ret, x$factor.returns,
+                             x$residuals[,i]/sqrt(x$resid.variance[i]) )
              colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
              factor.es.decomp.list[[i]] = 
                factorModelEsDecomposition(tmpData, 
-                                          fit.fund$beta[i,],
-                                          fit.fund$resid.variance[i], tail.prob=0.05)
+                                          x$beta[i,],
+                                          x$resid.variance[i], tail.prob=0.05)
            }
           
            # stacked bar charts of percent contributions to ES 
@@ -236,25 +238,25 @@ if (plot.single == TRUE) {
            }
            # report as positive number
            cr.etl = sapply(factor.es.decomp.list, getCETL)
-           rownames(cr.etl) = c(colnames(fit.fund$factor.returns), "residual")
+           rownames(cr.etl) = c(colnames(x$factor.returns), "residual")
            barplot(cr.etl[-1,(1:max.show)], main="Factor Contributions to ES",
                    legend.text=legend.txt, args.legend=list(x="topleft"),...)
            },
            "7L" =  {
              factor.VaR.decomp.list = list()
-             names = fit.fund$asset.names
+             names = x$asset.names
              for (i in names) {
                # check for missing values in fund data
-               #             idx = which(!is.na(fit.fund$data[,i]))
-               idx <- fit.fund$data[,fit.fund$assetvar]  == i  
-               asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
-               tmpData = cbind(asset.ret, fit.fund$factor.returns,
-                               fit.fund$residuals[,i]/sqrt(fit.fund$resid.variance[i]) )
+               #             idx = which(!is.na(x$data[,i]))
+               idx <- x$data[,x$assetvar]  == i  
+               asset.ret <- x$data[idx,x$returnsvar]
+               tmpData = cbind(asset.ret, x$factor.returns,
+                               x$residuals[,i]/sqrt(x$resid.variance[i]) )
                colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
                factor.VaR.decomp.list[[i]] = 
                  factorModelVaRDecomposition(tmpData, 
-                                            fit.fund$beta[i,],
-                                            fit.fund$resid.variance[i], tail.prob=0.05)
+                                            x$beta[i,],
+                                            x$resid.variance[i], tail.prob=0.05)
              }
              
              
@@ -264,7 +266,7 @@ if (plot.single == TRUE) {
              }
              # report as positive number
              cr.var = sapply(factor.VaR.decomp.list, getCVaR)
-             rownames(cr.var) = c(colnames(fit.fund$factor.returns), "residual")
+             rownames(cr.var) = c(colnames(x$factor.returns), "residual")
              barplot(cr.var[-1,(1:max.show)], main="Factor Contributions to VaR",
                      legend.text=legend.txt, args.legend=list(x="topleft"),...)
            },
@@ -272,7 +274,6 @@ if (plot.single == TRUE) {
     )         
 } 
 
-  
   
 } 
   

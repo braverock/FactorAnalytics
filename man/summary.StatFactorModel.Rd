@@ -2,10 +2,10 @@
 \alias{summary.StatFactorModel}
 \title{summary method for StatFactorModel object.}
 \usage{
-  summary.StatFactorModel(fit.stat, digits = 3)
+  \method{summary}{StatFactorModel} (object, digits = 3)
 }
 \arguments{
-  \item{fit.stat}{fit.stat object created by
+  \item{object}{An Object created by
   fitStatisticalFactorModel.}
 
   \item{digits}{Integer indicating the number of decimal

@@ -5,35 +5,36 @@
 #' newdata must be data.frame and contians date variable, asset variable and exact
 #' exposures names that are used in fit object by \code{fitFundamentalFactorModel}  
 #'
-#' @param fit "FundamentalFactorModel" object 
+#' @param object fit "FundamentalFactorModel" object 
 #' @param newdata An optional data frame in which to look for variables with which to predict. 
 #'                If omitted, the fitted values are used. 
 #' @param new.assetvar specify new asset variable in newdata if newdata is provided.
-#' @param new.datevar  speficy new date variable in newdata if newdata is provided.                
+#' @param new.datevar  speficy new date variable in newdata if newdata is provided. 
+#' @method predict FundamentalFactorModel               
 #' @export
 #' @author Yi-An Chen
 #' 
-predict.FundamentalFactorModel <- function(fit.fund,newdata,new.assetvar,new.datevar){
+predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datevar){
  
   # if there is no newdata provided
   # calculate fitted values
-   datevar <- as.character(fit.fund$datevar)
-   assetvar <- as.character(fit.fund$assetvar)
-   assets = unique(fit.fund$data[,assetvar])
-   timedates = as.Date(unique(fit.fund$data[,datevar]))
-   exposure.names <- fit.fund$exposure.names
+   datevar <- as.character(object$datevar)
+   assetvar <- as.character(object$assetvar)
+   assets = unique(object$data[,assetvar])
+   timedates = as.Date(unique(object$data[,datevar]))
+   exposure.names <- object$exposure.names
    
   numTimePoints <- length(timedates)
   numExposures <- length(exposure.names)
   numAssets <- length(assets)
   
-  f <-  fit.fund$factor.returns # T X 3 
+  f <-  object$factor.returns # T X 3 
   
  
   predictor <- function(data) {
     fitted <- rep(NA,numAssets)
     for (i in 1:numTimePoints) {
-      fit.tmp <- fit.fund$beta %*% t(f[i,])
+      fit.tmp <- object$beta %*% t(f[i,])
       fitted <- rbind(fitted,t(fit.tmp))
     }
     fitted <- fitted[-1,]
@@ -63,7 +64,7 @@ predict.FundamentalFactorModel <- function(fit.fund,newdata,new.assetvar,new.dat
   }
   
   if (missing(newdata) || is.null(newdata)) {
-   ans <- predictor(fit.fund$data)
+   ans <- predictor(object$data)
  } 
   
   # predict returns by newdata
@@ -82,6 +83,5 @@ else  if (dim(newdata)[1] != numAssets*numTimePoints ) {
   ans <- predictor.new(newdata,new.datevar,new.assetvar) 
   }
  }
-
 return(ans)  
 }

@@ -2,11 +2,11 @@
 \alias{summary.FundamentalFactorModel}
 \title{summary FundamentalFactorModel object}
 \usage{
-  summary.FundamentalFactorModel(fit.fund,
+  \method{summary}{FundamentalFactorModel} (object,
     digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
-  \item{fit.fund}{fit object created by
+  \item{object}{An object created by
   fitFundamentalFactorModel.}
 
   \item{digits}{integer indicating the number of decimal

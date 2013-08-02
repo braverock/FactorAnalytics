@@ -2,7 +2,7 @@
 \alias{plot.StatFactorModel}
 \title{plot StatFactorModel object.}
 \usage{
-  plot.StatFactorModel(fit.stat, variables,
+  \method{plot}{StatFactorModel} (x, variables,
     cumulative = TRUE, style = "bar",
     which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L"),
     hgrid = FALSE, vgrid = FALSE, plot.single = FALSE,
@@ -11,7 +11,7 @@
     max.show = 6, ...)
 }
 \arguments{
-  \item{fit.stat}{fit object created by
+  \item{x}{fit object created by
   fitStatisticalFactorModel.}
 
   \item{variables}{Optional. an integer vector telling

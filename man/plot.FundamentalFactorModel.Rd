@@ -2,14 +2,14 @@
 \alias{plot.FundamentalFactorModel}
 \title{plot FundamentalFactorModel object.}
 \usage{
-  plot.FundamentalFactorModel(fit.fund,
+  \method{plot}{FundamentalFactorModel} (x,
     which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L"),
     max.show = 4, plot.single = FALSE, asset.name,
     which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L"),
     legend.txt = TRUE, ...)
 }
 \arguments{
-  \item{fit.fund}{fit object created by
+  \item{x}{fit object created by
   fitFundamentalFactorModel.}
 
   \item{which.plot}{integer indicating which plot to

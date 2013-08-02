@@ -2,15 +2,14 @@
 \alias{plot.TimeSeriesFactorModel}
 \title{plot TimeSeriesfactorModel object.}
 \usage{
-  plot.TimeSeriesFactorModel(fit.macro, colorset = c(1:12),
-    legend.loc = NULL,
+  \method{plot}{TimeSeriesFactorModel} (x,
+    colorset = c(1:12), legend.loc = NULL,
     which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L"),
     max.show = 6, plot.single = FALSE, asset.name,
     which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L", "10L", "11L", "12L", "13L"))
 }
 \arguments{
-  \item{fit.macro}{fit object created by
-  fitTimeSeriesFactorModel.}
+  \item{x}{fit object created by fitTimeSeriesFactorModel.}
 
   \item{colorset}{Defualt colorset is c(1:12).}
 

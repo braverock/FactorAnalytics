@@ -3,7 +3,7 @@
 #' Generic function of predict method for fitStatisticalFactorModel. It utilizes
 #' function \code{predict.lm}.
 #' 
-#' @param fit.stat "StatFactorModel" object created by fitStatisticalFactorModel.
+#' @param object  A fit object created by fitStatisticalFactorModel.
 #' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
 #' @param ... Any other arguments used in \code{predict.lm}. For example like newdata and fit.se. 
 #' @author Yi-An Chen.
@@ -14,16 +14,17 @@
 #                                   ckeckData.method="data.frame")
 #' 
 #' predict(fit)
+#' @method predict StatFactorModel
 #' @export
 #' 
 
 
-predict.StatFactorModel <- function(fit.stat,newdata = NULL,...){
+predict.StatFactorModel <- function(object,newdata = NULL,...){
   
   if (missing(newdata) || is.null(newdata)  ) {
-    lapply(fit.stat$asset.fit, predict,...)
+    lapply(object$asset.fit, predict,...)
   } else  {
     newdata <- checkData(newdata,method = "data.frame")
-    lapply(fit.stat$asset.fit, predict ,newdata,... )
+    lapply(object$asset.fit, predict ,newdata,... )
   } 
 }
