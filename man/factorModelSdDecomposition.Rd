@@ -23,19 +23,16 @@
 }
 \examples{
 # load data from the database
-data(managers.df)
-ret.assets = managers.df[,(1:6)]
-factors    = managers.df[,(7:9)]
-# fit the factor model with OLS
-fit <- fitMacroeconomicFactorModel(ret.assets,factors,fit.method="OLS",
-                                 variable.selection="all subsets",
-                                 factor.set = 3)
-# factor SD decomposition for HAM1
-cov.factors = var(factors)
-manager.names = colnames(managers.df[,(1:6)])
-factor.names  = colnames(managers.df[,(7:9)])
-factor.sd.decomp.HAM1 = factorModelSdDecomposition(fit$beta.mat["HAM1",],
-                                                   cov.factors, fit$residVars.vec["HAM1"])
+data("stat.fm.data")
+fit.stat <- fitStatisticalFactorModel(sfm.dat,k=2)
+cov.factors = var(fit.stat$factors)
+names = colnames(fit.stat$asset.ret)
+factor.sd.decomp.list = list()
+for (i in names) {
+ factor.sd.decomp.list[[i]] =
+   factorModelSdDecomposition(fit.stat$loadings[,i],
+                              cov.factors, fit.stat$resid.variance[i])
+}
 }
 \author{
   Eric Zivot and Yi-An Chen

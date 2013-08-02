@@ -6,7 +6,7 @@
     which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L"),
     max.show = 4, plot.single = FALSE, asset.name,
     which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L"),
-    legend.txt = TRUE, ...)
+    legend.txt = TRUE, VaR.method = "historical", ...)
 }
 \arguments{
   \item{x}{fit object created by
@@ -39,6 +39,12 @@
 
   \item{legend.txt}{Logical. TRUE will plot legend on
   barplot. Defualt is \code{TRUE}.}
+
+  \item{VaR.method}{haracter, method for computing VaR.
+  Valid choices are one of
+  "modified","gaussian","historical", "kernel". computation
+  is done with the \code{VaR} in the PerformanceAnalytics
+  package. Default is "historical".}
 
   \item{...}{other variables for barplot method.}
 }

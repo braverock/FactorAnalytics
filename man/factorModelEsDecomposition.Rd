@@ -4,7 +4,7 @@
 \usage{
   factorModelEsDecomposition(Data, beta.vec, sig2.e,
     tail.prob = 0.05,
-    VaR.method = c("HS", "CornishFisher"))
+    VaR.method = c("modified", "gaussian", "historical", "kernel"))
 }
 \arguments{
   \item{Data}{\code{B x (k+2)} matrix of historic or
@@ -23,11 +23,10 @@
   quantile. Typically 0.01 or 0.05.}
 
   \item{VaR.method}{character, method for computing VaR.
-  Valid choices are "HS" for historical simulation
-  (empirical quantile); "CornishFisher" for modified VaR
-  based on Cornish-Fisher quantile estimate. Cornish-Fisher
-  computation is done with the VaR.CornishFisher in the
-  PerformanceAnalytics package.}
+  Valid choices are one of
+  "modified","gaussian","historical", "kernel". computation
+  is done with the \code{VaR} in the PerformanceAnalytics
+  package. package.}
 }
 \value{
   A list with the following components:

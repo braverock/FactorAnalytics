@@ -2,12 +2,12 @@
 \alias{factorModelVaRDecomposition}
 \title{Compute factor model factor VaR decomposition}
 \usage{
-  factorModelVaRDecomposition(bootData, beta.vec, sig2.e,
+  factorModelVaRDecomposition(Data, beta.vec, sig2.e,
     tail.prob = 0.01,
-    VaR.method = c("HS", "CornishFisher"))
+    VaR.method = c("modified", "gaussian", "historical", "kernel"))
 }
 \arguments{
-  \item{bootData}{B x (k+2) matrix of bootstrap data. First
+  \item{Data}{B x (k+2) matrix of bootstrap data. First
   column contains the fund returns, second through k+1
   columns contain factor returns, (k+2)nd column contain
   residuals scaled to have unit variance .}
@@ -20,11 +20,10 @@
   \item{tail.prob}{scalar, tail probability}
 
   \item{VaR.method}{character, method for computing VaR.
-  Valid choices are "HS" for historical simulation
-  (empirical quantile); "CornishFisher" for modified VaR
-  based on Cornish-Fisher quantile estimate. Cornish-Fisher
-  computation is done with the VaR.CornishFisher in the
-  PerformanceAnalytics package.}
+  Valid choices are one of
+  "modified","gaussian","historical", "kernel". computation
+  is done with the \code{VaR} in the PerformanceAnalytics
+  package.}
 }
 \value{
   an S3 object containing
@@ -55,8 +54,9 @@ fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)])
 tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
 residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
 colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
-factor.VaR.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
-                                                  fit.macro$resid.variance[1], tail.prob=0.05)
+factor.VaR.decomp.HAM1 = factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],
+                                                  fit.macro$resid.variance[1], tail.prob=0.05,
+                                                  VaR.method="historical)
 }
 \author{
   Eric Zivot and Yi-An Chen

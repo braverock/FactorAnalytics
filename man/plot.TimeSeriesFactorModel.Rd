@@ -6,7 +6,8 @@
     colorset = c(1:12), legend.loc = NULL,
     which.plot = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L"),
     max.show = 6, plot.single = FALSE, asset.name,
-    which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L", "10L", "11L", "12L", "13L"))
+    which.plot.single = c("none", "1L", "2L", "3L", "4L", "5L", "6L", "7L", "8L", "9L", "10L", "11L", "12L", "13L"),
+    VaR.method = "historical")
 }
 \arguments{
   \item{x}{fit object created by fitTimeSeriesFactorModel.}
@@ -43,6 +44,12 @@
   OLS residuals 12= CUSUM plot of recursive estimates
   relative to full sample estimates 13= rolling estimates
   over 24 month window}
+
+  \item{VaR.method}{haracter, method for computing VaR.
+  Valid choices are one of
+  "modified","gaussian","historical", "kernel". computation
+  is done with the \code{VaR} in the PerformanceAnalytics
+  package. Default is "historical".}
 }
 \description{
   Generic function of plot method for
