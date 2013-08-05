@@ -7,15 +7,12 @@
 #' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
 #' @param ... Any other arguments used in \code{predict.lm}. For example like newdata and fit.se. 
 #' @author Yi-An Chen.
-#' ' 
+#' @method predict StatFactorModel
+#' @export 
 #' @examples
 #' data(stat.fm.data)
-#'.fit <- fitStatisticalFactorModel(sfm.dat,k=2,
-#                                   ckeckData.method="data.frame")
-#' 
-#' predict(fit)
-#' @method predict StatFactorModel
-#' @export
+#' fit <- fitStatisticalFactorModel(sfm.dat,k=2)
+#' pred.stat <- predict(fit)
 #' 
 
 

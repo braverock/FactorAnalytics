@@ -79,12 +79,12 @@
 \examples{
 # load data from the database
 data(managers.df)
-fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
                                 data=managers.df,fit.method="OLS")
-factorData=factors
-Beta.mat=fit$beta.mat
-residualData=as.matrix(fit$residVars.vec,1,6)
+factorData= managers.df[,c("EDHEC.LS.EQ","SP500.TR")]
+Beta.mat=fit$beta
+residualData=as.matrix(fit$resid.variance,1,6)
 n.boot=1000
 # bootstrap returns data from factor model with residuals sample from normal distribution
 bootData <- factorModelMonteCarlo(n.boot, factorData,Beta.mat, residual.dist="normal",

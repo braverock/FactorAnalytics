@@ -7,16 +7,16 @@
 #' @param digits Integer indicating the number of decimal places. Default is 3.
 #' @param ... other option used in \code{summary.lm}
 #' @author Yi-An Chen.
+#' @method summary StatFactorModel
+#' @export
 #' @examples
 #' 
 #' # load data from the database
-#' data(managers.df)
+#' data(stat.fm.data)
 #' # fit the factor model with OLS
-#' fit <- fitStatisticalFactorModel(fitStatisticalFactorModel(sfm.dat,k=2,
-#'                                   ckeckData.method="data.frame"))
+#' fit <- fitStatisticalFactorModel(sfm.dat,k=2)
 #' summary(fit)
-#' @method summary StatFactorModel
-#' @export
+#' 
 #' 
 summary.StatFactorModel <- function(object,digits=3){
   if(!is.null(cl <- object$call)) {

@@ -22,11 +22,10 @@
 }
 \examples{
 data(stat.fm.data)
-.fit <- fitStatisticalFactorModel(sfm.dat,k=2,
-
-predict(fit)
+fit <- fitStatisticalFactorModel(sfm.dat,k=2)
+pred.stat <- predict(fit)
 }
 \author{
-  Yi-An Chen. '
+  Yi-An Chen.
 }
 

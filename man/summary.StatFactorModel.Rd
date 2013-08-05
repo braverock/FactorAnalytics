@@ -19,10 +19,9 @@
 }
 \examples{
 # load data from the database
-data(managers.df)
+data(stat.fm.data)
 # fit the factor model with OLS
-fit <- fitStatisticalFactorModel(fitStatisticalFactorModel(sfm.dat,k=2,
-                                  ckeckData.method="data.frame"))
+fit <- fitStatisticalFactorModel(sfm.dat,k=2)
 summary(fit)
 }
 \author{

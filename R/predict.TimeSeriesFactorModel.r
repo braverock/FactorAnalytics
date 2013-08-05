@@ -14,12 +14,14 @@
 #' data(managers.df)
 #' ret.assets = managers.df[,(1:6)]
 #' # fit the factor model with OLS
-#' fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+#' fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
 #'                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
 #'                                data=managers.df,fit.method="OLS")
 #' 
-#' predict(fit)
-#' predict(fit,newdata,interval="confidence")
+#' pred.fit <- predict(fit)
+#' newdata <- data.frame(EDHEC.LS.EQ = rnorm(n=120), SP500.TR = rnorm(n=120) )
+#' rownames(newdata) <- rownames(fit$data)
+#' pred.fit2 <- predict(fit,newdata,interval="confidence")
 #' 
 #' @method predict TimeSeriesFactorModel
 #' @export

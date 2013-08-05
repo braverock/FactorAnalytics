@@ -1,7 +1,6 @@
 \docType{data}
 \name{Stock.df}
 \alias{Stock.df}
-\alias{stock}
 \title{constructed NYSE 447 assets from 1996-01-01 through 2003-12-31.}
 \description{
   constructed NYSE 447 assets from 1996-01-01 through

@@ -20,7 +20,7 @@
 \examples{
 # load data from the database
 data(managers.df)
-fit.macro <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
                                       factors.names=c("EDHEC.LS.EQ","SP500.TR"),
                                       data=managers.df,fit.method="OLS")
 print(fit.macro)

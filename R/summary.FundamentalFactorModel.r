@@ -7,12 +7,14 @@
 #' @param digits integer indicating the number of decimal places. Default is 3.
 #' @param ...  Other arguments for print methods.
 #' @author Yi-An Chen.
+#' @method summary FundamentalFactorModel
+#' @export
 #' @examples
 #' 
 #' data(Stock.df)
 #' # there are 447 assets  
 #' exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
-#' test.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+#' test.fit <- fitFundamentalFactorModel(data=stock,exposure.names=exposure.names,
 #'                                        datevar = "DATE", returnsvar = "RETURN",
 #'                                        assetvar = "TICKER", wls = TRUE, 
 #'                                        regression = "classic", 
@@ -20,8 +22,7 @@
 #'                                        robust.scale = TRUE)
 #' 
 #' summary(test.fit)
-#' @method summary FundamentalFactorModel
-#' @export 
+#'  
 summary.FundamentalFactorModel <-
   function(object, digits = max(3, .Options$digits - 3), ...)
   {
