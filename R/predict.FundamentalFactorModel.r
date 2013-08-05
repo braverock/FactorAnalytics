@@ -14,7 +14,7 @@
 #' @export
 #' @author Yi-An Chen
 #' @examples
-#' data(stock.df)
+#' data(Stock.df)
 #' fit.fund <- fitFundamentalFactorModel(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP")
 #'                                      , data=stock,returnsvar = "RETURN",datevar = "DATE",  
 #'                                      assetvar = "TICKER",

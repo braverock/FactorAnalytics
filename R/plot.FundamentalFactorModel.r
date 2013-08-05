@@ -43,7 +43,7 @@
 #' 
 #' \dontrun{
 #' # BARRA type factor model
-#' data(stock.df)
+#' data(Stock.df)
 #' # there are 447 assets  
 #' exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
 #' fit.fund <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
