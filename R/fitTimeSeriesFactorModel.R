@@ -72,7 +72,7 @@
 #'  \dontrun{
 #' # load data from the database
 #' data(managers.df)
-#' fit <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
+#' fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
 #'                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
 #'                                 data=managers.df,fit.method="OLS")
 #' # summary of HAM1 

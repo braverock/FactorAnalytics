@@ -81,14 +81,13 @@ fit.fund <- fitFundamentalFactorModel(exposure.names=c("BOOK2MARKET", "LOG.MARKE
                                       wls = TRUE, regression = "classic",
                                       covariance = "classic", full.resid.cov = FALSE)
  idx <- fit.fund$data[,fit.fund$assetvar]  == "STI"
- asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
- tmpData = cbind(asset.ret, fit.fund$factors,
-                 fit.fund$residuals[,"STI"]/sqrt(fit.fund$resid.variance["STI"]) )
-  colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
-  factorModelEsDecomposition(tmpData,
+asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
+tmpData = cbind(asset.ret, fit.fund$factor.returns,
+                fit.fund$residuals[,"STI"]/sqrt(fit.fund$resid.variance["STI"]) )
+colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
+factorModelEsDecomposition(tmpData,
                           fit.fund$beta["STI",],
-                          fit.fund$resid.variance["STI"], tail.prob=0.05,
-                          VaR.method = "historical" )
+                          fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method="historical")
 }
 \author{
   Eric Zviot and Yi-An Chen.
