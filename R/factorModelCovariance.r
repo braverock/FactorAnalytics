@@ -60,6 +60,8 @@
 #' ret.cov.fundm <- factorModelCovariance(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.variance)
 #' fit.fund$returns.cov$cov == ret.cov.fundm
 #' }
+#' @export
+#' 
 
 factorModelCovariance <-
 function(beta, factor.cov, resid.variance) {

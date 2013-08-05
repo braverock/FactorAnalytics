@@ -36,12 +36,14 @@
 #' @param return.residuals logical; if \code{TRUE} then return simulated
 #' residuals in output list object.
 #' @return A list with the following components:
-#' @returnItem returns \code{n.boot x n.funds} matrix of simulated fund
+#' \itemize{
+#' \item returns \code{n.boot x n.funds} matrix of simulated fund
 #' returns.
-#' @returnItem factors \code{n.boot x n.factors} matrix of resampled factor
+#' \item factors \code{n.boot x n.factors} matrix of resampled factor
 #' returns. Returned only if \code{return.factors = TRUE}.
-#' @returnItem residuals \code{n.boot x n.funds} matrix of simulated fund
+#' \item residuals \code{n.boot x n.funds} matrix of simulated fund
 #' residuals. Returned only if \code{return.residuals = TRUE}.
+#' }
 #' @author Eric Zivot and Yi-An Chen.
 #' @references Jiang, Y. (2009). UW PhD Thesis.
 #' @export

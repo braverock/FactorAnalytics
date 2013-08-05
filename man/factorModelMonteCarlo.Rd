@@ -56,7 +56,14 @@
   return simulated residuals in output list object.}
 }
 \value{
-  A list with the following components:
+  A list with the following components: \itemize{ \item
+  returns \code{n.boot x n.funds} matrix of simulated fund
+  returns. \item factors \code{n.boot x n.factors} matrix
+  of resampled factor returns. Returned only if
+  \code{return.factors = TRUE}. \item residuals
+  \code{n.boot x n.funds} matrix of simulated fund
+  residuals. Returned only if \code{return.residuals =
+  TRUE}. }
 }
 \description{
   Simulate returns using factor model Monte Carlo method.
