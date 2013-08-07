@@ -5,7 +5,8 @@
   fitFundamentalFactorModel(data, exposure.names, datevar,
     returnsvar, assetvar, wls = TRUE,
     regression = "classic", covariance = "classic",
-    full.resid.cov = FALSE, robust.scale = FALSE)
+    full.resid.cov = FALSE, robust.scale = FALSE,
+    standardized.factor.exposure = FALSE, weight.var)
 }
 \arguments{
   \item{data}{data.frame, data must have \emph{assetvar},
@@ -37,11 +38,19 @@
   \item{returnsvar}{A character string giving the name of
   the return variable in the data.}
 
-  \item{datevar}{A character string giving the name of the
+  \item{datevar}{A character string gives the name of the
   date variable in the data.}
 
-  \item{assetvar}{A character string giving the name of the
+  \item{assetvar}{A character string gives the name of the
   asset variable in the data.}
+
+  \item{standardized.factor.exposure}{logical flag. Factor
+  exposure will be standarized to regression weighted mean
+  0 and standardized deviation to 1 if \code(TRUE). Default
+  is \code(FALSE). See Detail.}
+
+  \item{weight.var.}{A character strping gives the name of
+  the weight used for standarizing factor exposures.}
 }
 \value{
   an S3 object containing \itemize{ \item returns.cov A
@@ -78,6 +87,12 @@
   "FundamentalFactorModel".
 }
 \details{
+  If style factor exposure is standardized to
+  regression-weighted mean zero, this makes style factors
+  orthogonal to the Word factor (intercept term), which in
+  turn facilitted interpretation of the style factor
+  returns. See Menchero 2010.
+
   The original function was designed by Doug Martin and
   originally implemented in S-PLUS by a number of UW Ph.D.
   students:Christopher Green, Eric Aldrich, and Yindeng
@@ -87,7 +102,6 @@
   to R and robustbase Basic robust statistics package for R
 }
 \examples{
-\dontrun{
 # BARRA type factor model
 data(Stock.df)
 # there are 447 assets
@@ -130,12 +144,13 @@ test.fit2$resid.variance
 test.fit2$resids
 test.fit2$tstats
 test.fit2$call
-
-
-
-}
 }
 \author{
   Guy Yullen and Yi-An Chen
+}
+\references{
+  \itemize{ \item "The Characteristics of Factor
+  Portfolios", Fall 2010, MENCHERO Jose, Journal of
+  Performance Measurement. }
 }
 
