@@ -38,7 +38,15 @@ args(fitFundamentalFactorModel)
 @
 \verb@data@ is in class of \verb@data.frame@ and is required to have \emph{assetvar},\emph{returnvar} and \emph{datevar}. One can image data is like panel data setup and need firm variable and time variable. So data has dimension (N x T) and at least 3 colnumes to specify information needed.    
 
+We download data from CRSP/Compustat quarterly fundamental and name \verb@equity@ which contains 67 stocks from January 2000 to Decenmber 2013.  
 
+<<loading.data>>=
+equity <- read.csv(file="equity.csv")
+names(equity)
+length(unique(equity$datadate)) # number of period t 
+length(unique(equity$tic)) # number of assets
+@
+We want return
 
 
 
