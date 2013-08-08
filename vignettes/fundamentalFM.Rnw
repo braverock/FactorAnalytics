@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+% \VignetteIndexEntry{test file}
+% \VignetteKeywords{facor model, risk analytics}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{factorAnalytics: fundamental factor model}
+\author{Yi-An Chen}
+\maketitle
+
+\section{Introduction}
+This vignette aims to help users to learn how to use fundamental factor model in \verb@factorAnalytics@ package. We will walk through users a few examples from scratch. 
+
+\subsection{Fundamental Factor Model}
+A factor model is defined as \\
+\begin{equation} \label{fm}
+ r_t = bf + \epsilon_t\;,t=1 \cdots T  
+\end{equation}
+Where $r_t$ is N x 1, b is N x K and f is K x 1. N is number of variables and K is number of factors. b is usually called factor exposures or factor loadings and f is factor returns. $\epsilon_t$ is serial uncorrelated but may be cross-correlated. The model is useful to fit for examples asset returns. The famous CAPM (Capital Assets Pricing Model) is a one factor model with f equal to market returns.
+
+In the case of fundamental factor model, we assume we know b, factor exposures which are assets characteristics, like market capitalization or book-to-market ratio. f is unknown and we can use OLS or WLS regression skills to estimate for each period. In specific,
+\begin{equation}\label{ffm}
+r_t = f_M + b\hat{f_t} + \hat{\epsilon_t}\;,t=1 \cdots T 
+\end{equation}
+$f_M$ is normally called market factor or world factor depending on the context on the country level or global level. Econometrically, it is an intercept term of fundamental factor model. $f_t$ is estimated with cross-sectional in each period t.
+
+This approach is also called BARRA type approach since it is initially deceloped by BARRA and later on been merged by MSCI. The famous Barra global equity model (GEM3) contains more than 50 factors. 
+
+\section{Example}
+We will walk through some examples in this section. First example will use style factors like size and then we industry/country dummies. 
+\subsection{Loading Data}
+Let's look at the arguments of \verb@fitFundamentalFactorModel()@ which will deal with fundamental factor model in \verb@factorAnalytics@.
+<<args>>=
+library(factorAnalytics)
+args(fitFundamentalFactorModel)
+@
+\verb@data@ is in class of \verb@data.frame@ and is required to have \emph{assetvar},\emph{returnvar} and \emph{datevar}. One can image data is like panel data setup and need firm variable and time variable. So data has dimension (N x T) and at least 3 colnumes to specify information needed.    
+
+
+
+
+
+\end{document}
