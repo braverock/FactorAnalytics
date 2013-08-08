@@ -7,6 +7,12 @@
 \title{Functions for Cornish-Fisher density, CDF, random number simulation and
 quantile.}
 \usage{
+  dCornishFisher(x, n, skew, ekurt)
+
+  pCornishFisher(q, n, skew, ekurt)
+
+  qCornishFisher(p, n, skew, ekurt)
+
   rCornishFisher(n, sigma, skew, ekurt, seed = NULL)
 }
 \arguments{

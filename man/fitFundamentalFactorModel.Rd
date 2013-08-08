@@ -106,7 +106,7 @@
 data(Stock.df)
 # there are 447 assets
 exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
-test.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+test.fit <- fitFundamentalFactorModel(data=stock,exposure.names=exposure.names,
                                        datevar = "DATE", returnsvar = "RETURN",
                                        assetvar = "TICKER", wls = TRUE,
                                        regression = "classic",
@@ -127,7 +127,7 @@ test.fit$call
 # BARRA type Industry Factor Model
 exposure.names <- c("GICS.SECTOR")
 # the rest keep the same
-test.fit2 <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+test.fit2 <- fitFundamentalFactorModel(data=stock,exposure.names=exposure.names,
                                        datevar = "DATE", returnsvar = "RETURN",
                                        assetvar = "TICKER", wls = TRUE,
                                        regression = "classic",
