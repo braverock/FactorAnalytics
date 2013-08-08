@@ -201,13 +201,13 @@
         w[k] = w[k-1]/decay.factor 
       }   
       w <- w/sum(w)
-      rollReg <- function(data.z, formula,w) {
+      rollReg.w <- function(data.z, formula,w) {
         coef(lm(formula,weights=w, data = as.data.frame(data.z)))  
       }
       reg.z = zoo(fit.lm$model[-length(fit.lm$model)], as.Date(rownames(fit.lm$model)))
       factorNames = colnames(fit.lm$model)[c(-1,-length(fit.lm$model))]
       fit.formula = as.formula(paste(asset.name,"~", paste(factorNames, collapse="+"), sep=" "))
-      rollReg.z = rollapply(reg.z, FUN=rollReg, fit.formula,w, width=24, by.column = FALSE, 
+      rollReg.z = rollapply(reg.z, FUN=rollReg.w, fit.formula,w, width=24, by.column = FALSE, 
                             align="right")
       plot(rollReg.z, main=paste("24-month rolling regression estimates:", asset.name, sep=" ")) 
     } 
