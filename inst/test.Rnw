@@ -1,0 +1,13 @@
+\documentclass{article}
+% \VignetteIndexEntry{test file}
+%\VignetteDepends{factorAnalytics}
+%\VignetteKeywords{facor model, risk analytics}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{test file for vignette}
+\author{Yi-An Chen}
+\maketitle
+
+\end{document}
