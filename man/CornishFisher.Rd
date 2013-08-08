@@ -1,4 +1,5 @@
-\name{rCornishFisher}
+\name{CornishFisher}
+\alias{CornishFisher}
 \alias{dCornishFisher}
 \alias{pCornishFisher}
 \alias{qCornishFisher}
@@ -47,7 +48,8 @@ quantile.}
   CDF(q) = Pr(sqrt(n)*(x_bar-mu)/sigma < q)
 }
 \examples{
-# generate 1000 observation from Cornish-Fisher distribution
+\dontrun{
+ # generate 1000 observation from Cornish-Fisher distribution
 rc <- rCornishFisher(1000,1,0,5)
 hist(rc,breaks=100,freq=FALSE,main="simulation of Cornish Fisher Distribution",
     xlim=c(-10,10))
@@ -64,6 +66,7 @@ pgamma(q/sqrt(5)+1,shape=5,scale=1/5)
 pnorm(q)
 # use edgeworth expansion
 pCornishFisher(q,n=5,skew=2,ekurt=6)
+}
 }
 \author{
   Eric Zivot and Yi-An Chen.

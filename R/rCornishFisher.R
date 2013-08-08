@@ -1,6 +1,8 @@
 #' Functions for Cornish-Fisher density, CDF, random number simulation and
 #' quantile.
 #'
+#'@name  CornishFisher
+#'@aliases CornishFisher
 #'@aliases rCornishFisher 
 #'@aliases dCornishFisher
 #'@aliases qCornishFisher
@@ -46,6 +48,7 @@
 #'  @details CDF(q) = Pr(sqrt(n)*(x_bar-mu)/sigma < q)
 #'  
 #'  @examples
+#'  \dontrun{
 #'  # generate 1000 observation from Cornish-Fisher distribution
 #' rc <- rCornishFisher(1000,1,0,5)
 #'hist(rc,breaks=100,freq=FALSE,main="simulation of Cornish Fisher Distribution",
@@ -63,7 +66,7 @@
 #' pnorm(q)
 #' # use edgeworth expansion
 #' pCornishFisher(q,n=5,skew=2,ekurt=6)
-#' 
+#' }
 
 
 

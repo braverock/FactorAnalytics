@@ -46,10 +46,10 @@
 
   \item{standardized.factor.exposure}{logical flag. Factor
   exposure will be standarized to regression weighted mean
-  0 and standardized deviation to 1 if \code(TRUE). Default
-  is \code(FALSE). See Detail.}
+  0 and standardized deviation to 1 if \code{TRUE}. Default
+  is \code{FALSE}. See Detail.}
 
-  \item{weight.var.}{A character strping gives the name of
+  \item{weight.var}{A character strping gives the name of
   the weight used for standarizing factor exposures.}
 }
 \value{
