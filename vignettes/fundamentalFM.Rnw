@@ -41,7 +41,8 @@ args(fitFundamentalFactorModel)
 We download data from CRSP/Compustat quarterly fundamental and name \verb@equity@ which contains 67 stocks from January 2000 to Decenmber 2013.  
 
 <<loading.data>>=
-equity <- data(equity)
+#equity <- data(equity)
+equity <- read.csv(file="equity.csv")
 names(equity)
 length(unique(equity$datadate)) # number of period t 
 length(unique(equity$tic)) # number of assets
