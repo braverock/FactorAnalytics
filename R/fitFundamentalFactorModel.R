@@ -138,16 +138,16 @@ fitFundamentalFactorModel <-
     require(robust)
     
     
-    assets = unique(data[,assetvar])
-    timedates = as.Date(unique(data[,datevar]))    
-    
+    assets = unique(data[[assetvar]])
+    timedates = as.Date(unique(data[[datevar]]))    
+#     data[[datevar]] <- as.Date(data[[datevar]])
     
     if (length(timedates) < 2) 
       stop("At least two time points, t and t-1, are needed for fitting the factor model.")
-    if (!is(exposure.names, "vector") || !is.character(exposure.names)) 
-      stop("exposure argument invalid---must be character vector.")
-    if (!is(assets, "vector") || !is.character(assets)) 
-      stop("assets argument invalid---must be character vector.")
+     if (!is(exposure.names, "vector") || !is.character(exposure.names)) 
+       stop("exposure argument invalid---must be character vector.")
+     if (!is(assets, "vector") || !is.character(assets)) 
+       stop("assets argument invalid---must be character vector.")
     
     wls <- as.logical(wls)
     full.resid.cov <- as.logical(full.resid.cov)
@@ -279,8 +279,7 @@ fitFundamentalFactorModel <-
         else stop(mess)
       }
       tstat <- rep(NA, length(model$coef))
-      tstat[!is.na(model$coef)] <- summary(model, cor = FALSE)$coef[, 
-                                                                    3]
+      tstat[!is.na(model$coef)] <- summary(model, cor = FALSE)$coef[,3]
       alphaord <- order(names(model$coef))
       c(length(model$coef), model$coef[alphaord], tstat[alphaord], 
         model$resid)
@@ -319,7 +318,8 @@ fitFundamentalFactorModel <-
         FE.hat <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                      FUN = wls.robust, modelterms = regression.formula, 
                      conlist = contrasts.list, w = weights)
-      } else { 
+      } 
+      else { 
         # wls.classic
         resids <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                      FUN = function(xdf, modelterms, conlist) {

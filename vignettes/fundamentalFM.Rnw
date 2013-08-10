@@ -41,12 +41,48 @@ args(fitFundamentalFactorModel)
 We download data from CRSP/Compustat quarterly fundamental and name \verb@equity@ which contains 67 stocks from January 2000 to Decenmber 2013.  
 
 <<loading.data>>=
-equity <- read.csv(file="equity.csv")
+equity <- data(equity)
 names(equity)
 length(unique(equity$datadate)) # number of period t 
 length(unique(equity$tic)) # number of assets
 @
-We want return
+We want asset returns.
+<<get.returns>>=
+library(quantmod)   # for Delt. See Delt for detail
+equity <- cbind(equity,do.call(rbind,lapply(split(equity,equity$tic), 
+                                            function(x) Delt(x$PRCCQ)))) 
+names(equity)[22] <- "RET"
+@
+We want market value and book-to-market ratio too. market vale can be achieved by commom stocks outstading x price and book value we use commom/ordinary equity value. 
+<<get.mv.bm>>==
+equity$MV <- equity$PRCCQ*equity$CSHOQ 
+equity$BM <- equity$CEQQ/equity$MV
+@
+now we use model \ref{ffm} where K=2, b = [ MV , BM ].
+
+We will get an error message if \verb@datevar@ is not \verb@as.Date@ format compatible. In our example, our date variable is \emph{DATACQTR} and looks like "2000Q1". We have to convert it to \verb@as.Date@ compatible. We can utilize \verb@as.yearqtr@ to do it. Aslo, we will use character string for asset variable instead of factor.
+<<as.yearqtr>>=
+a <- unlist( lapply(strsplit(as.character(equity$DATACQTR),"Q"),
+               function(x)  paste(x[[1]],"-",x[[2]],sep="") ) )
+equity$yearqtr <- as.yearqtr(a,format="%Y-%q")
+equity$tic <- as.character(equity$tic)
+equity <- subset(equity,yearqtr != "2000 Q1")
+# delete the first element of each assets
+@
+
+fit the function:
+<<fit.ffm>>=
+fit.fund <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),datevar="yearqtr",
+                                      returnsvar ="RET",assetvar="tic",wls=TRUE,data=equity)
+names(fit.fund)
+@
+
+
+
+
+
+
+
 
 
 
