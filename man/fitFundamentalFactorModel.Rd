@@ -12,7 +12,8 @@
   \item{data}{data.frame, data must have \emph{assetvar},
   \emph{returnvar}, \emph{datevar} , and exposure.names.
   Generally, data is panel data setup, so it needs firm
-  variabales and time variables.}
+  variabales and time variables. Data has to be a balanced
+  panel.}
 
   \item{exposure.names}{a character vector of exposure
   names for the factor model}
