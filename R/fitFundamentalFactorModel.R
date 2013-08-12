@@ -140,7 +140,7 @@ fitFundamentalFactorModel <-
     
     assets = unique(data[[assetvar]])
     timedates = as.Date(unique(data[[datevar]]))    
-#     data[[datevar]] <- as.Date(data[[datevar]])
+    data[[datevar]] <- as.Date(data[[datevar]])
     
     if (length(timedates) < 2) 
       stop("At least two time points, t and t-1, are needed for fitting the factor model.")
@@ -192,9 +192,7 @@ fitFundamentalFactorModel <-
     }
     }
     
-    
-    
-    
+      
     regression.formula <- paste("~", paste(exposure.names, collapse = "+"))
     #  "~ BOOK2MARKET"
     if (length(exposures.factor)) {
@@ -338,8 +336,7 @@ fitFundamentalFactorModel <-
     }
     # if there is industry dummy variables
     if (length(exposures.factor)) {
-      numCoefs <- length(exposures.numeric) + length(levels(data[, 
-                                                                 exposures.factor]))
+      numCoefs <- length(exposures.numeric) + length(levels(data[,exposures.factor]))
       ncols <- 1 + 2 * numCoefs + numAssets
       fnames <- c(exposures.numeric, paste(exposures.factor, 
                                            levels(data[, exposures.factor]), sep = ""))
@@ -355,8 +352,7 @@ fitFundamentalFactorModel <-
     
     # create matrix for fit
     FE.hat.mat <- matrix(NA, ncol = ncols, nrow = numTimePoints, 
-                         dimnames = list(as.character(as.Date(as.numeric(names(FE.hat)), origin = "1970-01-01")), 
-                                         cnames))
+                         dimnames = list(as.character(timedates),cnames))
     # give each element t names 
     for (i in 1:length(FE.hat)) {
       names(FE.hat[[i]])[1] <- "numCoefs"
@@ -370,7 +366,7 @@ fitFundamentalFactorModel <-
       FE.hat.mat[i, idx] <- FE.hat[[i]]
     }
     # give back the names of timedates
-    timedates <- as.Date(as.numeric(dimnames(FE.hat)[[1]]), origin = "1970-01-01")
+#     timedates <- as.Date(as.numeric(dimnames(FE.hat)[[1]]), origin = "1970-01-01")
     coefs.names <- colnames(FE.hat.mat)[2:(1 + numCoefs)]
     # estimated factors returns ordered by time
     f.hat <- xts(x = FE.hat.mat[, 2:(1 + numCoefs)], order.by = timedates)
@@ -414,16 +410,17 @@ fitFundamentalFactorModel <-
     B.final[, match("(Intercept)", colnames, 0)] <- 1
     numeric.columns <- match(exposures.numeric, colnames, 0)
     # only take the latest beta to compute FM covariance
-    # should we let user choose which beta to use ?
     B.final[, numeric.columns] <- as.matrix(data[ (as.numeric(data[[datevar]]) == 
                                                      timedates[numTimePoints]), exposures.numeric])
     rownames(B.final) = assets
     colnames(B.final) = colnames(f.hat)
+    
     if (length(exposures.factor)) {
       B.final[, grep(exposures.factor, x = colnames)][cbind(seq(numAssets), 
-                                                            as.numeric(data[data[[datevar]] == timedates[numTimePoints], 
+                                                            as.numeric(data[ data[[datevar]] == timedates[numTimePoints], 
                                                                             exposures.factor]))] <- 1
     }
+    
     cov.returns <- B.final %*% Cov.factors$cov %*% t(B.final) + 
       if (full.resid.cov) { D.hat$cov
       }  else { D.hat  }
@@ -436,7 +433,7 @@ fitFundamentalFactorModel <-
       Cov.resids <- D.hat
     }
     else {
-      Cov.resids <- NULL
+      Cov.resids <- diag(resid.vars)
     }
     # 
     # # r-square for each asset = 1 - SSE/SST

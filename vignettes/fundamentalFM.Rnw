@@ -15,8 +15,8 @@ This vignette aims to help users to learn how to use fundamental factor model in
 
 \subsection{Fundamental Factor Model}
 A factor model is defined as \\
-\begin{equation} \label{fm}
- r_t = bf + \epsilon_t\;,t=1 \cdots T  
+\begin{equation} 
+ r_t = bf + \epsilon_t\;,t=1 \cdots T \label{fm} 
 \end{equation}
 Where $r_t$ is N x 1, b is N x K and f is K x 1. N is number of variables and K is number of factors. b is usually called factor exposures or factor loadings and f is factor returns. $\epsilon_t$ is serial uncorrelated but may be cross-correlated. The model is useful to fit for examples asset returns. The famous CAPM (Capital Assets Pricing Model) is a one factor model with f equal to market returns.
 
@@ -26,19 +26,19 @@ r_t = f_M + b\hat{f_t} + \hat{\epsilon_t}\;,t=1 \cdots T
 \end{equation}
 $f_M$ is normally called market factor or world factor depending on the context on the country level or global level. Econometrically, it is an intercept term of fundamental factor model. $f_t$ is estimated with cross-sectional in each period t.
 
-This approach is also called BARRA type approach since it is initially deceloped by BARRA and later on been merged by MSCI. The famous Barra global equity model (GEM3) contains more than 50 factors. 
+This approach is also called BARRA type approach since it is initially developed by BARRA and later on been merged by MSCI. The famous Barra global equity model (GEM3) contains more than 50 factors. 
 
-\section{Example}
-We will walk through some examples in this section. First example will use style factors like size and then we industry/country dummies. 
+\section{Example 1}
+We will walk through the first examples in this section. We will use style factors like size.
 \subsection{Loading Data}
 Let's look at the arguments of \verb@fitFundamentalFactorModel()@ which will deal with fundamental factor model in \verb@factorAnalytics@.
 <<args>>=
 library(factorAnalytics)
 args(fitFundamentalFactorModel)
 @
-\verb@data@ is in class of \verb@data.frame@ and is required to have \emph{assetvar},\emph{returnvar} and \emph{datevar}. One can image data is like panel data setup and need firm variable and time variable. So data has dimension (N x T) and at least 3 colnumes to specify information needed.    
+\verb@data@ is in class of \verb@data.frame@ and is required to have \emph{assetvar},\emph{returnvar} and \emph{datevar}. One can image data is like panel data setup and need firm variable and time variable. So data has dimension (N x T) and at least 3 consumes to specify information needed.    
 
-We download data from CRSP/Compustat quarterly fundamental and name \verb@equity@ which contains 67 stocks from January 2000 to Decenmber 2013.  
+We download data from CRSP/Compustat quarterly fundamental and name \verb@equity@ which contains 67 stocks from January 2000 to December 2013.  
 
 <<loading.data>>=
 #equity <- data(equity)
@@ -54,14 +54,14 @@ equity <- cbind(equity,do.call(rbind,lapply(split(equity,equity$tic),
                                             function(x) Delt(x$PRCCQ)))) 
 names(equity)[22] <- "RET"
 @
-We want market value and book-to-market ratio too. market vale can be achieved by commom stocks outstading x price and book value we use commom/ordinary equity value. 
+We want market value and book-to-market ratio too. market vale can be achieved by common stocks outstanding x price and book value we use common/ordinary equity value. We also take log on market value. 
 <<get.mv.bm>>==
-equity$MV <- equity$PRCCQ*equity$CSHOQ 
+equity$MV <- log(equity$PRCCQ*equity$CSHOQ) 
 equity$BM <- equity$CEQQ/equity$MV
 @
 now we use model \ref{ffm} where K=2, b = [ MV , BM ].
 
-We will get an error message if \verb@datevar@ is not \verb@as.Date@ format compatible. In our example, our date variable is \emph{DATACQTR} and looks like "2000Q1". We have to convert it to \verb@as.Date@ compatible. We can utilize \verb@as.yearqtr@ to do it. Aslo, we will use character string for asset variable instead of factor.
+We will get an error message if \verb@datevar@ is not \verb@as.Date@ format compatible. In our example, our date variable is \emph{DATACQTR} and looks like "2000Q1". We have to convert it to \verb@as.Date@ compatible. We can utilize \verb@as.yearqtr@ to do it. Also, we will use character string for asset variable instead of factor.
 <<as.yearqtr>>=
 a <- unlist( lapply(strsplit(as.character(equity$DATACQTR),"Q"),
                function(x)  paste(x[[1]],"-",x[[2]],sep="") ) )
@@ -71,6 +71,7 @@ equity <- subset(equity,yearqtr != "2000 Q1")
 # delete the first element of each assets
 @
 
+\subsection{Fit the Model}
 fit the function:
 <<fit.ffm>>=
 fit.fund <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),datevar="yearqtr",
@@ -78,13 +79,86 @@ fit.fund <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),datevar="yearq
 names(fit.fund)
 @
 
+A few notice for fitting fundamental factor model. So far this function can only deal with balanced panel because we want to extract return covariance and residuals and so on. Second, \verb@datevar@ has to be \verb@as.Date@ compatible, otherwise the function can not read the time index. It is somehow inconvenient but make sure we will not mess up with time index. 
+
+Default fit method for \verb@fitFundamentalFactorModel()@ is classic OLS and covariance matrix is also classic covariance matrix defined by \verb@covClassic()@ in \verb@robust@ package. One can change to robust estimation and robust covariance matrix estimation. 
 
 
+\verb@returns.cov@ contains information about returns covariance. return covariance is 
+\[ \Sigma_x = B \Sigma_f B' +  D \]. If \verb@full.resid.cov@ is \emph{FALSE}, D is diagonal matrix with variance of residuals in diagonal terms. If \emph{TRUE}, D is covariance matrix of residuals. 
+
+<<fit.fund>>=
+names(fit.fund$returns.cov)
+@
+Once can check out \verb@fit.fund$factor.cov@, \verb@fit.fund$resids.cov@ and \verb@fit.fund$resid.variance@ for detail. 
 
 
+factor returns, residuals,t-stats are xts class. 
+<<factor.return,results=hide>>=
+fit.fund$factor.returns
+fit.fund$residuals
+fit.fund$tstats
+@
 
+There are a few generic function \verb@predict@, \verb@summary@, \verb@print@ and \verb@plot@ one can utilize. 
+<<generic.fun,results=hide>>=
+summary(fit.fund)
+predict(fit.fund)
+print(fit.fund)
+@
 
+If \emph{newdata} is not specified in \verb@predict()@, fitted value of fundamental factor model will be shown, otherwise, predicted value will be shown. 
 
+\verb@plot()@ method has several option to choose, 
+\begin{verbatim}
+> plot(fit.fund)
+Factor Analytic Plot 
+Make a plot selection (or 0 to exit):
+ 
+
+1: Factor returns
+2: Residual plots
+3: Variance of Residuals
+4: Factor Model Correlation
+5: Factor Contributions to SD
+6: Factor Contributions to ES
+7: Factor Contributions to VaR
+
+Selection: plot(fit.fund)
+Enter an item from the menu, or 0 to exit
+\end{verbatim}
+
+For example, choose 1 will give factor returns and it looks like 
+<<label=plot.fit.fund,fig=TRUE,echo=FALSE,include=FALSE,results=hide>>=
+plot(fit.fund,which.plot=1,max.show=3)
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig1,fig=TRUE,echo=FALSE>>=
+<<plot.fit.fund>>
+@
+\end{center}
+\caption{Time Series of factor returns}
+\label{fig1}
+\end{figure}
+
+\section{Example 2: Barra type industry/country model}
+In a global equity model or specific country equity model, modelers usually want to use industry/country dummies. In our example, we have 63 stocks in different industry. In specific, 
+\begin{equation}
+x_{it} = a_{i,t} + \Sigma_{j=1}^{J}b_{i,j}f_{i,t} + \epsilon_{i,t},\;for\,each\,i\,,t
+\end{equation}
+where $b_{i,j} = 1$ if stock i in industry j and $b_{i,j}=0$ otherwise. 
+In matrix form:\[ x_t = Bf_t + \epsilon_t \] and B is the N X J matrix of industry dummies.  
+
+\emph{SPCINDCD} in our data are $S\&P$ industry code, what we only have to do to fit industry model is to add this variable name into \verb@exposure.names@. Be sure this variable is \emph{character} not \emph{numeric}. Otherwise the function will not create dummies.
+
+<<ind.model>>=
+equity$SPCINDCD <- as.character(equity$SPCINDCD)
+fit.ind <- fitFundamentalFactorModel(exposure.names=c("SPCINDCD"),datevar="yearqtr",
+                                      returnsvar ="RET",assetvar="tic",wls=FALSE,data=equity)
+@
+One can also use generic function to do plot, summary...
 
 
 \end{document}
