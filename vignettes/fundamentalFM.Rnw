@@ -6,7 +6,7 @@
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\title{factorAnalytics: fundamental factor model}
+\title{factorAnalytics: Fundamental Factor Model}
 \author{Yi-An Chen}
 \maketitle
 
@@ -159,6 +159,32 @@ fit.ind <- fitFundamentalFactorModel(exposure.names=c("SPCINDCD"),datevar="yearq
                                       returnsvar ="RET",assetvar="tic",wls=FALSE,data=equity)
 @
 One can also use generic function to do plot, summary...
+
+\verb@fitFundamentalFactorModel()@ support industry/country dummy factor exposures and style factor exposures together. Try 
+<<mixted,results=hide>>=
+fit.mix <- fitFundamentalFactorModel(exposure.names=c("BM","MV","SPCINDCD"),
+                                     datevar="yearqtr",returnsvar ="RET",
+                                     assetvar="tic",wls=FALSE,data=equity)
+@
+
+
+\section{Standardizing Factor Exposure}
+It is common to standardize factor exposure to have weight mean 0 and standard deviation equal to 1. The weight are often taken as proportional to square root of market capitalization, although other weighting schemes are possible. 
+
+We will try example 1 but with stardarized factor exposure with square root of market capitalization. First we create a weighting variable.
+
+<<standardized.fund>>=
+equity$weight <- sqrt(exp(equity$MV)) # we take log for MV before.
+@
+We can choose \verb@standardized.factor.exposure@ to be \verb@TRUE@ and \verb@weight.var@ equal to weighting variabel. 
+<<s.fit>>=
+fit.fund2 <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),
+                                     datevar="yearqtr",returnsvar ="RET",
+                                     assetvar="tic",wls=TRUE,data=equity,
+                                     standardized.factor.exposure = TRUE,
+                                       weight.var = "weight"  )
+@
+
 
 
 \end{document}

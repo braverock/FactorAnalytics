@@ -352,7 +352,7 @@ fitFundamentalFactorModel <-
     
     # create matrix for fit
     FE.hat.mat <- matrix(NA, ncol = ncols, nrow = numTimePoints, 
-                         dimnames = list(as.character(timedates),cnames))
+                         dimnames = list(as.character(timedates), cnames))
     # give each element t names 
     for (i in 1:length(FE.hat)) {
       names(FE.hat[[i]])[1] <- "numCoefs"
@@ -410,14 +410,13 @@ fitFundamentalFactorModel <-
     B.final[, match("(Intercept)", colnames, 0)] <- 1
     numeric.columns <- match(exposures.numeric, colnames, 0)
     # only take the latest beta to compute FM covariance
-    B.final[, numeric.columns] <- as.matrix(data[ (as.numeric(data[[datevar]]) == 
-                                                     timedates[numTimePoints]), exposures.numeric])
+    B.final[, numeric.columns] <- as.matrix(data[ (data[[datevar]] == timedates[numTimePoints]), exposures.numeric])
     rownames(B.final) = assets
     colnames(B.final) = colnames(f.hat)
     
     if (length(exposures.factor)) {
       B.final[, grep(exposures.factor, x = colnames)][cbind(seq(numAssets), 
-                                                            as.numeric(data[ data[[datevar]] == timedates[numTimePoints], 
+                                                            (data[ data[[datevar]] == timedates[numTimePoints], 
                                                                             exposures.factor]))] <- 1
     }
     
