@@ -6,7 +6,7 @@
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\title{factorAnalytics: Fundamental Factor Model}
+\title{factorAnalytics: Factor Model Fitting}
 \author{Yi-An Chen}
 \maketitle
 
@@ -16,7 +16,7 @@ This vignette aims to help users to learn how to use fundamental factor model in
 \subsection{Fundamental Factor Model}
 A factor model is defined as \\
 \begin{equation} 
- r_t = bf + \epsilon_t\;,t=1 \cdots T \label{fm} 
+ r_t = bf_t + \epsilon_t\;,t=1 \cdots T \label{fm} 
 \end{equation}
 Where $r_t$ is N x 1, b is N x K and f is K x 1. N is number of variables and K is number of factors. b is usually called factor exposures or factor loadings and f is factor returns. $\epsilon_t$ is serial uncorrelated but may be cross-correlated. The model is useful to fit for examples asset returns. The famous CAPM (Capital Assets Pricing Model) is a one factor model with f equal to market returns.
 
@@ -184,6 +184,79 @@ fit.fund2 <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),
                                      standardized.factor.exposure = TRUE,
                                        weight.var = "weight"  )
 @
+
+\section{Statistical Factor Model}
+
+In statistical factor model, neighter factor exposure b (normally called factor loadings in statistical factor model) nor factor returns $f_t$ are observed in equation \ref{fm2}:
+\begin{equation} 
+ r_t = bf_t + \epsilon_t\;,t=1 \cdots T \label{fm2} 
+\end{equation}
+Factor returns $f_t$ can be calculated as principle components of covariance matrix of assets returns if number of asset N is less than the number of time period T, and factor loadings can be calculated using conventional least square technique. 
+
+
+
+By default, the first principle component or factor will explain the most variation of returns covariance matrix and so on. 
+
+In some cases, when number of assets N is larger than number of time period T. Connor and Korajczyk (1986) develop an alternative method called asymptotic principal components, building on the approximate factor model theory of Chamberlain and Rothschild (1983). Connor and Korajczyk analyze the eigenvector of the T X T cross product of  matrix returns rather then N X N covariance matrix of returns. They show the first k eigenvectors of this cross product matrix provide consistent estimates of the k X T matrix of factor returns. 
+
+We can use function \verb@fitStatisticalFactorModel@ to fit statistical factor model. First, we need asset returns in time series or xts format. We choose xts to work with because time index is easy to handle but this is not restircted to the model fit. 
+
+<<create.xts>>=
+library(xts)
+tic <- unique(equity$tic)
+ret <- xts(NA,as.yearqtr("2000 Q2",format="%Y Q%q"))
+for (i in tic) {
+temp <- subset(equity,tic == i)
+ret.new <- xts(temp$RET,as.yearqtr(temp$yearqtr))
+names(ret.new) <- i
+ret <- merge(ret,ret.new)
+}
+ret <- ret[,-1]
+dim(ret)
+@
+We then fit the model. The data \verb@ret@ has 63 assets and 52 time period. So we will exploit asymptotic principal components analysis to find factor returns. There are two ways to find numbers of factors, Connor and Korajczyk(1995) and Bai and Ng (2002) are provided in the function. We will use Bai and Ng (2002) to choose the numbers of factors.    
+
+<<stat.fm>>=
+fit.stat <- fitStatisticalFactorModel(data=ret,
+                                      k= "bn")
+names(fit.stat)
+@
+
+5 factors is choosen by Bai and Ng (2002). Factor retunrs can be found using \verb@$factors@.    
+<<stat.factor.returns>>=
+fit.stat$k
+@
+We can plot factor returns with generic function \verb@plot@. 
+<<label=plot.fit.stat,fig=TRUE,echo=FALSE,include=FALSE,results=hide>>=
+plot(fit.stat,which.plot=2)
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig2,fig=TRUE,echo=FALSE>>=
+<<plot.fit.stat>>
+@
+\end{center}
+\caption{Time Series of statistical factor returns}
+\label{fig2}
+\end{figure}
+
+Finally, screen plot of eigenvalues shows how much variance can be explained by factors. We can see the first factor explain more than 70 percent of variation of cross-product matrix.   
+<<label=plot.fit.stat2,fig=TRUE,echo=FALSE,include=FALSE,results=hide>>=
+plot(fit.stat,which.plot=1)
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig2,fig=TRUE,echo=FALSE>>=
+<<plot.fit.stat2>>
+@
+\end{center}
+\caption{Screen Plot of Eigenvalues}
+\label{fig3}
+\end{figure}
+
+Similar to \verb@fitFundamentalFactorModel@, generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predict@ can be used for statistical factor model. 
 
 
 
