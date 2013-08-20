@@ -171,12 +171,12 @@ fit.mix <- fitFundamentalFactorModel(exposure.names=c("BM","MV","SPCINDCD"),
 \section{Standardizing Factor Exposure}
 It is common to standardize factor exposure to have weight mean 0 and standard deviation equal to 1. The weight are often taken as proportional to square root of market capitalization, although other weighting schemes are possible. 
 
-We will try example 1 but with stardarized factor exposure with square root of market capitalization. First we create a weighting variable.
+We will try example 1 but with standardized factor exposure with square root of market capitalization. First we create a weighting variable.
 
 <<standardized.fund>>=
 equity$weight <- sqrt(exp(equity$MV)) # we take log for MV before.
 @
-We can choose \verb@standardized.factor.exposure@ to be \verb@TRUE@ and \verb@weight.var@ equal to weighting variabel. 
+We can choose \verb@standardized.factor.exposure@ to be \verb@TRUE@ and \verb@weight.var@ equal to weighting variable. 
 <<s.fit>>=
 fit.fund2 <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),
                                      datevar="yearqtr",returnsvar ="RET",
@@ -187,7 +187,7 @@ fit.fund2 <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),
 
 \section{Statistical Factor Model}
 
-In statistical factor model, neighter factor exposure b (normally called factor loadings in statistical factor model) nor factor returns $f_t$ are observed in equation \ref{fm2}:
+In statistical factor model, neither factor exposure b (normally called factor loadings in statistical factor model) nor factor returns $f_t$ are observed in equation \ref{fm2}:
 \begin{equation} 
  r_t = bf_t + \epsilon_t\;,t=1 \cdots T \label{fm2} 
 \end{equation}
@@ -199,7 +199,7 @@ By default, the first principle component or factor will explain the most variat
 
 In some cases, when number of assets N is larger than number of time period T. Connor and Korajczyk (1986) develop an alternative method called asymptotic principal components, building on the approximate factor model theory of Chamberlain and Rothschild (1983). Connor and Korajczyk analyze the eigenvector of the T X T cross product of  matrix returns rather then N X N covariance matrix of returns. They show the first k eigenvectors of this cross product matrix provide consistent estimates of the k X T matrix of factor returns. 
 
-We can use function \verb@fitStatisticalFactorModel@ to fit statistical factor model. First, we need asset returns in time series or xts format. We choose xts to work with because time index is easy to handle but this is not restircted to the model fit. 
+We can use function \verb@fitStatisticalFactorModel@ to fit statistical factor model. First, we need asset returns in time series or xts format. We choose xts to work with because time index is easy to handle but this is not restricted to the model fit. 
 
 <<create.xts>>=
 library(xts)
@@ -222,7 +222,7 @@ fit.stat <- fitStatisticalFactorModel(data=ret,
 names(fit.stat)
 @
 
-5 factors is choosen by Bai and Ng (2002). Factor retunrs can be found using \verb@$factors@.    
+5 factors is chosen by Bai and Ng (2002). Factor returns can be found using \verb@$factors@.    
 <<stat.factor.returns>>=
 fit.stat$k
 @
@@ -258,6 +258,45 @@ plot(fit.stat,which.plot=1)
 
 Similar to \verb@fitFundamentalFactorModel@, generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predict@ can be used for statistical factor model. 
 
+\section{Time Series Factor Model}
+In Time Series facto model, factor returns $f_t$ is observed and takens as macroeconomic time series like GDP or other time series like market returns or credit spread. In our package, we have provided some common used times series in data set \verb@CommonFactors@. \verb@factors@ is monthly time series and \verb@factors.Q@ is quarterly time series.
+
+<<common.factors>>=
+data(CommonFactors)
+names(factors.Q)
+@
+
+We can combine with our data \verb@ret@ and get rid of NA values.
+
+<<merge>>=
+ts.factors <- xts(factors.Q,as.yearqtr(index(factors.Q),format="%Y-%m-%d")) 
+ts.data <- na.omit(merge(ret,ts.factors))
+@
+
+We will use SP500, 10 years and 3 months term spread and difference of VIX as our factors. 
+
+<<fit.ts>>=
+fit.time <- fitTimeSeriesFactorModel(assets.names=tic,factors.names=c("SP500","Term.Spread","dVIX"),data=ts.data,fit.method="OLS")
+names(fit.time)
+@
+
+\veb@asset.fit@ can show model fit of each assets, for example for asset \verb@AA@. 
+<<single.asset.fit>>=
+summary(fit.time$asset.fit$AA)
+@
+shows only beta of SP500 is significant.  
+
+\verb@fitTimeSeriesFactorModel@ also have various variable selection algorithm to choose. One can include all the factor and let the function to decide which one is the best model. For example, we inlcude all common factors and use method \verb@stepwise@ which utilizes \verb@step@ function in \verb@stat@ package 
+
+<<fit.ts>>=
+fit.time2 <- fitTimeSeriesFactorModel(assets.names=tic,factors.names=names(ts.factors),data=ts.data,fit.method="OLS",variable.selection = "stepwise")
+@
+There are 5 factors chosen for asset AA for example. 
+<<AA.fit>>=
+fit.time2$asset.fit$AA
+@
+
+Generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predict@ can be used for Time Series factor model as well like previous section.
 
 
 \end{document}
