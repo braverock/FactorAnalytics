@@ -389,7 +389,7 @@ plot.StatFactorModel <-
                    factorModelSdDecomposition(x$loadings[,i],
                                               cov.factors, x$resid.variance[i])
                }
-               # function to extract contribution to sd from list
+               # function to extract component contribution to sd from list
                getCSD = function(x) {
                  x$cr.fm
                }
@@ -397,8 +397,8 @@ plot.StatFactorModel <-
                cr.sd = sapply(factor.sd.decomp.list, getCSD)
                rownames(cr.sd) = c(colnames(x$factors), "residual")
                # create stacked barchart
-               barplot(cr.sd[,(1:max.show)], main="Factor Contributions to SD",
-                       legend.text=T, args.legend=list(x="topleft"))
+               barplot(cr.sd[,(1:max.show)], main="Factor Contributions to SD",...)
+#                        legend.text=T, args.legend=list(x="topright"))
              } ,
              "7L" ={
                factor.es.decomp.list = list()
@@ -416,15 +416,15 @@ plot.StatFactorModel <-
                }
                
                
-               # stacked bar charts of percent contributions to ES 
+               # stacked bar charts of component contributions to ES 
                getCETL = function(x) {
                  x$cES
                }
                # report as positive number
                cr.etl = sapply(factor.es.decomp.list, getCETL)
                rownames(cr.etl) = c(colnames(x$factors), "residual")
-               barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",
-                       legend.text=T, args.legend=list(x="topleft") )
+               barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",...)
+#                        legend.text=T, args.legend=list(x="topright") )
              },
              "8L" =  {
                factor.VaR.decomp.list = list()
@@ -442,15 +442,15 @@ plot.StatFactorModel <-
                }
                
                
-               # stacked bar charts of percent contributions to VaR
+               # stacked bar charts of component contributions to VaR
                getCVaR = function(x) {
                  x$cVaR.fm
                }
                # report as positive number
                cr.var = sapply(factor.VaR.decomp.list, getCVaR)
                rownames(cr.var) = c(colnames(x$factors), "residual")
-               barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",
-                       legend.text=T, args.legend=list(x="topleft"))
+               barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",...)
+#                        legend.text=T, args.legend=list(x="topright"))
              }, invisible()
              
       )

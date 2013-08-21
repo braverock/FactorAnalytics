@@ -1,5 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
 % \VignetteIndexEntry{test file}
 % \VignetteKeywords{facor model, risk analytics}
 
@@ -248,7 +250,7 @@ plot(fit.stat,which.plot=1)
 
 \begin{figure}
 \begin{center}
-<<label=fig2,fig=TRUE,echo=FALSE>>=
+<<label=fig3,fig=TRUE,echo=FALSE>>=
 <<plot.fit.stat2>>
 @
 \end{center}
@@ -259,7 +261,7 @@ plot(fit.stat,which.plot=1)
 Similar to \verb@fitFundamentalFactorModel@, generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predict@ can be used for statistical factor model. 
 
 \section{Time Series Factor Model}
-In Time Series facto model, factor returns $f_t$ is observed and takens as macroeconomic time series like GDP or other time series like market returns or credit spread. In our package, we have provided some common used times series in data set \verb@CommonFactors@. \verb@factors@ is monthly time series and \verb@factors.Q@ is quarterly time series.
+In Time Series factor model, factor returns $f_t$ is observed and taken as macroeconomic time series like GDP or other time series like market returns or credit spread. In our package, we have provided some common used times series in data set \verb@CommonFactors@. \verb@factors@ is monthly time series and \verb@factors.Q@ is quarterly time series.
 
 <<common.factors>>=
 data(CommonFactors)
@@ -277,16 +279,15 @@ We will use SP500, 10 years and 3 months term spread and difference of VIX as ou
 
 <<fit.ts>>=
 fit.time <- fitTimeSeriesFactorModel(assets.names=tic,factors.names=c("SP500","Term.Spread","dVIX"),data=ts.data,fit.method="OLS")
-names(fit.time)
 @
 
-\veb@asset.fit@ can show model fit of each assets, for example for asset \verb@AA@. 
+\verb@asset.fit@ can show model fit for each assets, for example for asset \verb@AA@. 
 <<single.asset.fit>>=
-summary(fit.time$asset.fit$AA)
+fit.time$asset.fit$AA
 @
-shows only beta of SP500 is significant.  
 
-\verb@fitTimeSeriesFactorModel@ also have various variable selection algorithm to choose. One can include all the factor and let the function to decide which one is the best model. For example, we inlcude all common factors and use method \verb@stepwise@ which utilizes \verb@step@ function in \verb@stat@ package 
+
+\verb@fitTimeSeriesFactorModel@ also have various variable selection algorithm to choose. One can include all the factor and let the function to decide which one is the best model. For example, we include all common factors and use method \verb@stepwise@ which utilizes \verb@step@ function in \verb@stat@ package 
 
 <<fit.ts>>=
 fit.time2 <- fitTimeSeriesFactorModel(assets.names=tic,factors.names=names(ts.factors),data=ts.data,fit.method="OLS",variable.selection = "stepwise")
@@ -296,7 +297,83 @@ There are 5 factors chosen for asset AA for example.
 fit.time2$asset.fit$AA
 @
 
-Generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predict@ can be used for Time Series factor model as well like previous section.
+Generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predict@ can also be used for time series factor model as previous section.
+
+\section{Risk Analysis}
+
+\subsection{Factor Model Risk Budgeting}
+One can do risk analysis easily with factor model. According to Meucci (2007), factor model can be represented as 
+
+\begin{align}
+r_{it} &= \alpha_i + \beta_{i1}f_{1t} + \beta_{i2}f_{2t} + \cdots + \beta_{ik}f_{kt} + \sigma{i}z_{it},\;i=1 \cdots N,\;t=1 \cdots T \\
+       &= \alpha_i + \tilde{\beta_i}'\tilde{F_t}
+\end{align}
+
+where $z_{it}$ is the standardized residuals and $\epsilon_{it} / \sigma_i = z_{it}$, $\tilde{\beta_i} = [\beta_{1i},\dots,\beta_{ki}, \sigma_i]$, $\tilde{F_t}=[f_{1t},\dots,f_{kt}, z_{it}]$  
+
+Common risk measures like standard deviation, value-at-risk and expected shortfall are function of homogeneous of degree 1. By Euler theoreom, risk metrics (RM) can be decomposed to 
+\begin{align}
+RM_i = \beta_{1i}\frac{\partial RM_i}{\partial \beta_{1i}} + \beta_{2i}\frac{\partial RM_i}{\partial \beta_{2i}} + \cdots + \beta_{ki}\frac{\partial RM_i}{\partial \beta_{ki}} + \sigma_{i}\frac{\partial RM_i}{\partial \sigma_{i}}
+\end{align}
+
+where\\
+$\frac{\partial RM_i}{\partial \beta_{ki}}$ is called marginal contribution of factor k to $RM_i$ \\
+$\beta_{ki}\frac{\partial RM_i}{\partial \beta_{ki}}$ is called component contribution of factor k to $RM_i$ \\
+$\beta_{ki}\frac{\partial RM_i}{\partial \beta_{ki}}/RM_i$ is called percentage contribution of factor k to $RM_i$
+
+\verb@factorAnalytics@ package provide 3 different risk metrics decomposition, Standard deviation (Std), Value-at-Risk (VaR) and Expected Shortfall (ES) with historical distribution, Normal distribution and Cornish-Fisher distribution. 
+
+For example, factor model VaR decomposition with Normal distribution of asset AA for a statistical factor model.
+<<risk.decomp>>=
+data.rd <- cbind(ret[,"AA"],fit.stat$factors,fit.stat$residuals[,"AA"]/sqrt(fit.stat$resid.variance["AA"]))
+var.decp <- factorModelVaRDecomposition(data.rd,fit.stat$loadings[,"AA"],
+                            fit.stat$resid.variance["AA"],tail.prob=0.05,
+                             VaR.method="gaussian")
+names(var.decp)
+@
+
+VaR, number of exceed, id of exceed, marginal contribution to VaR, component contribution to VaR and percentage contribution to VaR are computed. Let see VaR and component contribution to VaR 
+<<mct.var>>=
+var.decp$VaR.fm
+var.decp$cVaR.fm
+@
+It looks like the second factor contributes the largest risk to asset AA. 
+
+One can use \verb@plot@ method to see barplot of risk budgeting. Default is to show 6 assets. Figure \ref{fig4} shows componenet contribution to VaR for several different assets. 
+
+<<label=plot.rb.stat,fig=TRUE,echo=FALSE,include=FALSE,results=hide>>=
+plot(fit.stat,which.plot=8,legend.text=TRUE, args.legend=list(x="topright"),
+     VaR.method="gaussian")
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig4,fig=TRUE,echo=FALSE>>=
+<<plot.rb.stat>>
+@
+\end{center}
+\caption{Component Contribution to VaR for Statistical Factor Model. }
+\label{fig4}
+\end{figure}
+
+\subsection{Portfolio Risk Budgeting}
+
+Let $Rp_t = Rp_t(w)$ denote the portfolio return based on the vector of portfolio weights w. Let RM(w) denote a portfolio risk measure. 
+
+\begin{align}
+RM = w_{1}\frac{\partial RM}{\partial w_{1}} + w_{2}\frac{\partial RM}{\partial w_{2}} + \cdots + w_{N}\frac{\partial RM}{\partial w_{N}}
+\end{align}
+
+where\\
+$\frac{\partial RM}{\partial w_{i}}$ is called marginal contribution of asset i to RM \\
+$w_{i}\frac{\partial RM}{\partial w_{i}}$ is called component contribution of asset i to RM \\
+$w_{i}\frac{\partial RM}{\partial w_{i}}/RM$ is called percentage contribution of asset i to RM
+
+we can use function \verb@VaR()@ in \verb@PerformanceAnalytics@. Suppose we have an eqaully weighted portfolio of 63 assets in data set \verb@ret@. The following code can compute portfolio VaR, component contribution to VaR and percentage contribution to VaR
+
+<<port.var,results=hide>>=
+VaR(R=ret,method="gaussian",portfolio_method="component")
+@
 
 
 \end{document}

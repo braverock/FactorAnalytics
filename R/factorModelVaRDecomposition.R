@@ -44,7 +44,7 @@
 #' fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
 #'                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
 #'                                      data=managers.df,fit.method="OLS")
-#' # risk factor contribution to ETL
+#' # risk factor contribution to VaR
 #' # combine fund returns, factor returns and residual returns for HAM1
 #' tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
 #' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
