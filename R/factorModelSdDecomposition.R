@@ -9,10 +9,10 @@
 #' @param sig2.e scalar, residual variance from factor model.
 #' @return an S3 object containing
 #' \itemize{
-#' \item{sd.fm} Scalar, std dev based on factor model.
-#' \item{mcr.fm} (K+1) x 1 vector of factor marginal contributions to risk sd.
-#' \item{cr.fm} (K+1) x 1 vector of factor component contributions to risk sd.
-#' \item{pcr.fm} (K+1) x 1 vector of factor percent contributions to risk sd.
+#' \item{Sd.fm} Scalar, std dev based on factor model.
+#' \item{mSd.fm} (K+1) x 1 vector of factor marginal contributions to risk sd.
+#' \item{cSd.fm} (K+1) x 1 vector of factor component contributions to risk sd.
+#' \item{pcSd.fm} (K+1) x 1 vector of factor percentage component contributions to risk sd.
 #' }
 #' @author Eric Zivot and Yi-An Chen
 #' @examples
@@ -67,10 +67,10 @@ function(beta.vec, factor.cov, sig2.e) {
 	colnames(cr.fm) = "CR"
 	colnames(pcr.fm) = "PCR"
 ## return results
-	ans = list(sd.fm = sd.fm,
-             mcr.fm = t(mcr.fm),
-             cr.fm = t(cr.fm),
-             pcr.fm = t(pcr.fm))
+	ans = list(Sd.fm = sd.fm,
+             mSd.fm = t(mcr.fm),
+             cSd.fm = t(cr.fm),
+             pcSd.fm = t(pcr.fm))
 	return(ans)
 }
 

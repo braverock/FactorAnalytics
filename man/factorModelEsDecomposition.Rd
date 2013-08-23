@@ -35,11 +35,12 @@
   number of observations beyond VaR. \item{idx.exceed}
   \code{n.exceed x 1} vector giving index values of
   exceedences. \item{ES scalar} nonparametric ES value for
-  fund reported as a positive number. \item{mcES}
+  fund reported as a positive number. \item{mES}
   \code{(K+1) x 1} vector of factor marginal contributions
   to ES. \item{cES} \code{(K+1) x 1} vector of factor
   component contributions to ES. \item{pcES} \code{(K+1) x
-  1} vector of factor percent contributions to ES. }
+  1} vector of factor percentage component contributions to
+  ES. }
 }
 \description{
   Compute the factor model factor expected shortfall (ES)

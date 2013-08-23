@@ -34,7 +34,7 @@
   vector of factor marginal contributions to VaR.
   \item{cVaR.fm} (K+1) x 1 vector of factor component
   contributions to VaR. \item{pcVaR.fm} (K+1) x 1 vector of
-  factor percent contributions to VaR. }
+  factor percentage contributions to VaR. }
 }
 \description{
   Compute factor model factor VaR decomposition based on

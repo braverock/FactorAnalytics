@@ -32,9 +32,9 @@
 #' \item{n.exceed} Scalar, number of observations beyond VaR.
 #' \item{idx.exceed} \code{n.exceed x 1} vector giving index values of exceedences.
 #' \item{ES scalar} nonparametric ES value for fund reported as a positive number.
-#' \item{mcES} \code{(K+1) x 1} vector of factor marginal contributions to ES.
+#' \item{mES} \code{(K+1) x 1} vector of factor marginal contributions to ES.
 #' \item{cES} \code{(K+1) x 1} vector of factor component contributions to ES.
-#' \item{pcES} \code{(K+1) x 1} vector of factor percent contributions to ES.
+#' \item{pcES} \code{(K+1) x 1} vector of factor percentage component contributions to ES.
 #' }
 #' @author Eric Zviot and Yi-An Chen.
 #' @references 1. Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A
@@ -123,7 +123,7 @@ ans = list(VaR = -VaR.fm,
            n.exceed = length(idx),
            idx.exceed = idx,
            ES = ES.fm, 
-           mcES = t(mcES.fm), 
+           mES = t(mcES.fm), 
            cES = t(cES.fm),
            pcES = t(pcES.fm))
 return(ans)
