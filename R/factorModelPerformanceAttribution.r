@@ -75,10 +75,11 @@ factorModelPerformanceAttribution <-
   # if benchmark is provided
   
 #     if (!is.null(benchmark)) {
-#     ret.assets =  fit$ret.assets - benchmark
+#     ret.assets =  fit$data[] - benchmark
 #     fit = fitTimeSeriesFactorModel(ret.assets=ret.assets,...)
 #     }
-# return attributed to factors
+
+    # return attributed to factors
     cum.attr.ret <- fit$beta
     cum.spec.ret <- fit$alpha
     factorName = colnames(fit$beta)

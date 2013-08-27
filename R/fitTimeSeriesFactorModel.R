@@ -53,10 +53,15 @@
 #'   \item{r2} {N x 1 Vector of R-square values.}
 #'   \item{resid.variance} {N x 1 Vector of residual variances.}
 #'   \item{call} {function call.}
+#'   \item{data} original data as input
+#'   \item{factors.names}  factors.names as input
+#'   \item{variable.selection} variable.selection as input
+#'   \item{assets.names} asset.names as input   
 #' }
 #' 
 #' 
-#' interpreted as number 
+#' 
+#' 
 #' @author Eric Zivot and Yi-An Chen.
 #' @references 
 #' \enumerate{

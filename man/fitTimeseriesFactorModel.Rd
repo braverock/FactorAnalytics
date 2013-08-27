@@ -81,9 +81,10 @@
   \item{beta} {N x K Matrix of estimated betas.} \item{r2}
   {N x 1 Vector of R-square values.} \item{resid.variance}
   {N x 1 Vector of residual variances.} \item{call}
-  {function call.} }
-
-  interpreted as number
+  {function call.} \item{data} original data as input
+  \item{factors.names} factors.names as input
+  \item{variable.selection} variable.selection as input
+  \item{assets.names} asset.names as input }
 }
 \description{
   Fit time series factor model by time series regression
