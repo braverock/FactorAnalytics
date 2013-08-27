@@ -1,3 +1,4 @@
+export(factorModelPerformanceAttribution)
 export(dCornishFisher)
 export(factorModelCovariance)
 export(factorModelEsDecomposition)

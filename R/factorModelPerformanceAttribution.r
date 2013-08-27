@@ -32,6 +32,7 @@
 #' @author Yi-An Chen.
 #' @references Grinold,R and Kahn R, \emph{Active Portfolio Management},
 #' McGraw-Hill.
+#' @export
 #' @examples
 #' 
 #' 
