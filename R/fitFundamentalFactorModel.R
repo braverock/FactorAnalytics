@@ -443,6 +443,7 @@ fitFundamentalFactorModel <-
     # change names for intercept
     colnames(f.hat)[1] <- "Intercept"
     
+    
     output <- list(returns.cov = Cov.returns, 
                    factor.cov = Cov.factors, 
                    resids.cov = Cov.resids, 
