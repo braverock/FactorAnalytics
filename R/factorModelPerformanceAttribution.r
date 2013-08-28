@@ -135,7 +135,7 @@ if (class(fit) =="FundamentalFactorModel" ) {
   }
   # return attributed to factors
   factor.returns <- fit$factor.returns[,-1]
-  factor.names <- fit$exposure.names
+  factor.names <- colnames(fit$beta)
   dates <- index(factor.returns)
   ticker <- fit$asset.names
 
@@ -152,9 +152,17 @@ if (class(fit) =="FundamentalFactorModel" ) {
    
   attr.list <- list() 
   for (k in ticker) {
-    idx <- which(fit$data[,assetvar]== k)
-    returns <- fit$data[idx,returnsvar]
-    attr.factor <- fit$data[idx,factor.names] * coredata(factor.returns)
+    idx <- which(fit$data[,fit$assetvar]== k)
+    returns <- fit$data[idx,fit$returnsvar]
+    num.f.names <- intersect(fit$exposure.names,factor.names) 
+    # check if there is industry factors
+    if (length(setdiff(fit$exposure.names,factor.names))>0 ){
+    ind.f <-  matrix(rep(fit$beta[k,][-(1:length(num.f.names))],length(idx)),nrow=length(idx),byrow=TRUE)
+    colnames(ind.f) <- colnames(fit$beta)[-(1:length(num.f.names))]
+    exposure <- cbind(fit$data[idx,num.f.names],ind.f) 
+    } else {exposure <- fit$data[idx,num.f.names] }
+    
+    attr.factor <- exposure * coredata(factor.returns)
     specific.returns <- returns - apply(attr.factor,1,sum)
     attr <- cbind(returns,attr.factor,specific.returns)
     attr.list[[k]] <- xts(attr,as.Date(dates))
