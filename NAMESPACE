@@ -1,4 +1,4 @@
-S3method(summary.FM.attribution)
+S3method(summary,FM.attribution)
 export(factorModelPerformanceAttribution)
 export(dCornishFisher)
 export(factorModelCovariance)

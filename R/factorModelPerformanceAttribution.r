@@ -142,8 +142,13 @@ if (class(fit) =="FundamentalFactorModel" ) {
 
     
   #cumulative return attributed to factors
+  if (factor.names[1] == "(Intercept)") {
   cum.attr.ret <- matrix(,nrow=length(ticker),ncol=length(factor.names),
-                         dimnames=list(ticker,factor.names))
+                         dimnames=list(ticker,factor.names))[,-1] # discard intercept
+  } else {
+    cum.attr.ret <- matrix(,nrow=length(ticker),ncol=length(factor.names),
+                           dimnames=list(ticker,factor.names))
+  }
   cum.spec.ret <- rep(0,length(ticker))
   names(cum.spec.ret) <- ticker
  
@@ -164,7 +169,7 @@ if (class(fit) =="FundamentalFactorModel" ) {
     
     attr.factor <- exposure * coredata(factor.returns)
     specific.returns <- returns - apply(attr.factor,1,sum)
-    attr <- cbind(returns,attr.factor,specific.returns)
+    attr <- cbind(attr.factor,specific.returns)
     attr.list[[k]] <- xts(attr,as.Date(dates))
     cum.attr.ret[k,] <- apply(attr.factor,2,Return.cumulative)
     cum.spec.ret[k] <- Return.cumulative(specific.returns)
