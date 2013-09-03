@@ -86,12 +86,12 @@ factorModelPerformanceAttribution <-
     fundName = rownames(fit$beta)
     
     attr.list <- list()
-    
+  #  data <- checkData(fit$data)
     for (k in fundName) {
     fit.lm = fit$asset.fit[[k]]
    
     ## extract information from lm object
-    date <- index(fit$data[,k])
+    date <- rownames(fit.lm$model[1])
    
     actual.xts = xts(fit.lm$model[1], as.Date(date))
  
@@ -187,7 +187,7 @@ if (class(fit) =="FundamentalFactorModel" ) {
       cum.spec.ret <- fit$r2
       factorName = rownames(fit$loadings)
       fundName = colnames(fit$loadings)
-     
+      
       # create list for attribution
       attr.list <- list()
       # pca method
