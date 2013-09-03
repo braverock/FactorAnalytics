@@ -86,13 +86,12 @@ factorModelPerformanceAttribution <-
     fundName = rownames(fit$beta)
     
     attr.list <- list()
-    #  data <- checkData(fit$data)
+    
     for (k in fundName) {
       fit.lm = fit$asset.fit[[k]]
       
       ## extract information from lm object
-      date <- rownames(fit.lm$model[1])
-      
+      date <- index(na.omit(fit$data[,k])) 
       actual.xts = xts(fit.lm$model[1], as.Date(date))
       
       
