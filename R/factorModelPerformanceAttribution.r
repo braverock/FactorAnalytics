@@ -86,42 +86,42 @@ factorModelPerformanceAttribution <-
     fundName = rownames(fit$beta)
     
     attr.list <- list()
-  #  data <- checkData(fit$data)
+    #  data <- checkData(fit$data)
     for (k in fundName) {
-    fit.lm = fit$asset.fit[[k]]
-   
-    ## extract information from lm object
-    date <- rownames(fit.lm$model[1])
-   
-    actual.xts = xts(fit.lm$model[1], as.Date(date))
- 
-
-# attributed returns
-# active portfolio management p.512 17A.9 
+      fit.lm = fit$asset.fit[[k]]
+      
+      ## extract information from lm object
+      date <- rownames(fit.lm$model[1])
+      
+      actual.xts = xts(fit.lm$model[1], as.Date(date))
+      
+      
+      # attributed returns
+      # active portfolio management p.512 17A.9 
+      
+      cum.ret <-   Return.cumulative(actual.xts)
+      # setup initial value
+      attr.ret.xts.all <- xts(, as.Date(date))
+      for ( i in factorName ) {
+        
+        if (is.na(fit$beta[k,i])) {
+          cum.attr.ret[k,i] <- NA
+          attr.ret.xts.all <- merge(attr.ret.xts.all,xts(rep(NA,length(date)),as.Date(date)))  
+        } else {
+          attr.ret.xts <- actual.xts - xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]),
+                                           as.Date(date))  
+          cum.attr.ret[k,i] <- cum.ret - Return.cumulative(actual.xts-attr.ret.xts)  
+          attr.ret.xts.all <- merge(attr.ret.xts.all,attr.ret.xts)
+        }
+      }
     
-  cum.ret <-   Return.cumulative(actual.xts)
-  # setup initial value
-  attr.ret.xts.all <- xts(, as.Date(date))
-  for ( i in factorName ) {
-  
-    if (fit$beta[k,i]==0) {
-    cum.attr.ret[k,i] <- 0
-  attr.ret.xts.all <- merge(attr.ret.xts.all,xts(rep(0,length(date)),as.Date(date)))  
-  } else {
-  attr.ret.xts <- actual.xts - xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]),
-                               as.Date(date))  
-  cum.attr.ret[k,i] <- cum.ret - Return.cumulative(actual.xts-attr.ret.xts)  
-  attr.ret.xts.all <- merge(attr.ret.xts.all,attr.ret.xts)
-  }
-  
-  }
-    
-  # specific returns    
-    spec.ret.xts <- actual.xts - xts(as.matrix(fit.lm$model[,-1])%*%as.matrix(fit.lm$coef[-1]),
-                                 as.Date(date))
-    cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
-  attr.list[[k]] <- merge(attr.ret.xts.all,spec.ret.xts)
-   colnames(attr.list[[k]]) <- c(factorName,"specific.returns")
+      
+      # specific returns    
+      spec.ret.xts <- actual.xts - xts(as.matrix(fit.lm$model[,-1])%*%as.matrix(fit.lm$coef[-1]),
+                                       as.Date(date))
+      cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
+      attr.list[[k]] <- merge(attr.ret.xts.all,spec.ret.xts)
+      colnames(attr.list[[k]]) <- c(factorName,"specific.returns")
     }
 
     
