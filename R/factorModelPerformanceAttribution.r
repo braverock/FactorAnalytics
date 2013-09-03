@@ -91,7 +91,8 @@ factorModelPerformanceAttribution <-
       fit.lm = fit$asset.fit[[k]]
       
       ## extract information from lm object
-      date <- index(na.omit(fit$data[,k])) 
+      data <- checkData(fit$data)
+      date <- index(na.omit(data[,k])) 
       actual.xts = xts(fit.lm$model[1], as.Date(date))
       
       
