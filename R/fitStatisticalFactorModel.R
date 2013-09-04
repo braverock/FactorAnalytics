@@ -342,37 +342,37 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 
 # check data 
 data.xts <- checkData(data,method="xts") 
-data <- coredata(data.xts)
+
 
   call <- match.call()  
-  pos <- rownames(data)
-	data <- as.matrix(data)
-	if(any(is.na(data))) {
+  pos <- rownames(coredata(data.xts))
+	data.m <- as.matrix(coredata(data.xts))
+	if(any(is.na(data.m))) {
 		if(na.rm) {
-			data <- na.omit(data)
+			data.m <- na.omit(data.m)
 		}		else {
 			stop("Missing values are not allowed if na.rm=F.")
 		}
 	}
 	# use PCA if T > N
-	if(ncol(data) < nrow(data)) {
+	if(ncol(data.m) < nrow(data.m)) {
 		if(is.character(k)) {
 			stop("k must be the number of factors for PCA.")
 		}
-		if(k >= ncol(data)) {
+		if(k >= ncol(data.m)) {
 			stop("Number of factors must be smaller than number of variables."
 				)
 		}
-		ans <- mfactor.pca(data, k, check = check)
+		ans <- mfactor.pca(data.m, k, check = check)
 	}	else if(is.character(k)) {
-		ans <- mfactor.test(data, k, refine = refine, check = 
+		ans <- mfactor.test(data.m, k, refine = refine, check = 
 			check, max.k = max.k, sig = sig)
 	}	else { # use aPCA if T <= N
-		if(k >= ncol(data)) {
+		if(k >= ncol(data.m)) {
 			stop("Number of factors must be smaller than number of variables."
 				)
 		}
-		ans <- mfactor.apca(data, k, refine = refine, check = 
+		ans <- mfactor.apca(data.m, k, refine = refine, check = 
 			check)
 	}
   
@@ -383,20 +383,20 @@ data <- coredata(data.xts)
 		f <- as.matrix(f)
 	}
 
-	if(nrow(data) < ncol(data)) {
-		mimic <- ginv(data) %*% f
+	if(nrow(data.m) < ncol(data.m)) {
+		mimic <- ginv(data.m) %*% f
 	}	else {
-		mimic <- qr.solve(data, f)
+		mimic <- qr.solve(data.m, f)
 	}
 	
   mimic <- t(t(mimic)/colSums(mimic))
-	dimnames(mimic)[[1]] <- dimnames(data)[[2]]
+	dimnames(mimic)[[1]] <- dimnames(data.m)[[2]]
   
   ans$mimic <- mimic
   ans$resid.variance <- apply(ans$residuals,2,var)
   ans$call <- call
   ans$data <- data
-  ans$assets.names  <- colnames(data)
+  ans$assets.names  <- colnames(data.m)
 class(ans) <- "StatFactorModel"
   return(ans)
 }

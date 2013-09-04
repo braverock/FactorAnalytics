@@ -1,6 +1,6 @@
 \name{factorModelPerformanceAttribution}
 \alias{factorModelPerformanceAttribution}
-\title{Compute BARRA-type performance attribution}
+\title{Compute performance attribution}
 \usage{
   factorModelPerformanceAttribution(fit, benchmark = NULL,
     ...)
@@ -10,7 +10,8 @@
   "FundamentalFactorModel" or "statFactorModel".}
 
   \item{benchmark}{a xts, vector or data.frame provides
-  benchmark time series returns.}
+  benchmark time series returns. If benchmark is provided,
+  active returns decomposition will be calculated.}
 
   \item{...}{Other controled variables for fit methods.}
 }
@@ -31,11 +32,20 @@
 }
 \details{
   total returns can be decomposed into returns attributed
-  to factors and specific returns. \eqn{R_t = \sum_j b_{jt}
-  * f_{jt} + u_t},t=1..T,\eqn{b_{jt}} is exposure to factor
+  to factors and specific returns. \eqn{R_t = \sum_j b_{j}
+  * f_{jt} + u_t},t=1..T,\eqn{b_{j}} is exposure to factor
   j and \eqn{f_{jt}} is factor j. The returns attributed to
-  factor j is \eqn{b_{jt} * f_{jt}} and portfolio specific
-  returns is \eqn{u_t}
+  factor j is \eqn{b_{j} * f_{jt}} and specific returns is
+  \eqn{u_t}.
+
+  If benchmark is provided. active returns = total returns
+  - benchmark returns = active returns attributed to
+  factors + specific returns. Specifically, \eqn{R_t =
+  \sum_j b_{j}^A * f_{jt} + u_t},t=1..T, \eqn{b_{j}^A} is
+  \emph{active beta} to factor j and \eqn{f_{jt}} is factor
+  j. The active returns attributed to factor j is
+  \eqn{b_{j}^A * f_{jt}} specific returns is \eqn{u_t}, and
+  \eqn{b_{j}^A = b_{j}-1}
 }
 \examples{
 data(managers.df)
