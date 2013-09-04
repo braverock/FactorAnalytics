@@ -100,7 +100,9 @@
   Jiang. Guy Yullen re-implemented the function in R and
   requires the following additional R libraries: zoo time
   series library, robust Insightful robust library ported
-  to R and robustbase Basic robust statistics package for R
+  to R and robustbase Basic robust statistics package for
+  R. Yi-An Chen from UW economics deparment re-organize the
+  codes and finalize this function.
 }
 \examples{
 # BARRA type factor model

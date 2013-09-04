@@ -17,9 +17,10 @@
 #' and Yindeng Jiang. Guy Yullen re-implemented the function in R and requires
 #' the following additional R libraries: zoo time series library, robust
 #' Insightful robust library ported to R and robustbase Basic robust statistics
-#' package for R
+#' package for R. Yi-An Chen from UW economics deparment re-organize the codes and finalize this 
+#' function.  
 #'  
-#' 
+#'
 #' @param data data.frame, data must have \emph{assetvar}, \emph{returnvar}, \emph{datevar}
 #' , and exposure.names. Generally, data is panel data setup, so it needs firm variabales 
 #' and time variables. Data has to be a balanced panel. 
