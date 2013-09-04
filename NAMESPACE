@@ -1,3 +1,4 @@
+S3method(plot,FM.attribution)
 S3method(summary,FM.attribution)
 export(factorModelPerformanceAttribution)
 export(dCornishFisher)
