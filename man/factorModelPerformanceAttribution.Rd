@@ -2,16 +2,11 @@
 \alias{factorModelPerformanceAttribution}
 \title{Compute performance attribution}
 \usage{
-  factorModelPerformanceAttribution(fit, benchmark = NULL,
-    ...)
+  factorModelPerformanceAttribution(fit, ...)
 }
 \arguments{
   \item{fit}{Class of "TimeSeriesFactorModel",
   "FundamentalFactorModel" or "statFactorModel".}
-
-  \item{benchmark}{a xts, vector or data.frame provides
-  benchmark time series returns. If benchmark is provided,
-  active returns decomposition will be calculated.}
 
   \item{...}{Other controled variables for fit methods.}
 }
@@ -37,15 +32,6 @@
   j and \eqn{f_{jt}} is factor j. The returns attributed to
   factor j is \eqn{b_{j} * f_{jt}} and specific returns is
   \eqn{u_t}.
-
-  If benchmark is provided. active returns = total returns
-  - benchmark returns = active returns attributed to
-  factors + specific returns. Specifically, \eqn{R_t =
-  \sum_j b_{j}^A * f_{jt} + u_t},t=1..T, \eqn{b_{j}^A} is
-  \emph{active beta} to factor j and \eqn{f_{jt}} is factor
-  j. The active returns attributed to factor j is
-  \eqn{b_{j}^A * f_{jt}} specific returns is \eqn{u_t}, and
-  \eqn{b_{j}^A = b_{j}-1}
 }
 \examples{
 data(managers.df)

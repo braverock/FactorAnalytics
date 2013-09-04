@@ -10,16 +10,8 @@
 #' j. The returns attributed to factor j is \eqn{b_{j} * f_{jt}} and specific 
 #' returns is \eqn{u_t}. 
 #' 
-#' If benchmark is provided. active returns = total returns  - benchmark returns =
-#' active returns attributed to factors + specific returns. Specifically,  
-#' \eqn{R_t = \sum_j b_{j}^A * f_{jt} + u_t},t=1..T, \eqn{b_{j}^A} is \emph{active beta} to factor j 
-#' and \eqn{f_{jt}} is factor j. The active returns attributed to factor j is 
-#' \eqn{b_{j}^A * f_{jt}} specific returns is \eqn{u_t}, and \eqn{b_{j}^A = b_{j}-1} 
-#' 
 #' @param fit Class of "TimeSeriesFactorModel", "FundamentalFactorModel" or
 #' "statFactorModel".
-#' @param benchmark a xts, vector or data.frame provides benchmark time series
-#' returns. If benchmark is provided, active returns decomposition will be calculated.
 #' @param ...  Other controled variables for fit methods.
 #' @return an object of class \code{FM.attribution} containing
 #' \itemize{
@@ -46,7 +38,7 @@
 #' 
 #' 
 factorModelPerformanceAttribution <- 
-  function(fit,benchmark=NULL,...) {
+  function(fit,...) {
     
     require(PerformanceAnalytics)
     
@@ -76,9 +68,6 @@ factorModelPerformanceAttribution <-
         data <- checkData(fit$data)
         date <- index(na.omit(data[,k])) 
         actual.xts = xts(fit.lm$model[1], as.Date(date))
-        if (!is.null(benchmark)) {
-        benchmark.xts <- checkData(benchmark)[as.Date(date)]
-        }
         # attributed returns
         # active portfolio management p.512 17A.9 
         # top-down method
@@ -93,13 +82,8 @@ factorModelPerformanceAttribution <-
             cum.attr.ret[k,i] <- NA
             attr.ret.xts.all <- merge(attr.ret.xts.all,xts(rep(NA,length(date)),as.Date(date)))  
           } else {
-            if (!is.null(benchmark)) {
-              attr.ret.xts <- actual.xts - xts(as.matrix(benchmark.xts)%*%as.matrix(fit.lm$coef[i]-1),
-                                               as.Date(date))   
-            } else {
-              attr.ret.xts <- actual.xts - xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]),
+            attr.ret.xts <- actual.xts - xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]),
                                                as.Date(date))  
-            }
             cum.attr.ret[k,i] <- cum.ret - Return.cumulative(actual.xts-attr.ret.xts)  
             attr.ret.xts.all <- merge(attr.ret.xts.all,attr.ret.xts)
           }
@@ -119,10 +103,10 @@ factorModelPerformanceAttribution <-
     
     if (class(fit) =="FundamentalFactorModel" ) {
       # if benchmark is provided
-      
-      if (!is.null(benchmark)) {
-        stop("use fitFundamentalFactorModel instead")
-      }
+#       
+#       if (!is.null(benchmark)) {
+#         stop("use fitFundamentalFactorModel instead")
+#       }
       # return attributed to factors
       factor.returns <- fit$factor.returns[,-1]
       factor.names <- colnames(fit$beta)
@@ -188,13 +172,9 @@ factorModelPerformanceAttribution <-
           fit.lm = fit$asset.fit[[k]]
           
           ## extract information from lm object
-          date <- index(fit$data[,k])
+          date <- index(data[,k])
           # probably needs more general Date setting
           actual.xts = xts(fit.lm$model[1], as.Date(date))
-          if (!is.null(benchmark)) {
-            benchmark.xts <- checkData(benchmark)[as.Date(date)]
-          }
-          
           # attributed returns
           # active portfolio management p.512 17A.9 
           
@@ -202,13 +182,8 @@ factorModelPerformanceAttribution <-
           # setup initial value
           attr.ret.xts.all <- xts(, as.Date(date))
           for ( i in factorName ) {
-            if (!is.null(benchmark)) {
-              attr.ret.xts <- actual.xts - xts(as.matrix(benchmark.xts)%*%as.matrix(fit.lm$coef[i]-1),
-                                               as.Date(date))   
-            } else {
             attr.ret.xts <- actual.xts - xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]),
                                              as.Date(date))  
-            }
             cum.attr.ret[k,i] <- cum.ret - Return.cumulative(actual.xts-attr.ret.xts)  
             attr.ret.xts.all <- merge(attr.ret.xts.all,attr.ret.xts)
             
@@ -232,16 +207,8 @@ factorModelPerformanceAttribution <-
           attr.ret.xts.all <- xts(, as.Date(date))
           actual.xts <- xts(fit$asset.ret[,k],as.Date(date))
           cum.ret <-   Return.cumulative(actual.xts)
-          if (!is.null(benchmark)) {
-            benchmark.xts <- checkData(benchmark)[as.Date(date)]
-          }
           for (i in factorName) {
-            if (!is.null(benchmark)) {
-              attr.ret.xts <- actual.xts - xts(coredata(benchmark.xts)*(fit$loadings[i,k]-1),
-                                               as.Date(date))   
-            } else {
             attr.ret.xts <- xts(fit$factors[,i] * fit$loadings[i,k], as.Date(date) )
-            }
             attr.ret.xts.all <- merge(attr.ret.xts.all,attr.ret.xts)
             cum.attr.ret[k,i] <- cum.ret - Return.cumulative(actual.xts-attr.ret.xts)
           }
@@ -264,3 +231,10 @@ factorModelPerformanceAttribution <-
     class(ans) = "FM.attribution"      
     return(ans)
   }
+
+
+# If benchmark is provided, active return attribution will be calculated.
+#  active returns = total returns  - benchmark returns. Specifically,  
+# \eqn{R_t^A = \sum_j b_{j}^A * f_{jt} + u_t^A},t=1..T, \eqn{b_{j}^A} is \emph{active exposure} to factor j 
+# and \eqn{f_{jt}} is factor j. The active returns attributed to factor j is 
+# \eqn{b_{j}^A * f_{jt}} specific returns is \eqn{u_t^A} 
