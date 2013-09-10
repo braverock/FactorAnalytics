@@ -34,12 +34,14 @@
   \eqn{u_t}.
 }
 \examples{
+\dontrun{
 data(managers.df)
 fit.ts <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
                                       data=managers.df,fit.method="OLS")
 # withoud benchmark
 fm.attr <- factorModelPerformanceAttribution(fit.ts)
+}
 }
 \author{
   Yi-An Chen.
