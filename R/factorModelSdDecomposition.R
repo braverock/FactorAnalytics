@@ -3,6 +3,10 @@
 #' Compute the factor model factor standard deviation decomposition for an
 #' asset based on Euler's theorem given factor model parameters. 
 #' 
+#' The factor model has the form \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)}\cr
+#' where beta.star = (beta, sig.e)' and F.star(t) = [F(t)', z(t)]'. By Euler's
+#' theorem:\cr \code{Sd.fm = sum(cSd.fm) = sum(beta.star*mSd.fm)} \cr
+#' 
 #' 
 #' @param beta.vec k x 1 vector of factor betas with factor names in the
 #' rownames.
@@ -11,11 +15,19 @@
 #' @return an S3 object containing
 #' \itemize{
 #' \item{Sd.fm} Scalar, std dev based on factor model.
-#' \item{mSd.fm} (K+1) x 1 vector of factor marginal contributions to risk sd.
-#' \item{cSd.fm} (K+1) x 1 vector of factor component contributions to risk sd.
-#' \item{pcSd.fm} (K+1) x 1 vector of factor percentage component contributions to risk sd.
+#' \item{mSd.fm} (K+1) x 1 vector of factor marginal contributions to sd.
+#' \item{cSd.fm} (K+1) x 1 vector of factor component contributions to sd.
+#' \item{pcSd.fm} (K+1) x 1 vector of factor percentage component contributions to sd.
 #' }
 #' @author Eric Zivot and Yi-An Chen
+#' @references 
+#' \enumerate{ 
+#' \item Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A
+#' General Analysis", The Journal of Risk 5/2.
+#' \item Yamai and Yoshiba (2002)."Comparative Analyses of Expected Shortfall and Value-at-Risk: Their
+#' Estimation Error, Decomposition, and Optimization Bank of Japan.
+#' \item Meucci (2007). "Risk Contributions from Generic User-Defined Factors," Risk. 
+#' }#' 
 #' @examples
 #' 
 #' # load data from the database

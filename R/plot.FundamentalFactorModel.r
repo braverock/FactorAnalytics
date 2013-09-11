@@ -1,9 +1,3 @@
-# plot.FundamentalFactorModel.r
-# Yi-An Chen
-# 7/16/2012
-
-
-
 #' plot FundamentalFactorModel object.
 #' 
 #' Generic function of plot method for fitFundamentalFactorModel.
@@ -11,31 +5,31 @@
 #' 
 #' @param x fit object created by fitFundamentalFactorModel.
 #' @param which.plot integer indicating which plot to create: "none" will
-#' create a menu to choose. Defualt is none. 
-#' 1 = "Factor returns",
-#' 2 = "Residual plots",
-#' 3 = "Variance of Residuals",
-#' 4 = "Factor Model Correlation",
-#' 5 = "Factor Contributions to SD",
-#' 6 = "Factor Contributions to ES",
-#' 7 = "Factor Contributions to VaR"
+#' create a menu to choose. Defualt is none. \cr
+#' 1 = "Factor returns",\cr
+#' 2 = "Residual plots",\cr
+#' 3 = "Variance of Residuals",\cr
+#' 4 = "Factor Model Correlation",\cr
+#' 5 = "Factor Contributions to SD",\cr
+#' 6 = "Factor Contributions to ES",\cr
+#' 7 = "Factor Contributions to VaR"\cr
 #' @param max.show Maximum assets to plot. Default is 4.
-#' #' @param plot.single Plot a single asset of lm class. Defualt is FALSE.
+#' @param plot.single Plot a single asset of lm class. Defualt is FALSE.
 #' @param asset.name Name of the asset to be plotted.
 #' @param which.plot.single integer indicating which plot to create: "none"
-#' will create a menu to choose. Defualt is none. 
-#' 1 = time series plot of actual and fitted values,
-#' 2 = time series plot of residuals with standard error bands,
-#' 3 = time series plot of squared residuals,
-#' 4 = time series plot of absolute residuals,
-#' 5 = SACF and PACF of residuals,
-#' 6 = SACF and PACF of squared residuals,
-#' 7 = SACF and PACF of absolute residuals,
-#' 8 = histogram of residuals with normal curve overlayed,
-#' 9 = normal qq-plot of residuals.
+#' will create a menu to choose. Defualt is none.\cr 
+#' 1 = time series plot of actual and fitted values,\cr
+#' 2 = time series plot of residuals with standard error bands,\cr
+#' 3 = time series plot of squared residuals,\cr
+#' 4 = time series plot of absolute residuals,\cr
+#' 5 = SACF and PACF of residuals,\cr
+#' 6 = SACF and PACF of squared residuals,\cr
+#' 7 = SACF and PACF of absolute residuals,\cr
+#' 8 = histogram of residuals with normal curve overlayed,\cr
+#' 9 = normal qq-plot of residuals.\cr
 #' @param legend.txt  Logical. TRUE will plot legend on barplot. Defualt is \code{TRUE}. 
-#' @param VaR.method haracter, method for computing VaR. Valid choices are
-#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' @param VaR.method character, method for computing VaR. Valid choices are
+#' one of "modified","gaussian","historical", "kernel". Computation is done with the \code{VaR}
 #' in the PerformanceAnalytics package. Default is "historical".
 #' @param ...  other variables for barplot method.
 #' @author Eric Zivot and Yi-An Chen.

@@ -1,9 +1,11 @@
 #' Fit time series factor model by time series regression techniques.
 #' 
-#' @description Fit time series factor model by time series regression techniques. It
-#' creates the class of "TimeSeriesFactorModel".
+#' @description Fit time series factor model by time series regression techniques for single 
+#' or multiple assets. Classic OLS, Robust regression can be chosen and several model selection methods
+#' can be applied. Class "TimeSeriesFactorModel" will be created too.
 #' 
-#' @details add.up.market.returns adds a max(0,Rm-Rf) term in the regression as suggested by 
+#' @details 
+#' \code{add.up.market.returns} adds a max(0,Rm-Rf) term in the regression as suggested by 
 #' Merton-Henriksson Model (1981) to measure market timing. The coefficient can be interpreted as 
 #' number of free put options.
 #' 

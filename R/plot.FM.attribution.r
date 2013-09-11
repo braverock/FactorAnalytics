@@ -1,24 +1,26 @@
 #' plot FM.attribution class
 #' 
 #' Generic function of plot method for factorModelPerformanceAttribution.
-#' Either plot all fit models or choose a single asset to plot.
+#' Either plot all assets or choose a single asset to plot.
 #' 
 #' 
 #' @param fm.attr FM.attribution object created by
-#' factorModelPerformanceAttribution.
-#' @param which.plot integer indicating which plot to create: "none" will
-#' create a menu to choose. Defualt is none. 1 = attributed cumulative returns,
-#' 2 = attributed returns on date selected by user, 3 = time series of
-#' attributed returns
+#' \code{factorModelPerformanceAttribution}.
+#' @param which.plot Integer indicates which plot to create: "none" will
+#' create a menu to choose. Defualt is none.\cr
+#' 1 = attributed cumulative returns,\cr
+#' 2 = attributed returns on date selected by user,\cr
+#' 3 = time series of attributed returns
 #' @param max.show Maximum assets to plot. Default is 6.
-#' @param date date indicates for attributed returns, the date format should be
+#' @param date Indicates for attributed returns, the date format should be
 #' xts compatible.
 #' @param plot.single Plot a single asset of lm class. Defualt is FALSE.
 #' @param fundName Name of the portfolio to be plotted.
-#' @param which.plot.single integer indicating which plot to create: "none"
-#' will create a menu to choose. Defualt is none. 1 = attributed cumulative
-#' returns, 2 = attributed returns on date selected by user, 3 = time series of
-#' attributed returns
+#' @param which.plot.single Integer indicates which plot to create: "none"
+#' will create a menu to choose. Defualt is none.\cr
+#'  1 = attributed cumulative returns,\cr
+#'  2 = attributed returns on date selected by user, \cr
+#'  3 = time series of attributed returns
 #' @param ...  more arguements for \code{chart.TimeSeries} used for plotting
 #' time series
 #' @author Yi-An Chen.

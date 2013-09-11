@@ -1,42 +1,51 @@
 #' plot StatFactorModel object.
 #' 
 #' Generic function of plot method for fitStatisticFactorModel. Either plot all
-#' fit models or choose a single asset to plot.
+#' assets or choose a single asset to plot.
 #' 
-#' PCA works well. APCA is underconstruction.
-#' 
-#' @param x fit object created by fitStatisticalFactorModel.
-#' @param variables Optional. an integer vector telling which variables are to
+#'  
+#' @param x fit object created by \code{fitStatisticalFactorModel}.
+#' @param variables Optional. An integer vector shows which variables are to
 #' be plotted. The default is to plot all the variables, or the number of
-#' variables explaining 90 percent of the variance, whichever is bigger.
-#' @param cumulative a logical flag: if TRUE, the cumulative fraction of the
+#' variables explaining 90 percent of the variance, whatever is bigger.
+#' @param cumulative Logical flag: if \code{TRUE}, the cumulative fraction of the
 #' variance is printed above each bar in the plot.
 #' @param style Charater. bar or lines can be chosen.
 #' @param which.plot integer indicating which plot to create: "none" will
-#' create a menu to choose. Defualt is none. 1 = "Screeplot of Eigenvalues", 2
-#' = "Factor returns", 3 = "FM Correlation", 4 = "R square", 5 = "Variance of
-#' Residuals", 6 = "Factor Contributions to SD", 7 = "Factor Contributions to
-#' ES", 8 = "Factor Contributions to VaR"
-#' @param hgrid Logic. Whether to plot horizontal grid or not. Defualt is
-#' FALSE.
-#' @param vgrid Logic. Whether to plot vertical grid or not. Defualt is FALSE.
-#' @param plot.single Plot a single asset of lm class. Defualt is FALSE.
+#' create a menu to choose. Defualt is none.\cr
+#' 1 = "Screeplot of Eigenvalues", \cr
+#' 2 = "Factor returns", \cr
+#' 3 = "FM Correlation", \cr
+#' 4 = "R square",\cr
+#' 5 = "Variance of Residuals", \cr
+#' 6 = "Factor Contributions to SD", \cr
+#' 7 = "Factor Contributions to ES", \cr
+#' 8 = "Factor Contributions to VaR" \cr
+#' @param hgrid Logic flag. Whether to plot horizontal grid or not. Defualt is
+#' \code{FALSE}.
+#' @param vgrid Logic flag. Whether to plot vertical grid or not. Defualt is \code{FALSE}.
+#' @param plot.single Plot a single asset of lm class. Defualt is \code{FALSE}.
 #' @param asset.name Name of the asset to be plotted.
 #' @param which.plot.single integer indicating which plot to create: "none"
-#' will create a menu to choose. Defualt is none. 1 = time series plot of
-#' actual and fitted values 2 = time series plot of residuals with standard
-#' error bands 3 = time series plot of squared residuals 4 = time series plot
-#' of absolute residuals 5 = SACF and PACF of residuals 6 = SACF and PACF of
-#' squared residuals 7 = SACF and PACF of absolute residuals 8 = histogram of
-#' residuals with normal curve overlayed 9 = normal qq-plot of residuals 10=
-#' CUSUM plot of recursive residuals 11= CUSUM plot of OLS residuals 12= CUSUM
-#' plot of recursive estimates relative to full sample estimates 13= rolling
-#' estimates over 24 month window
+#' will create a menu to choose. Defualt is none. \cr
+#' 1 = time series plot of actual and fitted values, \cr
+#' 2 = time series plot of residuals with standard error bands,\cr
+#' 3 = time series plot of squared residuals, \cr
+#' 4 = time series plot of absolute residuals, \cr
+#' 5 = SACF and PACF of residuals, \cr
+#' 6 = SACF and PACF of squared residuals, \cr
+#' 7 = SACF and PACF of absolute residuals, \cr
+#' 8 = histogram of residuals with normal curve overlayed, \cr
+#' 9 = normal qq-plot of residuals,\cr
+#' 10= CUSUM plot of recursive residuals,\cr
+#' 11= CUSUM plot of OLS residuals,\cr
+#' 12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
+#' 13= rolling estimates over 24 month window. 
 #' @param max.show  Maximum assets to plot. Default is 6.
-#' @param VaR.method haracter, method for computing VaR. Valid choices are
-#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' @param VaR.method Character, method for computing VaR. Valid choices are
+#' either "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
 #' in the PerformanceAnalytics package. Default is "historical".
-#' @param ...  other variables for barplot method.
+#' @param ...  Other variables for barplot method.
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples
 #' 

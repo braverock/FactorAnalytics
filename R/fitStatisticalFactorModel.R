@@ -1,11 +1,12 @@
-#' Fit statistical factor model using principle components
+#' Fit statistical factor model using principle components analysis
 #' 
 #' Fit statistical factor model using principle components. This function is
-#' mainly adapted from S+FinMetric function mfactor.
+#' mainly adapted from S+FinMetric function \code{mfactor}.
 #' 
 #' 
 #' @param data a vector, matrix, data.frame, xts, timeSeries or zoo object with asset returns 
-#' and factors retunrs names
+#' and factors retunrs names. If data does not have xts class, rownames must provide 
+#' xts compatible time index.  
 #' @param k numbers of factors if it is scalar or method of choosing optimal
 #' number of factors. "bn" represents Bai and Ng (2002) method and "ck"
 #' represents Connor and korajczyk (1993) method. Default is k = 1.
@@ -20,23 +21,24 @@
 #' 
 #' @return
 #' \itemize{
-#' \item{factors}{T x K the estimated factors.}
-#' \item{loadings}{K x N the asset specific factor loadings beta_i.
+#' \item{factors}{ T x K the estimated factors.}
+#' \item{loadings}{ K x N the asset specific factor loadings beta_i.
 #' estimated from regress the asset returns on factors.}
-#' \item{alpha}{1 x N the estimated intercepts alpha_i}
-#' \item{ret.cov}{N x N asset returns sample variance covariance matrix.}
-#' \item{r2}{regression r square value from regress the asset returns on
+#' \item{alpha}{ 1 x N the estimated intercepts alpha_i}
+#' \item{ret.cov}{ N x N asset returns sample variance covariance matrix.}
+#' \item{r2}{ regression r square value from regress the asset returns on
 #' factors.}
-#' \item{k}{the number of the facotrs.}
-#' \item{eigen}{eigenvalues from the sample covariance matrix.}
-#' \item{residuals}{T x N matrix of residuals from regression.}
-#' \item{asset.ret}{asset returns}
-#' \item{asset.fit}{List of regression lm class of individual returns on
+#' \item{k}{ the number of the facotrs.}
+#' \item{eigen}{ eigenvalues from the sample covariance matrix.}
+#' \item{residuals}{ T x N matrix of residuals from regression.}
+#' \item{asset.ret}{ asset returns}
+#' \item{asset.fit}{ List of regression lm class of individual returns on
 #' factors.}
-#' \item{resid.variance}{vector of residual variances.}
-#' \item{mimic}{N x K matrix of factor mimicking portfolio returns.}
+#' \item{resid.variance}{ vector of residual variances.}
+#' \item{mimic}{ N x K matrix of factor mimicking portfolio returns.}
 #' }
 #' @author Eric Zivot and Yi-An Chen
+#' @references Zivot and Wang, (2006) "Modeling Financial Time Series with S-PLUS, 2nd edition"
 #' @examples
 #' 
 #' # load data for fitStatisticalFactorModel.r

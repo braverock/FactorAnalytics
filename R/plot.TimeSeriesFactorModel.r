@@ -1,32 +1,41 @@
-#' plot TimeSeriesfactorModel object.
+#' plot TimeSeriesFactorModel object.
 #' 
 #' Generic function of plot method for fitTimeSeriesFactorModel. Either plot
-#' all fit models or choose a single asset to plot.
+#' all assets or choose a single asset to plot.
 #' 
 #' 
-#' @param x fit object created by fitTimeSeriesFactorModel.
-#' @param colorset Defualt colorset is c(1:12).
-#' @param legend.loc plot legend or not. Defualt is \code{NULL}.
-#' @param which.plot integer indicating which plot to create: "none" will
-#' create a menu to choose. Defualt is none. 1 = "Fitted factor returns", 2 =
-#' "R square", 3 = "Variance of Residuals", 4 = "FM Correlation", 5 = "Factor
-#' Contributions to SD", 6 = "Factor Contributions to ES", 7 = "Factor
-#' Contributions to VaR"
+#' @param x fit object created by \code{fitTimeSeriesFactorModel}.
+#' @param colorset Defualt colorset the same as \code{barplot}.
+#' @param legend.loc Plot legend or not. Defualt is \code{NULL}.
+#' @param which.plot Integer indicates which plot to create: "none" will
+#' create a menu to choose. Defualt is none.\cr 
+#' 1 = "Fitted factor returns", \cr
+#' 2 = "R square", \cr
+#' 3 = "Variance of Residuals",\cr
+#' 4 = "FM Correlation",\cr
+#' 5 = "Factor Contributions to SD",\cr
+#' 6 = "Factor Contributions to ES",\cr
+#' 7 = "Factor Contributions to VaR"
 #' @param max.show Maximum assets to plot. Default is 6.
-#' @param plot.single Plot a single asset of lm class. Defualt is FALSE.
+#' @param plot.single Plot a single asset of lm class. Defualt is \code{FALSE}.
 #' @param asset.name Name of the asset to be plotted.
-#' @param which.plot.single integer indicating which plot to create: "none"
-#' will create a menu to choose. Defualt is none. 1 = time series plot of
-#' actual and fitted values 2 = time series plot of residuals with standard
-#' error bands 3 = time series plot of squared residuals 4 = time series plot
-#' of absolute residuals 5 = SACF and PACF of residuals 6 = SACF and PACF of
-#' squared residuals 7 = SACF and PACF of absolute residuals 8 = histogram of
-#' residuals with normal curve overlayed 9 = normal qq-plot of residuals 10=
-#' CUSUM plot of recursive residuals 11= CUSUM plot of OLS residuals 12= CUSUM
-#' plot of recursive estimates relative to full sample estimates 13= rolling
-#' estimates over 24 month window
-#' @param VaR.method haracter, method for computing VaR. Valid choices are
-#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
+#' @param which.plot.single Integer indicates which plot to create: "none"
+#' will create a menu to choose. Defualt is none.\cr
+#'  1 = time series plot of actual and fitted values,\cr
+#'  2 = time series plot of residuals with standard error bands, \cr
+#'  3 = time series plot of squared residuals, \cr
+#'  4 = time series plot of absolute residuals,\cr
+#'  5 = SACF and PACF of residuals,\cr
+#'  6 = SACF and PACF of squared residuals,\cr
+#'  7 = SACF and PACF of absolute residuals,\cr
+#'  8 = histogram of residuals with normal curve overlayed,\cr
+#'  9 = normal qq-plot of residuals,\cr
+#'  10= CUSUM plot of recursive residuals,\cr
+#'  11= CUSUM plot of OLS residuals,\cr
+#'  12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
+#'  13= rolling estimates over 24 month window.
+#' @param VaR.method Character, method for computing VaR. Valid choices are
+#' either "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
 #' in the PerformanceAnalytics package. Default is "historical".
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples

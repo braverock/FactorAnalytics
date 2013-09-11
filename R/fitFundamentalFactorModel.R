@@ -1,28 +1,25 @@
 #' fit fundamental factor model by classic OLS or Robust regression technique
 #' 
-#' fit fundamental factor model or cross-sectional time series factor model by
-#' classic OLS or Robust regression technique.  Fundamental factor models use
+#' fit fundamental factor model or cross-sectional factor model by
+#' classic OLS or Robust regression.  Fundamental factor models use
 #' observable asset specific characteristics (fundamentals) like industry
 #' classification, market capitalization, style classification (value, growth)
-#' etc. to determine the common risk factors. The function creates the class
+#' etc. to calculate the common risk factors. The function creates the class
 #' "FundamentalFactorModel".
 #' 
 #' @details
 #' If style factor exposure is standardized to regression-weighted mean zero, this makes
-#' style factors orthogonal to the Word factor (intercept term), which in turn facilitted 
+#' style factors orthogonal to the world factor (intercept term), which in turn facilitted 
 #' interpretation of the style factor returns. See Menchero 2010.    
 #' 
 #' The original function was designed by Doug Martin and originally implemented
-#' in S-PLUS by a number of UW Ph.D. students:Christopher Green, Eric Aldrich,
-#' and Yindeng Jiang. Guy Yullen re-implemented the function in R and requires
-#' the following additional R libraries: zoo time series library, robust
-#' Insightful robust library ported to R and robustbase Basic robust statistics
-#' package for R. Yi-An Chen from UW economics deparment re-organize the codes and finalize this 
-#' function.  
+#' in S-PLUS by a number of UW Ph.D. students: Christopher Green, Eric Aldrich,
+#' and Yindeng Jiang. Guy Yullen re-implemented the function in R. Yi-An Chen from 
+#' University of Washington re-writes the codes and finalizes the function.  
 #'  
 #'
 #' @param data data.frame, data must have \emph{assetvar}, \emph{returnvar}, \emph{datevar}
-#' , and exposure.names. Generally, data is panel data setup, so it needs firm variabales 
+#' , and exposure.names. Generally, data has to look like panel data. It needs firm variabales 
 #' and time variables. Data has to be a balanced panel. 
 #' @param exposure.names a character vector of exposure names for the factor model
 #' @param wls logical flag, TRUE for weighted least squares, FALSE for ordinary
@@ -75,6 +72,7 @@
 #' \itemize{
 #' \item "The Characteristics of Factor Portfolios", Fall 2010, MENCHERO Jose, 
 #' Journal of Performance Measurement. 
+#' \item Grinold,R and Kahn R, \emph{Active Portfolio Management}.
 #' }
 #' 
 #' @export

@@ -12,69 +12,67 @@
 }
 \arguments{
   \item{x}{fit object created by
-  fitStatisticalFactorModel.}
+  \code{fitStatisticalFactorModel}.}
 
-  \item{variables}{Optional. an integer vector telling
-  which variables are to be plotted. The default is to plot
-  all the variables, or the number of variables explaining
-  90 percent of the variance, whichever is bigger.}
+  \item{variables}{Optional. An integer vector shows which
+  variables are to be plotted. The default is to plot all
+  the variables, or the number of variables explaining 90
+  percent of the variance, whatever is bigger.}
 
-  \item{cumulative}{a logical flag: if TRUE, the cumulative
-  fraction of the variance is printed above each bar in the
-  plot.}
+  \item{cumulative}{Logical flag: if \code{TRUE}, the
+  cumulative fraction of the variance is printed above each
+  bar in the plot.}
 
   \item{style}{Charater. bar or lines can be chosen.}
 
   \item{which.plot}{integer indicating which plot to
   create: "none" will create a menu to choose. Defualt is
-  none. 1 = "Screeplot of Eigenvalues", 2 = "Factor
-  returns", 3 = "FM Correlation", 4 = "R square", 5 =
-  "Variance of Residuals", 6 = "Factor Contributions to
-  SD", 7 = "Factor Contributions to ES", 8 = "Factor
-  Contributions to VaR"}
+  none.\cr 1 = "Screeplot of Eigenvalues", \cr 2 = "Factor
+  returns", \cr 3 = "FM Correlation", \cr 4 = "R
+  square",\cr 5 = "Variance of Residuals", \cr 6 = "Factor
+  Contributions to SD", \cr 7 = "Factor Contributions to
+  ES", \cr 8 = "Factor Contributions to VaR" \cr}
 
-  \item{hgrid}{Logic. Whether to plot horizontal grid or
-  not. Defualt is FALSE.}
+  \item{hgrid}{Logic flag. Whether to plot horizontal grid
+  or not. Defualt is \code{FALSE}.}
 
-  \item{vgrid}{Logic. Whether to plot vertical grid or not.
-  Defualt is FALSE.}
+  \item{vgrid}{Logic flag. Whether to plot vertical grid or
+  not. Defualt is \code{FALSE}.}
 
   \item{plot.single}{Plot a single asset of lm class.
-  Defualt is FALSE.}
+  Defualt is \code{FALSE}.}
 
   \item{asset.name}{Name of the asset to be plotted.}
 
   \item{which.plot.single}{integer indicating which plot to
   create: "none" will create a menu to choose. Defualt is
-  none. 1 = time series plot of actual and fitted values 2
-  = time series plot of residuals with standard error bands
-  3 = time series plot of squared residuals 4 = time series
-  plot of absolute residuals 5 = SACF and PACF of residuals
-  6 = SACF and PACF of squared residuals 7 = SACF and PACF
-  of absolute residuals 8 = histogram of residuals with
-  normal curve overlayed 9 = normal qq-plot of residuals
-  10= CUSUM plot of recursive residuals 11= CUSUM plot of
-  OLS residuals 12= CUSUM plot of recursive estimates
-  relative to full sample estimates 13= rolling estimates
-  over 24 month window}
+  none. \cr 1 = time series plot of actual and fitted
+  values, \cr 2 = time series plot of residuals with
+  standard error bands,\cr 3 = time series plot of squared
+  residuals, \cr 4 = time series plot of absolute
+  residuals, \cr 5 = SACF and PACF of residuals, \cr 6 =
+  SACF and PACF of squared residuals, \cr 7 = SACF and PACF
+  of absolute residuals, \cr 8 = histogram of residuals
+  with normal curve overlayed, \cr 9 = normal qq-plot of
+  residuals,\cr 10= CUSUM plot of recursive residuals,\cr
+  11= CUSUM plot of OLS residuals,\cr 12= CUSUM plot of
+  recursive estimates relative to full sample estimates,\cr
+  13= rolling estimates over 24 month window.}
 
   \item{max.show}{Maximum assets to plot. Default is 6.}
 
-  \item{VaR.method}{haracter, method for computing VaR.
-  Valid choices are one of
+  \item{VaR.method}{Character, method for computing VaR.
+  Valid choices are either
   "modified","gaussian","historical", "kernel". computation
   is done with the \code{VaR} in the PerformanceAnalytics
   package. Default is "historical".}
 
-  \item{...}{other variables for barplot method.}
+  \item{...}{Other variables for barplot method.}
 }
 \description{
   Generic function of plot method for
-  fitStatisticFactorModel. Either plot all fit models or
-  choose a single asset to plot.
-}
-\details{
-  PCA works well. APCA is underconstruction.
+  fitStatisticFactorModel. Either plot all assets or choose
+  a single asset to plot.
 }
 \examples{
 \dontrun{

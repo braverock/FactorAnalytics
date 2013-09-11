@@ -52,11 +52,11 @@
   simulated data.
 }
 \details{
-  The factor model has the form \cr \code{R(t) =
-  t(beta)*F(t) + e(t) = t(beta.star)*F.star(t)} \cr where
-  \code{beta.star = t(beta, sig.e)} and \code{F.star(t) =
-  (t(F(t)), t(z(t)))} By Euler's theorem \cr \code{ES.fm =
-  sum(cES.fm) = sum(beta.star*mcES.fm)} \cr
+  The factor model has the form \cr \code{R(t) = beta'F(t)
+  + e(t) = beta.star'F.star(t)}\cr where beta.star = (beta,
+  sig.e)' and F.star(t) = (F(t)', z(t))' By Euler's
+  theorem:\cr \code{ES.fm = sum(cES.fm) =
+  sum(beta.star*mES.fm)} \cr
 }
 \examples{
 data(managers.df)
@@ -93,12 +93,13 @@ factorModelEsDecomposition(tmpData,
   Eric Zviot and Yi-An Chen.
 }
 \references{
-  1. Hallerback (2003), "Decomposing Portfolio
-  Value-at-Risk: A General Analysis", \emph{The Journal of
-  Risk} 5/2. \cr 2. Yamai and Yoshiba (2002). "Comparative
+  \enumerate{ \item Hallerback (2003), "Decomposing
+  Portfolio Value-at-Risk: A General Analysis", The Journal
+  of Risk 5/2. \item Yamai and Yoshiba (2002)."Comparative
   Analyses of Expected Shortfall and Value-at-Risk: Their
-  Estimation Error, Decomposition, and Optimization", Bank
-  of Japan. \cr 3. Meucci (2007). "Risk Contributions from
-  Generic User-Defined Factors," \emph{Risk}.
+  Estimation Error, Decomposition, and Optimization Bank of
+  Japan. \item Meucci (2007). "Risk Contributions from
+  Generic User-Defined Factors," Risk. \item Epperlein and
+  Smillie (2006) "Cracking VAR with Kernels," Risk. }
 }
 

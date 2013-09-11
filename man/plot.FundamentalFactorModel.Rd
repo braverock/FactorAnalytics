@@ -14,12 +14,13 @@
 
   \item{which.plot}{integer indicating which plot to
   create: "none" will create a menu to choose. Defualt is
-  none. 1 = "Factor returns", 2 = "Residual plots", 3 =
-  "Variance of Residuals", 4 = "Factor Model Correlation",
-  5 = "Factor Contributions to SD", 6 = "Factor
-  Contributions to ES", 7 = "Factor Contributions to VaR"}
+  none. \cr 1 = "Factor returns",\cr 2 = "Residual
+  plots",\cr 3 = "Variance of Residuals",\cr 4 = "Factor
+  Model Correlation",\cr 5 = "Factor Contributions to
+  SD",\cr 6 = "Factor Contributions to ES",\cr 7 = "Factor
+  Contributions to VaR"\cr}
 
-  \item{max.show}{Maximum assets to plot. Default is 4. #'}
+  \item{max.show}{Maximum assets to plot. Default is 4.}
 
   \item{plot.single}{Plot a single asset of lm class.
   Defualt is FALSE.}
@@ -28,21 +29,22 @@
 
   \item{which.plot.single}{integer indicating which plot to
   create: "none" will create a menu to choose. Defualt is
-  none. 1 = time series plot of actual and fitted values, 2
-  = time series plot of residuals with standard error
-  bands, 3 = time series plot of squared residuals, 4 =
-  time series plot of absolute residuals, 5 = SACF and PACF
-  of residuals, 6 = SACF and PACF of squared residuals, 7 =
-  SACF and PACF of absolute residuals, 8 = histogram of
-  residuals with normal curve overlayed, 9 = normal qq-plot
-  of residuals.}
+  none.\cr 1 = time series plot of actual and fitted
+  values,\cr 2 = time series plot of residuals with
+  standard error bands,\cr 3 = time series plot of squared
+  residuals,\cr 4 = time series plot of absolute
+  residuals,\cr 5 = SACF and PACF of residuals,\cr 6 = SACF
+  and PACF of squared residuals,\cr 7 = SACF and PACF of
+  absolute residuals,\cr 8 = histogram of residuals with
+  normal curve overlayed,\cr 9 = normal qq-plot of
+  residuals.\cr}
 
   \item{legend.txt}{Logical. TRUE will plot legend on
   barplot. Defualt is \code{TRUE}.}
 
-  \item{VaR.method}{haracter, method for computing VaR.
+  \item{VaR.method}{character, method for computing VaR.
   Valid choices are one of
-  "modified","gaussian","historical", "kernel". computation
+  "modified","gaussian","historical", "kernel". Computation
   is done with the \code{VaR} in the PerformanceAnalytics
   package. Default is "historical".}
 

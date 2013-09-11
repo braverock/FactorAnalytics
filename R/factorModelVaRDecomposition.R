@@ -1,4 +1,4 @@
-#' Compute factor model factor VaR decomposition
+#' Compute factor model VaR decomposition
 #' 
 #' Compute factor model factor VaR decomposition based on Euler's theorem given
 #' historic or simulated data and factor model parameters. The partial
@@ -7,9 +7,9 @@
 #' VaR is compute either as the sample quantile or as an estimated quantile
 #' using the Cornish-Fisher expansion.
 #' 
-#' The factor model has the form R(t) = beta'F(t) + e(t) = beta.star'F.star(t)
+#' The factor model has the form \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)}\cr
 #' where beta.star = (beta, sig.e)' and F.star(t) = (F(t)', z(t))' By Euler's
-#' theorem VaR.fm = sum(cVaR.fm) = sum(beta.star*mVaR.fm)
+#' theorem:\cr \code{VaR.fm = sum(cVaR.fm) = sum(beta.star*mVaR.fm)} \cr
 #' 
 #' @param Data B x (k+2) matrix of bootstrap data. First column contains
 #' the fund returns, second through k+1 columns contain factor returns, (k+2)nd
@@ -32,12 +32,14 @@
 #' \item{pcVaR.fm} (K+1) x 1 vector of factor percentage contributions to VaR.
 #' }
 #' @author Eric Zivot and Yi-An Chen
-#' @references 1. Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A
-#' General Analysis", The Journal of Risk 5/2. 2. Yamai and Yoshiba (2002).
-#' "Comparative Analyses of Expected Shortfall and Value-at-Risk: Their
-#' Estimation Error, Decomposition, and Optimization Bank of Japan. 3. Meucci
-#' (2007). "Risk Contributions from Generic User-Defined Factors," Risk. 4.
-#' Epperlein and Smillie (2006) "Cracking VAR with Kernels," Risk.
+#' @references 
+#' \enumerate{ 
+#' \item Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A
+#' General Analysis", The Journal of Risk 5/2.
+#' \item Yamai and Yoshiba (2002)."Comparative Analyses of Expected Shortfall and Value-at-Risk: Their
+#' Estimation Error, Decomposition, and Optimization Bank of Japan.
+#' \item Meucci (2007). "Risk Contributions from Generic User-Defined Factors," Risk. 
+#' }
 #' @examples
 #' 
 #' data(managers.df)
