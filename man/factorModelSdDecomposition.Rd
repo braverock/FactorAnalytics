@@ -1,6 +1,6 @@
 \name{factorModelSdDecomposition}
 \alias{factorModelSdDecomposition}
-\title{Compute factor model factor risk (sd) decomposition for individual fund.}
+\title{Compute factor model standard deviation decomposition}
 \usage{
   factorModelSdDecomposition(beta.vec, factor.cov, sig2.e)
 }
@@ -24,8 +24,9 @@
   }
 }
 \description{
-  Compute factor model factor risk (sd) decomposition for
-  individual fund.
+  Compute the factor model factor standard deviation
+  decomposition for an asset based on Euler's theorem given
+  factor model parameters.
 }
 \examples{
 # load data from the database

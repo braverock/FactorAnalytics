@@ -1,6 +1,7 @@
-#' Compute factor model factor risk (sd) decomposition for individual fund.
+#' Compute factor model standard deviation decomposition
 #' 
-#' Compute factor model factor risk (sd) decomposition for individual fund.
+#' Compute the factor model factor standard deviation decomposition for an
+#' asset based on Euler's theorem given factor model parameters. 
 #' 
 #' 
 #' @param beta.vec k x 1 vector of factor betas with factor names in the

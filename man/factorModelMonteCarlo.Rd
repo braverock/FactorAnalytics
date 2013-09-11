@@ -56,11 +56,11 @@
   return simulated residuals in output list object.}
 }
 \value{
-  A list with the following components: \itemize{ \item
-  returns \code{n.boot x n.funds} matrix of simulated fund
-  returns. \item factors \code{n.boot x n.factors} matrix
-  of resampled factor returns. Returned only if
-  \code{return.factors = TRUE}. \item residuals
+  A list with the following components: \itemize{
+  \item{returns} \code{n.boot x n.funds} matrix of
+  simulated fund returns. \item{factors} \code{n.boot x
+  n.factors} matrix of resampled factor returns. Returned
+  only if \code{return.factors = TRUE}. \item{residuals}
   \code{n.boot x n.funds} matrix of simulated fund
   residuals. Returned only if \code{return.residuals =
   TRUE}. }
@@ -69,7 +69,7 @@
   Simulate returns using factor model Monte Carlo method.
   Parametric method like normal distribution,
   Cornish-Fisher and skew-t distribution for residuals can
-  be selected. Resampling method like non-parametric
+  be selected. Resampling method such as non-parametric
   bootstrap or stationary bootstrap can be selected.
 }
 \details{

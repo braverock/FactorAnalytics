@@ -19,19 +19,18 @@
   attributed returns for every portfolio. }
 }
 \description{
-  Decompose total returns or active returns into returns
-  attributed to factors and specific returns. Class of
-  FM.attribution is generated and generic function
-  \code{plot()} and \code{summary()},\code{print()} can be
-  used.
+  Decompose total returns into returns attributed to
+  factors and specific returns. Class of FM.attribution is
+  generated and generic function \code{plot()} and
+  \code{summary()},\code{print()} can be applied.
 }
 \details{
-  total returns can be decomposed into returns attributed
-  to factors and specific returns. \eqn{R_t = \sum_j b_{j}
-  * f_{jt} + u_t},t=1..T,\eqn{b_{j}} is exposure to factor
-  j and \eqn{f_{jt}} is factor j. The returns attributed to
-  factor j is \eqn{b_{j} * f_{jt}} and specific returns is
-  \eqn{u_t}.
+  Total returns can be decomposed into returns attributed
+  to factors and specific returns. \cr \eqn{R_t = \sum b_j
+  * f_jt + u_t,t=1...T} \cr \code{b_j} is exposure to
+  factor j and \code{f_jt} is factor j. The returns
+  attributed to factor j is \code{b_j * f_jt} and specific
+  returns is \code{u_t}.
 }
 \examples{
 \dontrun{

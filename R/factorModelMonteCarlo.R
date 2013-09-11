@@ -2,7 +2,7 @@
 #' 
 #' Simulate returns using factor model Monte Carlo method. Parametric method
 #' like normal distribution, Cornish-Fisher and skew-t distribution for
-#' residuals can be selected. Resampling method like non-parametric bootstrap
+#' residuals can be selected. Resampling method such as non-parametric bootstrap
 #' or stationary bootstrap can be selected.
 #' 
 #' The factor model Monte Carlo method is described in Jiang (2009).
@@ -37,11 +37,11 @@
 #' residuals in output list object.
 #' @return A list with the following components:
 #' \itemize{
-#' \item returns \code{n.boot x n.funds} matrix of simulated fund
+#' \item{returns} \code{n.boot x n.funds} matrix of simulated fund
 #' returns.
-#' \item factors \code{n.boot x n.factors} matrix of resampled factor
+#' \item{factors} \code{n.boot x n.factors} matrix of resampled factor
 #' returns. Returned only if \code{return.factors = TRUE}.
-#' \item residuals \code{n.boot x n.funds} matrix of simulated fund
+#' \item{residuals} \code{n.boot x n.funds} matrix of simulated fund
 #' residuals. Returned only if \code{return.residuals = TRUE}.
 #' }
 #' @author Eric Zivot and Yi-An Chen.
