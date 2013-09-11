@@ -6,16 +6,17 @@
     digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
-  \item{x}{fit object created by
-  fitStatisticalFactorModel.}
+  \item{x}{Fit object created by
+  \code{fitStatisticalFactorModel}.}
 
-  \item{digits}{integer indicating the number of decimal
+  \item{digits}{Integer indicating the number of decimal
   places. Default is 3.}
 
-  \item{...}{Other arguments for print methods.}
+  \item{...}{Other arguments for \code{print} methods.}
 }
 \description{
-  Generic function of print method for fitStatFactorModel.
+  Generic function of print method for
+  \code{fitStatFactorModel}.
 }
 \examples{
 # load data for fitStatisticalFactorModel.r

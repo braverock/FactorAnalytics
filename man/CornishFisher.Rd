@@ -16,24 +16,24 @@ quantile.}
   rCornishFisher(n, sigma, skew, ekurt, seed = NULL)
 }
 \arguments{
-  \item{n}{scalar, number of simulated values in
+  \item{n}{Scalar, number of simulated values in
   rCornishFisher. Sample length in
   density,distribution,quantile function.}
 
-  \item{sigma}{scalar, standard deviation.}
+  \item{sigma}{Scalar, standard deviation.}
 
-  \item{skew}{scalar, skewness.}
+  \item{skew}{Scalar, skewness.}
 
-  \item{ekurt}{scalar, excess kurtosis.}
+  \item{ekurt}{Scalar, excess kurtosis.}
 
-  \item{seed}{set seed here. Default is \code{NULL}.}
+  \item{seed}{Set seed here. Default is \code{NULL}.}
 
-  \item{x,q}{vector of standardized quantiles. See detail.}
+  \item{x,q}{Vector of standardized quantiles. See detail.}
 
-  \item{p}{vector of probabilities.}
+  \item{p}{Vector of probabilities.}
 }
 \value{
-  n simulated values from Cornish-Fisher distribution.
+  n Simulated values from Cornish-Fisher distribution.
 }
 \description{
   \itemize{ \item \code{rCornishFisher} simulate
@@ -78,7 +78,7 @@ pCornishFisher(q,n=5,skew=2,ekurt=6)
   Eric Zivot and Yi-An Chen.
 }
 \references{
-  \itemize{ \item A.DasGupta, "Asymptotic Theory of
+  \enumerate{ \item A.DasGupta, "Asymptotic Theory of
   Statistics and Probability", Springer Science+Business
   Media,LLC 2008 \item Thomas A.Severini, "Likelihood
   Methods in Statistics", Oxford University Press, 2000 }

@@ -9,11 +9,11 @@
   \item{object}{A fit object created by
   fitStatisticalFactorModel.}
 
-  \item{newdata}{a vector, matrix, data.frame, xts,
+  \item{newdata}{A vector, matrix, data.frame, xts,
   timeSeries or zoo object to be coerced.}
 
-  \item{...}{Any other arguments used in \code{predict.lm}.
-  For example like newdata and fit.se.}
+  \item{...}{Any other arguments used in \code{predict.lm},
+  such as \code{newdata} and \code{fit.se}.}
 }
 \description{
   Generic function of predict method for

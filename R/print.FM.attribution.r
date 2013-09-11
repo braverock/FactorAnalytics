@@ -1,10 +1,10 @@
 #' Print FM.attribution object.
 #' 
-#' Generic function of print method for factorModelPerformanceAttribution.
+#' Generic function of print method for \code{factorModelPerformanceAttribution}.
 #' 
 #' 
 #' @param fm.attr FM.attribution object created by
-#' factorModelPerformanceAttribution.
+#' \code{factorModelPerformanceAttribution}.
 #' @author Yi-An Chen.
 #' @examples
 #' \dontrun{

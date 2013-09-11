@@ -1,11 +1,11 @@
 #' summary FundamentalFactorModel object
 #' 
-#' Generic function of summary method for fitFundamentalFactorModel.
+#' Generic function of summary method for \code{fitFundamentalFactorModel}.
 #' 
 #' 
-#' @param object An object created by fitFundamentalFactorModel.
+#' @param object An object created by \code{fitFundamentalFactorModel}.
 #' @param digits integer indicating the number of decimal places. Default is 3.
-#' @param ...  Other arguments for print methods.
+#' @param ...  Other arguments for \code{print} methods.
 #' @author Yi-An Chen.
 #' @method summary FundamentalFactorModel
 #' @export

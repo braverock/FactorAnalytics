@@ -3,20 +3,20 @@
 \title{summary method for TimeSeriesModel object.}
 \usage{
   \method{summary}{TimeSeriesFactorModel} (object,
-    digits = 3)
+    digits = 3, ...)
 }
 \arguments{
   \item{object}{An object created by
-  fitTimeSeiresFactorModel.}
+  \code{fitTimeSeiresFactorModel}.}
 
-  \item{digits}{Integer indicating the number of decimal
+  \item{digits}{Integer indicates the number of decimal
   places. Default is 3.}
 
-  \item{...}{other option used in \code{summary.lm}}
+  \item{...}{Other option used in \code{print} method.}
 }
 \description{
   Generic function of summary method for
-  fitTimeSeriesFactorModel.
+  \code{fitTimeSeriesFactorModel}.
 }
 \examples{
 # load data from the database

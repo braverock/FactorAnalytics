@@ -7,16 +7,16 @@
 }
 \arguments{
   \item{object}{An object created by
-  fitFundamentalFactorModel.}
+  \code{fitFundamentalFactorModel}.}
 
   \item{digits}{integer indicating the number of decimal
   places. Default is 3.}
 
-  \item{...}{Other arguments for print methods.}
+  \item{...}{Other arguments for \code{print} methods.}
 }
 \description{
   Generic function of summary method for
-  fitFundamentalFactorModel.
+  \code{fitFundamentalFactorModel}.
 }
 \examples{
 data(Stock.df)

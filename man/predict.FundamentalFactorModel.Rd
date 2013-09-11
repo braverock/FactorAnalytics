@@ -12,10 +12,10 @@
   for variables with which to predict.  If omitted, the
   fitted values are used.}
 
-  \item{new.assetvar}{specify new asset variable in newdata
+  \item{new.assetvar}{Specify new asset variable in newdata
   if newdata is provided.}
 
-  \item{new.datevar}{speficy new date variable in newdata
+  \item{new.datevar}{Speficy new date variable in newdata
   if newdata is provided.}
 }
 \description{
@@ -23,9 +23,10 @@
   fitFundamentalFactorModel.
 }
 \details{
-  newdata must be data.frame and contians date variable,
-  asset variable and exact exposures names that are used in
-  fit object by \code{fitFundamentalFactorModel}
+  \code{newdata} must be data.frame and contain date
+  variable, asset variable and exact exposures names that
+  are used in fit object by
+  \code{fitFundamentalFactorModel}
 }
 \examples{
 data(Stock.df)

@@ -2,15 +2,21 @@
 \alias{summary.FM.attribution}
 \title{summary FM.attribution object.}
 \usage{
-  \method{summary}{FM.attribution} (fm.attr)
+  \method{summary}{FM.attribution} (fm.attr,
+    digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
   \item{fm.attr}{FM.attribution object created by
-  factorModelPerformanceAttribution.}
+  \code{factorModelPerformanceAttribution}.}
+
+  \item{digits}{integer indicating the number of decimal
+  places. Default is 3.}
+
+  \item{...}{Other arguments for \code{print} methods.}
 }
 \description{
   Generic function of summary method for
-  factorModelPerformanceAttribution.
+  \code{factorModelPerformanceAttribution}.
 }
 \examples{
 # load data from the database

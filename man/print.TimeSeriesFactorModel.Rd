@@ -6,16 +6,17 @@
     digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
-  \item{x}{fit object created by fitTimeSeriesFactorModel.}
+  \item{x}{Fit object created by
+  \code{fitTimeSeriesFactorModel}.}
 
-  \item{digits}{integer indicating the number of decimal
+  \item{digits}{Integer indicating the number of decimal
   places. Default is 3.}
 
-  \item{...}{arguments to be passed to print method.}
+  \item{...}{Other arguments for \code{print} methods.}
 }
 \description{
   Generic function of print method for
-  fitTimeSeriesFactorModel.
+  \code{fitTimeSeriesFactorModel}.
 }
 \examples{
 # load data from the database

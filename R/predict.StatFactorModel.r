@@ -4,8 +4,9 @@
 #' function \code{predict.lm}.
 #' 
 #' @param object  A fit object created by fitStatisticalFactorModel.
-#' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
-#' @param ... Any other arguments used in \code{predict.lm}. For example like newdata and fit.se. 
+#' @param newdata A vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
+#' @param ... Any other arguments used in \code{predict.lm}, such as \code{newdata} and 
+#' \code{fit.se}. 
 #' @author Yi-An Chen.
 #' @method predict StatFactorModel
 #' @export 

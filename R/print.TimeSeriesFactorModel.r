@@ -1,11 +1,11 @@
 #' print TimeSeriesfactorModel object
 #' 
-#' Generic function of print method for fitTimeSeriesFactorModel.
+#' Generic function of print method for \code{fitTimeSeriesFactorModel}.
 #' 
 #' 
-#' @param x fit object created by fitTimeSeriesFactorModel.
-#' @param digits integer indicating the number of decimal places. Default is 3.
-#' @param ... arguments to be passed to print method.   
+#' @param x Fit object created by \code{fitTimeSeriesFactorModel}.
+#' @param digits Integer indicating the number of decimal places. Default is 3.
+#' @param ... Other arguments for \code{print} methods.   
 #' @author Yi-An Chen.
 #' @method print TimeSeriesFactorModel
 #' @export

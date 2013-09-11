@@ -25,19 +25,19 @@
 #' deviation, skewness and excess kurtosis.
 #'}
 #'
-#'@param n scalar, number of simulated values in rCornishFisher. Sample length in
+#'@param n Scalar, number of simulated values in rCornishFisher. Sample length in
 #' density,distribution,quantile function.
-#' @param sigma scalar, standard deviation.
-#' @param skew scalar, skewness.
-#' @param ekurt scalar, excess kurtosis.
-#' @param seed set seed here. Default is \code{NULL}.
-#' @param x,q vector of standardized quantiles. See detail.
-#' @param p vector of probabilities.
+#' @param sigma Scalar, standard deviation.
+#' @param skew Scalar, skewness.
+#' @param ekurt Scalar, excess kurtosis.
+#' @param seed Set seed here. Default is \code{NULL}.
+#' @param x,q Vector of standardized quantiles. See detail.
+#' @param p Vector of probabilities.
 #' 
-#' @return n simulated values from Cornish-Fisher distribution.
+#' @return n Simulated values from Cornish-Fisher distribution.
 #' @author Eric Zivot and Yi-An Chen.
 #' @references 
-#' \itemize{
+#' \enumerate{
 #' \item A.DasGupta, "Asymptotic Theory of Statistics and
 #' Probability", Springer Science+Business Media,LLC 2008
 #' \item   Thomas A.Severini, "Likelihood Methods in Statistics",

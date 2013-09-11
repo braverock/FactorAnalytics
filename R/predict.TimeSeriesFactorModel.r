@@ -4,8 +4,9 @@
 #' function \code{predict.lm}.
 #' 
 #' @param object A fit object created by fitTimeSeiresFactorModel.
-#' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
-#' @param ... Any other arguments used in \code{predict.lm}. for example newdata and se.fit.
+#' @param newdata A vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
+#' @param ... Any other arguments used in \code{predict.lm}, such as \code{newdata} and 
+#' \code{fit.se}.
 #' @author Yi-An Chen.
 #' 
 #' @examples

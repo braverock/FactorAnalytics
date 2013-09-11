@@ -6,11 +6,11 @@
 }
 \arguments{
   \item{fm.attr}{FM.attribution object created by
-  factorModelPerformanceAttribution.}
+  \code{factorModelPerformanceAttribution}.}
 }
 \description{
   Generic function of print method for
-  factorModelPerformanceAttribution.
+  \code{factorModelPerformanceAttribution}.
 }
 \examples{
 \dontrun{

@@ -1,11 +1,11 @@
 #' print StatFactorModel object
 #' 
-#' Generic function of print method for fitStatFactorModel.
+#' Generic function of print method for \code{fitStatFactorModel}.
 #' 
 #' 
-#' @param x fit object created by fitStatisticalFactorModel.
-#' @param digits integer indicating the number of decimal places. Default is 3.
-#' @param ...  Other arguments for print methods.
+#' @param x Fit object created by \code{fitStatisticalFactorModel}.
+#' @param digits Integer indicating the number of decimal places. Default is 3.
+#' @param ...  Other arguments for \code{print} methods.
 #' @author Eric Zivot and Yi-An Chen.
 #' @examples
 #' 

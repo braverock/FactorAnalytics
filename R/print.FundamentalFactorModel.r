@@ -1,11 +1,11 @@
 #' print FundamentalFactorModel object
 #' 
-#' Generic function of print method for fitFundamentalFactorModel.
+#' Generic function of print method for \code{fitFundamentalFactorModel}.
 #' 
 #' 
-#' @param x fit object created by fitFundamentalFactorModel.
-#' @param digits integer indicating the number of decimal places. Default is 3.
-#' @param ...  Other arguments for print methods.
+#' @param x Fit object created by fitFundamentalFactorModel.
+#' @param digits Integer indicating the number of decimal places. Default is 3.
+#' @param ...  Other arguments for \code{print} methods.
 #' @author Yi-An Chen.
 #' @method print FundamentalFactorModel
 #' @export

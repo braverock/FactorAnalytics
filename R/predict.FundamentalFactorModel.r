@@ -2,14 +2,14 @@
 #'
 #' Generic function of predict method for fitFundamentalFactorModel.
 #' 
-#' newdata must be data.frame and contians date variable, asset variable and exact
+#' \code{newdata} must be data.frame and contain date variable, asset variable and exact
 #' exposures names that are used in fit object by \code{fitFundamentalFactorModel}  
 #'
 #' @param object fit "FundamentalFactorModel" object 
 #' @param newdata An optional data frame in which to look for variables with which to predict. 
 #'                If omitted, the fitted values are used. 
-#' @param new.assetvar specify new asset variable in newdata if newdata is provided.
-#' @param new.datevar  speficy new date variable in newdata if newdata is provided. 
+#' @param new.assetvar Specify new asset variable in newdata if newdata is provided.
+#' @param new.datevar  Speficy new date variable in newdata if newdata is provided. 
 #' @method predict FundamentalFactorModel               
 #' @export
 #' @author Yi-An Chen

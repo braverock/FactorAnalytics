@@ -1,11 +1,11 @@
 #' summary method for TimeSeriesModel object.
 #' 
-#' Generic function of summary method for fitTimeSeriesFactorModel. 
+#' Generic function of summary method for \code{fitTimeSeriesFactorModel}. 
 #' 
 #' 
-#' @param object An object created by fitTimeSeiresFactorModel.
-#' @param digits Integer indicating the number of decimal places. Default is 3.
-#' @param ... other option used in \code{summary.lm}
+#' @param object An object created by \code{fitTimeSeiresFactorModel}.
+#' @param digits Integer indicates the number of decimal places. Default is 3.
+#' @param ... Other option used in \code{print} method.
 #' @author Yi-An Chen.
 #' @examples
 #' 
@@ -19,7 +19,7 @@
 #' @method summary TimeSeriesFactorModel
 #' @export
 #' 
-summary.TimeSeriesFactorModel <- function(object,digits=3){
+summary.TimeSeriesFactorModel <- function(object,digits=3,...){
   if(!is.null(cl <- object$call)) {
     cat("\nCall:\n")
     dput(cl)
@@ -31,7 +31,7 @@ summary.TimeSeriesFactorModel <- function(object,digits=3){
   cat("\n", object$assets.names[i], "\n")  
   table.macro <- t(summary(object$asset.fit[[i]])$coefficients)
   colnames(table.macro)[1] <- "alpha"
-  print(table.macro,digits = digits)
+  print(table.macro,digits = digits,...)
   cat("\nR-square =", object$r2[i] ,",residual variance ="
       , object$resid.variance[i],"\n")
   }
