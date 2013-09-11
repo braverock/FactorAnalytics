@@ -40,7 +40,7 @@ We will walk through the first examples in this section where use style factors 
 \subsubsection{Loading Data}
 Let's look at the arguments of \verb@fitFundamentalFactorModel()@ which will deal with fundamental factor model in \verb@factorAnalytics@.
 <<args>>=
-library(factorAnalytics)
+require(factorAnalytics)
 args(fitFundamentalFactorModel)
 @
 \verb@data@ is in class of \verb@data.frame@ and is required to have \emph{assetvar},\emph{returnvar} and \emph{datevar}. One can image \emph{data} is like panel data setup and need firm variable and time variable. Data has dimension (N x T) and at least 3 consumes to specify information needed.    
@@ -56,7 +56,7 @@ length(unique(equity$tic)) # number of assets
 @
 We need asset returns to run our model. We can utilize \verb@Delt()@ to calculate price percentage change which is exactly asset returns in \verb@quantmod@ package. 
 <<get.returns>>=
-library(quantmod)   # for Delt. See Delt for detail
+require(quantmod)   # for Delt. See Delt for detail
 equity <- cbind(equity,do.call(rbind,lapply(split(equity,equity$tic), 
                                             function(x) Delt(x$PRCCQ)))) 
 names(equity)[22] <- "RET"
