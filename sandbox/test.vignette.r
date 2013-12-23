@@ -1,3 +1,9 @@
+
+
+setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/vignettes")
+
+
+
 # test example files
 
 data(managers.df)
@@ -73,7 +79,7 @@ summary(fit.macro)
 data(Stock.df)
 # there are 447 assets  
 exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
- test.fit <- fitFundamentalFactorModel(data=data,exposure.names=exposure.names,
+ test.fit <- fitFundamentalFactorModel(data=stock,exposure.names=exposure.names,
                                         datevar = "DATE", returnsvar = "RETURN",
                                         assetvar = "TICKER", wls = TRUE, 
                                         regression = "classic", 
@@ -81,6 +87,9 @@ exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP")
                                         robust.scale = TRUE)
  
  summary(test.fit)
+
+test.fit$factor.returns
+
 
 data(stat.fm.data)
 

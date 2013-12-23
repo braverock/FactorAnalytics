@@ -312,6 +312,7 @@ fitFundamentalFactorModel <-
         weights <- if (covariance == "robust") 
           apply(resids, 1, scaleTau2)^2
         else apply(resids, 1, var)
+        weights <- weights^-1
         FE.hat <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                      FUN = wls.robust, modelterms = regression.formula, 
                      conlist = contrasts.list, w = weights)
@@ -328,13 +329,14 @@ fitFundamentalFactorModel <-
         weights <- if (covariance == "robust") 
           apply(resids, 1, scaleTau2)^2
         else apply(resids, 1, var)
+        weights <- weights^-1
         FE.hat <- by(data = data, INDICES = as.numeric(data[[datevar]]), 
                      FUN = wls.classic, modelterms = regression.formula, 
                      conlist = contrasts.list, w = weights)
       }
     }
     # if there is industry dummy variables
-    if (length(exposures.factor)) {
+    if (length(exposures.factor)>0) {
       numCoefs <- length(exposures.numeric) + length(levels(data[,exposures.factor]))
       ncols <- 1 + 2 * numCoefs + numAssets
       fnames <- c(exposures.numeric, paste(exposures.factor, 
@@ -413,7 +415,7 @@ fitFundamentalFactorModel <-
     rownames(B.final) = assets
     colnames(B.final) = colnames(f.hat)
     
-    if (length(exposures.factor)) {
+    if (length(exposures.factor)>0) {
       B.final[, grep(exposures.factor, x = colnames)][cbind(seq(numAssets), 
                                                             (data[ data[[datevar]] == timedates[numTimePoints], 
                                                                             exposures.factor]))] <- 1
@@ -440,8 +442,9 @@ fitFundamentalFactorModel <-
     #   r2 <- 1- SSE/SST                                  
     
     # change names for intercept
+    if (!(length(exposures.factor)>0)) {
     colnames(f.hat)[1] <- "Intercept"
-    
+    }
     
     output <- list(returns.cov = Cov.returns, 
                    factor.cov = Cov.factors, 
