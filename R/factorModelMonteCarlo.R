@@ -144,10 +144,10 @@ function(n.boot=1000, factorData, Beta.mat, Alpha.mat=NULL,
     } else if (residual.dist == "skew-t") {
     ## residual distribution is CornishFisher
       residualsSim[, i] = rst(n.boot,
-                              location=residualData[i, "location"],
-                              scale=residualData[i,"scale"],
-                              shape=residualData[i,"shape"],
-                              df=residualData[i,"df"])
+                              xi=residualData[i, "location"],
+                              omega=residualData[i,"scale"],
+                              alpha=residualData[i,"shape"],
+                              nu=residualData[i,"df"])
     } else {
      stop("Invalid residual distribution")
     }
