@@ -225,7 +225,7 @@ mfactor.ck <- function(data, max.k, sig = 0.05, refine = TRUE) {
 	resid <- t(t(tmp) - alpha)
 	r2 <- (1 - colSums(resid^2)/colSums(xc^2))
 	ret.cov <- t(B) %*% var(f) %*% B
-	diag(ret.cov) <- diag(ret.cov) + colSums(tmp^2)/(m - k - 1)
+	diag(ret.cov) <- diag(ret.cov) + colSums(resid^2)/(m - k - 1)
 	dimnames(B) <- list(paste("F", 1:k, sep = "."), data.names)
 	dimnames(f) <- list(dimnames(data)[[1]], paste("F", 1:k, sep = "."))
 	dimnames(ret.cov) <- list(data.names, data.names)
