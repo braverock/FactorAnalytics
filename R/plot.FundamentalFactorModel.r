@@ -278,7 +278,7 @@ if (plot.single == TRUE) {
                colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
                factor.VaR.decomp.list[[i]] = 
                  factorModelVaRDecomposition(tmpData, 
-                                            x$beta[i,],
+                                            betas[i,],
                                             x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
              }
              
