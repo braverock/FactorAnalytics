@@ -113,8 +113,8 @@ function(Data, beta.vec, sig2.e, tail.prob = 0.05,
     mcES.fm = -as.matrix(colMeans(Data[idx, -1]))
   
 ## compute correction factor so that sum of weighted marginal ES adds to portfolio ES
-#cf = as.numeric( ES.fm / sum(mcES.fm*beta.star.vec) )
-#mcES.fm = cf*mcES.fm
+cf = as.numeric( ES.fm / sum(mcES.fm*beta.star.vec) )
+mcES.fm = cf*mcES.fm
 cES.fm = mcES.fm*beta.star.vec
 pcES.fm = cES.fm/ES.fm
 colnames(mcES.fm) = "MCES"

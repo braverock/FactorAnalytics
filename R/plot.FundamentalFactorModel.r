@@ -189,40 +189,59 @@ if (plot.single == TRUE) {
              plotcorr(ordered.cor.fm[c(1:n),c(1:n)], col=cm.colors(11)[5*ordered.cor.fm + 6])
            },
            "5L" = {
-             cov.factors = var(x$factor.returns)
+             cov.factors = x$factor.cov$cov
+             factor.names <- colnames(cov.factors)
              names = x$asset.names
              factor.sd.decomp.list = list()
+             if (factor.names[1] ==  "(Intercept)" ) {
              for (i in names) {
                factor.sd.decomp.list[[i]] =
-                 factorModelSdDecomposition(x$beta[i,],
-                                            cov.factors, x$resid.variance[i])
+                 factorModelSdDecomposition(x$beta[i,-1],
+                                            cov.factors[-1,-1], x$resid.variance[i])
              }
+              factor.names <- factor.names[-1]           
+             } else { # no intercept term 
+               for (i in names) {
+                 factor.sd.decomp.list[[i]] =
+                   factorModelSdDecomposition(x$beta[i,],
+                                              cov.factors, x$resid.variance[i])
+               }
+             }
+             
              # function to efit.stattract contribution to sd from list
              getCSD = function(x) {
-               x$cr.fm
+               x$cSd.fm
              }
              # extract contributions to SD from list
              cr.sd = sapply(factor.sd.decomp.list, getCSD)
-             rownames(cr.sd) = c(colnames(x$factor.returns), "residual")
+             rownames(cr.sd) = c(factor.names, "residual")
              # create stacked barchart 
              # discard intercept 
-             barplot(cr.sd[-1,(1:max.show)], main="Factor Contributions to SD",
+             barplot(cr.sd[,(1:max.show)], main="Factor Contributions to SD",
                      legend.text=legend.txt, args.legend=list(x="topleft"),...)
            } ,
            "6L" = {
            factor.es.decomp.list = list()
            names = x$asset.names
+           factor.names <- colnames(x$factor.returns)
+           factor.returns <- x$factor.returns
+           betas <- x$beta
+           if (factor.names[1] == "Intercept" ) {
+             factor.returns <- factor.returns[,-1]
+             factor.names <- factor.names[-1]
+             betas <- betas[,-1]
+           }
            for (i in names) {
              # check for missing values in fund data
 #             idx = which(!is.na(x$data[,i]))
              idx <- x$data[,x$assetvar]  == i  
              asset.ret <- x$data[idx,x$returnsvar]
-             tmpData = cbind(asset.ret, x$factor.returns,
+             tmpData = cbind(asset.ret, factor.returns,
                              x$residuals[,i]/sqrt(x$resid.variance[i]) )
              colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
              factor.es.decomp.list[[i]] = 
                factorModelEsDecomposition(tmpData, 
-                                          x$beta[i,],
+                                          betas[i,],
                                           x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
            }
           
@@ -232,19 +251,29 @@ if (plot.single == TRUE) {
            }
            # report as positive number
            cr.etl = sapply(factor.es.decomp.list, getCETL)
-           rownames(cr.etl) = c(colnames(x$factor.returns), "residual")
-           barplot(cr.etl[-1,(1:max.show)], main="Factor Contributions to ES",
+           rownames(cr.etl) = c(factor.names, "residual")
+           barplot(cr.etl[,(1:max.show)], main="Factor Contributions to ES",
                    legend.text=legend.txt, args.legend=list(x="topleft"),...)
            },
            "7L" =  {
              factor.VaR.decomp.list = list()
              names = x$asset.names
+             factor.names <- colnames(x$factor.returns)
+             factor.returns <- x$factor.returns
+             betas <- x$beta
+             if (factor.names[1] == "Intercept" ) {
+               factor.returns <- factor.returns[,-1]
+               factor.names <- factor.names[-1]
+               betas <- betas[,-1]
+             }
+             
+             
              for (i in names) {
                # check for missing values in fund data
                #             idx = which(!is.na(x$data[,i]))
                idx <- x$data[,x$assetvar]  == i  
                asset.ret <- x$data[idx,x$returnsvar]
-               tmpData = cbind(asset.ret, x$factor.returns,
+               tmpData = cbind(asset.ret, factor.returns,
                                x$residuals[,i]/sqrt(x$resid.variance[i]) )
                colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
                factor.VaR.decomp.list[[i]] = 
@@ -260,8 +289,8 @@ if (plot.single == TRUE) {
              }
              # report as positive number
              cr.var = sapply(factor.VaR.decomp.list, getCVaR)
-             rownames(cr.var) = c(colnames(x$factor.returns), "residual")
-             barplot(cr.var[-1,(1:max.show)], main="Factor Contributions to VaR",
+             rownames(cr.var) = c(factor.names, "residual")
+             barplot(cr.var[,(1:max.show)], main="Factor Contributions to VaR",
                      legend.text=legend.txt, args.legend=list(x="topleft"),...)
            },
            invisible()       
