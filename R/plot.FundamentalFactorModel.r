@@ -72,6 +72,9 @@ if (plot.single == TRUE) {
   t <- length(dates)
   k <- length(x$exposure.names)
   
+  which.plot.single = which.plot.single[1]
+  
+  if (which.plot.single == "none") {
   which.plot.single<-menu(c("time series plot of actual and fitted values",
                             "time series plot of residuals with standard error bands",
                             "time series plot of squared residuals",
@@ -82,6 +85,7 @@ if (plot.single == TRUE) {
                             "histogram of residuals with normal curve overlayed",
                             "normal qq-plot of residuals"),
                           title="\nMake a plot selection (or 0 to exit):\n")
+  }
   switch(which.plot.single,
          "1L" =  {
            #       "time series plot of actual and fitted values",
@@ -229,7 +233,7 @@ if (plot.single == TRUE) {
            if (factor.names[1] == "Intercept" ) {
              factor.returns <- factor.returns[,-1]
              factor.names <- factor.names[-1]
-             betas <- betas[,-1]
+             betas <- as.matrix(betas[,-1])
            }
            for (i in names) {
              # check for missing values in fund data
@@ -239,9 +243,7 @@ if (plot.single == TRUE) {
              tmpData = cbind(asset.ret, factor.returns,
                              x$residuals[,i]/sqrt(x$resid.variance[i]) )
              colnames(tmpData)[c(1,length(tmpData[1,]))] = c(i, "residual")
-             factor.es.decomp.list[[i]] = 
-               factorModelEsDecomposition(tmpData, 
-                                          betas[i,],
+             factor.es.decomp.list[[i]] = factorModelEsDecomposition(tmpData, betas[i,],
                                           x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
            }
           
@@ -264,7 +266,7 @@ if (plot.single == TRUE) {
              if (factor.names[1] == "Intercept" ) {
                factor.returns <- factor.returns[,-1]
                factor.names <- factor.names[-1]
-               betas <- betas[,-1]
+               betas <- as.matrix(betas[,-1])
              }
              
              
