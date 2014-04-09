@@ -46,7 +46,7 @@
   asset variable in the data.}
 
   \item{standardized.factor.exposure}{logical flag. Factor
-  exposure will be standarized to regression weighted mean
+  exposure will be standardized to regression weighted mean
   0 and standardized deviation to 1 if \code{TRUE}. Default
   is \code{FALSE}. See Detail.}
 

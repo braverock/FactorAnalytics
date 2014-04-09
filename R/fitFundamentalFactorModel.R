@@ -39,7 +39,7 @@
 #' the data.
 #' @param assetvar A character string gives the name of the asset variable in
 #' the data.
-#' @param standardized.factor.exposure logical flag. Factor exposure will be standarized 
+#' @param standardized.factor.exposure logical flag. Factor exposure will be standardized 
 #' to regression weighted mean 0 and standardized deviation to 1 if \code{TRUE}. 
 #' Default is \code{FALSE}. See Detail. 
 #' @param weight.var A character strping gives the name of the weight used for standarizing factor exposures. 

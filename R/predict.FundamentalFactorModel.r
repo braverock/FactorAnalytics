@@ -45,7 +45,7 @@ predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datev
   numAssets <- length(assets)
   
   f <-  object$factor.returns # T X 3 
-  
+  factor.names <- colnames(f) 
  
   predictor <- function(data) {
     fitted <- rep(NA,numAssets)
@@ -62,16 +62,22 @@ predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datev
   
   predictor.new <- function(data,datevar,assetvar) {
   
+  
   beta.all <- data[,c(datevar,assetvar,exposure.names)] #  (N * T ) X 4
   names(beta.all)[1:2] <- c("time","assets.names")  
+  
+  if (factor.names[1] == "Intercept") {
+  beta.all$Intercept  <- rep(1,numTimePoints*numAssets) 
+  }
   
   ### calculated fitted values
    
   fitted <- rep(NA,numAssets)
   for (i in 1:numTimePoints) {
-    beta <- subset(beta.all, time == index(f)[i] & assets.names == assets)[,exposure.names]
-    beta <- as.matrix(cbind(rep(1,numAssets),beta))
-    fit.tmp <- beta %*% t(f[i,])
+    beta <- subset(beta.all, time == index(f)[i] & assets.names %in% assets)[,factor.names]
+#     beta <- as.matrix(cbind(rep(1,numAssets),beta))
+   beta <- as.matrix(beta)    
+fit.tmp <- beta %*% t(f[i,])
     fitted <- rbind(fitted,t(fit.tmp))
   }
   fitted <- fitted[-1,]
