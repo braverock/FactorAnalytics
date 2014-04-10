@@ -180,6 +180,9 @@ fitFundamentalFactorModel <-
     }
     
     if (standardized.factor.exposure == TRUE) {
+    if (is.na(weight.var)) {
+      stop("Need to assign weight variable")
+    }
       weight = by(data = data, INDICES = as.numeric(data[[datevar]]), 
                   function(x) x[[weight.var]]/sum(x[[weight.var]]))
       data[[weight.var]] <- unlist(weight)
