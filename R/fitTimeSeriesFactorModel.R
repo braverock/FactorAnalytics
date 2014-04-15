@@ -146,9 +146,9 @@ if (variable.selection == "none") {
           for (i in assets.names) {
         reg.df = na.omit(reg.xts[, c(i, factors.names)])  
         if(add.up.market.returns == TRUE) {
-        up.beta <- apply(reg.xts[,excess.market.returns.name],1,max,0)
-        reg.df = merge(reg.df,up.beta)
-        }
+        reg.df$up.beta = reg.df[,excess.market.returns.name]
+        reg.df$up.beta[reg.df$up.beta <0] <- rep(0,sum(reg.df$up.beta<0)) 
+         }
         if(add.quadratic.term == TRUE) {
           quadratic.term <- reg.xts[,excess.market.returns.name]^2
           reg.df = merge(reg.df,quadratic.term)
