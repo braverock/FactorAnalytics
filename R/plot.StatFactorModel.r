@@ -400,7 +400,7 @@ plot.StatFactorModel <-
                }
                # function to extract component contribution to sd from list
                getCSD = function(x) {
-                 x$cr.fm
+                 x$cSd.fm
                }
                # extract contributions to SD from list
                cr.sd = sapply(factor.sd.decomp.list, getCSD)
