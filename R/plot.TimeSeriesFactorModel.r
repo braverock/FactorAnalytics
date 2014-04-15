@@ -377,7 +377,7 @@ plot.TimeSeriesFactorModel <-
                }
                # function to extract contribution to sd from list
                getCSD = function(x) {
-                 x$cr.fm
+                 x$cSd.fm
                }
                # extract contributions to SD from list
                cr.sd = sapply(factor.sd.decomp.list, getCSD)
@@ -397,7 +397,8 @@ plot.TimeSeriesFactorModel <-
                    beta = as.matrix(x$beta[i,])        
                    fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
                    residual = plot.data[,i]-fitted
-                   tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                   tmpData = cbind(coredata(plot.data[idx,i]),
+                                   coredata(plot.data[idx,factor.names]),
                                    (residual[idx,]/sqrt(x$resid.variance[i])) )
                    colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
                    factor.es.decomp.list[[i]] = 
@@ -411,19 +412,21 @@ plot.TimeSeriesFactorModel <-
                  for (i in asset.names) {
                    # check for missing values in fund data
                    idx = which(!is.na(plot.data[,i]))
-                   tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                   tmpData = cbind(coredata(plot.data[idx,i]),
+                                   coredata(plot.data[idx,factor.names]),
                                    residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
-                   colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
+                   colnames(tmpData)[c(1,dim(tmpData)[2])] = c(i, "residual")
                    factor.es.decomp.list[[i]] = 
                      factorModelEsDecomposition(tmpData, 
                                                 x$beta[i,],
-                                                x$resid.variance[i], tail.prob=0.05)
+                                                x$resid.variance[i], tail.prob=0.05,
+                                                VaR.method=VaR.method)
                  }
                }     
                
                # stacked bar charts of percent contributions to SD
                getCETL = function(x) {
-                 x$cES
+                 x$cES.fm
                }
                # report as positive number
                cr.etl = sapply(factor.es.decomp.list, getCETL)
@@ -443,7 +446,8 @@ plot.TimeSeriesFactorModel <-
                    beta = as.matrix(x$beta[i,])        
                    fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
                    residual = plot.data[,i]-fitted
-                   tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                   tmpData = cbind(coredata(plot.data[idx,i]),
+                                   coredata(plot.data[idx,factor.names]),
                                    (residual[idx,]/sqrt(x$resid.variance[i])) )
                    colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
                    factor.VaR.decomp.list[[i]] = 
@@ -456,9 +460,10 @@ plot.TimeSeriesFactorModel <-
                  for (i in asset.names) {
                    # check for missing values in fund data
                    idx = which(!is.na(plot.data[,i]))
-                   tmpData = cbind(plot.data[idx,i], plot.data[idx,factor.names],
+                   tmpData = cbind(coredata(plot.data[idx,i]),
+                                   coredata(plot.data[idx,factor.names]),
                                    residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
-                   colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
+                   colnames(tmpData)[c(1,dim(tmpData)[2])] = c(i, "residual")
                    factor.VaR.decomp.list[[i]] = 
                      factorModelVaRDecomposition(tmpData, 
                                                  x$beta[i,],
