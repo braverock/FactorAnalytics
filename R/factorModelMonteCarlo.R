@@ -85,83 +85,73 @@
 #'                                   "TRUE")
 #' 
 factorModelMonteCarlo <-
-function(n.boot=1000, factorData, Beta.mat, Alpha.mat=NULL,
-                                  residualData, residual.dist = c("normal", "Cornish-Fisher", "skew-t"),
-                                  boot.method = c("random", "block"),
-                                  seed=123, return.factors= FALSE , return.residuals= FALSE ) {
-
-  
- require(tseries) # for function tsbootstrap()
- require(sn) # for function rst()
- require(PerformanceAnalytics)
- 
- boot.method = boot.method[1]
- residual.dist = residual.dist[1]
- set.seed(seed)
- if (nrow(Beta.mat) != nrow(residualData)) {
-  stop("Beta.mat and residualData have different number of rows")
- }
- factorData = as.matrix(factorData)
- n.funds = nrow(Beta.mat)
- fund.names = rownames(Beta.mat)
- if (is.null(Alpha.mat)) {
-  Alpha.mat = matrix(0, nrow(Beta.mat))
-  rownames(Alpha.mat) = fund.names
- }
-##
-## reseample from empirical distribution of factors
-## 
- if (boot.method == "random") {
-  bootIdx = sample(nrow(factorData),  n.boot, replace=TRUE)
- } else {
-  n.samples = round(n.boot/nrow(factorData))
-  n.adj = n.boot - n.samples*nrow(factorData)
-  bootIdx = as.vector(tsbootstrap(1:nrow(factorData), nb=n.samples))
-  if (n.adj > 0) {
-## need to make sure that length(bootIdx) = n.boot
-   bootIdx = c(bootIdx, bootIdx[1:n.adj])
-  }
- }
- factorDataBoot = factorData[bootIdx, ]
-##
-## run factor model Monte Carlo loop over funds
-##
-  fundReturnsBoot = matrix(0, n.boot, n.funds)
-  residualsSim = matrix(0, n.boot, n.funds)
-  colnames(fundReturnsBoot) = colnames(residualsSim) = fund.names
-  for (i in fund.names) {
-  ## set random number seed for fund specific residual simulations
-    set.seed(which(fund.names == i))
-  ## simulate from residual distributions
-    if (residual.dist == "normal") {
-      residualsSim[, i] = rnorm(n.boot, sd=sqrt(residualData[i,]))
-    } else if (residual.dist == "Cornish-Fisher") {
-    ## residual distribution is CornishFisher
-      residualsSim[, i] = rCornishFisher(n.boot,
-                                         sigma=sqrt(residualData[i,"var"]),
-                                         skew=residualData[i,"skew"],
-                                         ekurt=residualData[i,"ekurt"])
-    } else if (residual.dist == "skew-t") {
-    ## residual distribution is CornishFisher
-      residualsSim[, i] = rst(n.boot,
-                              xi=residualData[i, "location"],
-                              omega=residualData[i,"scale"],
-                              alpha=residualData[i,"shape"],
-                              nu=residualData[i,"df"])
-    } else {
-     stop("Invalid residual distribution")
+  function (n.boot = 1000, factorData, Beta.mat, Alpha.mat = NULL, 
+            residualData, residual.dist = c("normal", "Cornish-Fisher", 
+                                            "skew-t"), boot.method = c("random", "block"), seed = 123, 
+            return.factors = FALSE, return.residuals = FALSE) 
+  {
+    require(tseries)
+    require(sn)
+    require(PerformanceAnalytics)
+    boot.method = boot.method[1]
+    residual.dist = residual.dist[1]
+    set.seed(seed)
+    if (nrow(Beta.mat) != nrow(residualData)) {
+      stop("Beta.mat and residualData have different number of rows")
     }
-    ## simulated fund returns
-    fundReturnsBoot[, i] = Alpha.mat[i,1] + factorDataBoot[, colnames(Beta.mat)] %*% t(Beta.mat[i, ,drop=FALSE]) + residualsSim[, i]
-  } # end loop over funds
-
-  ans = list(returns=fundReturnsBoot)
-  if (return.factors) {
-   ans$factors=factorDataBoot
+    factorData = as.matrix(factorData)
+    n.funds = nrow(Beta.mat)
+    fund.names = rownames(Beta.mat)
+    if (is.null(Alpha.mat)) {
+      Alpha.mat = matrix(0, nrow(Beta.mat))
+      rownames(Alpha.mat) = fund.names
+    }
+    if (boot.method == "random") {
+      bootIdx = sample(nrow(factorData), n.boot, replace = TRUE)
+    }
+    else {
+      n.samples = round(n.boot/nrow(factorData))
+      n.adj = n.boot - n.samples * nrow(factorData)
+      bootIdx = as.vector(tsbootstrap(1:nrow(factorData), nb = n.samples))
+      if (n.adj > 0) {
+        bootIdx = c(bootIdx, bootIdx[1:n.adj])
+      }
+    }
+    factorDataBoot = factorData[bootIdx, ]
+    fundReturnsBoot = matrix(0, n.boot, n.funds)
+    residualsSim = matrix(0, n.boot, n.funds)
+    colnames(fundReturnsBoot) = colnames(residualsSim) = fund.names
+    for (i in fund.names) {
+      set.seed(which(fund.names == i))
+      if (residual.dist == "normal") {
+        residualsSim[, i] = rnorm(n.boot, sd = sqrt(residualData[i, 
+                                                                 ]))
+      }
+      else if (residual.dist == "Cornish-Fisher") {
+        residualsSim[, i] = rCornishFisher(n.boot, sigma = sqrt(residualData[i, 
+                                                                             "var"]), skew = residualData[i, "skew"], ekurt = residualData[i, 
+                                                                                                                                           "ekurt"])
+      }
+      else if (residual.dist == "skew-t") {
+        residualsSim[, i] = rst(n.boot, location = residualData[i, 
+                                                                "location"], scale = residualData[i, "scale"], 
+                                shape = residualData[i, "shape"], df = residualData[i, 
+                                                                                    "df"])
+      }
+      else {
+        stop("Invalid residual distribution")
+      }
+      fundReturnsBoot[, i] = Alpha.mat[i, 1] + factorDataBoot[, 
+                                                              colnames(Beta.mat)] %*% t(Beta.mat[i, , drop = FALSE]) + 
+        residualsSim[, i]
+    }
+    ans = list(returns = fundReturnsBoot)
+    if (return.factors) {
+      ans$factors = factorDataBoot
+    }
+    if (return.residuals) {
+      ans$residuals = residualsSim
+    }
+    return(ans)
   }
-  if (return.residuals) {
-   ans$residuals=residualsSim
-  }
-  return(ans)
-}
 

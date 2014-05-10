@@ -1,2 +1,9 @@
+^\.svn$
+^sandbox/*$
+^R/\.svn$
+^data/\.svn$
+^inst/\.svn$
+^man/\.svn$
+^vignettes/\.svn$
 ^.*\.Rproj$
 ^\.Rproj\.user$
