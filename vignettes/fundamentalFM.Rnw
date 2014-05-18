@@ -13,39 +13,39 @@
 \maketitle
 
 \section{Introduction}
-This vignette aims to help users to learn how to use fit factor model with \verb@factorAnalytics@ package. We will walk through users a few examples from data input to risk analysis and performance attribution. 
+This vignette aims to help users learn how to use \verb@factorAnalytics@ package. It provides a few examples covering data input, factor model estimation, risk decomposition and performance attribution. 
 
 \section{Factor Model}
-A factor model is defined as \\
+A factor model is defined as following:\\
 \begin{equation} 
  r_t = bf_t + \epsilon_t\;,t=1 \cdots T \label{fm} 
 \end{equation}
-Where $r_t$ is N x 1 exress returns, b is N x K and f is K x 1. N is number of variables and K is number of factors. b is usually called factor exposures or factor loadings, and b can be time-varying $b_t$ in fundamental factor model setting. f is factor returns. $\epsilon_t$ is serial uncorrelated but may be cross-correlated. The model is useful to fit asset pricing model. The famous CAPM (Capital Assets Pricing Model) is a one factor model with f equal to market returns.
+Where $r_t$ is N x 1 vector of exress returns, b is N x K matrix of factor loadings and f is K x 1 vector of common risk factor. N is numbers of assets and K is numbers of factors. b stands for factor exposures or factor loadings. factor loading b can be time-varying $b_t$ in fundamental factor model. $\epsilon_t$ is assumed serial uncorrelated but maybe cross-correlated in some models. Factor model is useful to fit asset pricing model, for example, the famous CAPM (Capital Assets Pricing Model) is a factor model which contains only one factor and that factor is excess market returns.
 
-\verb@factorAnalytics@ package provides 3 different kinds of factor models. That is fundamental factor model, statistical factor model and time series factor model. We will walk through them one by one.
+\verb@factorAnalytics@ package provides 3 different kinds of factor models. They are fundamental factor model, statistical factor model and time series factor model. 
 
 
 \subsection{Fundamental Factor Model}
 
-In the case of fundamental factor model, we assume we know factor exposures b which are assets characteristics, like market capitalization or book-to-market ratio. Therefore, $b_t$ is known and $f_t$ is unknown. We run cross-section OLS or WLS regression to estimate $f_t$ for each time period. In specific,
+In the case of fundamental factor model, factor exposures are time-varying and stand for assets characteristics or fundamentals, such as market capitalization, book-to-market ratio, industry indicator and so on . That is to say, $b_t$ is known and $f_t$ is unknown. Estimation of factor returns $f_t$ can be done by running cross-section OLS or WLS regression in each time period t. In specific: 
 \begin{equation}\label{ffm}
-r_t = f_M + b\hat{f_t} + \hat{\epsilon_t}\;,t=1 \cdots T 
+r_t = f_M + b_t\hat{f_t} + \hat{\epsilon_t}\;,t=1 \cdots T 
 \end{equation}
-$f_M$ is normally called market factor or world factor depending on the context on the country level or global level. Econometrically, it is an intercept term of fundamental factor model. $f_t$ is estimated with cross-sectional in each period t.
+$f_M$ is the market factor or world factor depending on the asset space. The former is of the country level and the later is of the global level. Econometrically, it is an intercept term of each cross-sectional regression.
 
-This approach is also called BARRA type approach since it is initially developed by BARRA and later on been merged by MSCI. The famous Barra global equity model (GEM3) contains more than 50 factors. 
+This approach is also known as BARRA type approach. The famous Barra global equity model (GEM3) contains more than 50 factors. 
 
 \subsection{Example 1}
-We will walk through the first examples in this section where use style factors like size are used.
+The first example in this section will use firm fundamental such as market cap and book-to-market ratio.
 \subsubsection{Loading Data}
-Let's look at the arguments of \verb@fitFundamentalFactorModel()@ which will deal with fundamental factor model in \verb@factorAnalytics@.
+Let's look at the arguments of \verb@fitFundamentalFactorModel()@. It is the function which will estimate fundamental factor model in \verb@factorAnalytics@.
 <<args>>=
 library(factorAnalytics)
 args(fitFundamentalFactorModel)
 @
-\verb@data@ is in class of \verb@data.frame@ and is required to have \emph{assetvar},\emph{returnvar} and \emph{datevar}. One can image \emph{data} is like panel data setup and need firm variable and time variable. Data has dimension (N x T) and at least 3 consumes to specify information needed.    
+\verb@data@ is in class of \verb@data.frame@ and is required to specify \emph{assetvar}, \emph{returnvar} and \emph{datevar}. The \emph{data} is a panel data so the firm variables and the time variable are required for \verb@fitFundamentalFactorModel()@. 
 
-We download data from CRSP/Compustat quarterly fundamental and name it \verb@equity@. It contains 67 stocks and 106 time period from January 2000 to December 2013.  
+In this example, the data is downlaoded from CRSP/Compustat quarterly fundamental and named \verb@equity@. It contains 67 stocks and 106 time period from January 2000 to December 2013.  
 
 <<loading.data>>=
 #equity <- data(equity)
@@ -54,21 +54,20 @@ names(equity)
 length(unique(equity$datadate)) # number of period t 
 length(unique(equity$tic)) # number of assets
 @
-We need asset returns to run our model. We can utilize \verb@Delt()@ to calculate price percentage change which is exactly asset returns in \verb@quantmod@ package. 
+To calculate asset returns, I use \verb@Delt()@  in \verb@quantmod@ package to calculate price percentage change. 
 <<get.returns>>=
 library(quantmod)   # for Delt. See Delt for detail
 equity <- cbind(equity,do.call(rbind,lapply(split(equity,equity$tic), 
                                             function(x) Delt(x$PRCCQ)))) 
 names(equity)[22] <- "RET"
 @
-We want market value and book-to-market ratio to be our style factors. Market vale can be achieved by common stocks outstanding multiply price and book value is common/ordinary equity value. We take log for market value. 
+The next step is to construct market capitalization and book-to-market ratio. They will be the factor loadings for \verb@fitFundamentalFactorModel()@ in our example. Market cap can be calculated by multiplying shares of common stocks outstanding with price and book value is the common/ordinary equity value. Nnatrual log is treated for market cap. 
 <<get.mv.bm>>==
 equity$MV <- log(equity$PRCCQ*equity$CSHOQ) 
 equity$BM <- equity$CEQQ/equity$MV
 @
-now we will fit Equation \ref{ffm} with b = [MV BM].
 
-We will get an error message if \verb@datevar@ is not \verb@as.Date@ format compatible. In our example, our date variable is \emph{DATACQTR} and looks like "2000Q1". We have to convert it to \verb@as.Date@ compatible. We can utilize \verb@as.yearqtr@ in \verb@xts@ package to do it. Also, we will use character string for asset variable instead of factor.\footnote{The best data input is to convert all your data into xts class since we use xts to compute everything in this package, although it is not restricted to it.}
+We will get an error message if \verb@datevar@ is not \verb@as.Date@ format compatible. In our example, our date variable is \emph{DATACQTR}. It reads as "2000Q1". We have to convert it to \verb@as.Date@ compatible. We can utilize \verb@as.yearqtr@ in \verb@xts@ package to do it. Also, we will use character string for asset variable instead of factor class.\footnote{The best data input is to convert all your data into xts class since we use xts to compute everything in this package.}
 <<as.yearqtr>>=
 a <- unlist( lapply(strsplit(as.character(equity$DATACQTR),"Q"),
                function(x)  paste(x[[1]],"-",x[[2]],sep="") ) )
@@ -78,7 +77,7 @@ equity <- subset(equity,yearqtr != "2000 Q1") # delete the first element of each
 @
 
 \subsubsection{Fit the Model}
-fit the function:
+The following codes will fit the fundamental factor model:
 <<fit.ffm>>=
 fit.fund <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),datevar="yearqtr",
                                       returnsvar ="RET",assetvar="tic",wls=TRUE,
@@ -86,29 +85,29 @@ fit.fund <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),datevar="yearq
 names(fit.fund)
 @
 
-A few notice for fitting fundamental factor model. So far this function can only deal with balanced panel because we want to extract return covariance and residuals and so on. Second, \verb@datevar@ has to be \verb@as.Date@ compatible, otherwise the function can not read time index. It is somehow inconvenient but make sure we will not mess up with any time issue. 
+A few notice for fitting fundamental factor model: So far this function can only deal with balanced panel because we want to extract return covariance and residuals and so on. Second, \verb@datevar@ has to be \verb@as.Date@ compatible, otherwise the function can not read time index. It is somehow inconvenient but it makes sure time index is not messed up. 
 
-Default fit method for \verb@fitFundamentalFactorModel()@ is classic OLS and covariance matrix is also classic covariance matrix defined by \verb@covClassic()@ in \verb@robust@ package. One can change to robust estimation and robust covariance matrix estimation. 
+Default fitting method for \verb@fitFundamentalFactorModel()@ is classic OLS. The covariance matrix is also fit with classic covariance matrix defined by \verb@covClassic()@ in \verb@robust@ package. One can also use robust estimation by using argument \verb@regression = "robust"@ and robust covariance matrix estimation by using \verb@covariance = "robust"@
 
 
-\verb@returns.cov@ contains information about returns covariance. return covariance is 
+\verb@returns.cov@ contains information about returns covariance. That is :  
 \[ \Sigma_x = B \Sigma_f B' +  D \]
-If \verb@full.resid.cov@ is \emph{FALSE}, D is diagonal matrix with variance of residuals in diagonal terms. If \emph{TRUE}, D is covariance matrix of residuals. 
+If \verb@full.resid.cov@ is \emph{FALSE}, D is a diagonal matrix with variance of residuals in diagonal terms. If \emph{TRUE}, D is a covariance matrix of residuals. 
 
 <<fit.fund>>=
 names(fit.fund$returns.cov)
 @
-Please check out \verb@fit.fund$factor.cov@, \verb@fit.fund$resids.cov@ and \verb@fit.fund$resid.variance@ yourself for detail. 
+For more information about covariance, please check out \verb@fit.fund$factor.cov@, \verb@fit.fund$resids.cov@ and \verb@fit.fund$resid.variance@ for detail. 
 
 
-factor returns, residuals,t-stats are xts class. 
+factor returns, residuals,t-stats are of \verb@xts@ class. 
 <<factor.return,results=hide>>=
 fit.fund$factor.returns
 fit.fund$residuals
 fit.fund$tstats
 @
 
-Output of \verb@fitFundamentalFactorModel()@ is of class \emph{FundamentalFactorModel}. There are generic function \verb@predict@, \verb@summary@, \verb@print@ and \verb@plot@ can be applied. 
+Output of \verb@fitFundamentalFactorModel()@ is of class \emph{FundamentalFactorModel}. Generic function \verb@predict@, \verb@summary@, \verb@print@ and \verb@plot@ can be applied to the output. 
 <<generic.fun,results=hide>>=
 summary(fit.fund)
 predict(fit.fund)
@@ -136,7 +135,7 @@ Selection: plot(fit.fund)
 Enter an item from the menu, or 0 to exit
 \end{verbatim}
 
-For example, choose 1 will give factor returns and it looks like in Figure \ref{fig1}
+For example, choose 1 will give users factor returns as shown in the Figure \ref{fig1}
 <<label=plot.fit.fund,fig=TRUE,echo=FALSE,include=FALSE,results=hide>>=
 plot(fit.fund,which.plot=1,max.show=3)
 @
@@ -152,14 +151,14 @@ plot(fit.fund,which.plot=1,max.show=3)
 \end{figure}
 
 \subsection{Example 2: Barra type industry/country model}
-In a global equity model or specific country equity model, modelers can use industry/country dummies. In our example, we have 63 stocks in different industry. In specific, 
+This example shows how to estimate BARRA tyipe industry/country model. Modelers use industry/country dummies in a specific country equity model or a global equity model. In this example, I have 63 stocks in the US equity market, so it is a BARRA industry model. In specific: 
 \begin{equation}
 x_{it} = \Sigma_{j=1}^{J}b_{i,j}f_{i,t} + \epsilon_{i,t},\;for\,each\,i\,,t
 \end{equation}
-where $b_{i,j} = 1$ if stock i in industry j and $b_{i,j}=0$ otherwise. 
+where $b_{i,j} = 1$ if stock i in industry j and $b_{i,j}=0$, otherwise. 
 In matrix form:\[ x_t = Bf_t + \epsilon_t \] and B is the N X J matrix of industry dummies.  
 
-\emph{SPCINDCD} in our \verb@equity@ contains $S\&P$ industry codes, we add this variable name into \verb@exposure.names@ and we can fit Barra type industry model. Be sure this variable is of class\emph{character} not \emph{numeric}. Otherwise the function will not create dummies.
+\emph{SPCINDCD} in our \verb@equity@ dataset contains $S\&P$ industry codes. \verb@fitFundamentalFactorModel()@ will fit Barra type industry model if \verb@exposure.names@ is equal to \emph{SPCINDCD}. Be sure this variable is of class \emph{character} but not \emph{numeric}. Otherwise the function will not create dummies.
 
 <<ind.model>>=
 equity$SPCINDCD <- as.character(equity$SPCINDCD)
@@ -168,7 +167,7 @@ fit.ind <- fitFundamentalFactorModel(exposure.names=c("SPCINDCD"),datevar="yearq
                                      data=equity)
 @
 
-\verb@fitFundamentalFactorModel()@ supports mixed model like fit industry/country dummy factor exposures and style factor exposures together. For example,
+\verb@fitFundamentalFactorModel()@ also supports mixed model which uses industry/country dummy factor exposures and style factor exposures together. For example :
 <<mixted,results=hide>>=
 fit.mix <- fitFundamentalFactorModel(exposure.names=c("BM","MV","SPCINDCD"),
                                      datevar="yearqtr",returnsvar ="RET",
@@ -177,9 +176,9 @@ fit.mix <- fitFundamentalFactorModel(exposure.names=c("BM","MV","SPCINDCD"),
 
 
 \subsubsection{Standardizing Factor Exposure}
-It is common to standardize factor exposure to have weight mean 0 and standard deviation equal to 1. The weight are often taken as proportional to square root of market capitalization, although other weighting schemes are possible. 
+It is common to standardize factor exposures by assigning appropriate weights so that factor loadings are mean 0 and standard deviation equal to 1. The weight are often proportional to square root of market capitalization, although other weighting schemes are possible. 
 
-We will try example 1 but with standardized factor exposure with square root of market capitalization. First we create a weighting variable.
+Let's redo the example 1 with standardized factor exposures with square root of market capitalization. In order to do that, we create a weighting variable first.
 
 <<standardized.fund>>=
 equity$weight <- sqrt(exp(equity$MV)) # we took log for MV before.
@@ -193,21 +192,21 @@ fit.fund2 <- fitFundamentalFactorModel(exposure.names=c("BM","MV"),
                                        weight.var = "weight"  )
 @
 
-The advantage of weight facotr exposures is better interpretation of factor returns. $f_t$ can be interpreted as long-short zero investment portfolio. In our case, $f_{MVt}$ will long big size stocks and short small size stocks. 
+The advantage of standardizing facotr exposures is the better interpretation of factor returns. $f_t$ can be interpreted as long-short zero investment portfolio. In our case, $f_{MV,t}$ is the long short portfolio returns which long big size stocks and short small size stocks. 
 
 \subsection{Statistical Factor Model}
 
-In statistical factor model, neither factor exposure b (normally called factor loadings in statistical factor model) nor factor returns $f_t$ are observed in equation \ref{fm}. So we can rewrite the model as:
+In statistical factor model, neither factor loading b nor factor returns $f_t$ are observed in equation \ref{fm}. So we can rewrite the model as:
 \begin{equation} 
  r_t = bf_t + \epsilon_t\;,t=1 \cdots T \label{fm2} 
 \end{equation}
 Factor returns $f_t$ can be calculated as principle components of covariance matrix of assets returns if number of asset N is less than the number of time period T, and factor loadings can be calculated using conventional least square technique. 
 
-By default, the first principle component or factor will explain the most variation of returns covariance matrix and so on. 
+The first principle component or factor will explain the most variation of returns covariance matrix. The second priciple component will explain the most variation controlling for the first one and so on.
 
-In some cases, when number of assets N is larger than number of time period T. Connor and Korajczyk (1986) develop an alternative method called asymptotic principal components, building on the approximate factor model theory of Chamberlain and Rothschild (1983). Connor and Korajczyk analyze the eigenvector of the T X T cross product of  matrix returns rather then N X N covariance matrix of returns. They show the first k eigenvectors of this cross product matrix provide consistent estimates of the k X T matrix of factor returns. 
+In some cases, when number of assets N is larger than number of time period T. Connor and Korajczyk (1986) develop an alternative method called asymptotic principal components analysis, related to the approximate factor model theory of Chamberlain and Rothschild (1983). Connor and Korajczyk analyze the eigenvector of the T X T cross product of  matrix returns rather then N X N covariance matrix of returns. They show the first k eigenvectors of this cross product matrix provide consistent estimates of the k X T matrix of factor returns. 
 
-We can use function \verb@fitStatisticalFactorModel@ to fit statistical factor model. First, we need asset returns in time series or xts class. We choose xts to work with because time index is easy to handle but this is not restricted to the function. 
+We can use function \verb@fitStatisticalFactorModel@ to fit statistical factor model. Asset returns have to be in time series or xts class. We choose xts to work with in this example because time index is easy to handle. 
 
 <<create.xts>>=
 library(xts)
@@ -222,7 +221,7 @@ ret <- merge(ret,ret.new)
 ret <- ret[,-1]
 dim(ret)
 @
-The data \verb@ret@ contians 63 assets and 52 time periods. We will exploit asymptotic principal components analysis to fit statistical model. There are two ways to find numbers of factors, Connor and Korajczyk(1995) and Bai and Ng (2002). Both are provided in our function. We will use Bai and Ng (2002) to choose the numbers of factors.    
+The data \verb@ret@ contians 63 assets and 52 time periods. We will exploit asymptotic principal components analysis to fit statistical model. There are two tests to determine numbers of factors, Connor and Korajczyk(1995) and Bai and Ng (2002). Both are provided in our function. We will use Bai and Ng (2002) to choose the numbers of factors.    
 
 <<stat.fm>>=
 fit.stat <- fitStatisticalFactorModel(data=ret,
@@ -230,7 +229,7 @@ fit.stat <- fitStatisticalFactorModel(data=ret,
 names(fit.stat)
 @
 
-5 factors is chosen by Bai and Ng (2002). Factor returns can be found \verb@fit.stat$factors@.    
+5 factors is chosen by Bai and Ng (2002). Factor returns can be found in \verb@fit.stat$factors@.    
 <<stat.factor.returns>>=
 fit.stat$k
 @
@@ -249,7 +248,7 @@ plot(fit.stat,which.plot=2)
 \label{fig2}
 \end{figure}
 
-Finally, screen plot of eigenvalues shows how much variance can be explained by factors. We can see the first factor explain more than 70 percent of variation of cross-product matrix.   
+Finally, screen plot of eigenvalues shows how much variation can be explained by factors. We can see the first factor explain more than 70 percent of variation of asset returns.   
 <<label=plot.fit.stat2,fig=TRUE,echo=FALSE,include=FALSE,results=hide>>=
 plot(fit.stat,which.plot=1)
 @
@@ -267,21 +266,21 @@ plot(fit.stat,which.plot=1)
 Similar to \verb@fitFundamentalFactorModel@, generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predict@ can be used for statistical factor model. 
 
 \subsection{Time Series Factor Model}
-In Time Series factor model, factor returns $f_t$ is observed and taken as macroeconomic time series like GDP or other time series like market returns or credit spread. In our package, we provid some common used times series in data set \verb@CommonFactors@. \verb@factors@ is monthly time series and \verb@factors.Q@ is quarterly time series.
+In Time Series factor model, factor returns $f_t$ is observed and is taken as macroeconomic time series like GDP growth rate or other finanical time series such as market returns or credit spread. In our package, we provid some common used times series in data set \verb@CommonFactors@. \verb@factors@ is monthly time series and \verb@factors.Q@ is quarterly time series.
 
 <<common.factors>>=
 data(CommonFactors)
 names(factors.Q)
 @
 
-We can combine with our data \verb@ret@ and get rid of NA values.
+Let's combine these factors with our data \verb@ret@ and delete NA values.
 
 <<merge>>=
 ts.factors <- xts(factors.Q,as.yearqtr(index(factors.Q),format="%Y-%m-%d")) 
 ts.data <- na.omit(merge(ret,ts.factors))
 @
 
-We will use SP500, 10 years and 3 months term spread and difference of VIX as our common factors. 
+In this example, we will use SP500, 10 years and 3 months term spread and difference of VIX as our common factors. 
 
 <<fit.ts>>=
 fit.time <- fitTimeSeriesFactorModel(assets.names=tic,
@@ -295,7 +294,7 @@ fit.time$asset.fit$AA
 @
 
 
-\verb@fitTimeSeriesFactorModel@ also have various variable selection algorithm to choose. One can include every factor and let the function to decide which one is the best model. For example, we include every common factors and use method \verb@stepwise@ which utilizes \verb@step@ function in \verb@stat@ package 
+\verb@fitTimeSeriesFactorModel@ also have various variable selection algorithm to choose. One can include all possible factors and let the function to decide which one is the best model. For example, we include every common factors and use method \verb@stepwise@ which utilizes \verb@step@ function in \verb@stat@ package 
 
 <<fit.ts>>=
 fit.time2 <- fitTimeSeriesFactorModel(assets.names=tic,
@@ -313,10 +312,10 @@ Generic functions like \verb@summary@, \verb@print@, \verb@plot@ and \verb@predi
 \section{Risk Analysis}
 
 \subsection{Factor Model Risk Budgeting}
-One can do risk analysis with factor model. According to Meucci (2007), factor model can be represented as 
+One can perform risk analysis with factor model. Meucci (2007) shows factor model can be represented as: 
 
 \begin{align}
-r_{it} &= \alpha_i + \beta_{i1}f_{1t} + \beta_{i2}f_{2t} + \cdots + \beta_{ik}f_{kt} + \sigma{i}z_{it},\;i=1 \cdots N,\;t=1 \cdots T \\
+r_{it} &= \alpha_i + \beta_{i1}f_{1t} + \beta_{i2}f_{2t} + \cdots + \beta_{ik}f_{kt} + \sigma_{i}z_{it},\;i=1 \cdots N,\;t=1 \cdots T \\
        &= \alpha_i + \tilde{\beta_i}'\tilde{F_t}
 \end{align}
 
@@ -328,11 +327,9 @@ RM_i = \beta_{1i}\frac{\partial RM_i}{\partial \beta_{1i}} + \beta_{2i}\frac{\pa
 \end{align}
 
 where\\
-$\frac{\partial RM_i}{\partial \beta_{ki}}$ is called marginal contribution of factor k to $RM_i$ \\
-$\beta_{ki}\frac{\partial RM_i}{\partial \beta_{ki}}$ is called component contribution of factor k to $RM_i$ \\
-$\beta_{ki}\frac{\partial RM_i}{\partial \beta_{ki}}/RM_i$ is called percentage contribution of factor k to $RM_i$
+$\frac{\partial RM_i}{\partial \beta_{ki}}$ is marginal contribution of factor k to $RM_i$. $\beta_{ki}\frac{\partial RM_i}{\partial \beta_{ki}}$ is component contribution of factor k to $RM_i$ and $\beta_{ki}\frac{\partial RM_i}{\partial \beta_{ki}}/RM_i$ is percentage contribution of factor k to $RM_i$
 
-\verb@factorAnalytics@ package provide 3 different risk metrics decomposition, Standard deviation (Std), Value-at-Risk (VaR) and Expected Shortfall (ES). Each one with different distribution such as historical distribution, Normal distribution and Cornish-Fisher distribution. 
+\verb@factorAnalytics@ package provide 3 different risk metrics decomposition, Standard deviation (Std), Value-at-Risk (VaR) and Expected Shortfall (ES). Each risk metric supports different estimation methods under different distribution such as empirical distribution, Normal distribution and Cornish-Fisher distribution. 
 
 This example shows factor model VaR decomposition with Normal distribution of asset AA for a statistical factor model.
 <<risk.decomp>>=
@@ -344,14 +341,14 @@ var.decp <- factorModelVaRDecomposition(data.rd,fit.stat$loadings[,"AA"],
 names(var.decp)
 @
 
-VaR, number of exceed, id of exceed, marginal contribution to VaR, component contribution to VaR and percentage contribution to VaR are computed. Let see VaR and component contribution to VaR 
+VaR, number of exceed, index of observations that exceed VaR, marginal contribution to VaR, component contribution to VaR and percentage contribution to VaR are computed. Let's see VaR and component contribution to VaR; 
 <<mct.var>>=
 var.decp$VaR.fm
 var.decp$cVaR.fm
 @
 It looks like the second factor contributes the largest risk to asset AA. 
 
-One can use \verb@plot()@ method to see barplot of risk budgeting. Default is to show 6 assets. Figure \ref{fig4} shows componenet contribution to VaR for several different assets. 
+One can use \verb@plot()@ method to see barplot of risk budgeting. The default is to show 6 assets. Figure \ref{fig4} shows componenet contribution to VaR for several different assets. 
 
 <<label=plot.rb.stat,fig=TRUE,echo=FALSE,include=FALSE,results=hide>>=
 plot(fit.stat,which.plot=8,legend.text=TRUE, args.legend=list(x="topright"),
@@ -377,11 +374,9 @@ RM = w_{1}\frac{\partial RM}{\partial w_{1}} + w_{2}\frac{\partial RM}{\partial 
 \end{align}
 
 where\\
-$\frac{\partial RM}{\partial w_{i}}$ is called marginal contribution of asset i to RM \\
-$w_{i}\frac{\partial RM}{\partial w_{i}}$ is called component contribution of asset i to RM \\
-$w_{i}\frac{\partial RM}{\partial w_{i}}/RM$ is called percentage contribution of asset i to RM
+$\frac{\partial RM}{\partial w_{i}}$ is marginal contribution of asset i to RM. $w_{i}\frac{\partial RM}{\partial w_{i}}$ is component contribution of asset i to RM. $w_{i}\frac{\partial RM}{\partial w_{i}}/RM$ is percentage contribution of asset i to RM.
 
-we can use function \verb@VaR()@ in \verb@PerformanceAnalytics@. Suppose we have an eqaully weighted portfolio of 63 assets in data set \verb@ret@. The following code can compute portfolio VaR, component contribution to VaR and percentage contribution to VaR
+we can use function \verb@VaR()@ in \verb@PerformanceAnalytics@ to perform portfolio risk budgeting. Suppose we have an eqaully weighted portfolio of 63 assets in data set \verb@ret@. The following code can compute portfolio VaR, component contribution to VaR and percentage contribution to VaR
 
 <<port.var,results=hide>>=
 VaR(R=ret,method="gaussian",portfolio_method="component")
@@ -390,23 +385,22 @@ VaR(R=ret,method="gaussian",portfolio_method="component")
 
 \section{Performance Attribution}
 
-User can do factor-based performance attribution with \verb@factorAnalytics@ package. factor model:
+Users can perform factor-based performance attribution with \verb@factorAnalytics@ package. factor model:
 \begin{equation}
 r_t = \alpha + Bf_t + e_t,\;t=1 \cdots T
 \end{equation}
-can break down asset returns into two pieces. The first term is \emph{returns atttributed to factors} $Bf_t$ and the second term is called \emph{specific returns} which is simply $\alpha + e_t$. 
+Factor model breaks asset returns into two pieces. The first term is \emph{returns atttributed to factors} $Bf_t$ and the second term is called \emph{specific returns} which is simply $\alpha + e_t$. 
 
-For example, we can breakdown time series factor model.\\ 
-Function \verb@factorModelPerformanceAttribution()@ can help us to calculate performance attribution. 
+For the example of time series factor model, function \verb@factorModelPerformanceAttribution()@ calculates performance attribution. 
 <<ts.attr>>=
 ts.attr <- factorModelPerformanceAttribution(fit.time)
 names(ts.attr)
 @
-There are 3 items generated by the function. \verb@cum.ret.attr.f@ will return a N x K matrix with cummulative returns attributed to factors. \verb@cum.spec.ret@ will return a N x 1 matrix with cummulative specific returns. \verb@attr.list@ will return a list which contains returns atttribution to each factors and specific returns asset by asset. In addition, a \emph{FM.attribution} class will be generated and generic function \verb@print()@, \verb@summary()@ and \verb@plot()@ can be applied to it.  
+There are 3 outputs generated by this function. \verb@cum.ret.attr.f@ will return a N x K matrix of cummulative returns attributed to factors. \verb@cum.spec.ret@ will return a N x 1 matrix of cummulative specific returns. \verb@attr.list@ will return a list which contains returns atttribution to each factors and specific returns asset by asset. In addition, a \emph{FM.attribution} class will be generated and generic function \verb@print()@, \verb@summary()@ and \verb@plot()@ can be applied to it.  
 
 \subsection{Benchmark and Active Returns}
 
 Portfolio performance is usually compared to similar type of benchmark. US equity portfolio will compare its performance with S$\&$P 500 index for example. Therefore, \emph{active returns} under active management is interested. We define active returns = assets returns - benchmark. 
 
-We can also calculate active return attribution just simply fit active return with fundamental factor model, statistical factor model or time series factor model and calculate by \verb@factorModelPerformanceAttribution()@. 
+We can also calculate active return attribution by fitting active return with fundamental factor model, statistical factor model or time series factor model first, and then using \verb@factorModelPerformanceAttribution()@. 
 \end{document}
