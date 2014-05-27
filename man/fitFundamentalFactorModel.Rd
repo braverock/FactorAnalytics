@@ -63,19 +63,24 @@
   resids.cov An object of class "cov" or "covRob" which
   contains the covariance matrix of the residuals, if
   "full.resid.cov" is TRUE.  NULL if "full.resid.cov" is
-  FALSE. \item resid.variance A vector of variances
-  estimated from the OLS residuals for each asset. If "wls"
-  is TRUE, these are the weights used in the weighted least
-  squares regressions.  If "cov = robust" these values are
-  computed with "scale.tau".  Otherwise they are computed
-  with "var". \item factor.returns A "xts" object
-  containing the times series of estimated factor returns
-  and intercepts. \item residuals A "xts" object containing
-  the time series of residuals for each asset. \item tstats
-  A "xts" object containing the time series of t-statistics
-  for each exposure. \item call function call \item
-  exposure.names A character string giving the name of the
-  exposure variable in the data. }
+  FALSE. \item returns.corr Correlation matrix of assets
+  returns. \item factor.corr An object of class "cov" or
+  "covRob" which contains the correlation matrix of the
+  factor returns (including intercept). \item resids.corr
+  Correlation matrix of returns returns. \item
+  resid.variance A vector of variances estimated from the
+  OLS residuals for each asset. If "wls" is TRUE, these are
+  the weights used in the weighted least squares
+  regressions.  If "cov = robust" these values are computed
+  with "scale.tau".  Otherwise they are computed with
+  "var". \item factor.returns A "xts" object containing the
+  times series of estimated factor returns and intercepts.
+  \item residuals A "xts" object containing the time series
+  of residuals for each asset. \item tstats A "xts" object
+  containing the time series of t-statistics for each
+  exposure. \item call function call \item exposure.names A
+  character string giving the name of the exposure variable
+  in the data. }
 }
 \description{
   fit fundamental factor model or cross-sectional factor

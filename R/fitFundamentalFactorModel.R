@@ -53,6 +53,10 @@
 #' \item resids.cov An object of class "cov" or "covRob" which contains
 #' the covariance matrix of the residuals, if "full.resid.cov" is TRUE.  NULL
 #' if "full.resid.cov" is FALSE.
+#' \item returns.corr Correlation matrix of assets returns. 
+#' \item factor.corr  An object of class "cov" or "covRob" which
+#' contains the correlation matrix of the factor returns (including intercept). 
+#' \item resids.corr Correlation matrix of returns returns.
 #' \item resid.variance A vector of variances estimated from the OLS
 #' residuals for each asset. If "wls" is TRUE, these are the weights used in
 #' the weighted least squares regressions.  If "cov = robust" these values are
@@ -428,16 +432,10 @@ fitFundamentalFactorModel <-
       if (full.resid.cov) { D.hat$cov
       }  else { D.hat  }
     mean.cov.returns = tapply(data[[returnsvar]],data[[assetvar]], mean)
+Corr.returns = cov2cor(cov.returns)
     Cov.returns <- list(cov = cov.returns, mean=mean.cov.returns, eigenvalues = eigen(cov.returns, 
                                                                                       only.values = TRUE, symmetric = TRUE)$values)
     
-    # report residual covaraince if full.resid.cov is true. 
-    if (full.resid.cov) {
-      Cov.resids <- D.hat
-    }
-    else {
-      Cov.resids <- diag(resid.vars)
-    }
     # 
     # # r-square for each asset = 1 - SSE/SST
     #    SSE <-  apply(fit.fund$residuals^2,2,sum) 
@@ -449,9 +447,34 @@ fitFundamentalFactorModel <-
     colnames(f.hat)[1] <- "Intercept"
     }
     
+# report corr matrix
+
+if (covariance == "robust") {
+  if (kappa(na.exclude(coredata(f.hat))) < 1e+10) {
+    Corr.factors <- covRob(coredata(f.hat), estim = "pairwiseGK", 
+                           distance = FALSE, na.action = na.omit,corr=TRUE)
+  } else {
+    cat("Covariance matrix of factor returns is singular.\n")
+    Corr.factors <- covRob(coredata(f.hat), distance = FALSE, 
+                           na.action = na.omit,corr=TRUE)
+  }
+  Corr.D <-  if (full.resid.cov) { cov2cor(D.hat$cov)
+  }  else { NULL  }
+  
+}   else {
+  Corr.factors <- covClassic(coredata(f.hat), distance = FALSE,na.action = na.omit,corr=TRUE)
+  Corr.D <-  if (full.resid.cov) { cov2cor(D.hat$cov)
+  }  else { NULL  }
+}
+
+
+
     output <- list(returns.cov = Cov.returns, 
                    factor.cov = Cov.factors, 
-                   resids.cov = Cov.resids, 
+                   resids.cov = D.hat,
+                   returns.corr = Corr.returns,
+                   factor.corr = Corr.factors,
+                   resids.corr = Corr.D,
                    resid.variance = resid.vars, 
                    factor.returns = f.hat, 
                    residuals = resids, 
