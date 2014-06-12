@@ -77,7 +77,7 @@
 #' # skew-t distribution
 #' # build residualData matrix
 #' residualData <- cbind(rnorm(6),c(1,2,1,3,0.1,0.5),rnorm(6),c(2,3,1,6,10,100))
-#' colnames(residualData) <- c("location","scale","shape","df")
+#' colnames(residualData) <- c("xi","omega","alpha","nu")
 #' rownames(residualData) <- colnames(managers.df[,(1:6)])
 #' bootData <- factorModelMonteCarlo(n.boot, factorData,Beta.mat, residual.dist="skew-t",
 #'                                   residualData, Alpha.mat=NULL, boot.method="random",
@@ -133,10 +133,10 @@ factorModelMonteCarlo <-
                                                                                                                                            "ekurt"])
       }
       else if (residual.dist == "skew-t") {
-        residualsSim[, i] = rst(n.boot, location = residualData[i, 
-                                                                "location"], scale = residualData[i, "scale"], 
-                                shape = residualData[i, "shape"], df = residualData[i, 
-                                                                                    "df"])
+        residualsSim[, i] = rst(n.boot, xi = residualData[i, 
+                                                                "xi"], omega = residualData[i, "omega"], 
+                                alpha = residualData[i, "alpha"], nu = residualData[i, 
+                                                                                    "nu"])
       }
       else {
         stop("Invalid residual distribution")
