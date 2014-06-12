@@ -2,10 +2,29 @@ Package: factorAnalytics
 Type: Package
 Title: factor analysis
 Version: 1.0
-Date: 2014-05-10
+Date: 2014-06-12
 Author: Eric Zivot and Yi-An Chen
 Maintainer: Yi-An Chen <chenyian@uw.edu>
-Description: An R package for estimation and risk analysis of linear factor models for asset returns and portfolios. It contains three major fitting method for the factor models: fitting macroeconomic factor model, fitting fundamental factor model and fitting statistical factor model and some risk analysis tools like VaR, ES to use the result of the fitting method. It also provides the different type of distribution to fit the fat-tail behavior of the financial returns, including edgeworth expansion type distribution.  
+Description: An R package for estimation and risk analysis of linear factor
+    models for asset returns and portfolios. It contains three major fitting
+    method for the factor models: fitting macroeconomic factor model, fitting
+    fundamental factor model and fitting statistical factor model and some risk
+    analysis tools like VaR, ES to use the result of the fitting method. It
+    also provides the different type of distribution to fit the fat-tail
+    behavior of the financial returns, including edgeworth expansion type
+    distribution.
 License: GPL-2
-Depends: robust, robustbase, leaps, lars, MASS, PerformanceAnalytics, sn, tseries, strucchange,xts,ellipse, zoo
+Depends:
+    robust,
+    robustbase,
+    leaps,
+    lars,
+    MASS,
+    PerformanceAnalytics,
+    sn,
+    tseries,
+    strucchange,xts,ellipse,
+    zoo
+Suggests:
+    testthat
 LazyLoad: yes
