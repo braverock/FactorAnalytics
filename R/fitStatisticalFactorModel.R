@@ -1,34 +1,36 @@
-#' Fit statistical factor model using principle components analysis
+#' Fit a statistical factor model using principal component analysis
 #' 
-#' Fit statistical factor model using principle components. This function is
-#' mainly adapted from S+FinMetric function \code{mfactor}.
+#' Fits a statistical factor model using principal component analysis. 
+#' This is an adaptation of the S+FinMetric function \code{mfactor}.
 #' 
 #' 
-#' @param data a vector, matrix, data.frame, xts, timeSeries or zoo object with asset returns 
-#' and factors retunrs names. If data does not have xts class, rownames must provide 
-#' xts compatible time index.  
-#' @param k numbers of factors if it is scalar or method of choosing optimal
-#' number of factors. "bn" represents Bai and Ng (2002) method and "ck"
-#' represents Connor and korajczyk (1993) method. Default is k = 1.
-#' @param refine \code{TRUE} By default, the APCA fit will use the
-#' Connor-Korajczyk refinement.
-#' @param check check if some variables has identical values. Default is FALSE.
-#' @param max.k scalar, select the number that maximum number of factors to be
+#' @param data a vector, matrix, data.frame, xts, timeSeries or zoo object with 
+#' asset returns and factors names. If data is not of class xts, rownames must 
+#' provide an xts compatible time index.  
+#' @param k numbers of factors. Can be a scalar value or a method for 
+#' determining the optimal number of factors. k="bn" corresponds to Bai and 
+#' Ng (2002) and k="ck" corresponds to Connor and Korajczyk (1993). Defaults to 1.
+#' @param refine a logical value that when set to \code{TRUE}, specifies the 
+#' Connor-Korajczyk refinement for APCA (Asymptotic Principal Component Analysis). 
+#' Defaults to \code{TRUE}.
+#' @param check Checks if any two assets have identical values. Defaults to 
+#' \code{FALSE}.
+#' @param max.k a scalar that specifies the maximum number of factors to be 
 #' considered.
-#' @param sig significant level when ck method uses.
-#' @param na.rm if allow missing values. Default is FALSE.
+#' @param sig desired level of significant when "ck"" method is specified.
+#' @param na.rm a logical value to specify if missing values should be removed. 
+#' Defaults to FALSE.
 #' 
 #' 
 #' @return
 #' \itemize{
-#' \item{factors}{ T x K the estimated factors.}
-#' \item{loadings}{ K x N the asset specific factor loadings beta_i.
-#' estimated from regress the asset returns on factors.}
-#' \item{alpha}{ 1 x N the estimated intercepts alpha_i}
-#' \item{ret.cov}{ N x N asset returns sample variance covariance matrix.}
-#' \item{r2}{ regression r square value from regress the asset returns on
-#' factors.}
-#' \item{k}{ the number of the facotrs.}
+#' \item{factors}{ T x K matrix of estimated factors.}
+#' \item{loadings}{ K x N matrix of asset specific factor loadings beta_i,
+#' estimated by regressing the asset returns on factors.}
+#' \item{alpha}{ 1 x N vector of estimated intercepts alpha_i}
+#' \item{ret.cov}{ N x N matrix of asset returns' sample covariance matrix.}
+#' \item{r2}{ r-squared value from regressing the asset returns on the factors.}
+#' \item{k}{ the number of facotrs.}
 #' \item{eigen}{ eigenvalues from the sample covariance matrix.}
 #' \item{residuals}{ T x N matrix of residuals from regression.}
 #' \item{asset.ret}{ asset returns}
@@ -37,6 +39,9 @@
 #' \item{resid.variance}{ vector of residual variances.}
 #' \item{mimic}{ N x K matrix of factor mimicking portfolio returns.}
 #' }
+#' Where N is the number of assets, K is the number of factors, and T is the 
+#' number of observations.
+#' 
 #' @author Eric Zivot and Yi-An Chen
 #' @references Zivot and Wang, (2006) "Modeling Financial Time Series with S-PLUS, 2nd edition"
 #' @examples
