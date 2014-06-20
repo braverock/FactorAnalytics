@@ -10,6 +10,7 @@
 #'                If omitted, the fitted values are used. 
 #' @param new.assetvar Specify new asset variable in newdata if newdata is provided.
 #' @param new.datevar  Speficy new date variable in newdata if newdata is provided. 
+#' @param ...
 #' @method predict FundamentalFactorModel               
 #' @export
 #' @author Yi-An Chen
@@ -30,7 +31,7 @@
 #' pred.fund2 <- predict(fit.fund,testdata,new.assetvar="TICKER",new.datevar="DATE")
 #' 
 #' 
-predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datevar){
+predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datevar,...){
  
   # if there is no newdata provided
   # calculate fitted values
