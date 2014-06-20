@@ -4,7 +4,7 @@
 \title{predict method for FundamentalFactorModel object}
 \usage{
 \method{predict}{FundamentalFactorModel}(object, newdata, new.assetvar,
-  new.datevar)
+  new.datevar, ...)
 }
 \arguments{
 \item{object}{fit "FundamentalFactorModel" object}
@@ -15,6 +15,8 @@ If omitted, the fitted values are used.}
 \item{new.assetvar}{Specify new asset variable in newdata if newdata is provided.}
 
 \item{new.datevar}{Speficy new date variable in newdata if newdata is provided.}
+
+\item{...}{}
 }
 \description{
 Generic function of predict method for fitFundamentalFactorModel.
