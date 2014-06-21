@@ -88,11 +88,6 @@
 #' 
 fitStatisticalFactorModel <-
 function(data, k = 1, refine = TRUE, check = FALSE, max.k = NULL, sig = 0.05, na.rm = FALSE){
-	
-# load package
-require(MASS)  
-require(PerformanceAnalytics)
-
 
 
   

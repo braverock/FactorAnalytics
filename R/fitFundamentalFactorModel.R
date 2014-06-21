@@ -137,8 +137,6 @@ fitFundamentalFactorModel <-
            covariance = "classic", full.resid.cov = FALSE, robust.scale = FALSE,
            standardized.factor.exposure = FALSE, weight.var) {
     
-    require(xts)
-    require(robust)
     
     
     assets = unique(data[[assetvar]])

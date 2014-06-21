@@ -72,8 +72,6 @@ plot.StatFactorModel <-
                                "7L","8L","9L","10L","11L","12L","13L"),
            max.show=6, VaR.method = "historical",...)
   {
-    require(strucchange)
-    require(ellipse)
     #
     # beginning of funciton screenplot
     #

@@ -16,7 +16,7 @@ If omitted, the fitted values are used.}
 
 \item{new.datevar}{Speficy new date variable in newdata if newdata is provided.}
 
-\item{...}{}
+\item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Generic function of predict method for fitFundamentalFactorModel.

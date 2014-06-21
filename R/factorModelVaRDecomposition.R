@@ -60,7 +60,6 @@ factorModelVaRDecomposition <-
 function(Data, beta.vec, sig2.e, tail.prob = 0.01,
          VaR.method=c("modified", "gaussian", "historical", "kernel")) {
   
-require(PerformanceAnalytics)
   VaR.method = VaR.method[1]
   Data = as.matrix(Data)
   ncol.Data = ncol(Data)

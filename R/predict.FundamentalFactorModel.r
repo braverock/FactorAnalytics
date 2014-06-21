@@ -10,7 +10,7 @@
 #'                If omitted, the fitted values are used. 
 #' @param new.assetvar Specify new asset variable in newdata if newdata is provided.
 #' @param new.datevar  Speficy new date variable in newdata if newdata is provided. 
-#' @param ...
+#' @param ... further arguments passed to or from other methods.
 #' @method predict FundamentalFactorModel               
 #' @export
 #' @author Yi-An Chen
@@ -40,6 +40,7 @@ predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datev
    assets = unique(object$data[,assetvar])
    timedates = as.Date(unique(object$data[,datevar]))
    exposure.names <- object$exposure.names
+   asset.names <- object$asset.names
    
   numTimePoints <- length(timedates)
   numExposures <- length(exposure.names)
@@ -65,7 +66,7 @@ predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datev
   
   
   beta.all <- data[,c(datevar,assetvar,exposure.names)] #  (N * T ) X 4
-  names(beta.all)[1:2] <- c("time","assets.names")  
+  names(beta.all)[1:2] <- c("time", asset.names)  
   
   if (factor.names[1] == "Intercept") {
   beta.all$Intercept  <- rep(1,numTimePoints*numAssets) 
@@ -75,7 +76,7 @@ predict.FundamentalFactorModel <- function(object,newdata,new.assetvar,new.datev
    
   fitted <- rep(NA,numAssets)
   for (i in 1:numTimePoints) {
-    beta <- subset(beta.all, time == index(f)[i] & assets.names %in% assets)[,factor.names]
+    beta <- subset(beta.all, time == index(f)[i] & asset.names %in% assets)[,factor.names]
 #     beta <- as.matrix(cbind(rep(1,numAssets),beta))
    beta <- as.matrix(beta)    
 fit.tmp <- beta %*% t(f[i,])

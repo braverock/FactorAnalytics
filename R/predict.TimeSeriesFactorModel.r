@@ -29,7 +29,6 @@
 #' 
 
 predict.TimeSeriesFactorModel <- function(object,newdata = NULL,...){
-  require(PerformanceAnalytics)
  
   if (missing(newdata) || is.null(newdata)  ) {
   lapply(object$asset.fit, predict,...)

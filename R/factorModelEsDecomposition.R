@@ -82,7 +82,6 @@ factorModelEsDecomposition <-
 function(Data, beta.vec, sig2.e, tail.prob = 0.05,
          VaR.method=c("modified", "gaussian", "historical", "kernel")) {
 
-  require(PerformanceAnalytics)
   Data = as.matrix(Data)
   ncol.Data = ncol(Data)
   if(is.matrix(beta.vec)) {

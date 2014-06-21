@@ -26,5 +26,5 @@ Depends:
     ellipse,
     doParallel
 Suggests:
-    testthat
+    testthat, quantmod
 LazyLoad: yes

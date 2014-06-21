@@ -90,9 +90,6 @@ factorModelMonteCarlo <-
                                             "skew-t"), boot.method = c("random", "block"), seed = 123, 
             return.factors = FALSE, return.residuals = FALSE) 
   {
-    require(tseries)
-    require(sn)
-    require(PerformanceAnalytics)
     boot.method = boot.method[1]
     residual.dist = residual.dist[1]
     set.seed(seed)

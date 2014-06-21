@@ -32,26 +32,27 @@ create a menu to choose. Defualt is none.\cr
 
 \item{asset.name}{Name of the asset to be plotted.}
 
-\item{which.plot.single}{Integer indicates which plot to create: "none"}
-
-\item{...}{will create a menu to choose. Defualt is none.\cr
-1 = time series plot of actual and fitted values,\cr
-2 = time series plot of residuals with standard error bands, \cr
-3 = time series plot of squared residuals, \cr
-4 = time series plot of absolute residuals,\cr
-5 = SACF and PACF of residuals,\cr
-6 = SACF and PACF of squared residuals,\cr
-7 = SACF and PACF of absolute residuals,\cr
-8 = histogram of residuals with normal curve overlayed,\cr
-9 = normal qq-plot of residuals,\cr
-10= CUSUM plot of recursive residuals,\cr
-11= CUSUM plot of OLS residuals,\cr
-12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
-13= rolling estimates over 24 month window.}
+\item{which.plot.single}{Integer indicates which plot to create: "none"
+will create a menu to choose. Defualt is none.\cr
+ 1 = time series plot of actual and fitted values,\cr
+ 2 = time series plot of residuals with standard error bands, \cr
+ 3 = time series plot of squared residuals, \cr
+ 4 = time series plot of absolute residuals,\cr
+ 5 = SACF and PACF of residuals,\cr
+ 6 = SACF and PACF of squared residuals,\cr
+ 7 = SACF and PACF of absolute residuals,\cr
+ 8 = histogram of residuals with normal curve overlayed,\cr
+ 9 = normal qq-plot of residuals,\cr
+ 10= CUSUM plot of recursive residuals,\cr
+ 11= CUSUM plot of OLS residuals,\cr
+ 12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
+ 13= rolling estimates over 24 month window.}
 
 \item{VaR.method}{Character, method for computing VaR. Valid choices are
 either "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
 in the PerformanceAnalytics package. Default is "historical".}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Generic function of plot method for fitTimeSeriesFactorModel. Either plot

@@ -58,8 +58,7 @@ function(x,which.plot=c("none","1L","2L","3L","4L","5L","6L"),max.show=4,
          which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
                              "7L","8L","9L"),legend.txt=TRUE,VaR.method="historical",...) 
   {
-require(ellipse)
-require(PerformanceAnalytics)  
+  
  
 if (plot.single == TRUE) {
   

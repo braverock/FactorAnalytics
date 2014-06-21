@@ -100,12 +100,7 @@ function(assets.names, factors.names, data=data, num.factor.subset = 1,
           subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
           lars.criteria = "Cp",add.up.market.returns = FALSE,add.quadratic.term = FALSE,
          excess.market.returns.name ) {
-  
-  require(PerformanceAnalytics)
-  require(leaps)
-  require(lars)
-  require(robust)
-  require(MASS)
+
   this.call <- match.call()
   
   # convert data into xts and hereafter compute in xts
