@@ -11,14 +11,15 @@ Description: An R package for the estimation and risk analysis of linear factor
     factor model, fundamental factor model and statistical factor model. They
     allow for different types of distributions to be specified for modeling the
     fat-tailed behavior of financial returns, including Edgeworth expansions.
-    Risk analysis measures such as VaR and ES are also provided for the results
-    of the fitted models.
+    Risk analysis measures such as VaR and ES and performance attribution (to 
+    factor-contributed and idiosyncratic returns) are also included. 
 License: GPL-2
 Depends:
     R (>= 2.14.0),
     robust,
     leaps,
     lars,
+    lmtest,
     PerformanceAnalytics,
     sn,
     tseries,
