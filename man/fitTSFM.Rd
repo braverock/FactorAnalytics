@@ -170,4 +170,9 @@ performance. II. Statistical procedures for evaluating forecasting skills,
 Journal of Business, Vol 54, No 4.
 }
 }
+\seealso{
+\code{\link{summary.tsfm}}, \code{\link{plot.tsfm}},
+\code{\link{predict.tsfm}}, \code{\link{coef.tsfm}},
+\code{\link{fitted.tsfm}}, \code{\link{residuals.tsfm}}
+}
 

@@ -1,25 +1,32 @@
-#' summary method for TimeSeriesModel object.
+#' @title Summarizing fitted time series factor model
 #' 
-#' Generic function of summary method for \code{fitTimeSeriesFactorModel}. 
+#' @description S3 \code{summary} method for object of class \code{tsfm}. 
+#' Resulting object is of class {summary.tsfm}.
+#'  
+#' @param object an object of class \code{tsfm} produced by \code{fitTSFM}.
+#' @param digits an integer value, to indicate the required number of 
+#' significant digits. Default is 3.
+#' @param ... optional arguments passed to the \code{print} method.
 #' 
+#' @return Returns an object of class {summary.tsfm}.
 #' 
-#' @param object An object created by \code{fitTimeSeiresFactorModel}.
-#' @param digits Integer indicates the number of decimal places. Default is 3.
-#' @param ... Other option used in \code{print} method.
-#' @author Yi-An Chen.
+#' @author Yi-An Chen & Sangeetha Srinivasan.
+#' 
+#' @seealso \code{\link{fitTSFM}}
+#' 
 #' @examples
-#' 
-#' # load data from the database
 #' data(managers.df)
-#' # fit the factor model with OLS
-#' fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-#'                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                                data=managers.df,fit.method="OLS")
+#' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+#'                factor.names=colnames(managers.df[,7:9]), 
+#'                market.name="SP500.TR",
+#'                data=data, fit.method="OLS", variable.selection="none", 
+#'                add.up.market=TRUE, add.market.sqd=TRUE)
 #' summary(fit)
-#' @method summary TimeSeriesFactorModel
+#' 
 #' @export
 #' 
-summary.TimeSeriesFactorModel <- function(object,digits=3,...){
+
+summary.tsfm <- function(object, digits=3, ...){
   if(!is.null(cl <- object$call)) {
     cat("\nCall:\n")
     dput(cl)
@@ -27,14 +34,14 @@ summary.TimeSeriesFactorModel <- function(object,digits=3,...){
   cat("\nFactor Betas\n")
   n <- length(object$assets.names)
   for (i in 1:n) {
-  options(digits = digits)  
-  cat("\n", object$assets.names[i], "\n")  
-  table.macro <- t(summary(object$asset.fit[[i]])$coefficients)
-  colnames(table.macro)[1] <- "alpha"
-  print(table.macro,digits = digits,...)
-  cat("\nR-square =", object$r2[i] ,",residual variance ="
-      , object$resid.variance[i],"\n")
+    options(digits = digits)  
+    cat("\n", object$assets.names[i], "\n")  
+    table.macro <- t(summary(object$asset.fit[[i]])$coefficients)
+    colnames(table.macro)[1] <- "Intercept"
+    print(table.macro,digits = digits,...)
+    cat("\nR-squared =", object$r2[i] ,",residual volatility ="
+        , object$resid.sd[i],"\n")
   }
-
+  
 }
-    
+

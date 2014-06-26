@@ -111,6 +111,7 @@
 #' @family Factor Models
 #' 
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.
+#' 
 #' @references 
 #' \enumerate{
 #' \item Christopherson, Carino and Ferson (2009). Portfolio Performance 
@@ -124,6 +125,10 @@
 #' performance. II. Statistical procedures for evaluating forecasting skills, 
 #' Journal of Business, Vol 54, No 4.
 #' }
+#' 
+#' @seealso \code{\link{summary.tsfm}}, \code{\link{plot.tsfm}}, 
+#' \code{\link{predict.tsfm}}, \code{\link{coef.tsfm}}, 
+#' \code{\link{fitted.tsfm}}, \code{\link{residuals.tsfm}}
 #' 
 #' @examples
 #'  \dontrun{
@@ -152,7 +157,7 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
                                        "seqrep"),
                     nvmax=8, force.in=NULL, num.factors.subset=1, 
                     add.up.market=FALSE, add.market.sqd=FALSE,
-                    decay=0.95, lars.criterion="Cp", ...) {
+                    decay=0.95, lars.criterion="Cp", ...){
   
   # get all the arguments specified by their full names
   call <- match.call()
@@ -280,14 +285,14 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names,
     # fit based on time series regression method chosen
     if (fit.method == "OLS") {
       reg.list[[i]] <- step(lm(fm.formula, data=reg.xts), direction=direction, 
-                     steps=steps, k=k, trace=0)
+                            steps=steps, k=k, trace=0)
     } else if (fit.method == "DLS") {
       w <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- step(lm(fm.formula, data=reg.xts, weights=w), 
-                     direction=direction, steps=steps, k=k, trace=0)
+                            direction=direction, steps=steps, k=k, trace=0)
     } else if (fit.method == "Robust") {
       reg.list[[i]] <- step.lmRob(lmRob(fm.formula, data=reg.df), trace=FALSE,
-                           direction=direction, steps=steps, k=k)
+                                  direction=direction, steps=steps, k=k)
     } else {
       stop("Invalid argument: fit.method must be 'OLS', 'DLS' or 'Robust'")
     }
@@ -422,7 +427,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, market.name,
 ### Format and add optional factors "up.market" and "market.sqd"
 #
 MarketFactors <- function(dat.xts, reg.xts, market.name, 
-                          add.up.market, add.market.sqd) {
+                          add.up.market, add.market.sqd){
   if(add.up.market == TRUE) {
     # up.market = max(0,Rm-Rf)
     up.market <- apply(dat.xts[,market.name],1,max,0)

@@ -1,27 +1,35 @@
-#' plot TimeSeriesFactorModel object.
+#' @title Plots from a fitted time series factor model
 #' 
-#' Generic function of plot method for fitTimeSeriesFactorModel. Either plot
-#' all assets or choose a single asset to plot.
+#' @description S3 \code{plot} method for object of class \code{tsfm}. Plots 
+#' selected characteristics for one or more assets. 
 #' 
-#' 
-#' @param x fit object created by \code{fitTimeSeriesFactorModel}.
-#' @param colorset Defualt colorset the same as \code{barplot}.
-#' @param legend.loc Plot legend or not. Defualt is \code{NULL}.
-#' @param which.plot Integer indicates which plot to create: "none" will
-#' create a menu to choose. Defualt is none.\cr 
-#' 1 = "Fitted factor returns", \cr
-#' 2 = "R square", \cr
-#' 3 = "Variance of Residuals",\cr
+#' @param x an object of class \code{tsfm} produced by \code{fitTSFM}.
+#' @param colorset a vector of colors for the bars or bar components. Argument 
+#' is used by \code{\link[graphics]{barplot}}. Default is c(1:12).
+#' @param legend.loc places a legend into one of nine locations on the chart: 
+#' bottomright, bottom, bottomleft, left, topleft, top, topright, right, or 
+#' center. Argument is used by 
+#' \code{\link[PerformanceAnalytics]{chart.TimeSeries}}. Default is \code{NULL}.
+#' @param which.plot a number or "none" to indicate which type of group plot to 
+#' create for multiple assets. Default is "none"; which brings up the following 
+#' menu to select a type. \cr 
+#' 1 = "Fitted asset returns", \cr
+#' 2 = "R-squared", \cr
+#' 3 = "Residual Volatility",\cr
 #' 4 = "FM Correlation",\cr
-#' 5 = "Factor Contributions to SD",\cr
-#' 6 = "Factor Contributions to ES",\cr
-#' 7 = "Factor Contributions to VaR"
-#' @param max.show Maximum assets to plot. Default is 6.
-#' @param plot.single Plot a single asset of lm class. Defualt is \code{FALSE}.
-#' @param asset.name Name of the asset to be plotted.
-#' @param which.plot.single Integer indicates which plot to create: "none"
-#' will create a menu to choose. Defualt is none.\cr
-#'  1 = time series plot of actual and fitted values,\cr
+#' 5 = "Factors' Contribution to SD",\cr
+#' 6 = "Factors' Contribution to ES",\cr
+#' 7 = "Factors' Contribution to VaR"
+#' @param max.show maximum number of assets in a plot. Default is 6.
+#' @param plot.single a logical value. If \code{TRUE}, plots an individual 
+#' asset's linear factor model trait selected by \code{which.plot.single}. 
+#' Default is \code{FALSE}.
+#' @param asset.name name of the individual asset to be plotted. Is necessary 
+#' if \code{plot.single=TRUE}
+#' @param which.plot.single a number or "none" to indicate which type of group 
+#' plot to create for multiple assets. Default is "none"; which brings up the 
+#' following menu to select a type.\cr
+#'  1 = time series plot of actual and fitted factor returns,\cr
 #'  2 = time series plot of residuals with standard error bands, \cr
 #'  3 = time series plot of squared residuals, \cr
 #'  4 = time series plot of absolute residuals,\cr
@@ -33,33 +41,39 @@
 #'  10= CUSUM plot of recursive residuals,\cr
 #'  11= CUSUM plot of OLS residuals,\cr
 #'  12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
-#'  13= rolling estimates over 24 month window.
-#' @param VaR.method Character, method for computing VaR. Valid choices are
-#' either "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
-#' in the PerformanceAnalytics package. Default is "historical".
+#'  13= rolling estimates over an observation window of length 24.
+#' @param VaR.method a method for computing VaR; one of "modified", "gaussian",
+#' "historical" or "kernel". VaR is computed using 
+#' \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".
 #' @param ... further arguments passed to or from other methods.
-#' @author Eric Zivot and Yi-An Chen.
+#' 
+#' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+#' 
+#' @seealso \code{\link{fitTSFM}}
+#' 
 #' @examples
 #' 
 #' \dontrun{
 #' # load data from the database
 #' data(managers.df)
-#' fit.macro <- fitTimeseriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-#'                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                                 data=managers.df,fit.method="OLS")
-#' # plot of all assets and show only first 4 assets.
+#' fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+#'                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                      data=managers.df,fit.method="OLS")
+#' # plot all assets and show only the first 4 assets.
 #' plot(fit.macro,max.show=4)
-#' # single plot of HAM1 asset 
+#' # plot of an individual asset, "HAM1" 
 #' plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
 #' }
-#' @method plot TimeSeriesFactorModel
+#' 
 #' @export
-plot.TimeSeriesFactorModel <- 
-  function(x,colorset=c(1:12),legend.loc=NULL,
-           which.plot=c("none","1L","2L","3L","4L","5L","6L","7L"),max.show=6,
-           plot.single=FALSE, asset.name,which.plot.single=c("none","1L","2L","3L","4L","5L","6L",
-                                                             "7L","8L","9L","10L","11L","12L","13L"),
-           VaR.method = "historical", ...) {
+
+plot.TSFM <- 
+  function(x, colorset=c(1:12), legend.loc=NULL,
+           which.plot=c("none","1L","2L","3L","4L","5L","6L","7L"), max.show=6,
+           plot.single=FALSE, asset.name, 
+           which.plot.single=c("none","1L","2L","3L","4L","5L","6L","7L","8L",
+                               "9L","10L","11L","12L","13L"),
+           VaR.method = "historical", ...){
     
     if (plot.single==TRUE) {
       ## inputs:
@@ -80,7 +94,7 @@ plot.TimeSeriesFactorModel <-
       ##                  10    CUSUM plot of recursive residuals
       ##                  11    CUSUM plot of OLS residuals
       ##                  12    CUSUM plot of recursive estimates relative to full sample estimates
-      ##                  13    rolling estimates over 24 month window
+      ##                  13    rolling estimates over an observation window of length 24
       which.plot.single<-which.plot.single[1]
       if (missing(asset.name) == TRUE) {
         stop("Neet to specify an asset to plot if plot.single is TRUE.")
@@ -113,7 +127,7 @@ plot.TimeSeriesFactorModel <-
                                     "CUSUM plot of recursive residuals",
                                     "CUSUM plot of OLS residuals",
                                     "CUSUM plot of recursive estimates relative to full sample estimates",
-                                    "rolling estimates over 24 month window"),
+                                    "rolling estimates over an observation window of length 24"),
                                   title="\nMake a plot selection (or 0 to exit):\n")
         switch(which.plot.single,
                "1L" =  {
@@ -304,13 +318,13 @@ plot.TimeSeriesFactorModel <-
       which.plot<-which.plot[1]
       
       if(which.plot=='none') 
-        which.plot<-menu(c("Fitted factor returns",
-                           "R square",
-                           "Variance of Residuals",
+        which.plot<-menu(c("Fitted asset returns",
+                           "R-squared",
+                           "Residual Volatility",
                            "FM Correlation",
-                           "Factor Contributions to SD",
-                           "Factor Contributions to ES",
-                           "Factor Contributions to VaR"),
+                           "Factors' Contribution to SD",
+                           "Factors' Contribution to ES",
+                           "Factors' Contribution to VaR"),
                          title="Factor Analytics Plot \nMake a plot selection (or 0 to exit):\n") 
       
       
@@ -354,7 +368,7 @@ plot.TimeSeriesFactorModel <-
                barplot(x$r2)
              },
              "3L" = {
-               barplot(x$resid.variance)  
+               barplot(x$resid.sd)  
              },    
              
              "4L" = {
@@ -380,7 +394,7 @@ plot.TimeSeriesFactorModel <-
                cr.sd = sapply(factor.sd.decomp.list, getCSD)
                rownames(cr.sd) = c(factor.names, "residual")
                # create stacked barchart
-               barplot(cr.sd, main="Factor Contributions to SD",
+               barplot(cr.sd, main="Factors' Contribution to SD",
                        legend.text=T, args.legend=list(x="topleft"))
                
              },
@@ -428,7 +442,7 @@ plot.TimeSeriesFactorModel <-
                # report as positive number
                cr.etl = sapply(factor.es.decomp.list, getCETL)
                rownames(cr.etl) = c(factor.names, "residual")
-               barplot(cr.etl, main="Factor Contributions to ES",
+               barplot(cr.etl, main="Factors' Contribution to ES",
                        legend.text=T, args.legend=list(x="topleft")) 
              },
              "7L" ={
@@ -476,7 +490,7 @@ plot.TimeSeriesFactorModel <-
                # report as positive number
                cr.VaR = sapply(factor.VaR.decomp.list, getCVaR)
                rownames(cr.VaR) = c(factor.names, "residual")
-               barplot(cr.VaR, main="Factor Contributions to VaR",
+               barplot(cr.VaR, main="Factors' Contribution to VaR",
                        legend.text=T, args.legend=list(x="topleft"))
              },
              invisible()       

@@ -1,43 +1,50 @@
-#' predict method for TimeSeriesModel object.
+#' @title Predicts asset returns based on a fitted time series factor model
 #' 
-#' Generic function of predict method for fitTimeSeriesFactorModel. It utilizes
-#' function \code{predict.lm}.
+#' @description S3 \code{predict} method for object of class \code{tsfm}. It 
+#' calls the \code{predict} method for fitted objects of class \code{lm}, 
+#' \code{lmRob} or \code{lars} as appropriate.
 #' 
-#' @param object A fit object created by fitTimeSeiresFactorModel.
-#' @param newdata A vector, matrix, data.frame, xts, timeSeries or zoo object to be coerced.
-#' @param ... Any other arguments used in \code{predict.lm}, such as \code{newdata} and 
-#' \code{fit.se}.
-#' @author Yi-An Chen.
+#' @param object an object of class \code{\link[stats]{tsfm}} produced by 
+#' \code{fitTSFM}.
+#' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object 
+#' containing the variables with which to predict.
+#' @param ... optional arguments passed to \code{predict.lm} or
+#' \code{\link[robust]{predict.lmRob}}, such as \code{se.fit}, or, to 
+#' \code{\link[lars]{predict.lars}} such as \code{mode}.
+#' 
+#' @author Yi-An Chen and Sangeetha Srinivasan
+#' 
+#' @seealso \code{\link{fitTSFM}}
 #' 
 #' @examples
-#' 
 #' # load data from the database
 #' data(managers.df)
 #' ret.assets = managers.df[,(1:6)]
 #' # fit the factor model with OLS
-#' fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-#'                                factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                                data=managers.df,fit.method="OLS")
+#' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                data=managers.df, fit.method="OLS")
 #' 
 #' pred.fit <- predict(fit)
 #' newdata <- data.frame(EDHEC.LS.EQ = rnorm(n=120), SP500.TR = rnorm(n=120) )
 #' rownames(newdata) <- rownames(fit$data)
-#' pred.fit2 <- predict(fit,newdata,interval="confidence")
+#' pred.fit2 <- predict(fit, newdata, interval="confidence")
 #' 
-#' @method predict TimeSeriesFactorModel
+#' @return \code{predict.tsfm} produces a vector or a matrix of predictions.
+#' 
 #' @export
 #' 
 
-predict.TimeSeriesFactorModel <- function(object,newdata = NULL,...){
- 
-  if (missing(newdata) || is.null(newdata)  ) {
-  lapply(object$asset.fit, predict,...)
-   } else  {
-    newdata <- checkData(newdata,method = "data.frame")
-    lapply(object$asset.fit, predict ,newdata,... )
-    } 
-
+predict.tsfm <- function(object, newdata = NULL, ...){
+  
+  if (missing(newdata) || is.null(newdata)) {
+    lapply(object$asset.fit, predict, ...)
+  } else {
+    newdata <- checkData(newdata, method = "data.frame")
+    lapply(object$asset.fit, predict, newdata, ...)
+  } 
 }
+
 #   
 #   if (  !(missing(newdata) && !is.null(newdata) )) {
 #    numAssets <- length(names(fit.macro$asset.fit))
@@ -63,5 +70,5 @@ predict.TimeSeriesFactorModel <- function(object,newdata = NULL,...){
 #     
 #     
 #   }
-  
-  
+
+
