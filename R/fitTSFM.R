@@ -5,7 +5,7 @@
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
 #' including Stepwise, Subsets, Lars are available as well. An object of class 
-#' \code{tsfm} is returned.
+#' \code{\link{tsfm}} is returned.
 #' 
 #' @details 
 #' Estimation method "OLS" corresponds to ordinary least squares, "DLS" is 
@@ -87,22 +87,25 @@
 #' and "DLS" fits. Scope argument is not available presently. Also plan to
 #' include other controls passed to \code{lmRob} soon.
 #' 
-#' @return The returned value is an S3 object of class \code{tsfm} 
+#' @return fitTSFM returns an object of class 
+#' \code{tsfm}.The returned object is a list
 #' containing the following components:
-#' \item{asset.fit} {list of the fitted objects for each asset. Each fitted 
+#' \describe{
+#' \item{asset.fit}{list of the fitted objects for each asset. Each fitted 
 #' object is of class \code{lm} if \code{fit.method} is "OLS" or "DLS";
 #' of class \code{lmRob} if the \code{fit.method} is "Robust"; of class 
-#' \code{lars} if \code{variable.selection}="lars" or "lasso".
-#' \item{alpha} {N x 1 vector of estimated alphas.}
-#' \item{beta} {N x K matrix of estimated betas.}
-#' \item{r2} {N x 1 vector of R-squared values.}
-#' \item{resid.sd} {N x 1 vector of residual standard deviations.}
-#' \item{call} {the matched function call.}
-#' \item{data} {data as input.}
-#' \item{asset.names} {asset.names as input.}
-#' \item{factor.names{ {factor.names as input.}
-#' \item{fit.method} {fit.method as input.}
-#' \item{variable.selection} {variable.selection as input.}
+#' \code{lars} if \code{variable.selection}="lars" or "lasso".}
+#' \item{alpha}{N x 1 vector of estimated alphas.}
+#' \item{beta}{N x K matrix of estimated betas.}
+#' \item{r2}{N x 1 vector of R-squared values.}
+#' \item{resid.sd}{N x 1 vector of residual standard deviations.}
+#' \item{call}{the matched function call.}
+#' \item{data}{data as input.}
+#' \item{asset.names}{asset.names as input.}
+#' \item{factor.names}{factor.names as input.}
+#' \item{fit.method}{fit.method as input.}
+#' \item{variable.selection}{variable.selection as input.}
+#' }
 #' Where N is the number of assets and K is the number of factors.
 #' 
 #' @family Factor Models
