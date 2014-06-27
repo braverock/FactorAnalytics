@@ -11,7 +11,8 @@
 #'    
 #' @author Yi-An Chen and Sangeetha Srinivasan
 #' 
-#' @seealso \code{\link{fitTSFM}}
+#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}, 
+#' \code{\link{tsfm}}
 #' 
 #' @examples
 #' data(managers.df)

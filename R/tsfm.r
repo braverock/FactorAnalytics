@@ -6,7 +6,8 @@
 #' 
 #' At present, the \code{tsfm} object supports the following S3 generic methods:
 #' \describe{
-#' \item{plot.tsfm}{Plots the fitted time series factor model for assets.}
+#' \item{plot.tsfm}{Plots the chosen characteristic of a fitted time series 
+#' factor model for an individual or group of assets.}
 #' \item{predict.tsfm}{Produces predicted values based on the factor model.}
 #' \item{print.tsfm}{Prints the call, factor model dimension, 
 #' regression coefficients, r-squared and residual volatilities from the 
@@ -16,12 +17,10 @@
 #' 
 #' And, the following extractor functions:
 #' \describe{
-#' \item{coef.tsfm} {matrix of coefficients from the fitted factor models for 
-#' each of the assets}
-#' \item{fitted.tsfm} {data object of fitted values from the fitted factor 
-#' models for each of the assets}
-#' \item{residuals.tsfm} {data object of residuals from the fitted factor 
-#' models for each of the assets}
+#' \item{coef.tsfm}{an N x (K+1) matrix of all coefficients}
+#' \item{cov.tsfm}{an N x N covariance matrix of asset returns}
+#' \item{fitted.tsfm}{an N x T data object of fitted values}
+#' \item{residuals.tsfm}{an N x T data object of residuals}
 #' }
 #' 
 #' @author Sangeetha Srinivasan

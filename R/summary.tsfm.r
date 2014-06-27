@@ -1,4 +1,4 @@
-#' @title Summarizing fitted time series factor model
+#' @title Summarizing a fitted time series factor model
 #' 
 #' @description S3 \code{summary} method for object of class \code{tsfm}. 
 #' Resulting object is of class {summary.tsfm}.
@@ -12,7 +12,7 @@
 #' 
 #' @author Yi-An Chen & Sangeetha Srinivasan.
 #' 
-#' @seealso \code{\link{fitTSFM}}
+#' @seealso \code{\link{fitTSFM}}, \code{\link{tsfm}}
 #' 
 #' @examples
 #' data(managers.df)
@@ -39,7 +39,7 @@ summary.tsfm <- function(object, digits=3, ...){
     table.macro <- t(summary(object$asset.fit[[i]])$coefficients)
     colnames(table.macro)[1] <- "Intercept"
     print(table.macro,digits = digits,...)
-    cat("\nR-squared =", object$r2[i] ,",residual volatility ="
+    cat("\nR-squared =", object$r2[i] ,",Residual Volatility ="
         , object$resid.sd[i],"\n")
   }
   

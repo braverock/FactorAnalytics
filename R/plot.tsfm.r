@@ -49,7 +49,8 @@
 #' 
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 #' 
-#' @seealso \code{\link{fitTSFM}}
+#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}, 
+#' \code{\link{tsfm}}
 #' 
 #' @examples
 #' 
@@ -67,7 +68,7 @@
 #' 
 #' @export
 
-plot.TSFM <- 
+plot.tsfm <- 
   function(x, colorset=c(1:12), legend.loc=NULL,
            which.plot=c("none","1L","2L","3L","4L","5L","6L","7L"), max.show=6,
            plot.single=FALSE, asset.name, 

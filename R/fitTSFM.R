@@ -1,11 +1,11 @@
-#' @title Fits a time series factor model (TSFM) using time series regression
+#' @title Fit a time series factor model using time series regression
 #' 
 #' @description Fits a time series (or, macroeconomic) factor model for single 
 #' or multiple asset returns or excess returns using time series regression. 
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
 #' including Stepwise, Subsets, Lars are available as well. An object of class 
-#' \code{\link{tsfm}} is returned.
+#' \code{tsfm} is returned.
 #' 
 #' @details 
 #' Estimation method "OLS" corresponds to ordinary least squares, "DLS" is 
@@ -13,7 +13,7 @@
 #' exponentially declining weights that sum to unity, and, "Robust" is robust 
 #' regression (uses \code{\link[robust]{lmRob}}). 
 #' 
-#' If \code{variable.selection}="none", all chosen factors are used in the 
+#' If \code{variable.selection="none"}, all chosen factors are used in the 
 #' factor model. Whereas, "stepwise" performs traditional forward/backward 
 #' stepwise OLS regression (using \code{\link[stats]{step}}), that starts from 
 #' the initial set of factors and adds factors only if the regression fit, as 
@@ -27,8 +27,8 @@
 #' 
 #' Note: If  \code{variable.selection}="lars" or "lasso", \code{fit.method} 
 #' will be ignored. And, "Robust" \code{fit.method} is not truly available with 
-#' \code{variable.selection}="all subsets"; instead, results are produced for 
-#' \code{variable.selection}="none" with "Robust" to include all factors.
+#' \code{variable.selection="all subsets"}; instead, results are produced for 
+#' \code{variable.selection="none"} with "Robust" to include all factors.
 #' 
 #' If \code{add.up.market = TRUE}, max(0, Rm-Rf) is added as a factor in the 
 #' regression, following Henriksson & Merton (1981), to account for market 
@@ -42,41 +42,36 @@
 #' cross-validated mean squared prediction error using 
 #' \code{\link[lars]{cv.lars}}.
 #' 
-#' @param asset.names  a character vector containing the names of the assets, 
-#' whose returns or excess returns are the dependent variable.
-#' @param factor.names a character vector containing the names of the 
-#' macroeconomic factors.
-#' @param market.name name of an optional column for market excess returns 
-#' (Rm-Rf). Necessary if \code{add.up.market} or \code{add.up.market.squared} 
+#' @param asset.names  vector containing names of assets, whose returns or 
+#' excess returns are the dependent variable.
+#' @param factor.names vector containing names of the macroeconomic factors.
+#' @param market.name name of the column for market excess returns (Rm-Rf). 
+#' Is required only if \code{add.up.market} or \code{add.up.market.squared} 
 #' are \code{TRUE}. 
-#' @param data a vector, matrix, data.frame, xts, timeSeries or zoo object  
-#' containing column(s) named \code{asset.names} and \code{factor.names}. 
-#' \code{market.name} is also necessary if \code{add.up.market} or 
-#' \code{add.market.sqd} are \code{TRUE}.
+#' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
+#' containing column(s) named \code{asset.names}, \code{factor.names} and 
+#' optionally, \code{market.name}.
 #' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
-#' See details. If \code{variable.selection}="lars" or "lasso", 
-#' \code{fit.method} will be ignored. And, "Robust" \code{fit.method} is not 
-#' available with \code{variable.selection}="all subsets". 
+#' See details. 
 #' @param variable.selection the variable selection method, one of "none", 
 #' "stepwise","all subsets","lars" or "lasso". See details.
-#' @param subsets.method a required option for the "all subsets" method; one of 
-#' "exhaustive", "forward", "backward" or "seqrep" (sequential replacement)
-#' to specify the type of subset search/selection.
-#' @param nvmax an option for the "all subsets" method; a scalar, specifies 
-#' the maximum size of subsets to examine. Default is 8.
-#' @param force.in an option for the "all subsets" method; a vector containing 
-#' the names of factors that should always be included in the model. Default 
-#' is NULL.
-#' @param num.factors.subset an option for the "all subsets" method; a scalar 
-#' number of factors required in the factor model. Default is 1. 
+#' @param subsets.method one of "exhaustive", "forward", "backward" or "seqrep" 
+#' (sequential replacement) to specify the type of subset search/selection. 
+#' Required if "all subsets" variable selection is chosen. 
+#' @param nvmax the maximum size of subsets to examine; an option for 
+#' "all subsets" variable selection. Default is 8. 
+#' @param force.in vector containing the names of factors that should always 
+#' be included in the model; an option for "all subsets" variable selection. 
+#' Default is NULL.
+#' @param num.factors.subset number of factors required in the factor model; 
+#' an option for "all subsets" variable selection. Default is 1. 
 #' Note: nvmax >= num.factors.subset >= length(force.in).
-#' @param add.up.market a logical value that when set to \code{TRUE}, adds 
-#' max(0, Rm-Rf) as a regressor. If \code{TRUE}, \code{market.name} is 
-#' required. Default is \code{FALSE}. See Details. 
-#' @param add.market.sqd a logical value that when set to \code{TRUE}, adds 
-#' (Rm-Rf)^2 as a regressor. If \code{TRUE}, \code{market.name} is 
-#' required. Default is \code{FALSE}.
-#' @param decay a scalar, specifies the decay factor for 
+#' @param add.up.market logical; If \code{TRUE}, adds max(0, Rm-Rf) as a 
+#' regressor and \code{market.name} is also required. Default is \code{FALSE}. 
+#' See Details. 
+#' @param add.market.sqd logical; If \code{TRUE}, adds (Rm-Rf)^2 as a 
+#' regressor and \code{market.name} is also required. Default is \code{FALSE}.
+#' @param decay a scalar in (0, 1] to specify the decay factor for 
 #' \code{fit.method="DLS"}. Default is 0.95.
 #' @param lars.criterion an option to assess model selection for the "lars" or 
 #' "lasso" variable.selection methods; one of "Cp" or "cv". See details. 
@@ -88,13 +83,12 @@
 #' include other controls passed to \code{lmRob} soon.
 #' 
 #' @return fitTSFM returns an object of class 
-#' \code{tsfm}.The returned object is a list
+#' \code{tsfm}. The returned object is a list
 #' containing the following components:
-#' \describe{
-#' \item{asset.fit}{list of the fitted objects for each asset. Each fitted 
-#' object is of class \code{lm} if \code{fit.method} is "OLS" or "DLS";
-#' of class \code{lmRob} if the \code{fit.method} is "Robust"; of class 
-#' \code{lars} if \code{variable.selection}="lars" or "lasso".}
+#' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
+#' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
+#' the \code{fit.method="Robust"}, or class \code{lars} if 
+#' \code{variable.selection="lars" or "lasso"}.}
 #' \item{alpha}{N x 1 vector of estimated alphas.}
 #' \item{beta}{N x K matrix of estimated betas.}
 #' \item{r2}{N x 1 vector of R-squared values.}
@@ -105,7 +99,6 @@
 #' \item{factor.names}{factor.names as input.}
 #' \item{fit.method}{fit.method as input.}
 #' \item{variable.selection}{variable.selection as input.}
-#' }
 #' Where N is the number of assets and K is the number of factors.
 #' 
 #' @family Factor Models
@@ -126,9 +119,15 @@
 #' Journal of Business, Vol 54, No 4.
 #' }
 #' 
-#' @seealso \code{\link{summary.tsfm}}, \code{\link{plot.tsfm}}, 
-#' \code{\link{predict.tsfm}}, \code{\link{coef.tsfm}}, 
-#' \code{\link{fitted.tsfm}}, \code{\link{residuals.tsfm}}
+#' @seealso The following generic method functions: \code{\link{plot.tsfm}}, 
+#' \code{\link{predict.tsfm}}, \code{\link{print.tsfm}} and 
+#' \code{\link{summary.tsfm}}. 
+#' 
+#' And, the following extractor functions: \code{\link{coef.tsfm}}, 
+#' \code{\link{cov.tsfm}}, \code{\link{fitted.tsfm}} and 
+#' \code{\link{residuals.tsfm}}.
+#' 
+#' \code{\link{paFM}} for Performance Attribution. 
 #' 
 #' @examples
 #'  \dontrun{

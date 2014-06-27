@@ -14,7 +14,8 @@
 #' 
 #' @author Yi-An Chen and Sangeetha Srinivasan
 #' 
-#' @seealso \code{\link{fitTSFM}}
+#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}, 
+#' \code{\link{tsfm}}
 #' 
 #' @examples
 #' # load data from the database
@@ -30,7 +31,8 @@
 #' rownames(newdata) <- rownames(fit$data)
 #' pred.fit2 <- predict(fit, newdata, interval="confidence")
 #' 
-#' @return \code{predict.tsfm} produces a vector or a matrix of predictions.
+#' @return 
+#' \code{predict.tsfm} produces a vector or a matrix of predictions.
 #' 
 #' @export
 #' 

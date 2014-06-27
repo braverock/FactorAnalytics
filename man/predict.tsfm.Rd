@@ -42,6 +42,7 @@ pred.fit2 <- predict(fit, newdata, interval="confidence")
 Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTSFM}}
+\code{\link{fitTSFM}}, \code{\link{summary.tsfm}},
+\code{\link{tsfm}}
 }
 

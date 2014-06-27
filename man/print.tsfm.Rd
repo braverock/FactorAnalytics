@@ -31,6 +31,7 @@ print(fit)
 Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTSFM}}
+\code{\link{fitTSFM}}, \code{\link{summary.tsfm}},
+\code{\link{tsfm}}
 }
 
