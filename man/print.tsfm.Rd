@@ -3,7 +3,7 @@
 \alias{print.tsfm}
 \title{Prints out a fitted time series factor model object}
 \usage{
-print.tsfm(x, digits = max(3, .Options$digits - 3), ...)
+\method{print}{tsfm}(x, digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
 \item{x}{an object of class \code{tsfm} produced by \code{fitTSFM}.}
@@ -31,7 +31,6 @@ print(fit)
 Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTSFM}}, \code{\link{summary.tsfm}},
-\code{\link{tsfm}}
+\code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
 }
 

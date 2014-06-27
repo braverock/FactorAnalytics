@@ -12,6 +12,9 @@
 #' \code{\link[robust]{predict.lmRob}}, such as \code{se.fit}, or, to 
 #' \code{\link[lars]{predict.lars}} such as \code{mode}.
 #' 
+#' @return 
+#' \code{predict.tsfm} produces a vector or a matrix of predictions.
+#' 
 #' @author Yi-An Chen and Sangeetha Srinivasan
 #' 
 #' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}, 
@@ -31,9 +34,7 @@
 #' rownames(newdata) <- rownames(fit$data)
 #' pred.fit2 <- predict(fit, newdata, interval="confidence")
 #' 
-#' @return 
-#' \code{predict.tsfm} produces a vector or a matrix of predictions.
-#' 
+#' @method predict tsfm
 #' @export
 #' 
 

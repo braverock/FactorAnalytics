@@ -12,7 +12,7 @@
 #' 
 #' @author Yi-An Chen & Sangeetha Srinivasan.
 #' 
-#' @seealso \code{\link{fitTSFM}}, \code{\link{tsfm}}
+#' @seealso \code{\link{fitTSFM}}
 #' 
 #' @examples
 #' data(managers.df)
@@ -23,8 +23,8 @@
 #'                add.up.market=TRUE, add.market.sqd=TRUE)
 #' summary(fit)
 #' 
+#' @method summary tsfm
 #' @export
-#' 
 
 summary.tsfm <- function(object, digits=3, ...){
   if(!is.null(cl <- object$call)) {

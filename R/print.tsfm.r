@@ -11,8 +11,7 @@
 #'    
 #' @author Yi-An Chen and Sangeetha Srinivasan
 #' 
-#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}, 
-#' \code{\link{tsfm}}
+#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
 #' 
 #' @examples
 #' data(managers.df)
@@ -23,6 +22,7 @@
 #'                add.up.market=TRUE, add.market.sqd=TRUE)
 #' print(fit)
 #' 
+#' @method print tsfm
 #' @export
 #' 
 
@@ -31,12 +31,12 @@ print.tsfm <- function(x, digits=max(3, .Options$digits - 3), ...){
     cat("\nCall:\n")
     dput(cl)
   }
-  cat("\nFactor Model dimensions:\n")
+  cat("\nModel dimensions:\n")
   tmp <- c(dim(t(x$beta)), nrow(x$data))
-  names(tmp) <- c("#Factors", "#Assets", "#Periods")
+  names(tmp) <- c("Factors", "Assets", "Periods")
   print(tmp)
   cat("\nRegression Alphas:\n")
-  print(x$alpha , digits = digits, ...)
+  print(x$alpha, digits = digits, ...)
   cat("\nFactor Betas:\n")
   print(t(x$beta), digits = digits, ...)
   cat("\nRegression R-squared values:\n")

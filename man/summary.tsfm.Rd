@@ -3,7 +3,7 @@
 \alias{summary.tsfm}
 \title{Summarizing a fitted time series factor model}
 \usage{
-summary.tsfm(object, digits = 3, ...)
+\method{summary}{tsfm}(object, digits = 3, ...)
 }
 \arguments{
 \item{object}{an object of class \code{tsfm} produced by \code{fitTSFM}.}
@@ -33,6 +33,6 @@ summary(fit)
 Yi-An Chen & Sangeetha Srinivasan.
 }
 \seealso{
-\code{\link{fitTSFM}}, \code{\link{tsfm}}
+\code{\link{fitTSFM}}
 }
 

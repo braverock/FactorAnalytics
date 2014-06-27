@@ -66,6 +66,7 @@
 #' plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
 #' }
 #' 
+#' @method plot tsfm
 #' @export
 
 plot.tsfm <- 

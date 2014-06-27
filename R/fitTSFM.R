@@ -208,8 +208,9 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
   
   # extract the fitted factor models, coefficients, r2 values and residual vol 
   # from returned factor model fits above
-  alpha <- sapply(reg.list, function(x) coef(x)[1], USE.NAMES = FALSE)
-  beta <- sapply(reg.list, function(x) coef(x)[-1], USE.NAMES = FALSE)
+  coef.mat <- t(sapply(reg.list, coef))
+  alpha <- coef.mat[, 1]
+  beta <- coef.mat[, -1]
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
   resid.sd <- sapply(reg.list, function(x) summary(x)$sigma)
   # create list of return values.

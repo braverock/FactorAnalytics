@@ -3,7 +3,7 @@
 \alias{predict.tsfm}
 \title{Predicts asset returns based on a fitted time series factor model}
 \usage{
-predict.tsfm(object, newdata = NULL, ...)
+\method{predict}{tsfm}(object, newdata = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class \code{\link[stats]{tsfm}} produced by
