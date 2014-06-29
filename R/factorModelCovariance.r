@@ -77,7 +77,7 @@ factorModelCovariance <- function(beta, factor.cov, resid.sd) {
   factor.cov = as.matrix(factor.cov)
   sig2.e = as.vector(resid.sd)^2
   
-  if (length(sig.e) > 1) {
+  if (length(sig2.e) > 1) {
     D.e = diag(as.vector(sig2.e))
   } else {
     D.e =  as.matrix(sig2.e)

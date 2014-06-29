@@ -283,9 +283,10 @@ ts.data <- na.omit(merge(ret,ts.factors))
 In this example, we will use SP500, 10 years and 3 months term spread and difference of VIX as our common factors. 
 
 <<fit.ts>>=
-fit.time <- fitTimeSeriesFactorModel(assets.names=tic,
-                                     factors.names=c("SP500","Term.Spread","dVIX"),
-                                     data=ts.data,fit.method="OLS")
+fit.time <- fitTSFM (asset.names=tic, 
+                     factor.names=c("SP500","Term.Spread","dVIX"), 
+                     data=ts.data, fit.method="OLS", 
+                     variable.selection="none")
 @
 
 \verb@asset.fit@ can show model fit for each assets, for example for asset \verb@AA@. 
@@ -297,10 +298,9 @@ fit.time$asset.fit$AA
 \verb@fitTimeSeriesFactorModel@ also have various variable selection algorithm to choose. One can include all possible factors and let the function to decide which one is the best model. For example, we include every common factors and use method \verb@stepwise@ which utilizes \verb@step@ function in \verb@stat@ package 
 
 <<fit.ts>>=
-fit.time2 <- fitTimeSeriesFactorModel(assets.names=tic,
-                                      factors.names=names(ts.factors),
-                                      data=ts.data,fit.method="OLS",
-                                      variable.selection = "stepwise")
+fit.time2 <- fitTSFM(asset.names=tic, factor.names=names(ts.factors), 
+                     data=ts.data, fit.method="OLS", 
+                     variable.selection = "stepwise")
 @
 There are 5 factors chosen for asset AA for example. 
 <<AA.fit>>=

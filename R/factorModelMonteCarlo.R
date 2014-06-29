@@ -51,12 +51,13 @@
 #' 
 #' # load data from the database
 #' data(managers.df)
-#' fit <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-#'                                 factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                                 data=managers.df,fit.method="OLS")
+#' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                data=managers.df,fit.method="OLS",
+#'                variable.selection="none")
 #' factorData= managers.df[,c("EDHEC.LS.EQ","SP500.TR")]  
 #' Beta.mat=fit$beta
-#' residualData=as.matrix(fit$resid.variance,1,6) 
+#' residualData=as.matrix((fit$resid.sd)^2,1,6) 
 #' n.boot=1000
 #' # bootstrap returns data from factor model with residuals sample from normal distribution
 #' bootData <- factorModelMonteCarlo(n.boot, factorData,Beta.mat, residual.dist="normal",

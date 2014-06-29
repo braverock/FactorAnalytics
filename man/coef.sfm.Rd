@@ -3,11 +3,13 @@
 \alias{coef.sfm}
 \title{Extract coefficients from a fitted stochastic factor model}
 \usage{
-\method{coef}{sfm}(x)
+\method{coef}{sfm}(object, ...)
 }
 \arguments{
-\item{x}{an object of class \code{sfm} which is returned by
+\item{object}{a fit object of class \code{sfm} which is returned by
 \code{\link{fitSFM}}}
+
+\item{...}{other arguments passed}
 }
 \value{
 \item{coef.mat}{an N x (K+1) matrix of all coefficients}

@@ -3,7 +3,7 @@
 \alias{factorModelEsDecomposition}
 \title{Compute Factor Model ES Decomposition}
 \usage{
-factorModelEsDecomposition(Data, beta.vec, sig2.e, tail.prob = 0.05,
+factorModelEsDecomposition(Data, beta.vec, sig.e, tail.prob = 0.05,
   VaR.method = c("modified", "gaussian", "historical", "kernel"))
 }
 \arguments{
@@ -14,7 +14,7 @@ contain residuals scaled to have unit variance.}
 
 \item{beta.vec}{\code{k x 1} vector of factor betas.}
 
-\item{sig2.e}{scalar, residual variance from factor model.}
+\item{sig.e}{scalar, residual variance from factor model.}
 
 \item{tail.prob}{scalar, tail probability for VaR quantile. Typically 0.01
 or 0.05.}
@@ -51,16 +51,17 @@ theorem:\cr \code{ES.fm = sum(cES.fm) = sum(beta.star*mES.fm)} \cr
 }
 \examples{
 data(managers.df)
-fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-                                     factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-                                     data=managers.df,fit.method="OLS")
+fit.macro <- fitTSFM (asset.names=colnames(managers.df[,(1:6)]),
+                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+                      data=managers.df, fit.method="OLS",
+                      variable.selection="none")
 # risk factor contribution to ETL
 # combine fund returns, factor returns and residual returns for HAM1
 tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
-residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.sd[1]))
 colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
-                                                  fit.macro$resid.variance[1], tail.prob=0.05,
+                                                  fit.macro$resid.sd[1], tail.prob=0.05,
                                                   VaR.method="historical" )
 
 # fundamental factor model

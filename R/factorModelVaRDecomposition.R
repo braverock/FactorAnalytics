@@ -43,16 +43,17 @@
 #' @examples
 #' 
 #' data(managers.df)
-#' fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-#'                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                                      data=managers.df,fit.method="OLS")
+#' fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+#'                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                      data=managers.df,fit.method="OLS",
+#'                      variable.selection="none")
 #' # risk factor contribution to VaR
 #' # combine fund returns, factor returns and residual returns for HAM1
 #' tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
-#' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+#' residuals(fit.macro$asset.fit$HAM1)/fit.macro$resid.sd[1])
 #' colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 #' factor.VaR.decomp.HAM1 = factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],
-#'                                                   fit.macro$resid.variance[1], tail.prob=0.05,
+#'                                                   fit.macro$resid.sd[1], tail.prob=0.05,
 #'                                                   VaR.method="historical")
 #' 
 #' @export

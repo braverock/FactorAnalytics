@@ -11,7 +11,7 @@ ret.assets = managers.df[,(1:6)]
 
 names(managers.df)
 setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/R")
-source("fitTimeSeriesFactorModel.r")
+source("fitTSFM.r")
 source("fitStatisticalFactorModel.r")
 source("impliedFactorReturns.r")
 source("factorModelSdDecomposition.r")
@@ -24,11 +24,10 @@ data("managers.df")
 colnames(managers.df)
 
 # fit the factor model with OLS
-fit.ts <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-                                    factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-                                    data=managers.df,fit.method="OLS")
-#                                    ,variable.selection="all subsets",
-#                                    subsets.method="exhaustive")
+fit.ts <- fitTSFM (asset.names=colnames(managers.df[,(1:6)]),
+                   factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+                   data=managers.df,fit.method="OLS"), 
+                   variable.selection="none")
                                        
 
 names(fit.ts)
@@ -37,10 +36,10 @@ fit.ts$asset.fit
 fit.ts$alpha
 fit.ts$beta
 fit$r2
-fit$resid.variance
+fit$resid.sd
 fit$asset.fit$HAM1
 fit$call
-fit.ts$factors.names
+fit.ts$factor.names
 summary(fit.ts$asset.fit$HAM1)
 fit.macro$variable.selection
 
@@ -51,9 +50,9 @@ summary(fit.ts)
 
 # test factormodel performance attribution
 setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/R")
-source("factorModelPerformanceAttribution.r")
+source("paFM.r")
 
-fm.attr <- factorModelPerformanceAttribution(fit.ts)
+fm.attr <- paFM(fit.ts)
 names(fm.attr)
 fm.attr$cum.ret.attr.f
 fm.attr$cum.spec.ret
@@ -61,13 +60,13 @@ fm.attr$attr.list
 
 # test benchmark
 # data.xts <- checkData(managers.df) 
-# fm.attr2 <- factorModelPerformanceAttribution(fit.ts,benchmark=data.xts[,9])
+# fm.attr2 <- paFM(fit.ts,benchmark=data.xts[,9])
 # fm.attr2$cum.ret.attr.f
 # fm.attr2$cum.spec.ret
 # fm.attr2$attr.list
 
 
-source("summary.FM.attribution.r")
+source("summary.pafm.r")
 summary(fm.attr)
 
 
@@ -78,24 +77,24 @@ setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalyti
 source("factorModelVaRDecomposition.r")
 source("factorModelEsDecomposition.r")
 tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
-                residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+                residuals(fit.macro$asset.fit$HAM1)/fit.macro$resid.sd[1])
 colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
-                                            fit.macro$resid.variance[1], tail.prob=0.05,
+                                            (fit.macro$resid.sd[1])^2, tail.prob=0.05,
                                                    VaR.method="gaussian")
 
 factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],
-                            fit.macro$resid.variance[1], tail.prob=0.05,
+                            (fit.macro$resid.sd[1])^2, tail.prob=0.05,
                             VaR.method="kernel")
 
 
 
 
 
-source("print.TimeSeriesFactorModel.r")  
+source("print.tsfm.r")  
 print(fit.macro)
 
-source("predict.TimeSeriesFactorModel.r")
+source("predict.tsfm.r")
 predict(fit.macro)
 newdata <- data.frame(EDHEC.LS.EQ = rnorm(n=120), SP500.TR = rnorm(n=120) )
 rownames(newdata) <- rownames(fit.macro$data)
@@ -103,11 +102,11 @@ predict(fit.macro,newdata = newdata)
 
 
 
-source("summary.TimeSeriesFactorModel.r")
+source("summary.tsfm.r")
 summary(fit.macro)
 
 
-source("plot.TimeSeriesFactorModel.r")
+source("plot.tsfm.r")
 plot(fit.macro)
 plot(fit.macro,plot.single=TRUE,asset.name="HAM1")
 
@@ -117,7 +116,7 @@ plot(fit.macro,plot.single=TRUE,asset.name="HAM1")
 
 source("factorModelCovariance.r")
 factors    = managers.df[,(7:8)]
-factorModelCovariance(fit.macro$beta,var(factors),fit.macro$resid.variance)
+factorModelCovariance(fit.macro$beta,var(factors),fit.macro$resid.sd)
 
 
  # plot actual vs. fitted over time for HAM1
@@ -148,19 +147,17 @@ load('managers.df.rda')
 data <- managers.df
 data <- cbind(data,rnorm(120))
 colnames(data)[10] <- "evwret"
-assets.names <- colnames(managers.df[,(1:6)])
-factors.names=c("EDHEC.LS.EQ","SP500.TR")
-excess.market.returns.name = "evwret" 
+asset.names <- colnames(managers.df[,(1:6)])
+factor.names=c("EDHEC.LS.EQ","SP500.TR")
+market.name = "evwret" 
 setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/R")
-source("fitTimeSeriesFactorModel.r")
-args(fitTimeSeriesFactorModel)
-fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-                                      data=data,fit.method="OLS", 
-                                      variable.selection = "lar",
-                                      add.up.market.returns = T ,add.quadratic.term = F,
-                                      excess.market.returns.name = "evwret",
-                                      lars.criteria = "cv")
+source("fitTSFM.r")
+args(fitTSFM)
+fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+                     factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+                     data=data, fit.method="OLS", variable.selection = "lar",
+                     add.up.market = T, add.market.sqd = F,
+                     market.name = "evwret", lars.criterion = "cv")
 
 
 names(fit.macro)
@@ -222,13 +219,13 @@ sfm.pca.fit$residuals
 sfm.pca.fit$resid.variance
 sfm.pca.fit$mimic
 sfm.pca.fit$asset.fit
-factorModelCovariance(t(fit.stat$loadings),var(fit.stat$factors),fit.stat$resid.variance)
+factorModelCovariance(t(fit.stat$loadings),var(fit.stat$factors),sqrt(fit.stat$resid.variance))
 
 # test factormodel performance attribution
 setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/R")
-source("factorModelPerformanceAttribution.r")
+source("paFM.r")
 
-fm.attr <- factorModelPerformanceAttribution(fit.stat)
+fm.attr <- paFM(fit.stat)
 names(fm.attr)
 fm.attr$cum.ret.attr.f
 fm.attr$cum.spec.ret
@@ -241,7 +238,7 @@ summary(fm.attr)
 date.s <- index(fm.attr$attr.list[[1]])
 t <- length(date.s)
 bench.stat <- xts(rnorm(t),as.Date(date.s))
-fm.attr2 <- factorModelPerformanceAttribution(fit.stat,benchmark=bench.stat)
+fm.attr2 <- paFM(fit.stat,benchmark=bench.stat)
 fm.attr2$cum.ret.attr.f
 fm.attr2$cum.spec.ret
 fm.attr2$attr.list
@@ -300,11 +297,11 @@ sfm.apca.fit$mimic
 sfm.apca.fit$r2
 sfm.apca.fit$data
 
-fm.attr <- factorModelPerformanceAttribution(sfm.apca.fit)
+fm.attr <- paFM(sfm.apca.fit)
 names(fm.attr)
 
 factorModelCovariance(t(sfm.apca.fit$loadings),
-                      var(sfm.apca.fit$factors),sfm.apca.fit$resid.variance)
+                      var(sfm.apca.fit$factors),sqrt(sfm.apca.fit$resid.variance))
 
 source("plot.StatFactorModel.r")
 plot(sfm.apca.fit,max.show=10)
@@ -325,7 +322,7 @@ sfm.apca.fit.bn$asset.fit
 
 plot(sfm.apca.fit.bn)
 
-fm.bn.attr <- factorModelPerformanceAttribution(sfm.apca.fit.bn)
+fm.bn.attr <- paFM(sfm.apca.fit.bn)
 names(fm.bn.attr)
 fm.bn.attr$cum.ret.attr.f
 fm.bn.attr$cum.spec.ret
@@ -342,9 +339,9 @@ sfm.apca.fit.ck$mimic
 sfm.apca.fit.ck$asset.fit
 checkData(sfm.apca.fit.ck$data)
 
-source("factorModelPerformanceAttribution.r")
+source("paFM.r")
 
-fm.ck.attr <- factorModelPerformanceAttribution(sfm.apca.fit.ck)
+fm.ck.attr <- paFM(sfm.apca.fit.ck)
 names(fm.ck.attr)
 fm.ck.attr$cum.ret.attr.f
 fm.ck.attr$cum.spec.ret
@@ -356,7 +353,7 @@ date.ck <- index(fm.ck.attr$attr.list[[1]])
 t <- length(date.ck)
 bench.ck <- xts(rnorm(t),as.Date(date.ck))
 
-fm.ck.attr2 <- factorModelPerformanceAttribution(sfm.apca.fit.ck,benchmark=bench.ck)
+fm.ck.attr2 <- paFM(sfm.apca.fit.ck,benchmark=bench.ck)
 names(fm.ck.attr)
 fm.ck.attr2$cum.ret.attr.f
 fm.ck.attr2$cum.spec.ret
@@ -435,9 +432,9 @@ fit.fund$beta
 #test performance attribution
 
 setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/R")
-source("factorModelPerformanceAttribution.r")
+source("paFM.r")
 
-fm.attr <- factorModelPerformanceAttribution(fit.fund)
+fm.attr <- paFM(fit.fund)
 names(fm.attr)
 fm.attr$cum.ret.attr.f
 fm.attr$cum.spec.ret
@@ -473,7 +470,7 @@ plot(fit.fund,max.show=10)
 plot(fit.fund,plot.single=TRUE,asset.name = "JJSF")
 
 # FM return covariance 
-factorModelCovariance(fit.fund$beta,fit.fund$factor.cov$cov,fit.fund$resid.variance)
+factorModelCovariance(fit.fund$beta,fit.fund$factor.cov$cov,sqrt(fit.fund$resid.variance))
 
 
 # BARRA type Industry Factor Model
@@ -526,8 +523,8 @@ fit.fund <- fitFundamentalFactorModel(exposure.names=exposure.names,
 names(fit.fund)
 fit.fund$factor.returns
 
-source("factorModelPerformanceAttribution.r")
-fund.attr <- factorModelPerformanceAttribution(fit.fund)
+source("paFM.r")
+fund.attr <- paFM(fit.fund)
 names(fund.attr)
 fund.attr$cum.ret.attr.f
 fund.attr$cum.spec.ret
@@ -555,7 +552,7 @@ fit.fund <- fitFundamentalFactorModel(exposure.names=c("BOOK2MARKET", "LOG.MARKE
                                       assetvar = "TICKER",
                                       wls = TRUE, regression = "classic", 
                                       covariance = "classic", full.resid.cov = FALSE)
-ret.cov.fundm <- factorModelCovariance(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.variance)
+ret.cov.fundm <- factorModelCovariance(beta.mat1,fit.fund$factor.cov$cov,sqrt(fit.fund$resid.variance))
 fit.fund$returns.cov$cov == ret.cov.fundm
 
 
@@ -635,28 +632,28 @@ i = "STI"
 idx <- fit.fund$data[,fit.fund$assetvar]  == "STI"  
 asset.ret <- fit.fund$data[idx,fit.fund$returnsvar]
 tmpData = cbind(asset.ret, fit.fund$factor.returns,
-                fit.fund$residuals[,"STI"]/sqrt(fit.fund$resid.variance["STI"]) )
+                fit.fund$residuals[,"STI"]/sqrt(fit.fund$resid.variance["STI"]))
 colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
-  factorModelEsDecomposition(tmpData, 
-                             fit.fund$beta["STI",],
-                             fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method="historical")
+  factorModelEsDecomposition(tmpData, fit.fund$beta["STI",],
+                             fit.fund$resid.variance["STI"], tail.prob=0.05,
+                             VaR.method="historical")
 
 
 
-# factorModelPerformanceAttribution example
+# paFM example
 setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/R")
-source("factorModelPerformanceAttribution.r")
+source("paFM.r")
 
-source("summary.FM.attribution.r")
+source("summary.pafm.r")
 data(managers.df)
-fit.ts <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-                                       data=managers.df,fit.method="OLS")
+fit.ts <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+                  factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+                  data=managers.df,fit.method="OLS", variable.selection="none")
 
 # withoud benchmark
-fm.attr <- factorModelPerformanceAttribution(fit.ts)
+fm.attr <- paFM(fit.ts)
 summary(fm.attr)
 
-source("plot.FM.attribution.r")
+source("plot.pafm.r")
 plot(fm.attr,legend.loc="topleft",max.show=6)
 plot(fm.attr,plot.single=TRUE,fundName="HAM1")

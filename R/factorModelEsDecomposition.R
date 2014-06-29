@@ -16,7 +16,7 @@
 #' contain the returns on the \code{k} factors, and the \code{(k+2)}nd column
 #' contain residuals scaled to have unit variance.
 #' @param beta.vec \code{k x 1} vector of factor betas.
-#' @param sig2.e scalar, residual variance from factor model.
+#' @param sig.e scalar, residual variance from factor model.
 #' @param tail.prob scalar, tail probability for VaR quantile. Typically 0.01
 #' or 0.05.
 #' @param VaR.method character, method for computing VaR. Valid choices are
@@ -47,16 +47,17 @@
 #' @examples
 #' 
 #' data(managers.df)
-#' fit.macro <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-#'                                      factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                                      data=managers.df,fit.method="OLS")
+#' fit.macro <- fitTSFM (asset.names=colnames(managers.df[,(1:6)]), 
+#'                       factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+#'                       data=managers.df, fit.method="OLS", 
+#'                       variable.selection="none")
 #' # risk factor contribution to ETL
 #' # combine fund returns, factor returns and residual returns for HAM1
 #' tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
-#' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.variance[1]))
+#' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.sd[1]))
 #' colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 #' factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],
-#'                                                   fit.macro$resid.variance[1], tail.prob=0.05,
+#'                                                   fit.macro$resid.sd[1], tail.prob=0.05,
 #'                                                   VaR.method="historical" )
 #' 
 #' # fundamental factor model
@@ -79,7 +80,7 @@
 #' @export
 #' 
 factorModelEsDecomposition <-
-function(Data, beta.vec, sig2.e, tail.prob = 0.05,
+function(Data, beta.vec, sig.e, tail.prob = 0.05,
          VaR.method=c("modified", "gaussian", "historical", "kernel")) {
 
   Data = as.matrix(Data)
@@ -92,7 +93,7 @@ function(Data, beta.vec, sig2.e, tail.prob = 0.05,
    stop("beta.vec is not an n x 1 matrix or a vector")
   }  
   beta.names = c(names(beta.vec), "residual")
-	beta.star.vec = c(beta.vec, sqrt(sig2.e))
+	beta.star.vec = c(beta.vec, sig.e)
 	names(beta.star.vec) = beta.names
 
    ## epsilon is calculated in the sense of minimizing mean square error by Silverman 1986

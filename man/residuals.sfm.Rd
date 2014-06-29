@@ -3,11 +3,13 @@
 \alias{residuals.sfm}
 \title{Get residuals from a fitted stochastic factor model}
 \usage{
-\method{residuals}{sfm}(x)
+\method{residuals}{sfm}(object, ...)
 }
 \arguments{
-\item{x}{an object of class \code{sfm} which is returned by
+\item{object}{a fit object of class \code{sfm} which is returned by
 \code{\link{fitSFM}}}
+
+\item{...}{other arguments passed}
 }
 \value{
 \item{residuals.xts}{an N x T data object of residuals}

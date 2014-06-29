@@ -2,8 +2,9 @@
 #' 
 #' @description Method or helper function for fit object of class \code{tsfm}. 
 #' 
-#' @param x an object of class \code{tsfm} which is returned by 
+#' @param object a fit object of class \code{tsfm} which is returned by 
 #' \code{\link{fitTSFM}} 
+#' @param ... other arguments passed
 #' 
 #' @return 
 #' \item{fitted.xts}{an N x T data object of fitted values}
@@ -27,10 +28,10 @@
 #' @method fitted tsfm
 #' @export
 
-fitted.tsfm <- function(x){
+fitted.tsfm <- function(object,...){
   # get fitted values from each linear factor model fit 
   # and convert them into xts/zoo objects
-  fitted.list = sapply(x$asset.fit, function(x) checkData(fitted(x)))
+  fitted.list = sapply(object$asset.fit, function(x) checkData(fitted(x)))
   # this is a list of xts objects, indexed by the asset name
   # merge the objects in the list into one xts object
   fitted.xts <- do.call(merge, fitted.list)

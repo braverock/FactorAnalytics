@@ -3,11 +3,13 @@
 \alias{fitted.tsfm}
 \title{Get fitted values from a time series factor model}
 \usage{
-\method{fitted}{tsfm}(x)
+\method{fitted}{tsfm}(object, ...)
 }
 \arguments{
-\item{x}{an object of class \code{tsfm} which is returned by
+\item{object}{a fit object of class \code{tsfm} which is returned by
 \code{\link{fitTSFM}}}
+
+\item{...}{other arguments passed}
 }
 \value{
 \item{fitted.xts}{an N x T data object of fitted values}

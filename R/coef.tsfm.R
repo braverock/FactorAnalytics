@@ -2,8 +2,9 @@
 #' 
 #' @description Method or helper function for fit object of class \code{tsfm}. 
 #' 
-#' @param x an object of class \code{tsfm} which is returned by 
+#' @param object a fit object of class \code{tsfm} which is returned by 
 #' \code{\link{fitTSFM}} 
+#' @param ... other arguments passed
 #' 
 #' @return 
 #' \item{coef.mat}{an N x (K+1) matrix of all coefficients}
@@ -27,7 +28,7 @@
 #' @method coef tsfm
 #' @export
 
-coef.tsfm <- function(x){
-  coef.mat <- t(sapply(x$asset.fit, coef))
+coef.tsfm <- function(object,...){
+  coef.mat <- t(sapply(object$asset.fit, coef))
   return(coef.mat)
 }

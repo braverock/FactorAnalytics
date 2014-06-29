@@ -20,9 +20,10 @@ Generic function of summary method for \code{paFM}.
 # load data from the database
  data(managers.df)
  # fit the factor model with OLS
- fit.ts <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-                               factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-                               data=managers.df,fit.method="OLS")
+ fit.ts <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+                   factor.names=c("EDHEC.LS.EQ","SP500.TR"),
+                   data=managers.df, fit.method="OLS",
+                   variable.selection="none")
 
   fm.attr <- paFM(fit.ts)
   summary(fm.attr)

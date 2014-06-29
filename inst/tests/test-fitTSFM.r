@@ -1,6 +1,6 @@
-context("Test fitTimeSeriesFactorModel")
+context("Test fitTSFM")
 
-test_that("fitTimeSeriesFactorModel is as expected", {
+test_that("fitTSFM is as expected", {
 
   # fit Carhart 4-factor model using lm
   fpath <- system.file("extdata", "timeSeriesReturns.csv", package="factorAnalytics")
@@ -17,12 +17,13 @@ test_that("fitTimeSeriesFactorModel is as expected", {
   Sigma.eps <- diag(as.numeric(sapply(X = sum4, FUN = "[", "sigma")))
   Sigma.R <- t(beta.hat) %*% Sigma.F %*% beta.hat + Sigma.eps^2
 
-  # fit Carhart 4-factor mode via fitTimeSeriesFactorModel
-  ff.mod <- fitTimeSeriesFactorModel(
-    assets.names = assets,
-    factors.names = c("mktrf","smb", "hml","umd"),
+  # fit Carhart 4-factor mode via fitTSFM
+  ff.mod <- fitTSFM(
+    asset.names = assets,
+    factor.names = c("mktrf","smb", "hml","umd"),
     data = cbind(ex.rets,carhart),
-    fit.method = "OLS")
+    fit.method = "OLS",
+    variable.selection="none")
 
   expect_that(ff.mod$beta,is_equivalent_to(t(coef(ff4)[-1,])))
   expect_that(as.numeric(ff.mod$r2),equals(as.numeric(sapply(X = sum4, FUN = "[", "r.squared"))))

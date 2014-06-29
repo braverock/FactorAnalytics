@@ -3,29 +3,37 @@
 \alias{summary.tsfm}
 \title{Summarizing a fitted time series factor model}
 \usage{
-\method{summary}{tsfm}(object, digits = 3, ...)
+\method{summary}{tsfm}(object, ...)
 }
 \arguments{
 \item{object}{an object of class \code{tsfm} produced by \code{fitTSFM}.}
 
-\item{digits}{an integer value, to indicate the required number of
-significant digits. Default is 3.}
-
-\item{...}{optional arguments passed to the \code{print} method.}
+\item{...}{futher arguments passed to or from other methods.}
 }
 \value{
-Returns an object of class {summary.tsfm}.
+Returns an object of class \code{summary.tsfm}, which is a list
+containing the function call to \code{fitTSFM} and the
+\code{summary.lm} objects fitted for each asset in the factor model.
+The print method for class \code{summary.tsfm} outputs the call, coefficients,
+r-squared and residual volatilty for all assets.
 }
 \description{
 S3 \code{summary} method for object of class \code{tsfm}.
-Resulting object is of class {summary.tsfm}.
+Resulting object is of class {summary.tsfm}. There is a generic
+\code{print} method for this object.
+}
+\note{
+For a more detailed printed summary for each asset, refer to
+\code{print.summary.lm}, which tries to be smart about formatting the
+coefficients, standard errors, etc. and additionally gives ‘significance
+stars’ if \code{signif.stars} is TRUE.
 }
 \examples{
 data(managers.df)
 fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
                factor.names=colnames(managers.df[,7:9]),
-               market.name="SP500.TR",
-               data=data, fit.method="OLS", variable.selection="none",
+               market.name="SP500.TR", data=managers.df,
+               fit.method="OLS", variable.selection="none",
                add.up.market=TRUE, add.market.sqd=TRUE)
 summary(fit)
 }

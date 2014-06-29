@@ -18,7 +18,7 @@
 #' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                factor.names=colnames(managers.df[,7:9]), 
 #'                market.name="SP500.TR",
-#'                data=data, fit.method="OLS", variable.selection="none", 
+#'                data=managers.df, fit.method="OLS", variable.selection="none", 
 #'                add.up.market=TRUE, add.market.sqd=TRUE)
 #' print(fit)
 #' 
@@ -39,7 +39,7 @@ print.tsfm <- function(x, digits=max(3, .Options$digits - 3), ...){
   print(x$alpha, digits = digits, ...)
   cat("\nFactor Betas:\n")
   print(t(x$beta), digits = digits, ...)
-  cat("\nRegression R-squared values:\n")
+  cat("\nR-squared values:\n")
   print(x$r2, digits = digits, ...)
   cat("\nResidual Volatilities:\n")
   print(x$resid.sd, digits = digits, ...)

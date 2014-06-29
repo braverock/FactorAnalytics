@@ -130,21 +130,19 @@ cross-validated mean squared prediction error using
 \code{\link[lars]{cv.lars}}.
 }
 \examples{
-\dontrun{
 # load data from the database
 data(managers.df)
-fit <- fitTimeSeriesFactorModel(asset.names=colnames(managers.df[,(1:6)]),
-                                factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-                                data=managers.df,fit.method="OLS")
+fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
+               fit.method="OLS", variable.selection="none")
 # summary of HAM1
 summary(fit$asset.fit$HAM1)
 # plot actual vs. fitted over time for HAM1
-# use chart.TimeSeries() function from PerformanceAnalytics package
+# using chart.TimeSeries() function from PerformanceAnalytics package
 dataToPlot <- cbind(fitted(fit$asset.fit$HAM1), na.omit(managers.df$HAM1))
 colnames(dataToPlot) <- c("Fitted","Actual")
 chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
                  colorset=c("black","blue"), legend.loc="bottomleft")
- }
 }
 \author{
 Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.

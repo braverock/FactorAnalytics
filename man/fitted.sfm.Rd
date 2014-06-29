@@ -3,11 +3,13 @@
 \alias{fitted.sfm}
 \title{Get fitted values from a stochastic factor model}
 \usage{
-\method{fitted}{tsfm}(x)
+\method{fitted}{sfm}(object, ...)
 }
 \arguments{
-\item{x}{an object of class \code{sfm} which is returned by
+\item{object}{a fit object of class \code{sfm} which is returned by
 \code{\link{fitSFM}}}
+
+\item{...}{other arguments passed}
 }
 \value{
 \item{fitted.xts}{an N x T data object of fitted values}

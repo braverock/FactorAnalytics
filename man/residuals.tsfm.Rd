@@ -3,11 +3,13 @@
 \alias{residuals.tsfm}
 \title{Get residuals from a fitted time series factor model}
 \usage{
-\method{residuals}{tsfm}(x)
+\method{residuals}{tsfm}(object, ...)
 }
 \arguments{
-\item{x}{an object of class \code{tsfm} which is returned by
+\item{object}{a fit object of class \code{tsfm} which is returned by
 \code{\link{fitTSFM}}}
+
+\item{...}{other arguments passed}
 }
 \value{
 \item{residuals.xts}{an N x T data object of residuals}
