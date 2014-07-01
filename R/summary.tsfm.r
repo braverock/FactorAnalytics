@@ -15,8 +15,8 @@
 #' 
 #' @note For a more detailed printed summary for each asset, refer to 
 #' \code{print.summary.lm}, which tries to be smart about formatting the 
-#' coefficients, standard errors, etc. and additionally gives ‘significance 
-#' stars’ if \code{signif.stars} is TRUE. 
+#' coefficients, standard errors, etc. and additionally gives significance 
+#' stars if \code{signif.stars} is TRUE. 
 #' 
 #' @author Yi-An Chen & Sangeetha Srinivasan.
 #' 
