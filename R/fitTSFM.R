@@ -34,7 +34,9 @@
 #' regression, following Henriksson & Merton (1981), to account for market 
 #' timing (price movement of the general stock market relative to fixed income 
 #' securities). The coefficient can be interpreted as the number of free put 
-#' options.
+#' options. Similarly, if \code{add.market.sqd = TRUE}, (Rm-Rf)^2 is added as 
+#' a factor in the regression, following Treynor-Mazuy (1966), to account for 
+#' market timing with respect to volatility.
 #' 
 #' Finally, for both the "lars" and "lasso" methods, the "Cp" statistic 
 #' (defined in page 17 of Efron et al. (2002)) is calculated using 
@@ -42,14 +44,14 @@
 #' cross-validated mean squared prediction error using 
 #' \code{\link[lars]{cv.lars}}.
 #' 
-#' @param asset.names  vector containing names of assets, whose returns or 
+#' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
 #' @param market.name name of the column for market excess returns (Rm-Rf). 
-#' Is required only if \code{add.up.market} or \code{add.up.market.squared} 
+#' Is required only if \code{add.up.market} or \code{add.market.sqd} 
 #' are \code{TRUE}. 
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
-#' containing column(s) named \code{asset.names}, \code{factor.names} and 
+#' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{market.name}.
 #' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
 #' See details. 
@@ -82,9 +84,19 @@
 #' and "DLS" fits. Scope argument is not available presently. Also plan to
 #' include other controls passed to \code{lmRob} soon.
 #' 
-#' @return fitTSFM returns an object of class 
-#' \code{tsfm}. The returned object is a list
-#' containing the following components:
+#' @return fitTSFM returns an object of class \code{tsfm}. 
+#' 
+#' The generic functions \code{summary}, \code{predict} and \code{plot} are 
+#' used to obtain and print a summary, predicted asset returns for new factor 
+#' data and plot selected characteristics for one or more assets. The generic 
+#' accessor functions \code{coefficients}, \code{fitted} and \code{residuals} 
+#' extract various useful features of the fit object. \code{coef.tsfm} extracts 
+#' coefficients from the fitted factor model and returns an N x (K+1) matrix of 
+#' all coefficients, \code{fitted.tsfm} gives an N x T data object of fitted 
+#' values and \code{residuals.tsfm} gives an N x T data object of residuals.
+#' 
+#' An object of class \code{tsfm} is a list containing the following 
+#' components:
 #' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
 #' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
 #' the \code{fit.method="Robust"}, or class \code{lars} if 
@@ -99,33 +111,35 @@
 #' \item{factor.names}{factor.names as input.}
 #' \item{fit.method}{fit.method as input.}
 #' \item{variable.selection}{variable.selection as input.}
-#' Where N is the number of assets and K is the number of factors.
-#' 
-#' @family Factor Models
+#' Where N is the number of assets, K is the number of factors and T is the 
+#' number of time periods.
 #' 
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.
 #' 
 #' @references 
 #' \enumerate{
-#' \item Christopherson, Carino and Ferson (2009). Portfolio Performance 
-#' Measurement and Benchmarking, McGraw Hill.
-#' \item Efron, Hastie, Johnstone and Tibshirani (2002) "Least Angle
-#' Regression" (with discussion) Annals of Statistics. Also refer to 
-#' \url{http://www-stat.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf}. 
-#' \item Hastie, Tibshirani and Friedman (2008) Elements of Statistical 
-#' Learning 2nd edition, Springer, NY.
-#' \item Henriksson and Merton (1981). On market timing and investment 
-#' performance. II. Statistical procedures for evaluating forecasting skills, 
-#' Journal of Business, Vol 54, No 4.
+#' \item Christopherson, Jon A., David R. Carino, and Wayne E. Ferson. 
+#' Portfolio performance measurement and benchmarking. McGraw Hill 
+#' Professional, 2009.
+#' \item Efron, Bradley, Trevor Hastie, Iain Johnstone, and Robert Tibshirani. 
+#' "Least angle regression." The Annals of statistics 32, no. 2 (2004): 407-499. 
+#' \item Hastie, Trevor, Robert Tibshirani, Jerome Friedman, T. Hastie, J. 
+#' Friedman, and R. Tibshirani. The elements of statistical learning. Vol. 2, 
+#' no. 1. New York: Springer, 2009.
+#' \item Henriksson, Roy D., and Robert C. Merton. "On market timing and 
+#' investment performance. II. Statistical procedures for evaluating 
+#' forecasting skills." Journal of business (1981): 513-533.
+#' \item Treynor, Jack, and Kay Mazuy. "Can mutual funds outguess the market." 
+#' Harvard business review 44, no. 4 (1966): 131-136.
 #' }
 #' 
-#' @seealso The following generic method functions: \code{\link{plot.tsfm}}, 
-#' \code{\link{predict.tsfm}}, \code{\link{print.tsfm}} and 
-#' \code{\link{summary.tsfm}}. 
+#' @seealso The \code{tsfm} methods for generic functions: 
+#' \code{\link{plot.tsfm}}, \code{\link{predict.tsfm}}, 
+#' \code{\link{print.tsfm}} and \code{\link{summary.tsfm}}. 
 #' 
-#' And, the following extractor functions: \code{\link{coef.tsfm}}, 
-#' \code{\link{cov.tsfm}}, \code{\link{fitted.tsfm}} and 
-#' \code{\link{residuals.tsfm}}.
+#' And, the following extractor functions: \code{\link[stats]{coef}}, 
+#' \code{\link{covFM}}, \code{\link[stats]{fitted}} and 
+#' \code{\link[stats]{residuals}}.
 #' 
 #' \code{\link{paFM}} for Performance Attribution. 
 #' 
@@ -137,6 +151,8 @@
 #'                fit.method="OLS", variable.selection="none")
 #' # summary of HAM1 
 #' summary(fit$asset.fit$HAM1)
+#' # fitted values all 6 asset returns
+#' fitted(fit)
 #' # plot actual vs. fitted over time for HAM1
 #' # using chart.TimeSeries() function from PerformanceAnalytics package
 #' dataToPlot <- cbind(fitted(fit$asset.fit$HAM1), na.omit(managers.df$HAM1))
@@ -144,7 +160,6 @@
 #' chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
 #'                  colorset=c("black","blue"), legend.loc="bottomleft")
 #'
-#'  
 #'  @export
 
 fitTSFM <- function(asset.names, factor.names, market.name, data=data, 
@@ -450,4 +465,81 @@ WeightsDLS <- function(t,d){
   w <- d^seq((t-1),0,-1)    
   # ensure that the weights sum to unity
   w/sum(w)
+}
+
+
+#' @param object a fit object of class \code{tsfm} which is returned by 
+#' \code{fitTSFM}
+ 
+#' @rdname fitTSFM
+#' @method coef tsfm
+#' @export
+
+coef.tsfm <- function(object,...){
+  coef.mat <- t(sapply(object$asset.fit, coef))
+  return(coef.mat)
+}
+
+#' @rdname fitTSFM
+#' @method fitted tsfm
+#' @export
+
+fitted.tsfm <- function(object,...){
+  # get fitted values from each linear factor model fit 
+  # and convert them into xts/zoo objects
+  fitted.list = sapply(object$asset.fit, function(x) checkData(fitted(x)))
+  # this is a list of xts objects, indexed by the asset name
+  # merge the objects in the list into one xts object
+  fitted.xts <- do.call(merge, fitted.list)
+  return(fitted.xts)
+}
+
+
+#' @rdname fitTSFM
+#' @method residuals tsfm
+#' @export
+
+residuals.tsfm <- function(object ,...) {
+  # get residuals from each linear factor model fit 
+  # and convert them into xts/zoo objects
+  residuals.list = sapply(object$asset.fit, function(x) checkData(residuals(x)))
+  # this is a list of xts objects, indexed by the asset name
+  # merge the objects in the list into one xts object
+  residuals.xts <- do.call(merge, residuals.list)
+  return(residuals.xts)
+}
+
+#' @rdname fitTSFM
+#' @method covFM tsfm
+#' @export
+
+covFM.tsfm <- function(object) {
+  
+  # check input object validity
+  if (!inherits(object, c("tsfm", "sfm", "ffm"))) {
+    stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
+  }
+  
+  # get parameters and factors from factor model
+  beta <- object$beta
+  sig2.e = object$resid.sd^2
+  factor <- object$data[, colnames(object$beta)]
+  
+  # factor covariance matrix 
+  factor.cov = var(factor, use="na.or.complete")
+  
+  # residual covariance matrix D
+  if (length(sig2.e) > 1) {
+    D.e = diag(sig2.e)
+  } else {
+    D.e =  as.vector(sig2.e)
+  }
+  
+  cov.fm = beta %*% factor.cov %*% t(beta) + D.e
+  
+  if (any(diag(chol(cov.fm)) == 0)) {
+    warning("Covariance matrix is not positive definite!")
+  }
+  
+  return(cov.fm)
 }

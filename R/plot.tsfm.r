@@ -41,7 +41,7 @@
 #'  10= CUSUM plot of recursive residuals,\cr
 #'  11= CUSUM plot of OLS residuals,\cr
 #'  12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
-#'  13= rolling estimates over an observation window of length 24.
+#'  13= rolling estimates over a 24-period observation window
 #' @param VaR.method a method for computing VaR; one of "modified", "gaussian",
 #' "historical" or "kernel". VaR is computed using 
 #' \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".
@@ -49,8 +49,7 @@
 #' 
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 #' 
-#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}, 
-#' \code{\link{tsfm}}
+#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
 #' 
 #' @examples
 #' 
@@ -96,7 +95,7 @@ plot.tsfm <-
       ##                  10    CUSUM plot of recursive residuals
       ##                  11    CUSUM plot of OLS residuals
       ##                  12    CUSUM plot of recursive estimates relative to full sample estimates
-      ##                  13    rolling estimates over an observation window of length 24
+      ##                  13    rolling estimates over a 24-period observation window
       which.plot.single<-which.plot.single[1]
       if (missing(asset.name) == TRUE) {
         stop("Neet to specify an asset to plot if plot.single is TRUE.")
@@ -129,7 +128,7 @@ plot.tsfm <-
                                     "CUSUM plot of recursive residuals",
                                     "CUSUM plot of OLS residuals",
                                     "CUSUM plot of recursive estimates relative to full sample estimates",
-                                    "rolling estimates over an observation window of length 24"),
+                                    "rolling estimates over a 24-period observation window"),
                                   title="\nMake a plot selection (or 0 to exit):\n")
         switch(which.plot.single,
                "1L" =  {
@@ -206,7 +205,7 @@ plot.tsfm <-
                    stop("CUMSUM applies only on OLS method")
                },
                "13L"= {
-                 ##  rolling regression over 24 month window
+                 ##  Rolling estimates over 24-period observation window 
                  if (as.character(x$call["fit.method"]) == "OLS") {   
                    rollReg <- function(data.z, formula) {
                      coef(lm(formula, data = as.data.frame(data.z)))  
@@ -214,7 +213,7 @@ plot.tsfm <-
                    reg.z = zoo(fit.lm$model, as.Date(rownames(fit.lm$model)))
                    rollReg.z = rollapply(reg.z, FUN=rollReg, fit.formula, width=24, by.column = FALSE, 
                                          align="right")
-                   plot(rollReg.z, main=paste("24-month rolling regression estimates:", asset.name, sep=" "))
+                   plot(rollReg.z, main=paste("Rolling estimates over 24-period observation window:", asset.name, sep=" "))
                  } else if (as.character(x$call["fit.method"]) == "DLS") {
                    decay.factor <- as.numeric(as.character(x$call["decay.factor"]))
                    t.length <- 24
@@ -231,7 +230,7 @@ plot.tsfm <-
                    fit.formula = as.formula(paste(asset.name,"~", paste(factorNames, collapse="+"), sep=" "))
                    rollReg.z = rollapply(reg.z, FUN=rollReg.w, fit.formula,w, width=24, by.column = FALSE, 
                                          align="right")
-                   plot(rollReg.z, main=paste("24-month rolling regression estimates:", asset.name, sep=" ")) 
+                   plot(rollReg.z, main=paste("Rolling estimates over 24-period observation window:", asset.name, sep=" ")) 
                  } 
                },
                invisible()

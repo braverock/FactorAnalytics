@@ -4,8 +4,7 @@
 #' calls the \code{predict} method for fitted objects of class \code{lm}, 
 #' \code{lmRob} or \code{lars} as appropriate.
 #' 
-#' @param object an object of class \code{\link[stats]{tsfm}} produced by 
-#' \code{fitTSFM}.
+#' @param object an object of class \code{tsfm} produced by \code{fitTSFM}.
 #' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object 
 #' containing the variables with which to predict.
 #' @param ... optional arguments passed to \code{predict.lm} or
@@ -17,8 +16,7 @@
 #' 
 #' @author Yi-An Chen and Sangeetha Srinivasan
 #' 
-#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}, 
-#' \code{\link{tsfm}}
+#' @seealso \code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
 #' 
 #' @examples
 #' # load data from the database

@@ -6,8 +6,7 @@
 \method{predict}{tsfm}(object, newdata = NULL, ...)
 }
 \arguments{
-\item{object}{an object of class \code{\link[stats]{tsfm}} produced by
-\code{fitTSFM}.}
+\item{object}{an object of class \code{tsfm} produced by \code{fitTSFM}.}
 
 \item{newdata}{a vector, matrix, data.frame, xts, timeSeries or zoo object
 containing the variables with which to predict.}
@@ -42,7 +41,6 @@ pred.fit2 <- predict(fit, newdata, interval="confidence")
 Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTSFM}}, \code{\link{summary.tsfm}},
-\code{\link{tsfm}}
+\code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
 }
 

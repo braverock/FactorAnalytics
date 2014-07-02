@@ -38,7 +38,7 @@ print.tsfm <- function(x, digits=max(3, .Options$digits - 3), ...){
   cat("\nRegression Alphas:\n")
   print(x$alpha, digits = digits, ...)
   cat("\nFactor Betas:\n")
-  print(t(x$beta), digits = digits, ...)
+  print(x$beta, digits = digits, ...)
   cat("\nR-squared values:\n")
   print(x$r2, digits = digits, ...)
   cat("\nResidual Volatilities:\n")

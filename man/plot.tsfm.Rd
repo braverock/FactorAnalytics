@@ -55,7 +55,7 @@ following menu to select a type.\cr
  10= CUSUM plot of recursive residuals,\cr
  11= CUSUM plot of OLS residuals,\cr
  12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
- 13= rolling estimates over an observation window of length 24.}
+ 13= rolling estimates over a 24-period observation window}
 
 \item{VaR.method}{a method for computing VaR; one of "modified", "gaussian",
 "historical" or "kernel". VaR is computed using
@@ -84,7 +84,6 @@ plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
 Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTSFM}}, \code{\link{summary.tsfm}},
-\code{\link{tsfm}}
+\code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
 }
 
