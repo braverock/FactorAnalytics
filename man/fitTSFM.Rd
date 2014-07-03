@@ -11,7 +11,7 @@ fitTSFM(asset.names, factor.names, market.name, data = data,
   fit.method = c("OLS", "DLS", "Robust"), variable.selection = c("none",
   "stepwise", "all subsets", "lar", "lasso"), subsets.method = c("exhaustive",
   "backward", "forward", "seqrep"), nvmax = 8, force.in = NULL,
-  num.factors.subset = 1, add.up.market = FALSE, add.market.sqd = FALSE,
+  num.factors.subset = 1, add.up.market = TRUE, add.market.sqd = TRUE,
   decay = 0.95, lars.criterion = "Cp", ...)
 
 \method{coef}{tsfm}(object, ...)
@@ -58,11 +58,11 @@ an option for "all subsets" variable selection. Default is 1.
 Note: nvmax >= num.factors.subset >= length(force.in).}
 
 \item{add.up.market}{logical; If \code{TRUE}, adds max(0, Rm-Rf) as a
-regressor and \code{market.name} is also required. Default is \code{FALSE}.
+regressor and \code{market.name} is also required. Default is \code{TRUE}.
 See Details.}
 
 \item{add.market.sqd}{logical; If \code{TRUE}, adds (Rm-Rf)^2 as a
-regressor and \code{market.name} is also required. Default is \code{FALSE}.}
+regressor and \code{market.name} is also required. Default is \code{TRUE}.}
 
 \item{decay}{a scalar in (0, 1] to specify the decay factor for
 \code{fit.method="DLS"}. Default is 0.95.}
@@ -134,21 +134,18 @@ Criterion (AIC), improves. And, "all subsets" enables subsets selection
 using \code{\link[leaps]{regsubsets}} that chooses the n-best performing
 subsets of any given size (specified as \code{num.factor.subsets} here).
 "lar" and "lasso" correspond to variants of least angle regression using
-\code{\link[lars]{lars}}. If "lar" or "lasso" are chosen, \code{fit.method}
-will be ignored.
+\code{\link[lars]{lars}}.
 
 Note: If \code{variable.selection="lar" or "lasso"}, \code{fit.method}
-will be ignored. And, \code{fit.method="Robust"} is not truly available with
-\code{variable.selection="all subsets"}; instead,
-\code{variable.selection="none"} is used to include all factors.
+will be ignored.
 
-If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in the
-regression, following Henriksson & Merton (1981), to account for market
+If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in
+the regression, following Henriksson & Merton (1981), to account for market
 timing (price movement of the general stock market relative to fixed income
 securities). The coefficient can be interpreted as the number of free put
-options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added as
-a factor in the regression, following Treynor-Mazuy (1966), to account for
-market timing with respect to volatility.
+options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added
+as a factor in the regression, following Treynor-Mazuy (1966), to account
+for market timing with respect to volatility.
 
 Finally, for both the "lar" and "lasso" methods, the "Cp" statistic
 (defined in page 17 of Efron et al. (2002)) is calculated using
@@ -161,6 +158,7 @@ cross-validated mean squared prediction error using
 data(managers.df)
 fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
+               add.up.market=FALSE, add.market.sqd=FALSE,
                fit.method="OLS", variable.selection="none")
 # summary of HAM1
 summary(fit$asset.fit$HAM1)

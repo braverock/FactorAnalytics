@@ -283,7 +283,7 @@ ts.data <- na.omit(merge(ret,ts.factors))
 In this example, we will use SP500, 10 years and 3 months term spread and difference of VIX as our common factors. 
 
 <<fit.ts>>=
-fit.time <- fitTSFM (asset.names=tic, 
+fit.time <- fitTSFM (asset.names=tic, market.name="SP500",
                      factor.names=c("SP500","Term.Spread","dVIX"), 
                      data=ts.data, fit.method="OLS", 
                      variable.selection="none")
@@ -299,7 +299,7 @@ fit.time$asset.fit$AA
 
 <<fit.ts>>=
 fit.time2 <- fitTSFM(asset.names=tic, factor.names=names(ts.factors), 
-                     data=ts.data, fit.method="OLS", 
+                     data=ts.data, market.name="SP500", fit.method="OLS", 
                      variable.selection = "stepwise")
 @
 There are 5 factors chosen for asset AA for example. 

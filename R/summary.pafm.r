@@ -14,8 +14,8 @@
 #'  # fit the factor model with OLS
 #'  fit.ts <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                    factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                    data=managers.df, fit.method="OLS",
-#'                    variable.selection="none")
+#'                    market.name="SP500.TR", data=managers.df, 
+#'                    fit.method="OLS", variable.selection="none")
 #'   
 #'   fm.attr <- paFM(fit.ts)
 #'   summary(fm.attr)

@@ -40,7 +40,7 @@ data(managers.df)
 factors = managers.df[, (7:9)]
 fit <- fitTSFM(assets.names=colnames(managers.df[, (1:6)]),
                factors.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
-               fit.method="OLS")
+               add.up.market=FALSE, add.market.sqd=FALSE, fit.method="OLS")
 covFM(fit)
 
 # Statistical Factor Model

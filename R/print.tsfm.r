@@ -17,9 +17,8 @@
 #' data(managers.df)
 #' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                factor.names=colnames(managers.df[,7:9]), 
-#'                market.name="SP500.TR",
-#'                data=managers.df, fit.method="OLS", variable.selection="none", 
-#'                add.up.market=TRUE, add.market.sqd=TRUE)
+#'                market.name="SP500.TR", data=managers.df, 
+#'                fit.method="OLS", variable.selection="none")
 #' print(fit)
 #' 
 #' @method print tsfm

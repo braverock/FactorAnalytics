@@ -21,6 +21,7 @@ test_that("fitTSFM is as expected", {
   ff.mod <- fitTSFM(
     asset.names = assets,
     factor.names = c("mktrf","smb", "hml","umd"),
+    add.up.market=FALSE, add.market.sqd=FALSE,
     data = cbind(ex.rets,carhart),
     fit.method = "OLS",
     variable.selection="none")

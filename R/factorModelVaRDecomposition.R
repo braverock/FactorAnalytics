@@ -45,7 +45,8 @@
 #' data(managers.df)
 #' fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                      data=managers.df,fit.method="OLS",
+#'                      add.up.market=FALSE, add.market.sqd=FALSE,
+#'                      data=managers.df, fit.method="OLS",
 #'                      variable.selection="none")
 #' # risk factor contribution to VaR
 #' # combine fund returns, factor returns and residual returns for HAM1

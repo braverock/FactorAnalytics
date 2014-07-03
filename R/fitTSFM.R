@@ -22,21 +22,18 @@
 #' using \code{\link[leaps]{regsubsets}} that chooses the n-best performing 
 #' subsets of any given size (specified as \code{num.factor.subsets} here). 
 #' "lar" and "lasso" correspond to variants of least angle regression using 
-#' \code{\link[lars]{lars}}. If "lar" or "lasso" are chosen, \code{fit.method} 
-#' will be ignored.
+#' \code{\link[lars]{lars}}. 
 #' 
 #' Note: If \code{variable.selection="lar" or "lasso"}, \code{fit.method} 
-#' will be ignored. And, \code{fit.method="Robust"} is not truly available with 
-#' \code{variable.selection="all subsets"}; instead, 
-#' \code{variable.selection="none"} is used to include all factors.
+#' will be ignored.
 #' 
-#' If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in the 
-#' regression, following Henriksson & Merton (1981), to account for market 
+#' If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in 
+#' the regression, following Henriksson & Merton (1981), to account for market 
 #' timing (price movement of the general stock market relative to fixed income 
 #' securities). The coefficient can be interpreted as the number of free put 
-#' options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added as 
-#' a factor in the regression, following Treynor-Mazuy (1966), to account for 
-#' market timing with respect to volatility.
+#' options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added 
+#' as a factor in the regression, following Treynor-Mazuy (1966), to account 
+#' for market timing with respect to volatility.
 #' 
 #' Finally, for both the "lar" and "lasso" methods, the "Cp" statistic 
 #' (defined in page 17 of Efron et al. (2002)) is calculated using 
@@ -69,10 +66,10 @@
 #' an option for "all subsets" variable selection. Default is 1. 
 #' Note: nvmax >= num.factors.subset >= length(force.in).
 #' @param add.up.market logical; If \code{TRUE}, adds max(0, Rm-Rf) as a 
-#' regressor and \code{market.name} is also required. Default is \code{FALSE}. 
+#' regressor and \code{market.name} is also required. Default is \code{TRUE}. 
 #' See Details. 
 #' @param add.market.sqd logical; If \code{TRUE}, adds (Rm-Rf)^2 as a 
-#' regressor and \code{market.name} is also required. Default is \code{FALSE}.
+#' regressor and \code{market.name} is also required. Default is \code{TRUE}.
 #' @param decay a scalar in (0, 1] to specify the decay factor for 
 #' \code{fit.method="DLS"}. Default is 0.95.
 #' @param lars.criterion an option to assess model selection for the "lar" or 
@@ -148,6 +145,7 @@
 #' data(managers.df)
 #' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df, 
+#'                add.up.market=FALSE, add.market.sqd=FALSE, 
 #'                fit.method="OLS", variable.selection="none")
 #' # summary of HAM1 
 #' summary(fit$asset.fit$HAM1)
@@ -169,7 +167,7 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
                     subsets.method = c("exhaustive", "backward", "forward", 
                                        "seqrep"),
                     nvmax=8, force.in=NULL, num.factors.subset=1, 
-                    add.up.market=FALSE, add.market.sqd=FALSE,
+                    add.up.market=TRUE, add.market.sqd=TRUE,
                     decay=0.95, lars.criterion="Cp", ...){
   
   # get all the arguments specified by their full names
@@ -285,18 +283,11 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names,
   for (i in asset.names){
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
+    # optionally add factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
+    reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
+                             add.up.market, add.market.sqd)
     # formula to pass to lm or lmRob
     fm.formula <- as.formula(paste(i," ~ ."))
-    
-    # optionally add factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
-    if(fit.method=="Robust" && (add.up.market==TRUE | add.market.sqd==TRUE)) {
-      stop("This function does not support add.up.market/add.market.sqd when 
-           variable.selection = 'stepwise' && fit.method = 'Robust'. Please 
-           choose a different combination of options.")
-    } else {
-      reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
-                               add.up.market, add.market.sqd)
-    }
     
     # fit based on time series regression method chosen
     if (fit.method == "OLS") {
@@ -332,49 +323,44 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names,
   
   # loop through and estimate model for each asset to allow unequal histories
   for (i in asset.names){
-    # formula to pass to lm or lmRob
-    fm.formula <- as.formula(paste(i," ~ ."))
     
-    # branch out based on time series regression method chosen
-    if (fit.method == "Robust") {
-      warning("'Robust' fit.method is not available with 'all subsets' 
-              variable.selection. Instead, results are shown for 
-              variable.selection='none' with fit.method='Robust' to include 
-              all factors.")
+    # choose best subset of factors depending on specified number of factors
+    if (num.factors.subset == length(force.in)) {
+      reg.xts <- na.omit(dat.xts[, c(i, force.in)])
+    } else if (num.factors.subset > length(force.in)) {
       reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-      reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
-                               add.up.market, add.market.sqd)
-      asset.fit <- lmRob(fm.formula, data=reg.xts)    
-    } 
-    else if (fit.method == "OLS" | fit.method == "DLS") {
-      # use regsubsets to find the best model with a subset of factors of size 
-      # num.factors.subset
-      
-      if (num.factors.subset == length(force.in)) {
-        reg.xts <- na.omit(dat.xts[, c(i, force.in)])
-      } else if (num.factors.subset > length(force.in)) {
-        reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-        if (fit.method != "DLS") {decay <- 1}
-        # do weighted least squares if "DLS"
-        w <- WeightsDLS(nrow(reg.xts), decay)
-        fm.subsets <- regsubsets(fm.formula, data=reg.xts, nvmax=nvmax,
-                                 force.in=force.in, method=subsets.method, 
-                                 weights=w)
-        sum.sub <- summary(fm.subsets)
-        reg.xts <- na.omit(dat.xts[,c(i,names(which(sum.sub$which[
-          as.character(num.factors.subset),-1]==TRUE)))])
-      } else {
-        stop("Invalid Argument: num.factors.subset should be >= 
-             length(force.in)")
-      }
-      
       # optionally add factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
       reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
                                add.up.market, add.market.sqd)
-      # fit linear regression model for the factors chosen
-      reg.list[[i]] <- lm(fm.formula, data=reg.xts, weights=w)
+      # formula to pass to lm or lmRob
+      fm.formula <- as.formula(paste(i," ~ ."))
+      
+      if (fit.method != "DLS") {decay <- 1}
+      # do weighted least squares if "DLS"
+      w <- WeightsDLS(nrow(reg.xts), decay)
+      
+      # use regsubsets to find the best model with a subset of factors of size 
+      # num.factors.subset
+      fm.subsets <- regsubsets(fm.formula, data=reg.xts, nvmax=nvmax,
+                               force.in=force.in, method=subsets.method, 
+                               weights=w)
+      sum.sub <- summary(fm.subsets)
+      reg.xts <- na.omit(dat.xts[,c(i,names(which(sum.sub$which[
+        as.character(num.factors.subset),-1]==TRUE)))])
+    } else {
+      stop("Invalid Argument: num.factors.subset should be >= 
+             length(force.in)")
     }
-    else {
+    
+    # fit based on time series regression method chosen
+    if (fit.method == "OLS") {
+      reg.list[[i]] <- lm(fm.formula, data=reg.xts)
+    } else if (fit.method == "DLS") {
+      w <- WeightsDLS(nrow(reg.xts), decay)
+      reg.list[[i]] <- lm(fm.formula, data=reg.xts, weights=w)
+    } else if (fit.method == "Robust") {
+      reg.list[[i]] <- lmRob(fm.formula, data=reg.xts)
+    } else {
       stop("Invalid argument: fit.method must be 'OLS', 'DLS' or 'Robust'")
     }
   }
@@ -473,7 +459,7 @@ WeightsDLS <- function(t,d){
 #
 makePaddedDataFrame <- function(l){
   DF <- do.call(rbind, lapply(lapply(l, unlist), "[", 
-                        unique(unlist(c(sapply(l,names))))))
+                              unique(unlist(c(sapply(l,names))))))
   DF <- as.data.frame(DF)
   names(DF) <- unique(unlist(c(sapply(l,names))))
   # as.matrix(DF) # if matrix output needed
@@ -482,7 +468,7 @@ makePaddedDataFrame <- function(l){
 
 #' @param object a fit object of class \code{tsfm} which is returned by 
 #' \code{fitTSFM}
- 
+
 #' @rdname fitTSFM
 #' @method coef tsfm
 #' @export
@@ -550,9 +536,9 @@ covFM.tsfm <- function(object) {
   
   cov.fm = beta %*% factor.cov %*% t(beta) + D.e
   
-#   if (any(diag(chol(cov.fm)) == 0)) {
-#     warning("Covariance matrix is not positive definite!")
-#   }
+  #   if (any(diag(chol(cov.fm)) == 0)) {
+  #     warning("Covariance matrix is not positive definite!")
+  #   }
   
   return(cov.fm)
 }

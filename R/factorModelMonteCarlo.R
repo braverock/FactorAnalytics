@@ -53,8 +53,8 @@
 #' data(managers.df)
 #' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                data=managers.df,fit.method="OLS",
-#'                variable.selection="none")
+#'                data=managers.df, add.up.market=FALSE, add.market.sqd=FALSE, 
+#'                fit.method="OLS", variable.selection="none")
 #' factorData= managers.df[,c("EDHEC.LS.EQ","SP500.TR")]  
 #' Beta.mat=fit$beta
 #' residualData=as.matrix((fit$resid.sd)^2,1,6) 

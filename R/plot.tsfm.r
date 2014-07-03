@@ -59,6 +59,7 @@
 #' fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
 #'                      data=managers.df, fit.method="OLS",
+#'                      add.up.market=FALSE, add.market.sqd=FALSE,
 #'                      variable.selection="none")
 #' # plot all assets and show only the first 4 assets.
 #' plot(fit.macro,max.show=4)

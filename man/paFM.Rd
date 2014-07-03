@@ -36,6 +36,7 @@ returns is \code{u_t}.
 data(managers.df)
 fit <- fitTSFM(asset.names=colnames(managers.df[, (1:6)]),
                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
+               add.up.market=FALSE, add.market.sqd=FALSE,
                fit.method="OLS", variable.selection="none")
 # without benchmark
 fm.attr <- paFM(fit)
