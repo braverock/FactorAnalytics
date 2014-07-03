@@ -4,12 +4,15 @@
 \alias{summary.tsfm}
 \title{Summarizing a fitted time series factor model}
 \usage{
-\method{summary}{tsfm}(object, ...)
+\method{summary}{tsfm}(object, se.type = "Default", ...)
 
 \method{print}{summary.tsfm}(x, digits = 3, ...)
 }
 \arguments{
 \item{object}{an object of class \code{tsfm} returned by \code{fitTSFM}.}
+
+\item{se.type}{one of "Default", "HC" or "HAC"; option for computing
+HC/HAC standard errors and t-statistics.}
 
 \item{x}{an object of class \code{summary.tsfm}.}
 
@@ -19,21 +22,36 @@ Default is 3.}
 \item{...}{futher arguments passed to or from other methods.}
 }
 \value{
-Returns an object of class \code{summary.tsfm}, which is a list
-containing the function call to \code{fitTSFM} and the
-\code{summary.lm} objects fitted for each asset in the factor model.
+Returns an object of class \code{summary.tsfm}.
 The print method for class \code{summary.tsfm} outputs the call,
-coefficients, r-squared and residual volatilty for all assets.
+coefficients (with standard errors and t-statistics), r-squared and
+residual volatilty (under the homoskedasticity assumption) for all assets.
+
+Object of class \code{summary.tsfm} is a list of length N + 2 containing:
+\item{call}{the function call to \code{fitTSFM}}
+\item{se.type}{standard error type as input}
+\item{}{summaries of the N fit objects (of class \code{lm}, \code{lmRob}
+or \code{lars}) for each asset in the factor model.}
 }
 \description{
 \code{summary} method for object of class \code{tsfm}.
 Returned object is of class {summary.tsfm}.
 }
+\details{
+The default \code{summary} method for a fitted \code{lm} object
+computes the standard errors and t-statistics under the assumption of
+homoskedasticty. Argument \code{se.type} gives the option to compute
+heteroskedasticity-consistent (HC) or
+heteroskedasticity-autocorrelation-consistent (HAC) standard errors and
+t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful
+only if \code{fit.method = "OLS" or "DLS"}.
+}
 \note{
 For a more detailed printed summary for each asset, refer to
-\code{print.summary.lm}, which further formats the coefficients,
-standard errors, etc. and additionally gives significance
-stars if \code{signif.stars} is TRUE.
+\code{\link[stats]{summary.lm}} or \code{\link[robustbase]{lmRob}}, which
+include F-statistics, Multiple R-squared, Adjusted R-squared and further
+format the coefficients, standard errors, etc. and additionally give
+significance stars if \code{signif.stars} is TRUE.
 }
 \examples{
 data(managers.df)
@@ -43,7 +61,7 @@ fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
                fit.method="OLS", variable.selection="none",
                add.up.market=TRUE, add.market.sqd=TRUE)
 # summary of factor model fit for all assets
-summary(fit)
+summary(fit, "HAC")
 
 # summary of lm fit for a single asset
 summary(fit$asset.fit[[1]])

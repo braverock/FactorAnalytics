@@ -21,24 +21,24 @@
 #' Criterion (AIC), improves. And, "all subsets" enables subsets selection 
 #' using \code{\link[leaps]{regsubsets}} that chooses the n-best performing 
 #' subsets of any given size (specified as \code{num.factor.subsets} here). 
-#' "lars" and "lasso" correspond to variants of least angle regression using 
-#' \code{\link[lars]{lars}}. If "lars" or "lasso" are chosen, \code{fit.method} 
+#' "lar" and "lasso" correspond to variants of least angle regression using 
+#' \code{\link[lars]{lars}}. If "lar" or "lasso" are chosen, \code{fit.method} 
 #' will be ignored.
 #' 
-#' Note: If  \code{variable.selection}="lars" or "lasso", \code{fit.method} 
-#' will be ignored. And, "Robust" \code{fit.method} is not truly available with 
-#' \code{variable.selection="all subsets"}; instead, results are produced for 
-#' \code{variable.selection="none"} with "Robust" to include all factors.
+#' Note: If \code{variable.selection="lar" or "lasso"}, \code{fit.method} 
+#' will be ignored. And, \code{fit.method="Robust"} is not truly available with 
+#' \code{variable.selection="all subsets"}; instead, 
+#' \code{variable.selection="none"} is used to include all factors.
 #' 
-#' If \code{add.up.market = TRUE}, max(0, Rm-Rf) is added as a factor in the 
+#' If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in the 
 #' regression, following Henriksson & Merton (1981), to account for market 
 #' timing (price movement of the general stock market relative to fixed income 
 #' securities). The coefficient can be interpreted as the number of free put 
-#' options. Similarly, if \code{add.market.sqd = TRUE}, (Rm-Rf)^2 is added as 
+#' options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added as 
 #' a factor in the regression, following Treynor-Mazuy (1966), to account for 
 #' market timing with respect to volatility.
 #' 
-#' Finally, for both the "lars" and "lasso" methods, the "Cp" statistic 
+#' Finally, for both the "lar" and "lasso" methods, the "Cp" statistic 
 #' (defined in page 17 of Efron et al. (2002)) is calculated using 
 #' \code{\link[lars]{summary.lars}} . While, "cv" computes the K-fold 
 #' cross-validated mean squared prediction error using 
@@ -56,7 +56,7 @@
 #' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
 #' See details. 
 #' @param variable.selection the variable selection method, one of "none", 
-#' "stepwise","all subsets","lars" or "lasso". See details.
+#' "stepwise","all subsets","lar" or "lasso". See details.
 #' @param subsets.method one of "exhaustive", "forward", "backward" or "seqrep" 
 #' (sequential replacement) to specify the type of subset search/selection. 
 #' Required if "all subsets" variable selection is chosen. 
@@ -75,7 +75,7 @@
 #' regressor and \code{market.name} is also required. Default is \code{FALSE}.
 #' @param decay a scalar in (0, 1] to specify the decay factor for 
 #' \code{fit.method="DLS"}. Default is 0.95.
-#' @param lars.criterion an option to assess model selection for the "lars" or 
+#' @param lars.criterion an option to assess model selection for the "lar" or 
 #' "lasso" variable.selection methods; one of "Cp" or "cv". See details. 
 #' Default is "Cp".
 #' @param ... optional arguments passed to the \code{step} function for 
@@ -100,7 +100,7 @@
 #' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
 #' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
 #' the \code{fit.method="Robust"}, or class \code{lars} if 
-#' \code{variable.selection="lars" or "lasso"}.}
+#' \code{variable.selection="lar" or "lasso"}.}
 #' \item{alpha}{N x 1 vector of estimated alphas.}
 #' \item{beta}{N x K matrix of estimated betas.}
 #' \item{r2}{N x 1 vector of R-squared values.}
@@ -165,7 +165,7 @@
 fitTSFM <- function(asset.names, factor.names, market.name, data=data, 
                     fit.method = c("OLS","DLS","Robust"),
                     variable.selection = c("none","stepwise","all subsets",
-                                           "lars","lasso"),
+                                           "lar","lasso"),
                     subsets.method = c("exhaustive", "backward", "forward", 
                                        "seqrep"),
                     nvmax=8, force.in=NULL, num.factors.subset=1, 
@@ -207,7 +207,7 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
                                  market.name, fit.method, subsets.method, 
                                  nvmax, force.in, num.factors.subset, 
                                  add.up.market, add.market.sqd, decay)
-  } else if (variable.selection == "lars" | variable.selection == "lasso"){
+  } else if (variable.selection == "lar" | variable.selection == "lasso"){
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, market.name, 
                               variable.selection, add.up.market, add.market.sqd, 
                               decay, lars.criterion)
@@ -217,14 +217,14 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
   } 
   else {
     stop("Invalid argument: variable.selection must be either 'none',
-         'stepwise','all subsets','lars' or 'lasso'")
+         'stepwise','all subsets','lar' or 'lasso'")
   }
   
   # extract the fitted factor models, coefficients, r2 values and residual vol 
   # from returned factor model fits above
-  coef.mat <- t(sapply(reg.list, coef))
-  alpha <- coef.mat[, 1]
-  beta <- coef.mat[, -1]
+  coef.mat <- makePaddedDataFrame(lapply(reg.list, coef))
+  alpha <- coef.mat[, 1, drop = FALSE]
+  beta <- coef.mat[, -1, drop = FALSE]
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
   resid.sd <- sapply(reg.list, function(x) summary(x)$sigma)
   # create list of return values.
@@ -380,7 +380,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names,
 }
 
 
-### method variable.selection = "lars" or "lasso"
+### method variable.selection = "lar" or "lasso"
 #
 SelectLars <- function(dat.xts, asset.names, factor.names, market.name, 
                        variable.selection, add.up.market, add.market.sqd, 
@@ -467,6 +467,15 @@ WeightsDLS <- function(t,d){
   w/sum(w)
 }
 
+### make a data frame (padded with NAs) from columns of unequal length
+#
+makePaddedDataFrame <- function(l){
+  DF <- do.call(rbind, lapply(lapply(l, unlist), "[", 
+                        unique(unlist(c(sapply(l,names))))))
+  DF <- as.data.frame(DF)
+  names(DF) <- unique(unlist(c(sapply(l,names))))
+  DF
+}
 
 #' @param object a fit object of class \code{tsfm} which is returned by 
 #' \code{fitTSFM}
@@ -521,9 +530,10 @@ covFM.tsfm <- function(object) {
   }
   
   # get parameters and factors from factor model
-  beta <- object$beta
+  beta <- as.matrix(object$beta)
+  beta[is.na(beta)] <- 0
   sig2.e = object$resid.sd^2
-  factor <- object$data[, colnames(object$beta)]
+  factor <- as.matrix(object$data[, colnames(object$beta)])
   
   # factor covariance matrix 
   factor.cov = var(factor, use="na.or.complete")
@@ -537,9 +547,9 @@ covFM.tsfm <- function(object) {
   
   cov.fm = beta %*% factor.cov %*% t(beta) + D.e
   
-  if (any(diag(chol(cov.fm)) == 0)) {
-    warning("Covariance matrix is not positive definite!")
-  }
+#   if (any(diag(chol(cov.fm)) == 0)) {
+#     warning("Covariance matrix is not positive definite!")
+#   }
   
   return(cov.fm)
 }

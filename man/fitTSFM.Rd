@@ -9,11 +9,10 @@
 \usage{
 fitTSFM(asset.names, factor.names, market.name, data = data,
   fit.method = c("OLS", "DLS", "Robust"), variable.selection = c("none",
-  "stepwise", "all subsets", "lars", "lasso"),
-  subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
-  nvmax = 8, force.in = NULL, num.factors.subset = 1,
-  add.up.market = FALSE, add.market.sqd = FALSE, decay = 0.95,
-  lars.criterion = "Cp", ...)
+  "stepwise", "all subsets", "lar", "lasso"), subsets.method = c("exhaustive",
+  "backward", "forward", "seqrep"), nvmax = 8, force.in = NULL,
+  num.factors.subset = 1, add.up.market = FALSE, add.market.sqd = FALSE,
+  decay = 0.95, lars.criterion = "Cp", ...)
 
 \method{coef}{tsfm}(object, ...)
 
@@ -41,7 +40,7 @@ optionally, \code{market.name}.}
 See details.}
 
 \item{variable.selection}{the variable selection method, one of "none",
-"stepwise","all subsets","lars" or "lasso". See details.}
+"stepwise","all subsets","lar" or "lasso". See details.}
 
 \item{subsets.method}{one of "exhaustive", "forward", "backward" or "seqrep"
 (sequential replacement) to specify the type of subset search/selection.
@@ -68,7 +67,7 @@ regressor and \code{market.name} is also required. Default is \code{FALSE}.}
 \item{decay}{a scalar in (0, 1] to specify the decay factor for
 \code{fit.method="DLS"}. Default is 0.95.}
 
-\item{lars.criterion}{an option to assess model selection for the "lars" or
+\item{lars.criterion}{an option to assess model selection for the "lar" or
 "lasso" variable.selection methods; one of "Cp" or "cv". See details.
 Default is "Cp".}
 
@@ -98,7 +97,7 @@ components:
 \item{asset.fit}{list of fitted objects for each asset. Each object is of
 class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if
 the \code{fit.method="Robust"}, or class \code{lars} if
-\code{variable.selection="lars" or "lasso"}.}
+\code{variable.selection="lar" or "lasso"}.}
 \item{alpha}{N x 1 vector of estimated alphas.}
 \item{beta}{N x K matrix of estimated betas.}
 \item{r2}{N x 1 vector of R-squared values.}
@@ -134,24 +133,24 @@ measured by the Bayesian Information Criterion (BIC) or Akaike Information
 Criterion (AIC), improves. And, "all subsets" enables subsets selection
 using \code{\link[leaps]{regsubsets}} that chooses the n-best performing
 subsets of any given size (specified as \code{num.factor.subsets} here).
-"lars" and "lasso" correspond to variants of least angle regression using
-\code{\link[lars]{lars}}. If "lars" or "lasso" are chosen, \code{fit.method}
+"lar" and "lasso" correspond to variants of least angle regression using
+\code{\link[lars]{lars}}. If "lar" or "lasso" are chosen, \code{fit.method}
 will be ignored.
 
-Note: If  \code{variable.selection}="lars" or "lasso", \code{fit.method}
-will be ignored. And, "Robust" \code{fit.method} is not truly available with
-\code{variable.selection="all subsets"}; instead, results are produced for
-\code{variable.selection="none"} with "Robust" to include all factors.
+Note: If \code{variable.selection="lar" or "lasso"}, \code{fit.method}
+will be ignored. And, \code{fit.method="Robust"} is not truly available with
+\code{variable.selection="all subsets"}; instead,
+\code{variable.selection="none"} is used to include all factors.
 
-If \code{add.up.market = TRUE}, max(0, Rm-Rf) is added as a factor in the
+If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in the
 regression, following Henriksson & Merton (1981), to account for market
 timing (price movement of the general stock market relative to fixed income
 securities). The coefficient can be interpreted as the number of free put
-options. Similarly, if \code{add.market.sqd = TRUE}, (Rm-Rf)^2 is added as
+options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added as
 a factor in the regression, following Treynor-Mazuy (1966), to account for
 market timing with respect to volatility.
 
-Finally, for both the "lars" and "lasso" methods, the "Cp" statistic
+Finally, for both the "lar" and "lasso" methods, the "Cp" statistic
 (defined in page 17 of Efron et al. (2002)) is calculated using
 \code{\link[lars]{summary.lars}} . While, "cv" computes the K-fold
 cross-validated mean squared prediction error using
