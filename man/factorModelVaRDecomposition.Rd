@@ -48,6 +48,7 @@ where beta.star = (beta, sig.e)' and F.star(t) = (F(t)', z(t))' By Euler's
 theorem:\cr \code{VaR.fm = sum(cVaR.fm) = sum(beta.star*mVaR.fm)} \cr
 }
 \examples{
+\dontrun{
 data(managers.df)
 fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
@@ -61,6 +62,7 @@ colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 factor.VaR.decomp.HAM1 = factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],
                                                   fit.macro$resid.sd[1], tail.prob=0.05,
                                                   VaR.method="historical")
+}
 }
 \author{
 Eric Zivot and Yi-An Chen

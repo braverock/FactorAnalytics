@@ -30,14 +30,12 @@
 #' @seealso \code{\link{fitTSFM}}, \code{\link{fitSFM}}, \code{\link{fitFFM}}
 #' 
 #' @examples
-#' \dontrun{
 #' data(managers.df)
-#' fit.ts <- fitTSFM(assets.names=colnames(managers.df[, (1:6)]), 
-#'                   factors.names=c("EDHEC.LS.EQ","SP500.TR"), 
-#'                   data=managers.df, fit.method="OLS")
+#' fit <- fitTSFM(asset.names=colnames(managers.df[, (1:6)]), 
+#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df, 
+#'                fit.method="OLS", variable.selection="none")
 #' # without benchmark
-#' fm.attr <- paFM(fit.ts)
-#' }
+#' fm.attr <- paFM(fit)
 #' 
 #' @export
 #' 
@@ -71,7 +69,7 @@ paFM <- function(fit, ...) {
       # active portfolio management p.512 17A.9 
       # top-down method
       
-      cum.ret <-   Return.cumulative(actual.xts)
+      cum.ret <- Return.cumulative(actual.xts)
       # setup initial value
       attr.ret.xts.all <- xts(, as.Date(date))
       
@@ -95,7 +93,7 @@ paFM <- function(fit, ...) {
       spec.ret.xts <- actual.xts - 
         xts(as.matrix(fit.lm$model[, -1])%*%as.matrix(fit.lm$coef[-1]), 
             as.Date(date))
-      cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts - spec.ret.xts)
+      cum.spec.ret[k,1] <- cum.ret - Return.cumulative(actual.xts - spec.ret.xts)
       attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
       colnames(attr.list[[k]]) <- c(factorName, "specific.returns")
     }

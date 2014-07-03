@@ -27,16 +27,17 @@
 #' @examples
 #' \dontrun{
 #' data(managers.df)
-#' fit.ts <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-#'                                   factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                                   data=managers.df,fit.method="OLS")
-#'  fm.attr <- paFM(fit.ts)
+#' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df, 
+#'                fit.method="OLS", variable.selection="none")
+#' fm.attr <- paFM(fit)
 #' # plot all
 #' plot(fm.attr,legend.loc="topleft",max.show=6)
 #' dev.off()
 #' # plot only one assets "HAM1
 #' plot(fm.attr,plot.single=TRUE,fundName="HAM1")
 #' }
+#' 
 #' @method plot pafm  
 #' @export
 #' 

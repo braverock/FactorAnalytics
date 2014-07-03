@@ -223,8 +223,10 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
   # extract the fitted factor models, coefficients, r2 values and residual vol 
   # from returned factor model fits above
   coef.mat <- makePaddedDataFrame(lapply(reg.list, coef))
-  alpha <- coef.mat[, 1, drop = FALSE]
-  beta <- coef.mat[, -1, drop = FALSE]
+  alpha <- coef.mat[, 1, drop=FALSE]
+  # to make class of alpha numeric instead of matrix
+  # aplha <- coef.mat[,1]
+  beta <- coef.mat[, -1, drop=FALSE]
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
   resid.sd <- sapply(reg.list, function(x) summary(x)$sigma)
   # create list of return values.
@@ -474,6 +476,7 @@ makePaddedDataFrame <- function(l){
                         unique(unlist(c(sapply(l,names))))))
   DF <- as.data.frame(DF)
   names(DF) <- unique(unlist(c(sapply(l,names))))
+  # as.matrix(DF) # if matrix output needed
   DF
 }
 

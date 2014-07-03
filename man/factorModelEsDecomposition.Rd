@@ -50,6 +50,7 @@ where beta.star = (beta, sig.e)' and F.star(t) = (F(t)', z(t))' By Euler's
 theorem:\cr \code{ES.fm = sum(cES.fm) = sum(beta.star*mES.fm)} \cr
 }
 \examples{
+\dontrun{
 data(managers.df)
 fit.macro <- fitTSFM (asset.names=colnames(managers.df[,(1:6)]),
                       factor.names=c("EDHEC.LS.EQ","SP500.TR"),
@@ -80,6 +81,7 @@ colnames(tmpData)[c(1,length(tmpData[1,]))] = c("STI", "residual")
 factorModelEsDecomposition(tmpData,
                           fit.fund$beta["STI",],
                           fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method="historical")
+}
 }
 \author{
 Eric Zviot and Yi-An Chen.

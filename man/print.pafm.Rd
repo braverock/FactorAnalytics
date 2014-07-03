@@ -15,17 +15,14 @@
 Generic function of print method for \code{paFM}.
 }
 \examples{
-\dontrun{
 # load data from the database
  data(managers.df)
- # fit the factor model with OLS
- fit.ts <- fitTimeSeriesFactorModel(assets.names=colnames(managers.df[,(1:6)]),
-                               factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-                               data=managers.df,fit.method="OLS")
-
-  fm.attr <- paFM(fit.ts)
-  print(fm.attr)
-  }
+# fit the factor model with OLS
+fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
+               fit.method="OLS", variable.selection="none")
+fm.attr <- paFM(fit)
+print(fm.attr)
 }
 \author{
 Yi-An Chen.

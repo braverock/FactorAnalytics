@@ -31,7 +31,7 @@
 #' or \code{lars}) for each asset in the factor model.}
 #' 
 #' @note For a more detailed printed summary for each asset, refer to 
-#' \code{\link[stats]{summary.lm}} or \code{\link[robustbase]{lmRob}}, which 
+#' \code{\link[stats]{summary.lm}} or \code{\link[robust]{lmRob}}, which 
 #' include F-statistics, Multiple R-squared, Adjusted R-squared and further 
 #' format the coefficients, standard errors, etc. and additionally give 
 #' significance stars if \code{signif.stars} is TRUE. 
@@ -72,9 +72,9 @@ summary.tsfm <- function(object, se.type="Default", ...){
   # convert to HC/HAC standard errors and t-stats if specified
   for (i in object$asset.names) {
     if (se.type == "HC") {
-      sum[[i]]$coefficients <- coeftest(fit$asset.fit[[i]], vcovHC)[,1:4]
+      sum[[i]]$coefficients <- coeftest(object$asset.fit[[i]], vcovHC)[,1:4]
     } else if (se.type == "HAC") {
-      sum[[i]]$coefficients <- coeftest(fit$asset.fit[[i]], vcovHAC)[,1:4]
+      sum[[i]]$coefficients <- coeftest(object$asset.fit[[i]], vcovHAC)[,1:4]
     }
   }
   

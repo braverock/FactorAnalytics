@@ -25,7 +25,7 @@ test_that("fitTSFM is as expected", {
     fit.method = "OLS",
     variable.selection="none")
 
-  expect_that(ff.mod$beta,is_equivalent_to(t(coef(ff4)[-1,])))
+  expect_that(as.matrix(ff.mod$beta),is_equivalent_to(t(coef(ff4)[-1,])))
   expect_that(as.numeric(ff.mod$r2),equals(as.numeric(sapply(X = sum4, FUN = "[", "r.squared"))))
   
 })

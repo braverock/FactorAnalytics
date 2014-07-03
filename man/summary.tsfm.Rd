@@ -48,7 +48,7 @@ only if \code{fit.method = "OLS" or "DLS"}.
 }
 \note{
 For a more detailed printed summary for each asset, refer to
-\code{\link[stats]{summary.lm}} or \code{\link[robustbase]{lmRob}}, which
+\code{\link[stats]{summary.lm}} or \code{\link[robust]{lmRob}}, which
 include F-statistics, Multiple R-squared, Adjusted R-squared and further
 format the coefficients, standard errors, etc. and additionally give
 significance stars if \code{signif.stars} is TRUE.

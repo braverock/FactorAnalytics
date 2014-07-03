@@ -33,14 +33,12 @@ The returns attributed to factor j is \code{b_j * f_jt} and specific
 returns is \code{u_t}.
 }
 \examples{
-\dontrun{
 data(managers.df)
-fit.ts <- fitTSFM(assets.names=colnames(managers.df[, (1:6)]),
-                  factors.names=c("EDHEC.LS.EQ","SP500.TR"),
-                  data=managers.df, fit.method="OLS")
+fit <- fitTSFM(asset.names=colnames(managers.df[, (1:6)]),
+               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
+               fit.method="OLS", variable.selection="none")
 # without benchmark
-fm.attr <- paFM(fit.ts)
-}
+fm.attr <- paFM(fit)
 }
 \author{
 Yi-An Chen and Sangeetha Srinivasan

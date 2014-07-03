@@ -45,7 +45,7 @@
 #' \item Epperlein and Smillie (2006) "Cracking VAR with Kernels," Risk.
 #' }
 #' @examples
-#' 
+#' \dontrun{
 #' data(managers.df)
 #' fit.macro <- fitTSFM (asset.names=colnames(managers.df[,(1:6)]), 
 #'                       factor.names=c("EDHEC.LS.EQ","SP500.TR"),
@@ -76,6 +76,7 @@
 #' factorModelEsDecomposition(tmpData, 
 #'                           fit.fund$beta["STI",],
 #'                           fit.fund$resid.variance["STI"], tail.prob=0.05,VaR.method="historical")
+#' }
 #' 
 #' @export
 #' 

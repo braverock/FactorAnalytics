@@ -73,7 +73,8 @@ selected characteristics for one or more assets.
 data(managers.df)
 fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-                     data=managers.df,fit.method="OLS")
+                     data=managers.df, fit.method="OLS",
+                     variable.selection="none")
 # plot all assets and show only the first 4 assets.
 plot(fit.macro,max.show=4)
 # plot of an individual asset, "HAM1"

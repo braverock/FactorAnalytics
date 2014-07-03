@@ -41,7 +41,7 @@
 #' \item Meucci (2007). "Risk Contributions from Generic User-Defined Factors," Risk. 
 #' }
 #' @examples
-#' 
+#' \dontrun{
 #' data(managers.df)
 #' fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
@@ -55,7 +55,7 @@
 #' factor.VaR.decomp.HAM1 = factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],
 #'                                                   fit.macro$resid.sd[1], tail.prob=0.05,
 #'                                                   VaR.method="historical")
-#' 
+#' }
 #' @export
 factorModelVaRDecomposition <-
 function(Data, beta.vec, sig2.e, tail.prob = 0.01,

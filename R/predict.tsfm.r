@@ -24,8 +24,8 @@
 #' ret.assets = managers.df[,(1:6)]
 #' # fit the factor model with OLS
 #' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                data=managers.df, fit.method="OLS")
+#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df, 
+#'                fit.method="OLS", variable.selection="none")
 #' 
 #' pred.fit <- predict(fit)
 #' newdata <- data.frame(EDHEC.LS.EQ = rnorm(n=120), SP500.TR = rnorm(n=120) )

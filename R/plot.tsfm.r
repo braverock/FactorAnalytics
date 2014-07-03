@@ -58,7 +58,8 @@
 #' data(managers.df)
 #' fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
 #'                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                      data=managers.df,fit.method="OLS")
+#'                      data=managers.df, fit.method="OLS",
+#'                      variable.selection="none")
 #' # plot all assets and show only the first 4 assets.
 #' plot(fit.macro,max.show=4)
 #' # plot of an individual asset, "HAM1" 
@@ -373,7 +374,7 @@ plot.tsfm <-
              },    
              
              "4L" = {
-               cov.fm<- factorModelCovariance(x$beta,cov.factors,x$resid.variance)    
+               cov.fm<- covFM(x)    
                cor.fm = cov2cor(cov.fm)
                rownames(cor.fm) = colnames(cor.fm)
                ord <- order(cor.fm[1,])
