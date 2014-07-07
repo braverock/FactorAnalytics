@@ -46,7 +46,7 @@
 #' @param factor.names vector containing names of the macroeconomic factors.
 #' @param market.name name of the column for market excess returns (Rm-Rf). 
 #' Is required only if \code{add.up.market} or \code{add.market.sqd} 
-#' are \code{TRUE}. 
+#' are \code{TRUE}.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{market.name}.
@@ -65,11 +65,11 @@
 #' @param num.factors.subset number of factors required in the factor model; 
 #' an option for "all subsets" variable selection. Default is 1. 
 #' Note: nvmax >= num.factors.subset >= length(force.in).
-#' @param add.up.market logical; If \code{TRUE}, adds max(0, Rm-Rf) as a 
-#' regressor and \code{market.name} is also required. Default is \code{TRUE}. 
+#' @param add.up.market logical, adds max(0, Rm-Rf) as a factor. If 
+#' \code{TRUE}, \code{market.name} is required. Default is \code{TRUE}. 
 #' See Details. 
-#' @param add.market.sqd logical; If \code{TRUE}, adds (Rm-Rf)^2 as a 
-#' regressor and \code{market.name} is also required. Default is \code{TRUE}.
+#' @param add.market.sqd logical, adds (Rm-Rf)^2 as a factor. If \code{TRUE},
+#' \code{market.name} is required. Default is \code{TRUE}.
 #' @param decay a scalar in (0, 1] to specify the decay factor for 
 #' \code{fit.method="DLS"}. Default is 0.95.
 #' @param lars.criterion an option to assess model selection for the "lar" or 
@@ -103,7 +103,7 @@
 #' \item{r2}{N x 1 vector of R-squared values.}
 #' \item{resid.sd}{N x 1 vector of residual standard deviations.}
 #' \item{call}{the matched function call.}
-#' \item{data}{data as input.}
+#' \item{data}{xts data object containing the assets and factors.}
 #' \item{asset.names}{asset.names as input.}
 #' \item{factor.names}{factor.names as input.}
 #' \item{fit.method}{fit.method as input.}
@@ -172,12 +172,18 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
   
   # get all the arguments specified by their full names
   call <- match.call()
+
+  fit.method = fit.method[1] # default is OLS
+  variable.selection = variable.selection[1] # default is "none"
+  subsets.method = subsets.method[1] # default is "exhaustive"
+  
   if (!exists("direction")) {direction <- "backward"}
   if (!exists("steps")) {steps <- 1000}
   if (!exists("k")) {k <- 2}
-  if (!exists("market.name") && (add.up.market==TRUE | add.market.sqd==TRUE)) {
-    stop("Missing input: 'market.name' to include factors 'up.market' or 
-         'market.sqd'")
+  if ((missing(market.name)|is.null(market.name)) && 
+        (add.up.market==TRUE | add.market.sqd==TRUE)) {
+    stop("Missing input: 'market.name' is required to include factors 
+         'up.market' or 'market.sqd'")
   }
   
   # convert data into an xts object and hereafter work with xts objects
@@ -185,33 +191,52 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
   
   # extract columns to be used in the time series regression
   dat.xts <- merge(data.xts[,asset.names], data.xts[,factor.names])
-  if (add.up.market == TRUE | add.market.sqd == TRUE ) {
-    dat.xts <- merge(dat.xts, data.xts[,market.name])
+  ### When merging xts objects, the spaces in names get converted to periods
+  
+  # opt add market-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
+  if(add.up.market == TRUE) {
+    up.market <- data.xts[,market.name]
+    up.market [up.market < 0] <- 0
+    dat.xts <- merge.xts(dat.xts,up.market)
+    colnames(dat.xts)[dim(dat.xts)[2]] <- "up.market"
+    factor.names <- c(factor.names, "up.market")
   }
+  if(add.market.sqd == TRUE) {
+    market.sqd <- data.xts[,market.name]^2   
+    dat.xts <- merge(dat.xts, market.sqd)
+    colnames(dat.xts)[dim(dat.xts)[2]] <- "market.sqd"
+    factor.names <- c(factor.names, "market.sqd")
+  }
+  
+  # spaces get converted to periods in colnames of xts object after merge
+  asset.names <- gsub(" ",".", asset.names, fixed=TRUE)
+  factor.names <- gsub(" ",".", factor.names, fixed=TRUE)
   
   # Selects regression procedure based on specified variable.selection method.
   # Each method returns a list of fitted factor models for each asset.
   if (variable.selection == "none") {
     reg.list <- NoVariableSelection(dat.xts, asset.names, factor.names, 
-                                    market.name, fit.method, add.up.market, 
-                                    add.market.sqd, decay)
+                                    fit.method, add.up.market, add.market.sqd, 
+                                    decay)
   } else if (variable.selection == "stepwise"){
     reg.list <- SelectStepwise(dat.xts, asset.names, factor.names, 
-                               market.name, fit.method,
-                               add.up.market, add.market.sqd, decay,
-                               direction, steps, k)
+                               fit.method, add.up.market, add.market.sqd, 
+                               decay, direction, steps, k)
   } else if (variable.selection == "all subsets"){
     reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names, 
-                                 market.name, fit.method, subsets.method, 
+                                 fit.method, subsets.method, 
                                  nvmax, force.in, num.factors.subset, 
                                  add.up.market, add.market.sqd, decay)
   } else if (variable.selection == "lar" | variable.selection == "lasso"){
-    result.lars <- SelectLars(dat.xts, asset.names, factor.names, market.name, 
+    result.lars <- SelectLars(dat.xts, asset.names, factor.names, 
                               variable.selection, add.up.market, add.market.sqd, 
                               decay, lars.criterion)
-    result.lars <- c(result.lars, call, data, asset.names, factor.names, 
-                     fit.method, variable.selection)
-    return(result.lars)
+    input <- list(call=call, data=dat.xts, 
+                  asset.names=asset.names, factor.names=factor.names, 
+                  fit.method=fit.method, variable.selection=variable.selection)
+    result <- c(result.lars, input)
+    class(result) <- "tsfm"
+    return(result)
   } 
   else {
     stop("Invalid argument: variable.selection must be either 'none',
@@ -229,7 +254,7 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
   resid.sd <- sapply(reg.list, function(x) summary(x)$sigma)
   # create list of return values.
   result <- list(asset.fit=reg.list, alpha=alpha, beta=beta, r2=r2, 
-                 resid.sd=resid.sd, call=call, data=data, 
+                 resid.sd=resid.sd, call=call, data=dat.xts, 
                  asset.names=asset.names, factor.names=factor.names, 
                  fit.method=fit.method, variable.selection=variable.selection)
   class(result) <- "tsfm"
@@ -239,9 +264,8 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
 
 ### method variable.selection = "none"
 #
-NoVariableSelection <- function (dat.xts, asset.names, factor.names, 
-                                 market.name, fit.method, add.up.market, 
-                                 add.market.sqd, decay){
+NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method, 
+                                add.up.market, add.market.sqd, decay){
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
@@ -249,9 +273,7 @@ NoVariableSelection <- function (dat.xts, asset.names, factor.names,
   for (i in asset.names){
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-    # optionally add factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
-    reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
-                             add.up.market, add.market.sqd)
+    
     # formula to pass to lm or lmRob
     fm.formula <- as.formula(paste(i," ~ ."))
     
@@ -273,9 +295,9 @@ NoVariableSelection <- function (dat.xts, asset.names, factor.names,
 
 ### method variable.selection = "stepwise"
 #
-SelectStepwise <- function(dat.xts, asset.names, factor.names, 
-                           market.name, fit.method, add.up.market, 
-                           add.market.sqd, decay, direction, steps, k){
+SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method, 
+                           add.up.market, add.market.sqd, decay, 
+                           direction, steps, k){
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
@@ -283,9 +305,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names,
   for (i in asset.names){
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-    # optionally add factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
-    reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
-                             add.up.market, add.market.sqd)
+    
     # formula to pass to lm or lmRob
     fm.formula <- as.formula(paste(i," ~ ."))
     
@@ -310,14 +330,15 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names,
 
 ### method variable.selection = "all subsets"
 #
-SelectAllSubsets <- function(dat.xts, asset.names, factor.names, 
-                             market.name, fit.method, subsets.method, 
-                             nvmax, force.in, num.factors.subset, 
-                             add.up.market, add.market.sqd, decay){
+SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method, 
+                             subsets.method, nvmax, force.in, 
+                             num.factors.subset, add.up.market, add.market.sqd, 
+                             decay){
   # Check argument validity
   if (nvmax < num.factors.subset) {
     stop("Invaid Argument: nvmax should be >= num.factors.subset")
   }
+  
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
@@ -329,9 +350,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names,
       reg.xts <- na.omit(dat.xts[, c(i, force.in)])
     } else if (num.factors.subset > length(force.in)) {
       reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-      # optionally add factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
-      reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
-                               add.up.market, add.market.sqd)
+      
       # formula to pass to lm or lmRob
       fm.formula <- as.formula(paste(i," ~ ."))
       
@@ -370,9 +389,8 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names,
 
 ### method variable.selection = "lar" or "lasso"
 #
-SelectLars <- function(dat.xts, asset.names, factor.names, market.name, 
-                       variable.selection, add.up.market, add.market.sqd, 
-                       decay, lars.criterion) {
+SelectLars <- function(dat.xts, asset.names, factor.names, variable.selection, 
+                       add.up.market, add.market.sqd, decay, lars.criterion) {
   # initialize list object to hold the fitted objects and, vectors and matrices
   # for the other results
   asset.fit <- list()
@@ -380,19 +398,18 @@ SelectLars <- function(dat.xts, asset.names, factor.names, market.name,
   beta <- matrix(NA, length(asset.names), length(factor.names))
   r2 <- rep(NA, length(asset.names))
   resid.sd <- rep(NA, length(asset.names))
-  
+  names(alpha)=names(r2)=names(resid.sd)=rownames(beta)=asset.names
+  colnames(beta) <- factor.names
   
   # loop through and estimate model for each asset to allow unequal histories
   for (i in asset.names){
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-    # optionally add factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
-    reg.xts <- MarketFactors(dat.xts, reg.xts, market.name, 
-                             add.up.market, add.market.sqd)
+    
     # convert to matrix
     reg.mat <- as.matrix(na.omit(reg.xts))
     # fit lar or lasso regression model
-    lars.fit <- lars(reg.mat[,factor.names], reg.mat[,i], 
+    lars.fit <- lars(reg.mat[,-1], reg.mat[,i], 
                      type=variable.selection, trace = FALSE)
     lars.sum <- summary(lars.fit)
     
@@ -410,39 +427,20 @@ SelectLars <- function(dat.xts, asset.names, factor.names, market.name,
     
     # get factor model coefficients & fitted values at the step obtained above
     coef.lars <- predict(lars.fit, s=s, type="coef", mode="step")
-    fitted.lars <- predict(lars.fit, reg.xts[,factor.names], s=s, type="fit", 
+    fitted.lars <- predict(lars.fit, reg.xts[,-1], s=s, type="fit", 
                            mode="step")
     # extract and assign the results
     asset.fit[[i]] = lars.fit
     alpha[i] <- (fitted.lars$fit - 
-                   reg.xts[,factor.names]%*%coef.lars$coefficients)[1]
+                   reg.xts[,-1]%*%coef.lars$coefficients)[1]
     beta.names <- names(coef.lars$coefficients)
-    beta[i,beta.names] <- coef.lars$coefficients
+    beta[i, beta.names] <- coef.lars$coefficients
     r2[i] <-  lars.fit$R2[s]
     resid.sd[i] <- lars.sum$Rss[s]/(nrow(reg.xts)-s)
     
   }
-  results.lars <- list(asset.fit, alpha, beta, r2, resid.sd)
-}
-
-
-### Format and add optional factors "up.market" and "market.sqd"
-#
-MarketFactors <- function(dat.xts, reg.xts, market.name, 
-                          add.up.market, add.market.sqd){
-  if(add.up.market == TRUE) {
-    # up.market = max(0,Rm-Rf)
-    up.market <- apply(dat.xts[,market.name],1,max,0)
-    reg.xts <- merge(reg.xts,up.market)
-    colnames(reg.xts)[dim(reg.xts)[2]] <- "up.market"
-  }
-  if(add.market.sqd == TRUE) {
-    # market.sqd = (Rm-Rf)^2
-    market.sqd <- dat.xts[,market.name]^2
-    reg.xts <- merge(reg.xts,market.sqd)
-    colnames(reg.xts)[dim(reg.xts)[2]] <- "market.sqd"
-  }
-  reg.xts
+  results.lars <- list(asset.fit=asset.fit, alpha=alpha, beta=beta, r2=r2, 
+                       resid.sd=resid.sd)
 }
 
 

@@ -9,11 +9,12 @@
 #' heteroskedasticity-consistent (HC) or 
 #' heteroskedasticity-autocorrelation-consistent (HAC) standard errors and 
 #' t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful 
-#' only if \code{fit.method = "OLS" or "DLS"}.
+#' only if \code{fit.method = "OLS" or "DLS"}. This option is currently not 
+#' available for \code{variable.selection = "lar" or "lasso"}.
 #'  
 #' @param object an object of class \code{tsfm} returned by \code{fitTSFM}.
 #' @param se.type one of "Default", "HC" or "HAC"; option for computing 
-#' HC/HAC standard errors and t-statistics. 
+#' HC/HAC standard errors and t-statistics.
 #' @param x an object of class \code{summary.tsfm}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
@@ -70,6 +71,7 @@ summary.tsfm <- function(object, se.type="Default", ...){
   sum <- lapply(object$asset.fit, summary)
   
   # convert to HC/HAC standard errors and t-stats if specified
+  # extract coefficients separately for "lars" variable.selection method
   for (i in object$asset.names) {
     if (se.type == "HC") {
       sum[[i]]$coefficients <- coeftest(object$asset.fit[[i]], vcovHC)[,1:4]
@@ -78,8 +80,19 @@ summary.tsfm <- function(object, se.type="Default", ...){
     }
   }
   
+  if (object$variable.selection=="lar" | object$variable.selection=="lasso") {
+    sum <- list()
+    for (i in object$asset.names) {
+      sum[[i]]$coefficients <- as.matrix(c(object$alpha[i], object$beta[i,]))
+      rownames(sum[[i]]$coefficients)[1]="(Intercept)"
+      colnames(sum[[i]]$coefficients)[1]="Estimate"
+      sum[[i]]$r.squared <- as.numeric(object$r2[i])
+      sum[[i]]$sigma <- as.numeric(object$resid.sd[i]) 
+    }
+  }
+  
   # include the call and se.type to fitTSFM
-  sum <- c(call=object$call, Type=se.type, sum)
+  sum <- c(list(call=object$call, Type=se.type), sum)
   class(sum) <- "summary.tsfm"
   return(sum)
 }

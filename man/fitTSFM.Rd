@@ -57,12 +57,12 @@ Default is NULL.}
 an option for "all subsets" variable selection. Default is 1.
 Note: nvmax >= num.factors.subset >= length(force.in).}
 
-\item{add.up.market}{logical; If \code{TRUE}, adds max(0, Rm-Rf) as a
-regressor and \code{market.name} is also required. Default is \code{TRUE}.
+\item{add.up.market}{logical, adds max(0, Rm-Rf) as a factor. If
+\code{TRUE}, \code{market.name} is required. Default is \code{TRUE}.
 See Details.}
 
-\item{add.market.sqd}{logical; If \code{TRUE}, adds (Rm-Rf)^2 as a
-regressor and \code{market.name} is also required. Default is \code{TRUE}.}
+\item{add.market.sqd}{logical, adds (Rm-Rf)^2 as a factor. If \code{TRUE},
+\code{market.name} is required. Default is \code{TRUE}.}
 
 \item{decay}{a scalar in (0, 1] to specify the decay factor for
 \code{fit.method="DLS"}. Default is 0.95.}
@@ -103,7 +103,7 @@ the \code{fit.method="Robust"}, or class \code{lars} if
 \item{r2}{N x 1 vector of R-squared values.}
 \item{resid.sd}{N x 1 vector of residual standard deviations.}
 \item{call}{the matched function call.}
-\item{data}{data as input.}
+\item{data}{xts data object containing the assets and factors.}
 \item{asset.names}{asset.names as input.}
 \item{factor.names}{factor.names as input.}
 \item{fit.method}{fit.method as input.}
