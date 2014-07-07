@@ -21,11 +21,10 @@
 #' Criterion (AIC), improves. And, "all subsets" enables subsets selection 
 #' using \code{\link[leaps]{regsubsets}} that chooses the n-best performing 
 #' subsets of any given size (specified as \code{num.factor.subsets} here). 
-#' "lar" and "lasso" correspond to variants of least angle regression using 
-#' \code{\link[lars]{lars}}. 
-#' 
-#' Note: If \code{variable.selection="lar" or "lasso"}, \code{fit.method} 
-#' will be ignored.
+#' \code{varaible.selection="lars"} corresponds to least angle regression 
+#' using \code{\link[lars]{lars}} with variants "lasso", "lar", 
+#' "forward.stagewise" or "stepwise". Note: If 
+#' \code{variable.selection="lars"}, \code{fit.method} will be ignored.
 #' 
 #' If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in 
 #' the regression, following Henriksson & Merton (1981), to account for market 
@@ -46,14 +45,14 @@
 #' @param factor.names vector containing names of the macroeconomic factors.
 #' @param market.name name of the column for market excess returns (Rm-Rf). 
 #' Is required only if \code{add.up.market} or \code{add.market.sqd} 
-#' are \code{TRUE}.
+#' are \code{TRUE}. Default is NULL.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{market.name}.
 #' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
 #' See details. 
 #' @param variable.selection the variable selection method, one of "none", 
-#' "stepwise","all subsets","lar" or "lasso". See details.
+#' "stepwise","all subsets","lars". See details.
 #' @param subsets.method one of "exhaustive", "forward", "backward" or "seqrep" 
 #' (sequential replacement) to specify the type of subset search/selection. 
 #' Required if "all subsets" variable selection is chosen. 
@@ -72,9 +71,10 @@
 #' \code{market.name} is required. Default is \code{TRUE}.
 #' @param decay a scalar in (0, 1] to specify the decay factor for 
 #' \code{fit.method="DLS"}. Default is 0.95.
-#' @param lars.criterion an option to assess model selection for the "lar" or 
-#' "lasso" variable.selection methods; one of "Cp" or "cv". See details. 
-#' Default is "Cp".
+#' @param lars.type One of "lasso", "lar", "forward.stagewise" or "stepwise". 
+#' The names can be abbreviated to any unique substring. Default is "lasso".
+#' @param lars.criterion an option to assess model selection for the "lars" 
+#' method; one of "Cp" or "cv". See details. Default is "Cp".
 #' @param ... optional arguments passed to the \code{step} function for 
 #' variable.selection method "stepwise", such as direction, steps and 
 #' the penalty factor k. Note that argument k is available only for "OLS" 
@@ -160,22 +160,24 @@
 #'
 #'  @export
 
-fitTSFM <- function(asset.names, factor.names, market.name, data=data, 
-                    fit.method = c("OLS","DLS","Robust"),
-                    variable.selection = c("none","stepwise","all subsets",
-                                           "lar","lasso"),
-                    subsets.method = c("exhaustive", "backward", "forward", 
-                                       "seqrep"),
+fitTSFM <- function(asset.names, factor.names, market.name=NULL, data=data, 
+                    fit.method=c("OLS","DLS","Robust"),
+                    variable.selection=c("none","stepwise","all subsets",
+                                         "lars"),
+                    subsets.method=c("exhaustive","backward","forward",
+                                     "seqrep"),
                     nvmax=8, force.in=NULL, num.factors.subset=1, 
-                    add.up.market=TRUE, add.market.sqd=TRUE,
-                    decay=0.95, lars.criterion="Cp", ...){
+                    add.up.market=TRUE, add.market.sqd=TRUE, decay=0.95,
+                    lars.type=c("lasso","lar","forward.stagewise","stepwise"),
+                    lars.criterion="Cp", ...){
   
   # get all the arguments specified by their full names
   call <- match.call()
-
+  
   fit.method = fit.method[1] # default is OLS
   variable.selection = variable.selection[1] # default is "none"
   subsets.method = subsets.method[1] # default is "exhaustive"
+  lars.type=lars.type[1] # default is "lasso"
   
   if (!exists("direction")) {direction <- "backward"}
   if (!exists("steps")) {steps <- 1000}
@@ -227,9 +229,9 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
                                  fit.method, subsets.method, 
                                  nvmax, force.in, num.factors.subset, 
                                  add.up.market, add.market.sqd, decay)
-  } else if (variable.selection == "lar" | variable.selection == "lasso"){
+  } else if (variable.selection == "lars"){
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, 
-                              variable.selection, add.up.market, add.market.sqd, 
+                              lars.type, add.up.market, add.market.sqd, 
                               decay, lars.criterion)
     input <- list(call=call, data=dat.xts, 
                   asset.names=asset.names, factor.names=factor.names, 
@@ -240,7 +242,7 @@ fitTSFM <- function(asset.names, factor.names, market.name, data=data,
   } 
   else {
     stop("Invalid argument: variable.selection must be either 'none',
-         'stepwise','all subsets','lar' or 'lasso'")
+         'stepwise','all subsets','lars'")
   }
   
   # extract the fitted factor models, coefficients, r2 values and residual vol 
@@ -387,9 +389,9 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
 }
 
 
-### method variable.selection = "lar" or "lasso"
+### method variable.selection = "lars"
 #
-SelectLars <- function(dat.xts, asset.names, factor.names, variable.selection, 
+SelectLars <- function(dat.xts, asset.names, factor.names, lars.type, 
                        add.up.market, add.market.sqd, decay, lars.criterion) {
   # initialize list object to hold the fitted objects and, vectors and matrices
   # for the other results
@@ -410,7 +412,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, variable.selection,
     reg.mat <- as.matrix(na.omit(reg.xts))
     # fit lar or lasso regression model
     lars.fit <- lars(reg.mat[,-1], reg.mat[,i], 
-                     type=variable.selection, trace = FALSE)
+                     type=lars.type, trace = FALSE)
     lars.sum <- summary(lars.fit)
     
     # get the step that minimizes the "Cp" statistic or the "cv" mean-sqd 
@@ -419,7 +421,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, variable.selection,
       s <- which.min(lars.sum$Cp)
     } else if (lars.criterion == "cv") {
       lars.cv <- cv.lars(reg.mat[,factor.names], reg.mat[,i], trace=FALSE,
-                         type=variable.selection, mode="step", plot.it=FALSE)
+                         type=lars.type, mode="step", plot.it=FALSE)
       s <- which.min(lars.cv$cv)
     } else {
       stop("Invalid argument: lars.criterion must be Cp' or 'cv'")

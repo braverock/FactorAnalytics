@@ -80,7 +80,7 @@ summary.tsfm <- function(object, se.type="Default", ...){
     }
   }
   
-  if (object$variable.selection=="lar" | object$variable.selection=="lasso") {
+  if (object$variable.selection=="lars") {
     sum <- list()
     for (i in object$asset.names) {
       sum[[i]]$coefficients <- as.matrix(c(object$alpha[i], object$beta[i,]))

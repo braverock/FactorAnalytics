@@ -7,12 +7,13 @@
 \alias{residuals.tsfm}
 \title{Fit a time series factor model using time series regression}
 \usage{
-fitTSFM(asset.names, factor.names, market.name, data = data,
+fitTSFM(asset.names, factor.names, market.name = NULL, data = data,
   fit.method = c("OLS", "DLS", "Robust"), variable.selection = c("none",
-  "stepwise", "all subsets", "lar", "lasso"), subsets.method = c("exhaustive",
+  "stepwise", "all subsets", "lars"), subsets.method = c("exhaustive",
   "backward", "forward", "seqrep"), nvmax = 8, force.in = NULL,
   num.factors.subset = 1, add.up.market = TRUE, add.market.sqd = TRUE,
-  decay = 0.95, lars.criterion = "Cp", ...)
+  decay = 0.95, lars.type = c("lasso", "lar", "forward.stagewise",
+  "stepwise"), lars.criterion = "Cp", ...)
 
 \method{coef}{tsfm}(object, ...)
 
@@ -30,7 +31,7 @@ excess returns are the dependent variable.}
 
 \item{market.name}{name of the column for market excess returns (Rm-Rf).
 Is required only if \code{add.up.market} or \code{add.market.sqd}
-are \code{TRUE}.}
+are \code{TRUE}. Default is NULL.}
 
 \item{data}{vector, matrix, data.frame, xts, timeSeries or zoo object
 containing column(s) named in \code{asset.names}, \code{factor.names} and
@@ -40,7 +41,7 @@ optionally, \code{market.name}.}
 See details.}
 
 \item{variable.selection}{the variable selection method, one of "none",
-"stepwise","all subsets","lar" or "lasso". See details.}
+"stepwise","all subsets","lars". See details.}
 
 \item{subsets.method}{one of "exhaustive", "forward", "backward" or "seqrep"
 (sequential replacement) to specify the type of subset search/selection.
@@ -67,9 +68,11 @@ See Details.}
 \item{decay}{a scalar in (0, 1] to specify the decay factor for
 \code{fit.method="DLS"}. Default is 0.95.}
 
-\item{lars.criterion}{an option to assess model selection for the "lar" or
-"lasso" variable.selection methods; one of "Cp" or "cv". See details.
-Default is "Cp".}
+\item{lars.type}{One of "lasso", "lar", "forward.stagewise" or "stepwise".
+The names can be abbreviated to any unique substring. Default is "lasso".}
+
+\item{lars.criterion}{an option to assess model selection for the "lars"
+method; one of "Cp" or "cv". See details. Default is "Cp".}
 
 \item{...}{optional arguments passed to the \code{step} function for
 variable.selection method "stepwise", such as direction, steps and
@@ -133,11 +136,10 @@ measured by the Bayesian Information Criterion (BIC) or Akaike Information
 Criterion (AIC), improves. And, "all subsets" enables subsets selection
 using \code{\link[leaps]{regsubsets}} that chooses the n-best performing
 subsets of any given size (specified as \code{num.factor.subsets} here).
-"lar" and "lasso" correspond to variants of least angle regression using
-\code{\link[lars]{lars}}.
-
-Note: If \code{variable.selection="lar" or "lasso"}, \code{fit.method}
-will be ignored.
+\code{varaible.selection="lars"} corresponds to least angle regression
+using \code{\link[lars]{lars}} with variants "lasso", "lar",
+"forward.stagewise" or "stepwise". Note: If
+\code{variable.selection="lars"}, \code{fit.method} will be ignored.
 
 If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in
 the regression, following Henriksson & Merton (1981), to account for market
