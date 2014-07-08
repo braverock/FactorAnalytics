@@ -7,13 +7,14 @@
 \alias{residuals.tsfm}
 \title{Fit a time series factor model using time series regression}
 \usage{
-fitTSFM(asset.names, factor.names, market.name = NULL, data = data,
-  fit.method = c("OLS", "DLS", "Robust"), variable.selection = c("none",
-  "stepwise", "all subsets", "lars"), subsets.method = c("exhaustive",
-  "backward", "forward", "seqrep"), nvmax = 8, force.in = NULL,
-  num.factors.subset = 1, add.up.market = TRUE, add.market.sqd = TRUE,
-  decay = 0.95, lars.type = c("lasso", "lar", "forward.stagewise",
-  "stepwise"), lars.criterion = "Cp", ...)
+fitTSFM(asset.names, factor.names, market.name = NULL, Rf.name = NULL,
+  data = data, fit.method = c("OLS", "DLS", "Robust"),
+  variable.selection = c("none", "stepwise", "all subsets", "lars"),
+  subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
+  nvmax = 8, force.in = NULL, num.factors.subset = 1,
+  add.up.market = TRUE, add.market.sqd = TRUE, decay = 0.95,
+  lars.type = c("lasso", "lar", "forward.stagewise", "stepwise"),
+  lars.criterion = "Cp", ...)
 
 \method{coef}{tsfm}(object, ...)
 
@@ -33,9 +34,13 @@ excess returns are the dependent variable.}
 Is required only if \code{add.up.market} or \code{add.market.sqd}
 are \code{TRUE}. Default is NULL.}
 
+\item{Rf.name}{name of the column of risk free rate variable to calculate
+excess returns for all assets and factors. Default is NULL, in which case,
+the data is used as it is.}
+
 \item{data}{vector, matrix, data.frame, xts, timeSeries or zoo object
 containing column(s) named in \code{asset.names}, \code{factor.names} and
-optionally, \code{market.name}.}
+optionally, \code{market.name} and \code{Rf.name}.}
 
 \item{fit.method}{the estimation method, one of "OLS", "DLS" or "Robust".
 See details.}
@@ -100,7 +105,7 @@ components:
 \item{asset.fit}{list of fitted objects for each asset. Each object is of
 class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if
 the \code{fit.method="Robust"}, or class \code{lars} if
-\code{variable.selection="lar" or "lasso"}.}
+\code{variable.selection="lars"}.}
 \item{alpha}{N x 1 vector of estimated alphas.}
 \item{beta}{N x K matrix of estimated betas.}
 \item{r2}{N x 1 vector of R-squared values.}
@@ -123,6 +128,10 @@ including Stepwise, Subsets, Lars are available as well. An object of class
 \code{tsfm} is returned.
 }
 \details{
+Typically factor models are fit using excess returns. \code{Rf.name} gives
+the option to supply a risk free rate variable to subtract from each asset
+return and factor to create excess returns.
+
 Estimation method "OLS" corresponds to ordinary least squares, "DLS" is
 discounted least squares, which is weighted least squares estimation with
 exponentially declining weights that sum to unity, and, "Robust" is robust
@@ -149,26 +158,26 @@ options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added
 as a factor in the regression, following Treynor-Mazuy (1966), to account
 for market timing with respect to volatility.
 
-Finally, for both the "lar" and "lasso" methods, the "Cp" statistic
-(defined in page 17 of Efron et al. (2002)) is calculated using
-\code{\link[lars]{summary.lars}} . While, "cv" computes the K-fold
+\code{lars.criterion} selects the criterion (one of "Cp" or "cv") to
+determine the best fitted model for \code{variable.selection="lars"}. The
+"Cp" statistic (defined in page 17 of Efron et al. (2002)) is calculated
+using \code{\link[lars]{summary.lars}}. While, "cv" computes the K-fold
 cross-validated mean squared prediction error using
 \code{\link[lars]{cv.lars}}.
 }
 \examples{
 # load data from the database
-data(managers.df)
-fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
-               add.up.market=FALSE, add.market.sqd=FALSE,
-               fit.method="OLS", variable.selection="none")
-# summary of HAM1
-summary(fit$asset.fit$HAM1)
-# fitted values all 6 asset returns
+data(managers)
+fit <- fitTSFM(asset.names=colnames(managers[,(1:6)]),
+               factor.names=colnames(managers[,(7:9)]),
+               market.name="SP500 TR", data=managers)
+# summary
+summary(fit)
+# fitted values for all assets' returns
 fitted(fit)
 # plot actual vs. fitted over time for HAM1
 # using chart.TimeSeries() function from PerformanceAnalytics package
-dataToPlot <- cbind(fitted(fit$asset.fit$HAM1), na.omit(managers.df$HAM1))
+dataToPlot <- cbind(fitted(fit$asset.fit$HAM1), na.omit(managers$HAM1))
 colnames(dataToPlot) <- c("Fitted","Actual")
 chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
                  colorset=c("black","blue"), legend.loc="bottomleft")
