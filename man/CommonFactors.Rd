@@ -1,39 +1,37 @@
 \name{CommonFactors}
 \alias{CommonFactors}
-\alias{factors}
+\alias{factors.M}
 \alias{factors.Q}
 \docType{data}
 \title{
 Factor set of several commonly used factors
 }
 \description{
-10 monthly and quarterly common factors xts data from 1997-01-31 to 2013-07-31. 
+Collection of common factors as both monthly and quarterly time series
 \itemize{
-\item SP500 is SP500 returns from FRED,
-\item GS10TR US Treasury 10y yields total returns from the yeild of the 10 year constant maturity from FRED,
-\item USD.Index Trade Weighted U.S. Dollar Index: Major Currencies - TWEXMMTH. from FRED
-\item Term.Spread Yield spread of Merrill Lynch High-Yield Corporate Master II Index minus 10-year Treasury. from FRED
-\item TED.Spread 3-Month Treasury Bill: Secondary Market Rate(TB3MS) - 3-Month Eurodollar Deposit Rate (London) (MED)3. from FRED.
-\item DJUBSTR DJUBS Commodities index.
-\item dVIX the first difference of the end-of-month value of the CBOE Volatility Index (VIX).
-\item OILPRICE ""OILPRICE" from FRED.
-\item TB3MS 3-Month Treasury Bill: Secondary Market Rate(TB3MS) from FRED
+\item SP500: S&P 500 composite index returns. (Yahoo)
+\item GS10TR: US Treasury 10y yields total returns from the yeild of the 10 year constant maturity. (FRED)
+\item USD.Index: Trade Weighted U.S. Dollar Index: Major Currencies - TWEXMMTH. (FRED)
+\item Term.Spread: Yield spread of Merrill Lynch High-Yield Corporate Master II Index minus 10-year Treasury. (FRED)
+\item TED.Spread: 3-Month Treasury Bill: Secondary Market Rate(TB3MS) - 3-Month Eurodollar Deposit Rate (MED3). (FRED)
+\item dVIX: First difference of the end-of-month value of the CBOE Volatility Index (VIX). (Yahoo)
+\item OILPRICE: Monthly returns of spot price of West Texas Intermediate. (FRED)
+\item TB3MS: 3-Month Treasury Bill Secondary Market Rate (TB3MS). (FRED)
 }
 
 }
 \usage{data(CommonFactors)}
 \format{
-  A data frame with 0 observations on the following 2 variables.
+  xts time series object
   \describe{
-    \item{\code{x}}{a numeric vector}
-    \item{\code{y}}{a numeric vector}
+    \item{\code{factor.M}}{Jan-1997 through May-2014}
+    \item{\code{factor.Q}}{Q1-1997 through Q1-2014}
   }
 }
 \source{
 \itemize{
-\item FRED
-\item http://www.djindexes.com/mdsidx/downloads/xlspages/ubsci_public/DJUBS_full_hist.xls
-\item http://www.cboe.com/publish/ScheduledTask/MktData/datahouse/vixarchive.xls
+\item Federal Reserve Economic Data (FRED):  \url{http://research.stlouisfed.org/fred2/}
+\item Yahoo Finance: \url{http://finance.yahoo.com/}
 }
 }
 

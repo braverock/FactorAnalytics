@@ -1,7 +1,8 @@
+rm(list=ls())
 # Acquire data for factors
 
 # Script downloads, parses, and transforms data for a small set
-# of common factors to be included as example data within 
+# of common factors to be included as example data within
 # FactorAnalytics.  For more information, see the help file
 # for ?factors
 
@@ -11,6 +12,7 @@
 require(gdata)
 require(quantmod)
 require(RQuantLib)
+require(XLConnect)
 
 ## Factor set of several commonly used factors
 
@@ -18,8 +20,8 @@ require(RQuantLib)
 # @TODO: Find a source for TR of SP500
 
 # setup perl
-perl = "C:/Program Files/MATLAB/R2010b/sys/perl/win32/bin/perl.exe"
-setwd("C:/Users/Yi-An Chen/Documents/R-project/R FA project")
+#perl = "C:/Program Files/MATLAB/R2010b/sys/perl/win32/bin/perl.exe"
+#setwd("C:/Users/Yi-An Chen/Documents/R-project/R FA project")
 
 ### Equities
 # Get S&P price returns from FRED for now, TR later
@@ -34,7 +36,7 @@ SP500.Q.R=quarterlyReturn(SP500)
 colnames(SP500.Q.R)="SP500"
 
 ### Bonds
-# Calculate total returns from the yeild of the 10 year constant maturity 
+# Calculate total returns from the yeild of the 10 year constant maturity
 # index maintained by the Fed
 getSymbols("GS10", src="FRED") #load US Treasury 10y yields from FRED
 # Dates should be end of month, not beginning of the month as reported
@@ -99,7 +101,8 @@ if(file.exists("DJUBS_full_hist.xls"))
 # Download the most recent file
 print("Downloading excel spreadsheet from DJUBS web site...")
 # Can't get it directly, sorry windows users
-system("wget http://www.djindexes.com/mdsidx/downloads/xlspages/ubsci_public/DJUBS_full_hist.xls")
+#system("wget http://www.djindexes.com/mdsidx/downloads/xlspages/ubsci_public/DJUBS_full_hist.xls")
+download.file(url="http://www.djindexes.com/mdsidx/downloads/xlspages/ubsci_public/DJUBS_full_hist.xls",destfile="DJUBS_full_hist.xls",mode = "wb")
 if(!file.exists("DJUBS_full_hist.xls"))
   stop(paste("No spreadsheet exists.  Download the spreadsheet to be processed from www.djindexes.com into ", filesroot, "/.incoming", sep=""))
 
@@ -107,8 +110,12 @@ if(!file.exists("DJUBS_full_hist.xls"))
 print("Reading sheet... This will take a moment...")
 
 
-x = read.xls("DJUBS_full_hist.xls", sheet="Total Return",perl=perl)
-x=x[-1:-2,] # Get rid of the headings  
+#x = read.xls("DJUBS_full_hist.xls", sheet="Total Return",perl=perl)
+x <- readWorksheetFromFile("DJUBS_full_hist.xls", sheet = "Total Return",
+    header = FALSE, startCol = 1, startRow = 4,
+    endCol = 0, endRow = 0, check.names=FALSE)
+
+x=x[-1:-3,] # Get rid of the headings
 x=x[-dim(x)[1],] # Get rid of the last line, which contains the disclaimer
 ISOdates = as.Date(x[,1], "%m/%d/%Y") # Get dates
 
@@ -123,13 +130,13 @@ x.q.xts = ROC(Cl(x.q.xts)) # Calc monthly returns
 # @ TODO Want to delete the last line off ONLY IF the month is incomplete
 #  if(tail(index(x.xts),1) != as.Date(as.yearmon(tail(index(x.xts),1)), frac=1)) {
 # That test isn't quite right, but its close.  It won't work on the first
-# day of a new month when the last business day wasn't the last day of 
+# day of a new month when the last business day wasn't the last day of
 # the month.  It will work for the second day.
 #     x.m.xts = x.m.xts[-dim(x.m.xts)[1],]
 #   }
 
-# Index is set to last trading day of the month.  
-# Reset index to last day of the month to make alignment easier with other monthly series.  
+# Index is set to last trading day of the month.
+# Reset index to last day of the month to make alignment easier with other monthly series.
 index(x.m.xts)=as.Date(index(x.m.xts), frac=1)
 index(x.q.xts)=as.Date(index(x.q.xts), frac=1)
 DJUBS.R = x.m.xts
@@ -145,8 +152,11 @@ colnames(DJUBS.Q.R)="DJUBSTR"
 # Daily from 1990-2003
 
 
-x= read.xls( "http://www.cboe.com/publish/ScheduledTask/MktData/datahouse/vixarchive.xls",
-             perl = perl)
+#x= read.xls( "http://www.cboe.com/publish/ScheduledTask/MktData/datahouse/vixarchive.xls",perl = perl)
+download.file(url="http://www.cboe.com/publish/ScheduledTask/MktData/datahouse/vixarchive.xls",destfile="vixarchive.xls",mode = "wb")
+x <- readWorksheetFromFile("vixarchive.xls", sheet = 1,
+    header = FALSE, startCol = 1, startRow = 3,
+    endCol = 0, endRow = 0, check.names=FALSE)
 ISOdates = as.Date(x[,1], "%m/%d/%y") # Get dates
 x.xts = as.xts(as.numeric(as.vector(x[,5])), order.by=ISOdates)
 x.m.xts = to.monthly(x.xts)
@@ -183,11 +193,16 @@ OIL.Q.R = ROC(Cl(to.quarterly(OILPRICE)))
 index(OIL.Q.R) = as.Date(as.yearqtr(index(OIL.Q.R)), frac=1)
 
 ### PUT
-system("wget https://www.cboe.com/micro/put/PUT_86-06.xls")
-setwd("C:/Users/Yi-An Chen/Documents/R-project/R FA project")
-x = read.xls("PUT_86-06.xls",perl=perl)
-x=na.omit(x[-1:-4,1:2])
-ISOdates = as.Date(x[,1], "%d-%b-%Y") # Get dates
+#system("wget https://www.cboe.com/micro/put/PUT_86-06.xls")
+download.file(url="http://www.cboe.com/micro/put/PUT_86-06.xls",destfile="PUT_86-06.xls",mode="wb")
+#setwd("C:/Users/Yi-An Chen/Documents/R-project/R FA project")
+#x = read.xls("PUT_86-06.xls",perl=perl)
+#x = read.xls("PUT_86-06.xls",perl=perl)
+x <- readWorksheetFromFile("PUT_86-06.xls", sheet = 1,
+    header = FALSE, startCol = 1, startRow = 7,
+    endCol = 2, endRow = 0, check.names=FALSE)
+#x=na.omit(x[-1:-4,1:2])
+ISOdates = as.Date(x[,1], "%Y-%m-%d") # Get dates
 PUT1 = xts(as.numeric(as.vector(x[,2])), order.by=ISOdates)
 
 # link fails
@@ -206,10 +221,10 @@ index(PUT) = as.Date(as.yearmon(index(PUT)), frac=1)
 lastquarter=format(as.Date(as.yearqtr(Sys.Date())-.25, frac=1), "%Y-%m")
 
 
-factors=cbind(SP500.R, GS10.R, USDI.R, TERM, CREDIT, DJUBS.R, dVIX, TED, OIL.R, TB3MS/100)
-factors=factors["1997::",]
-factors.Q=cbind(SP500.Q.R, GS10.Q.R, USDI.Q.R, TERM.Q, CREDIT.Q, DJUBS.Q.R, dVIX.Q, TED.Q, OIL.Q.R, TB3MS[endpoints(TB3MS, on="quarters"),]/100)
-factors.Q=factors.Q[paste("1997::",lastquarter,sep=""),]
+factorsM=cbind(SP500.R, GS10.R, USDI.R, TERM, CREDIT, DJUBS.R, dVIX, TED, OIL.R, TB3MS/100)
+factorsM=factorsM["1997::",]
+factorsQ=cbind(SP500.Q.R, GS10.Q.R, USDI.Q.R, TERM.Q, CREDIT.Q, DJUBS.Q.R, dVIX.Q, TED.Q, OIL.Q.R, TB3MS[endpoints(TB3MS, on="quarters"),]/100)
+factorsQ=factorsQ[paste("1997::",lastquarter,sep=""),]
 
 setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalytics/data")
-save(factors,factors.Q,file="CommomFactors.RData")
+save(factors,factorsQ,file="CommomFactors.RData")
