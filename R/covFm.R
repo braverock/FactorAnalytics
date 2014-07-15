@@ -32,27 +32,26 @@
 #' with S-Plus Springer-Verlag." (2006).
 #' }
 #' 
-#' @seealso \code{\link{fitTSFM}}, \code{\link{fitSFM}}, \code{\link{fitFFM}}
+#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
 #' 
 #' @examples
 #' \dontrun{
 #' # Time Series Factor model
-#' data(managers.df)
-#' factors = managers.df[, (7:9)]
-#' fit <- fitTSFM(assets.names=colnames(managers.df[, (1:6)]), 
-#'                factors.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df, 
-#'                add.up.market=FALSE, add.market.sqd=FALSE, fit.method="OLS")                              
-#' covFM(fit)
+#' data(managers)
+#' factors = managers[, (7:9)]
+#' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
+#'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)                              
+#' covFm(fit)
 #' 
 #' # Statistical Factor Model
 #' data(stat.fm.data)
-#' sfm.pca.fit <- fitStatisticalFactorModel(sfm.dat, k=2)
-#' #' covFM(t(sfm.pca.fit$loadings), var(sfm.pca.fit$factors), 
+#' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
+#' #' covFm(t(sfm.pca.fit$loadings), var(sfm.pca.fit$factors), 
 #'                          sfm.pca.fit$resid.sd)
 #' 
-#' sfm.apca.fit <- fitSFM(sfm.apca.dat, k=2)
+#' sfm.apca.fit <- fitSfm(sfm.apca.dat, k=2)
 #' 
-#' covFM(t(sfm.apca.fit$loadings), var(sfm.apca.fit$factors), 
+#' covFm(t(sfm.apca.fit$loadings), var(sfm.apca.fit$factors), 
 #'                       sfm.apca.fit$resid.sd)
 #'
 #' # Fundamental Factor Model
@@ -62,18 +61,17 @@
 #' beta.mat <- subset(stock, DATE=="2003-12-31")[, exposure.names]
 #' beta.mat1 <- cbind(rep(1, 447), beta.mat1)
 #' # FM return covariance 
-#' fit.fund <- fitFFM(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP"), 
+#' fit.fund <- fitFfm(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP"), 
 #'                    data=stock, returnsvar="RETURN", datevar="DATE", 
 #'                    assetvar="TICKER", wls=TRUE, regression="classic", 
 #'                    covariance="classic", full.resid.cov=FALSE)
-#' ret.cov.fundm <- covFM(beta.mat1, fit.fund$factor.cov$cov, 
-#'                                        fit.fund$resid.sd)
+#' ret.cov.fundm <- covFm(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.sd)
 #' fit.fund$returns.cov$cov == ret.cov.fundm
 #' }
 #' 
-#' @rdname covFM
+#' @rdname covFm
 #' @export
 
-covFM <- function(object){
-UseMethod("covFM")
+covFm <- function(object){
+  UseMethod("covFm")
 }

@@ -49,15 +49,12 @@ theorem:\cr \code{VaR.fm = sum(cVaR.fm) = sum(beta.star*mVaR.fm)} \cr
 }
 \examples{
 \dontrun{
-data(managers.df)
-fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-                     factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-                     add.up.market=FALSE, add.market.sqd=FALSE,
-                     data=managers.df, fit.method="OLS",
-                     variable.selection="none")
+data(managers)
+fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+                     factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
 # risk factor contribution to VaR
 # combine fund returns, factor returns and residual returns for HAM1
-tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
+tmpData = cbind(managers[,1], managers[,c("EDHEC LS EQ","SP500 TR")] ,
 residuals(fit.macro$asset.fit$HAM1)/fit.macro$resid.sd[1])
 colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 factor.VaR.decomp.HAM1 = factorModelVaRDecomposition(tmpData, fit.macro$beta[1,],

@@ -7,22 +7,20 @@
 }
 \arguments{
 \item{x}{object of class \code{"pafm"} created by
-\code{paFM}.}
+\code{paFm}.}
 
 \item{...}{Other arguments for \code{print} methods.}
 }
 \description{
-Generic function of print method for \code{paFM}.
+Generic function of print method for \code{paFm}.
 }
 \examples{
 # load data from the database
- data(managers.df)
+ data(managers)
 # fit the factor model with OLS
-fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
-               add.up.market=FALSE, add.market.sqd=FALSE,
-               fit.method="OLS", variable.selection="none")
-fm.attr <- paFM(fit)
+fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+               factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
+fm.attr <- paFm(fit)
 print(fm.attr)
 }
 \author{

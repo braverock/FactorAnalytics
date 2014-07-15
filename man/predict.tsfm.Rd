@@ -6,7 +6,7 @@
 \method{predict}{tsfm}(object, newdata = NULL, ...)
 }
 \arguments{
-\item{object}{an object of class \code{tsfm} produced by \code{fitTSFM}.}
+\item{object}{an object of class \code{tsfm} produced by \code{fitTsfm}.}
 
 \item{newdata}{a vector, matrix, data.frame, xts, timeSeries or zoo object
 containing the variables with which to predict.}
@@ -25,16 +25,13 @@ calls the \code{predict} method for fitted objects of class \code{lm},
 }
 \examples{
 # load data from the database
-data(managers.df)
-ret.assets = managers.df[,(1:6)]
+data(managers)
 # fit the factor model with OLS
-fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
-               add.up.market=FALSE, add.market.sqd=FALSE,
-               fit.method="OLS", variable.selection="none")
+fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+               factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
 
 pred.fit <- predict(fit)
-newdata <- data.frame(EDHEC.LS.EQ = rnorm(n=120), SP500.TR = rnorm(n=120) )
+newdata <- data.frame("EDHEC LS EQ"=rnorm(n=120), "SP500 TR"=rnorm(n=120))
 rownames(newdata) <- rownames(fit$data)
 pred.fit2 <- predict(fit, newdata, interval="confidence")
 }
@@ -42,6 +39,6 @@ pred.fit2 <- predict(fit, newdata, interval="confidence")
 Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
+\code{\link{fitTsfm}}, \code{\link{summary.tsfm}}
 }
 

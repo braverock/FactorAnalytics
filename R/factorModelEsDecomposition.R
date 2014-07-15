@@ -7,9 +7,10 @@
 #' equal to its value-at-risk (VaR). VaR is compute as the sample quantile of
 #' the historic or simulated data.
 #' 
-#' The factor model has the form \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)}\cr
+#' The factor model has the form \cr 
+#' \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)}\cr
 #' where beta.star = (beta, sig.e)' and F.star(t) = (F(t)', z(t))' By Euler's
-#' theorem:\cr \code{ES.fm = sum(cES.fm) = sum(beta.star*mES.fm)} \cr
+#' theorem: \cr \code{ES.fm = sum(cES.fm) = sum(beta.star*mES.fm)} \cr
 #' 
 #' @param Data \code{B x (k+2)} matrix of historic or simulated data. The first
 #' column contains the fund returns, the second through \code{k+1}st columns
@@ -20,8 +21,8 @@
 #' @param tail.prob scalar, tail probability for VaR quantile. Typically 0.01
 #' or 0.05.
 #' @param VaR.method character, method for computing VaR. Valid choices are
-#' one of "modified","gaussian","historical", "kernel". computation is done with the \code{VaR}
-#' in the PerformanceAnalytics package.
+#' one of "modified","gaussian","historical", "kernel". computation is done 
+#' with the \code{VaR} in the PerformanceAnalytics package.
 #' 
 #' 
 #' @return A list with the following components:
@@ -30,31 +31,31 @@
 #' positive number.}
 #' \item{n.exceed} Scalar, number of observations beyond VaR.
 #' \item{idx.exceed} n.exceed x 1 vector giving index values of exceedences.
-#' \item{ES.fm}  Scalar. nonparametric ES value for fund reported as a positive number.
+#' \item{ES.fm}  Scalar. nonparametric ES value for fund reported as a positive 
+#' number.
 #' \item{mES.fm} (K+1) x 1 vector of factor marginal contributions to ES.
 #' \item{cES.fm} (K+1) x 1 vector of factor component contributions to ES.
-#' \item{pcES.fm} (K+1) x 1 vector of factor percentage component contributions to ES.
+#' \item{pcES.fm} (K+1) x 1 vector of factor percentage component contributions 
+#' to ES.
 #' }
 #' @author Eric Zviot and Yi-An Chen.
 #' @references \enumerate{ 
 #' \item Hallerback (2003), "Decomposing Portfolio Value-at-Risk: A
 #' General Analysis", The Journal of Risk 5/2.
-#' \item Yamai and Yoshiba (2002)."Comparative Analyses of Expected Shortfall and Value-at-Risk: Their
+#' \item Yamai and Yoshiba (2002)."Comparative Analyses of Expected Shortfall 
+#' and Value-at-Risk: Their
 #' Estimation Error, Decomposition, and Optimization Bank of Japan.
-#' \item Meucci (2007). "Risk Contributions from Generic User-Defined Factors," Risk. 
+#' \item Meucci (2007). "Risk Contributions from Generic User-Defined Factors". 
 #' \item Epperlein and Smillie (2006) "Cracking VAR with Kernels," Risk.
 #' }
 #' @examples
 #' \dontrun{
-#' data(managers.df)
-#' fit.macro <- fitTSFM (asset.names=colnames(managers.df[,(1:6)]), 
-#'                       factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                       data=managers.df, fit.method="OLS", 
-#'                       add.up.market=FALSE, add.market.sqd=FALSE,
-#'                       variable.selection="none")
+#' data(managers)
+#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]), 
+#'                      factor.names=c("EDHEC LS EQ","SP500 TR"),data=managers)
 #' # risk factor contribution to ETL
 #' # combine fund returns, factor returns and residual returns for HAM1
-#' tmpData = cbind(managers.df[,1],managers.df[,c("EDHEC.LS.EQ","SP500.TR")] ,
+#' tmpData = cbind(managers[,1],managers[,c("EDHEC LS EQ","SP500 TR")] ,
 #' residuals(fit.macro$asset.fit$HAM1)/sqrt(fit.macro$resid.sd[1]))
 #' colnames(tmpData)[c(1,4)] = c("HAM1", "residual")
 #' factor.es.decomp.HAM1 = factorModelEsDecomposition(tmpData, fit.macro$beta[1,],

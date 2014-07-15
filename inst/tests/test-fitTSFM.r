@@ -1,11 +1,13 @@
-context("Test fitTSFM")
+context("Test fitTsfm")
 
-test_that("fitTSFM is as expected", {
+test_that("fitTsfm is as expected", {
 
   # fit Carhart 4-factor model using lm
-  fpath <- system.file("extdata", "timeSeriesReturns.csv", package="factorAnalytics")
-  returns.z <- read.zoo(file=fpath,header=TRUE,sep=",",as.is=TRUE,FUN=as.yearmon)
-  returns.z <- window(returns.z,start="2008-01-01",end="2012-12-31")  
+  fpath <- system.file("extdata", "timeSeriesReturns.csv", 
+                       package="factorAnalytics")
+  returns.z <- read.zoo(file=fpath, header=TRUE, sep=",", as.is=TRUE,
+                        FUN=as.yearmon)
+  returns.z <- window(returns.z, start="2008-01-01", end="2012-12-31")  
   assets <- names(returns.z)[1:30]
   ex.rets <- returns.z[,assets]-returns.z$rf
   carhart <- returns.z[,c("mktrf","smb","hml","umd")]  
@@ -17,16 +19,14 @@ test_that("fitTSFM is as expected", {
   Sigma.eps <- diag(as.numeric(sapply(X = sum4, FUN = "[", "sigma")))
   Sigma.R <- t(beta.hat) %*% Sigma.F %*% beta.hat + Sigma.eps^2
 
-  # fit Carhart 4-factor mode via fitTSFM
-  ff.mod <- fitTSFM(
+  # fit Carhart 4-factor mode via fitTsfm
+  ff.mod <- fitTsfm(
     asset.names = assets,
-    factor.names = c("mktrf","smb", "hml","umd"),
-    add.up.market=FALSE, add.market.sqd=FALSE,
-    data = cbind(ex.rets,carhart),
-    fit.method = "OLS",
-    variable.selection="none")
+    factor.names = c("mktrf","smb","hml","umd"),
+    data = cbind(ex.rets,carhart))
 
   expect_that(as.matrix(ff.mod$beta),is_equivalent_to(t(coef(ff4)[-1,])))
-  expect_that(as.numeric(ff.mod$r2),equals(as.numeric(sapply(X = sum4, FUN = "[", "r.squared"))))
+  expect_that(as.numeric(ff.mod$r2), 
+              equals(as.numeric(sapply(X=sum4, FUN="[", "r.squared"))))
   
 })

@@ -7,26 +7,25 @@
 }
 \arguments{
 \item{object}{\code{"pafm"} object created by
-\code{paFM}.}
+\code{paFm}.}
 
 \item{digits}{integer indicating the number of decimal places. Default is 3.}
 
 \item{...}{Other arguments for \code{print} methods.}
 }
 \description{
-Generic function of summary method for \code{paFM}.
+Generic function of summary method for \code{paFm}.
 }
 \examples{
 # load data from the database
- data(managers.df)
- # fit the factor model with OLS
- fit.ts <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-                   factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-                   market.name="SP500.TR", data=managers.df,
-                   fit.method="OLS", variable.selection="none")
+data(managers)
+# fit the factor model with OLS
+fit.ts <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+                  factor.names=c("EDHEC LS EQ","SP500 TR"),
+                  mkt.name="SP500 TR", mkt.timing="both", data=managers)
 
-  fm.attr <- paFM(fit.ts)
-  summary(fm.attr)
+fm.attr <- paFm(fit.ts)
+summary(fm.attr)
 }
 \author{
 Yi-An Chen.

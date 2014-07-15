@@ -1,20 +1,20 @@
 #' @title Fit a time series factor model using time series regression
 #' 
-#' @description Fits a time series (or, macroeconomic) factor model for single 
-#' or multiple asset returns or excess returns using time series regression. 
+#' @description Fits a time series (or, macroeconomic) factor model for one 
+#' or more asset returns (or, excess returns) using time series regression. 
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
 #' including Stepwise, Subsets, Lars are available as well. An object of class 
 #' \code{tsfm} is returned.
 #' 
 #' @details 
-#' Typically factor models are fit using excess returns. \code{Rf.name} gives 
+#' Typically, factor models are fit using excess returns. \code{rf.name} gives 
 #' the option to supply a risk free rate variable to subtract from each asset 
 #' return and factor to create excess returns. 
 #' 
 #' Estimation method "OLS" corresponds to ordinary least squares, "DLS" is 
-#' discounted least squares, which is weighted least squares estimation with 
-#' exponentially declining weights that sum to unity, and, "Robust" is robust 
+#' discounted least squares (weighted least squares with exponentially 
+#' declining weights that sum to unity), and, "Robust" is robust 
 #' regression (uses \code{\link[robust]{lmRob}}). 
 #' 
 #' If \code{variable.selection="none"}, all chosen factors are used in the 
@@ -30,13 +30,15 @@
 #' "forward.stagewise" or "stepwise". Note: If 
 #' \code{variable.selection="lars"}, \code{fit.method} will be ignored.
 #' 
-#' If \code{add.up.market=TRUE}, \code{max(0, Rm-Rf)} is added as a factor in 
-#' the regression, following Henriksson & Merton (1981), to account for market 
-#' timing (price movement of the general stock market relative to fixed income 
-#' securities). The coefficient can be interpreted as the number of free put 
-#' options. Similarly, if \code{add.market.sqd=TRUE}, \code{(Rm-Rf)^2} is added 
-#' as a factor in the regression, following Treynor-Mazuy (1966), to account 
-#' for market timing with respect to volatility.
+#' \code{mkt.timing} allows for market-timing factors to be added to any of the 
+#' above methods. Market timing accounts for the price movement of the general 
+#' stock market relative to fixed income securities). "HM" follows 
+#' Henriksson & Merton (1981) and \code{up-market = max(0, Rm-Rf)}, is added 
+#' as a factor in the regression. The coefficient of this up-market factor can 
+#' be interpreted as the number of free put options. Similarly, "TM" follows 
+#' Treynor-Mazuy (1966), to account for market timing with respect to 
+#' volatility, and \code{market.sqd = (Rm-Rf)^2} is added as a factor in the 
+#' regression. Option "both" adds both of these factors.
 #' 
 #' \code{lars.criterion} selects the criterion (one of "Cp" or "cv") to 
 #' determine the best fitted model for \code{variable.selection="lars"}. The 
@@ -48,22 +50,23 @@
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
-#' @param market.name name of the column for market excess returns (Rm-Rf). 
+#' @param mkt.name name of the column for market excess returns (Rm-Rf). 
 #' Is required only if \code{add.up.market} or \code{add.market.sqd} 
 #' are \code{TRUE}. Default is NULL.
-#' @param Rf.name name of the column of risk free rate variable to calculate 
-#' excess returns for all assets and factors. Default is NULL, in which case, 
-#' the data is used as it is.
+#' @param rf.name name of the column of risk free rate variable to calculate 
+#' excess returns for all assets (in \code{asset.names}) and factors (in 
+#' \code{factor.names}). Default is NULL, and no action is taken.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
-#' optionally, \code{market.name} and \code{Rf.name}.
+#' optionally, \code{mkt.name} and \code{rf.name}.
 #' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
-#' See details. 
+#' See details. Default is "OLS". 
 #' @param variable.selection the variable selection method, one of "none", 
-#' "stepwise","all subsets","lars". See details.
+#' "stepwise","all subsets","lars". See details. Default is "none".
 #' @param subsets.method one of "exhaustive", "forward", "backward" or "seqrep" 
 #' (sequential replacement) to specify the type of subset search/selection. 
-#' Required if "all subsets" variable selection is chosen. 
+#' Required if "all subsets" variable selection is chosen. Default is 
+#' "exhaustive".
 #' @param nvmax the maximum size of subsets to examine; an option for 
 #' "all subsets" variable selection. Default is 8. 
 #' @param force.in vector containing the names of factors that should always 
@@ -72,11 +75,8 @@
 #' @param num.factors.subset number of factors required in the factor model; 
 #' an option for "all subsets" variable selection. Default is 1. 
 #' Note: nvmax >= num.factors.subset >= length(force.in).
-#' @param add.up.market logical, adds max(0, Rm-Rf) as a factor. If 
-#' \code{TRUE}, \code{market.name} is required. Default is \code{TRUE}. 
-#' See Details. 
-#' @param add.market.sqd logical, adds (Rm-Rf)^2 as a factor. If \code{TRUE},
-#' \code{market.name} is required. Default is \code{TRUE}.
+#' @param mkt.timing one of "HM", "TM" or "both". Default is NULL. See Details. 
+#' \code{mkt.name} is required if any of these options are specified.
 #' @param decay a scalar in (0, 1] to specify the decay factor for 
 #' \code{fit.method="DLS"}. Default is 0.95.
 #' @param lars.type One of "lasso", "lar", "forward.stagewise" or "stepwise". 
@@ -89,16 +89,18 @@
 #' and "DLS" fits. Scope argument is not available presently. Also plan to
 #' include other controls passed to \code{lmRob} soon.
 #' 
-#' @return fitTSFM returns an object of class \code{tsfm}. 
+#' @return fitTsfm returns an object of class \code{tsfm}. 
 #' 
 #' The generic functions \code{summary}, \code{predict} and \code{plot} are 
 #' used to obtain and print a summary, predicted asset returns for new factor 
 #' data and plot selected characteristics for one or more assets. The generic 
-#' accessor functions \code{coefficients}, \code{fitted} and \code{residuals} 
+#' accessor functions \code{coef}, \code{fitted} and \code{residuals} 
 #' extract various useful features of the fit object. \code{coef.tsfm} extracts 
 #' coefficients from the fitted factor model and returns an N x (K+1) matrix of 
 #' all coefficients, \code{fitted.tsfm} gives an N x T data object of fitted 
-#' values and \code{residuals.tsfm} gives an N x T data object of residuals.
+#' values and \code{residuals.tsfm} gives an N x T data object of residuals. 
+#' Additionally, \code{covFm} computes the \code{N x N} covariance matrix for 
+#' asset returns based on the fitted factor model
 #' 
 #' An object of class \code{tsfm} is a list containing the following 
 #' components:
@@ -110,6 +112,8 @@
 #' \item{beta}{N x K matrix of estimated betas.}
 #' \item{r2}{N x 1 vector of R-squared values.}
 #' \item{resid.sd}{N x 1 vector of residual standard deviations.}
+#' \item{fitted}{xts data object of fitted values; if and only if 
+#' \code{variable.selection="lars"}}
 #' \item{call}{the matched function call.}
 #' \item{data}{xts data object containing the assets and factors.}
 #' \item{asset.names}{asset.names as input.}
@@ -127,7 +131,7 @@
 #' Portfolio performance measurement and benchmarking. McGraw Hill 
 #' Professional, 2009.
 #' \item Efron, Bradley, Trevor Hastie, Iain Johnstone, and Robert Tibshirani. 
-#' "Least angle regression." The Annals of statistics 32, no. 2 (2004): 407-499. 
+#' "Least angle regression." The Annals of statistics 32, no.2 (2004): 407-499. 
 #' \item Hastie, Trevor, Robert Tibshirani, Jerome Friedman, T. Hastie, J. 
 #' Friedman, and R. Tibshirani. The elements of statistical learning. Vol. 2, 
 #' no. 1. New York: Springer, 2009.
@@ -143,17 +147,17 @@
 #' \code{\link{print.tsfm}} and \code{\link{summary.tsfm}}. 
 #' 
 #' And, the following extractor functions: \code{\link[stats]{coef}}, 
-#' \code{\link{covFM}}, \code{\link[stats]{fitted}} and 
+#' \code{\link{covFm}}, \code{\link[stats]{fitted}} and 
 #' \code{\link[stats]{residuals}}.
 #' 
-#' \code{\link{paFM}} for Performance Attribution. 
+#' \code{\link{paFm}} for Performance Attribution. 
 #' 
 #' @examples
 #' # load data from the database
 #' data(managers)
-#' fit <- fitTSFM(asset.names=colnames(managers[,(1:6)]),
+#' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
-#'                market.name="SP500 TR", data=managers)
+#'                mkt.name="SP500 TR", mkt.timing="both", data=managers)
 #' # summary 
 #' summary(fit)
 #' # fitted values for all assets' returns
@@ -167,14 +171,14 @@
 #'
 #'  @export
 
-fitTSFM <- function(asset.names, factor.names, market.name=NULL, Rf.name=NULL, 
+fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"),
                     variable.selection=c("none","stepwise","all subsets",
                                          "lars"),
                     subsets.method=c("exhaustive","backward","forward",
                                      "seqrep"),
                     nvmax=8, force.in=NULL, num.factors.subset=1, 
-                    add.up.market=TRUE, add.market.sqd=TRUE, decay=0.95,
+                    mkt.timing=NULL, decay=0.95,
                     lars.type=c("lasso","lar","forward.stagewise","stepwise"),
                     lars.criterion="Cp", ...){
   
@@ -189,10 +193,9 @@ fitTSFM <- function(asset.names, factor.names, market.name=NULL, Rf.name=NULL,
   if (!exists("direction")) {direction <- "backward"}
   if (!exists("steps")) {steps <- 1000}
   if (!exists("k")) {k <- 2}
-  if ((missing(market.name)|is.null(market.name)) && 
-        (add.up.market==TRUE | add.market.sqd==TRUE)) {
-    stop("Missing input: 'market.name' is required to include factors 
-         'up.market' or 'market.sqd'")
+  if (xor(is.null(mkt.name), is.null(mkt.timing))) {
+    stop("Missing argument: 'mkt.name' and 'mkt.timing' are both required to 
+         include market-timing factors.")
   }
   
   # convert data into an xts object and hereafter work with xts objects
@@ -203,24 +206,27 @@ fitTSFM <- function(asset.names, factor.names, market.name=NULL, Rf.name=NULL,
   ### After merging xts objects, the spaces in names get converted to periods
   
   # convert all asset and factor returns to excess return form if specified
-  if (!is.null(Rf.name)) {
-    dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,Rf.name], 
+  if (!is.null(rf.name)) {
+    cat("Excess returns were used for all assets and factors.")
+    dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
                                      FUN.VALUE = numeric(nrow(dat.xts))))
   }
   
   # opt add market-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
-  if(add.up.market == TRUE) {
-    up.market <- data.xts[,market.name]
-    up.market [up.market < 0] <- 0
-    dat.xts <- merge.xts(dat.xts,up.market)
-    colnames(dat.xts)[dim(dat.xts)[2]] <- "up.market"
-    factor.names <- c(factor.names, "up.market")
-  }
-  if(add.market.sqd == TRUE) {
-    market.sqd <- data.xts[,market.name]^2   
-    dat.xts <- merge(dat.xts, market.sqd)
-    colnames(dat.xts)[dim(dat.xts)[2]] <- "market.sqd"
-    factor.names <- c(factor.names, "market.sqd")
+  if (!is.null(mkt.timing)) {
+    if(mkt.timing=="HM" | mkt.timing=="both") {
+      up.market <- data.xts[,mkt.name]
+      up.market [up.market < 0] <- 0
+      dat.xts <- merge.xts(dat.xts,up.market)
+      colnames(dat.xts)[dim(dat.xts)[2]] <- "up.market"
+      factor.names <- c(factor.names, "up.market")
+    }
+    if(mkt.timing=="TM" | mkt.timing=="both") {
+      market.sqd <- data.xts[,mkt.name]^2   
+      dat.xts <- merge(dat.xts, market.sqd)
+      colnames(dat.xts)[dim(dat.xts)[2]] <- "market.sqd"
+      factor.names <- c(factor.names, "market.sqd")
+    }
   }
   
   # spaces get converted to periods in colnames of xts object after merge
@@ -231,24 +237,20 @@ fitTSFM <- function(asset.names, factor.names, market.name=NULL, Rf.name=NULL,
   # Each method returns a list of fitted factor models for each asset.
   if (variable.selection == "none") {
     reg.list <- NoVariableSelection(dat.xts, asset.names, factor.names, 
-                                    fit.method, add.up.market, add.market.sqd, 
-                                    decay)
+                                    fit.method, decay)
   } else if (variable.selection == "stepwise"){
     reg.list <- SelectStepwise(dat.xts, asset.names, factor.names, 
-                               fit.method, add.up.market, add.market.sqd, 
-                               decay, direction, steps, k)
+                               fit.method, decay, direction, steps, k)
   } else if (variable.selection == "all subsets"){
     reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names, 
                                  fit.method, subsets.method, 
-                                 nvmax, force.in, num.factors.subset, 
-                                 add.up.market, add.market.sqd, decay)
+                                 nvmax, force.in, num.factors.subset, decay)
   } else if (variable.selection == "lars"){
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, 
-                              lars.type, add.up.market, add.market.sqd, 
-                              decay, lars.criterion)
-    input <- list(call=call, data=dat.xts, 
-                  asset.names=asset.names, factor.names=factor.names, 
-                  fit.method=fit.method, variable.selection=variable.selection)
+                              lars.type, decay, lars.criterion)
+    input <- list(call=call, data=dat.xts, asset.names=asset.names, 
+                  factor.names=factor.names, fit.method=fit.method, 
+                  variable.selection=variable.selection)
     result <- c(result.lars, input)
     class(result) <- "tsfm"
     return(result)
@@ -279,8 +281,8 @@ fitTSFM <- function(asset.names, factor.names, market.name=NULL, Rf.name=NULL,
 
 ### method variable.selection = "none"
 #
-NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method, 
-                                add.up.market, add.market.sqd, decay){
+NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
+                                decay){
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
@@ -311,8 +313,7 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
 ### method variable.selection = "stepwise"
 #
 SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method, 
-                           add.up.market, add.market.sqd, decay, 
-                           direction, steps, k){
+                           decay, direction, steps, k){
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
@@ -347,8 +348,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
 #
 SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method, 
                              subsets.method, nvmax, force.in, 
-                             num.factors.subset, add.up.market, add.market.sqd, 
-                             decay){
+                             num.factors.subset, decay){
   # Check argument validity
   if (nvmax < num.factors.subset) {
     stop("Invaid Argument: nvmax should be >= num.factors.subset")
@@ -405,10 +405,11 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
 ### method variable.selection = "lars"
 #
 SelectLars <- function(dat.xts, asset.names, factor.names, lars.type, 
-                       add.up.market, add.market.sqd, decay, lars.criterion) {
+                       decay, lars.criterion) {
   # initialize list object to hold the fitted objects and, vectors and matrices
   # for the other results
   asset.fit <- list()
+  fitted.list <- list()
   alpha <- rep(NA, length(asset.names))
   beta <- matrix(NA, length(asset.names), length(factor.names))
   r2 <- rep(NA, length(asset.names))
@@ -422,7 +423,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.type,
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
     # convert to matrix
-    reg.mat <- as.matrix(na.omit(reg.xts))
+    reg.mat <- as.matrix(reg.xts)
     # fit lars regression model
     lars.fit <- lars(reg.mat[,-1], reg.mat[,i], 
                      type=lars.type, trace = FALSE)
@@ -444,6 +445,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.type,
     coef.lars <- predict(lars.fit, s=s, type="coef", mode="step")
     fitted.lars <- predict(lars.fit, reg.xts[,-1], s=s, type="fit", 
                            mode="step")
+    fitted.list[[i]] <- xts(fitted.lars$fit, index(reg.xts))
     # extract and assign the results
     asset.fit[[i]] = lars.fit
     alpha[i] <- (fitted.lars$fit - 
@@ -454,8 +456,9 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.type,
     resid.sd[i] <- lars.sum$Rss[s]/(nrow(reg.xts)-s)
     
   }
+  fitted.xts <- do.call(merge, fitted.list)
   results.lars <- list(asset.fit=asset.fit, alpha=alpha, beta=beta, r2=r2, 
-                       resid.sd=resid.sd)
+                       resid.sd=resid.sd, fitted=fitted.xts)
 }
 
 
@@ -480,51 +483,64 @@ makePaddedDataFrame <- function(l){
 }
 
 #' @param object a fit object of class \code{tsfm} which is returned by 
-#' \code{fitTSFM}
+#' \code{fitTsfm}
 
-#' @rdname fitTSFM
+#' @rdname fitTsfm
 #' @method coef tsfm
 #' @export
 
 coef.tsfm <- function(object,...){
-  coef.mat <- t(sapply(object$asset.fit, coef))
+  if (object$variable.selection=="lars") {
+    coef.mat <- cbind(object$alpha, object$beta)
+    colnames(coef.mat)[1] <- "(Intercept)"
+  } else {
+    coef.mat <- t(sapply(object$asset.fit, coef))
+  }
   return(coef.mat)
 }
 
-#' @rdname fitTSFM
+#' @rdname fitTsfm
 #' @method fitted tsfm
 #' @export
 
-fitted.tsfm <- function(object,...){
-  # get fitted values from each linear factor model fit 
-  # and convert them into xts/zoo objects
-  fitted.list = sapply(object$asset.fit, function(x) checkData(fitted(x)))
-  # this is a list of xts objects, indexed by the asset name
-  # merge the objects in the list into one xts object
-  fitted.xts <- do.call(merge, fitted.list)
+fitted.tsfm <- function(object,...){  
+  if (object$variable.selection=="lars") {
+    fitted.xts <- object$fitted
+  } else {
+    # get fitted values from each linear factor model fit 
+    # and convert them into xts/zoo objects
+    fitted.list = sapply(object$asset.fit, function(x) checkData(fitted(x)))
+    # this is a list of xts objects, indexed by the asset name
+    # merge the objects in the list into one xts object
+    fitted.xts <- do.call(merge, fitted.list)
+  }
   return(fitted.xts)
 }
 
 
-#' @rdname fitTSFM
+#' @rdname fitTsfm
 #' @method residuals tsfm
 #' @export
 
 residuals.tsfm <- function(object ,...) {
-  # get residuals from each linear factor model fit 
-  # and convert them into xts/zoo objects
-  residuals.list = sapply(object$asset.fit, function(x) checkData(residuals(x)))
-  # this is a list of xts objects, indexed by the asset name
-  # merge the objects in the list into one xts object
-  residuals.xts <- do.call(merge, residuals.list)
+  if (object$variable.selection=="lars") {
+    residuals.xts <- object$data[,object$asset.names] - object$fitted
+  } else {
+    # get residuals from each linear factor model fit 
+    # and convert them into xts/zoo objects
+    residuals.list = sapply(object$asset.fit, function(x) checkData(residuals(x)))
+    # this is a list of xts objects, indexed by the asset name
+    # merge the objects in the list into one xts object
+    residuals.xts <- do.call(merge, residuals.list)
+  }
   return(residuals.xts)
 }
 
-#' @rdname fitTSFM
-#' @method covFM tsfm
+#' @rdname fitTsfm
+#' @method covFm tsfm
 #' @export
 
-covFM.tsfm <- function(object) {
+covFm.tsfm <- function(object) {
   
   # check input object validity
   if (!inherits(object, c("tsfm", "sfm", "ffm"))) {

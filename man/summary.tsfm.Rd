@@ -9,7 +9,7 @@
 \method{print}{summary.tsfm}(x, digits = 3, ...)
 }
 \arguments{
-\item{object}{an object of class \code{tsfm} returned by \code{fitTSFM}.}
+\item{object}{an object of class \code{tsfm} returned by \code{fitTsfm}.}
 
 \item{se.type}{one of "Default", "HC" or "HAC"; option for computing
 HC/HAC standard errors and t-statistics.}
@@ -28,7 +28,7 @@ coefficients (with standard errors and t-statistics), r-squared and
 residual volatilty (under the homoskedasticity assumption) for all assets.
 
 Object of class \code{summary.tsfm} is a list of length N + 2 containing:
-\item{call}{the function call to \code{fitTSFM}}
+\item{call}{the function call to \code{fitTsfm}}
 \item{se.type}{standard error type as input}
 \item{}{summaries of the N fit objects (of class \code{lm}, \code{lmRob}
 or \code{lars}) for each asset in the factor model.}
@@ -55,11 +55,10 @@ format the coefficients, standard errors, etc. and additionally give
 significance stars if \code{signif.stars} is TRUE.
 }
 \examples{
-data(managers.df)
-fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-               factor.names=colnames(managers.df[,7:9]),
-               market.name="SP500.TR", data=managers.df,
-               fit.method="OLS", variable.selection="none")
+data(managers)
+fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+               factor.names=colnames(managers[,7:9]),
+               mkt.name="SP500 TR", mkt.timing="HM", data=managers)
 
 # summary of factor model fit for all assets
 summary(fit, "HAC")
@@ -71,6 +70,6 @@ summary(fit$asset.fit[[1]])
 Yi-An Chen & Sangeetha Srinivasan.
 }
 \seealso{
-\code{\link{fitTSFM}}, \code{\link[stats]{summary.lm}}
+\code{\link{fitTsfm}}, \code{\link[stats]{summary.lm}}
 }
 

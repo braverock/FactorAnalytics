@@ -6,7 +6,7 @@
 \method{print}{tsfm}(x, digits = max(3, .Options$digits - 3), ...)
 }
 \arguments{
-\item{x}{an object of class \code{tsfm} produced by \code{fitTSFM}.}
+\item{x}{an object of class \code{tsfm} produced by \code{fitTsfm}.}
 
 \item{digits}{an integer value, to indicate the required number of
 significant digits. Default is 3.}
@@ -19,17 +19,16 @@ the call, factor model dimension, regression coefficients, r-squared and
 residual volatilities from the fitted object.
 }
 \examples{
-data(managers.df)
-fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-               factor.names=colnames(managers.df[,7:9]),
-               market.name="SP500.TR", data=managers.df,
-               fit.method="OLS", variable.selection="none")
+data(managers)
+fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+               factor.names=colnames(managers[,7:9]),
+               mkt.name="SP500 TR", mkt.timing="both", data=managers)
 print(fit)
 }
 \author{
 Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTSFM}}, \code{\link{summary.tsfm}}
+\code{\link{fitTsfm}}, \code{\link{summary.tsfm}}
 }
 

@@ -1,4 +1,4 @@
-#' @title Compute performance attribution in factor models
+#' @title Compute cumulative mean attribution for factor models
 #' 
 #' @description Decompose total returns into returns attributed to factors and 
 #' specific returns. An object of class \code{"pafm"} is generated and generic 
@@ -27,21 +27,19 @@
 #' @references Grinold, R. and Kahn, R. \emph{Active Portfolio Management},
 #' McGraw-Hill.
 #' 
-#' @seealso \code{\link{fitTSFM}}, \code{\link{fitSFM}}, \code{\link{fitFFM}}
+#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
 #' 
 #' @examples
-#' data(managers.df)
-#' fit <- fitTSFM(asset.names=colnames(managers.df[, (1:6)]), 
-#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df, 
-#'                add.up.market=FALSE, add.market.sqd=FALSE, 
-#'                fit.method="OLS", variable.selection="none")
+#' data(managers)
+#' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
+#'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
 #' # without benchmark
-#' fm.attr <- paFM(fit)
+#' fm.attr <- paFm(fit)
 #' 
 #' @export
 #' 
 
-paFM <- function(fit, ...) {
+paFm <- function(fit, ...) {
   
   if (class(fit)!="tsfm" & class(fit)!="ffm" & class(fit)!="sfm") {
     stop("Class has to be one of 'tsfm', 'ffm' or 'sfm'.")
@@ -54,36 +52,36 @@ paFM <- function(fit, ...) {
     # return attributed to factors
     cum.attr.ret <- fit$beta
     cum.spec.ret <- fit$alpha
-    factorName = colnames(fit$beta)
-    fundName = rownames(fit$beta)
+    factorNames = fit$factor.names
+    fundNames = fit$asset.names
     
     attr.list <- list()
     
-    for (k in fundName) {
+    for (k in fundNames) {
       fit.lm = fit$asset.fit[[k]]
       
-      ## extract information from lm object
-      data <- checkData(fit$data)
-      date <- index(na.omit(data[, k])) 
-      actual.xts = xts(fit.lm$model[1], as.Date(date))
+      ## extract information from lm, lmRob or lars object
+      reg.xts <- na.omit(fit$data[, c(k, factorNames)])
+      dates <- as.Date(index(reg.xts))
+      actual.xts = xts(fit.lm$model[1], dates)
       # attributed returns
       # active portfolio management p.512 17A.9 
       # top-down method
       
       cum.ret <- Return.cumulative(actual.xts)
       # setup initial value
-      attr.ret.xts.all <- xts(, as.Date(date))
+      attr.ret.xts.all <- xts(, dates)
       
-      for ( i in factorName ) {
+      for ( i in factorNames ) {
         
         if (is.na(fit$beta[k, i])) {
           cum.attr.ret[k, i] <- NA
           attr.ret.xts.all <- merge(attr.ret.xts.all, 
-                                    xts(rep(NA, length(date)), as.Date(date)))  
+                                    xts(rep(NA, length(date)), dates))  
         } else {
           attr.ret.xts <- actual.xts - 
             xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), 
-                as.Date(date))  
+                dates)  
           cum.attr.ret[k, i] <- cum.ret - 
             Return.cumulative(actual.xts - attr.ret.xts)  
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
@@ -93,10 +91,10 @@ paFM <- function(fit, ...) {
       # specific returns    
       spec.ret.xts <- actual.xts - 
         xts(as.matrix(fit.lm$model[, -1])%*%as.matrix(fit.lm$coef[-1]), 
-            as.Date(date))
+            dates)
       cum.spec.ret[k,1] <- cum.ret - Return.cumulative(actual.xts - spec.ret.xts)
       attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
-      colnames(attr.list[[k]]) <- c(factorName, "specific.returns")
+      colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")
     }
   }    
   
@@ -157,8 +155,8 @@ paFM <- function(fit, ...) {
     # return attributed to factors
     cum.attr.ret <- t(fit$loadings)
     cum.spec.ret <- fit$r2
-    factorName = rownames(fit$loadings)
-    fundName = colnames(fit$loadings)
+    factorNames = rownames(fit$loadings)
+    fundNames = colnames(fit$loadings)
     data <- checkData(fit$data)
     # create list for attribution
     attr.list <- list()
@@ -166,7 +164,7 @@ paFM <- function(fit, ...) {
     
     if ( dim(fit$asset.ret)[1] > dim(fit$asset.ret)[2] ) {
       
-      for (k in fundName) {
+      for (k in fundNames) {
         fit.lm = fit$asset.fit[[k]]
         ## extract information from lm object
         date <- index(data[, k])
@@ -178,7 +176,7 @@ paFM <- function(fit, ...) {
         # setup initial value
         attr.ret.xts.all <- xts(, as.Date(date))
         
-        for ( i in factorName ) {
+        for ( i in factorNames ) {
           attr.ret.xts <- actual.xts - 
             xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), 
                 as.Date(date))  
@@ -193,7 +191,7 @@ paFM <- function(fit, ...) {
               as.Date(date))
         cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
         attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
-        colnames(attr.list[[k]]) <- c(factorName, "specific.returns")
+        colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")
       }
     } else {
       # apca method:
@@ -201,12 +199,12 @@ paFM <- function(fit, ...) {
       #   fit$factors  # T X f
       date <- index(fit$factors)
       
-      for ( k in fundName) {
+      for ( k in fundNames) {
         attr.ret.xts.all <- xts(, as.Date(date))
         actual.xts <- xts(fit$asset.ret[, k], as.Date(date))
         cum.ret <-   Return.cumulative(actual.xts)
         
-        for (i in factorName) {
+        for (i in factorNames) {
           attr.ret.xts <- xts(fit$factors[, i] * fit$loadings[i, k], 
                               as.Date(date))
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
@@ -217,7 +215,7 @@ paFM <- function(fit, ...) {
                                          as.Date(date))
         cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
         attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
-        colnames(attr.list[[k]]) <- c(factorName, "specific.returns")  
+        colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")  
       }
     } 
   }

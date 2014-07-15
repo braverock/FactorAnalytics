@@ -7,9 +7,9 @@ setwd("C:/Users/Yi-An Chen/Documents/R-project/returnanalytics/pkg/FactorAnalyti
 # test example files
 
 data(managers.df)
-fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+fit <- fitTsfm(asset.names=colnames(managers.df[,(1:6)]),
                factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-               data=managers.df,fit.method="OLS", variable.selection="none")
+               data=managers.df, fit.method="OLS", variable.selection="none")
 factorData= managers.df[,c("EDHEC.LS.EQ","SP500.TR")]  
 Beta.mat=fit$beta
 residualData=as.matrix((fit$resid.sd)^2,1,6) 
@@ -70,9 +70,10 @@ summary(test.fit)
 print(test.fit)
 
 data(managers.df)
-fit.macro <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
+fit.macro <- fitTsfm(asset.names=colnames(managers.df[,(1:6)]),
                      factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-                     data=managers.df,fit.method="OLS", variable.selection="none")
+                     data=managers.df, fit.method="OLS", 
+                     variable.selection="none")
 print(fit.macro)
 summary(fit.macro)
 

@@ -9,7 +9,7 @@
 }
 \arguments{
 \item{x}{object of class \code{"pafm"} created by
-\code{paFM}.}
+\code{paFm}.}
 
 \item{which.plot}{Integer indicates which plot to create: "none" will
 create a menu to choose. Defualt is none.\cr
@@ -36,22 +36,20 @@ will create a menu to choose. Defualt is none.\cr
 time series}
 }
 \description{
-Generic function of plot method for paFM.
+Generic function of plot method for paFm.
 Either plot all assets or choose a single asset to plot.
 }
 \examples{
 \dontrun{
-data(managers.df)
-fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers.df,
-               add.up.market=FALSE, add.market.sqd=FALSE,
-               fit.method="OLS", variable.selection="none")
-fm.attr <- paFM(fit)
+data(managers)
+fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+               factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
+fm.attr <- paFm(fit)
 # plot all
-plot(fm.attr,legend.loc="topleft",max.show=6)
+plot(fm.attr, legend.loc="topleft", max.show=6)
 dev.off()
 # plot only one assets "HAM1
-plot(fm.attr,plot.single=TRUE,fundName="HAM1")
+plot(fm.attr, plot.single=TRUE, fundName="HAM1")
 }
 }
 \author{

@@ -50,12 +50,11 @@
 #' @examples
 #' 
 #' # load data from the database
-#' data(managers.df)
-#' fit <- fitTSFM(asset.names=colnames(managers.df[,(1:6)]),
-#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"),
-#'                data=managers.df, add.up.market=FALSE, add.market.sqd=FALSE, 
-#'                fit.method="OLS", variable.selection="none")
-#' factorData= managers.df[,c("EDHEC.LS.EQ","SP500.TR")]  
+#' \dontrun{
+#' data(managers)
+#' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
+#' factorData= managers[,c("EDHEC LS EQ","SP500 TR")]  
 #' Beta.mat=fit$beta
 #' residualData=as.matrix((fit$resid.sd)^2,1,6) 
 #' n.boot=1000
@@ -68,7 +67,7 @@
 #' # build different residualData matrix
 #' residualData <- cbind(c(1,2,1,3,0.1,0.5),rnorm(6),c(2,3,1,2,1,0))
 #' colnames(residualData) <- c("var","skew","ekurt")
-#' rownames(residualData) <- colnames(managers.df[,(1:6)])
+#' rownames(residualData) <- colnames(managers[,(1:6)])
 #' bootData <- factorModelMonteCarlo(n.boot, factorData,Beta.mat, residual.dist="Cornish-Fisher",
 #'                                   residualData, Alpha.mat=NULL, boot.method="random",
 #'                                   seed = 123, return.factors = "TRUE", return.residuals =
@@ -79,11 +78,12 @@
 #' # build residualData matrix
 #' residualData <- cbind(rnorm(6),c(1,2,1,3,0.1,0.5),rnorm(6),c(2,3,1,6,10,100))
 #' colnames(residualData) <- c("xi","omega","alpha","nu")
-#' rownames(residualData) <- colnames(managers.df[,(1:6)])
+#' rownames(residualData) <- colnames(managers[,(1:6)])
 #' bootData <- factorModelMonteCarlo(n.boot, factorData,Beta.mat, residual.dist="skew-t",
 #'                                   residualData, Alpha.mat=NULL, boot.method="random",
 #'                                   seed = 123, return.factors = "TRUE", return.residuals =
 #'                                   "TRUE")
+#' }
 #' 
 factorModelMonteCarlo <-
   function (n.boot = 1000, factorData, Beta.mat, Alpha.mat = NULL, 
