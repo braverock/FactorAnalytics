@@ -12,22 +12,23 @@
 #' the option to supply a risk free rate variable to subtract from each asset 
 #' return and factor to create excess returns. 
 #' 
-#' Estimation method "OLS" corresponds to ordinary least squares, "DLS" is 
-#' discounted least squares (weighted least squares with exponentially 
-#' declining weights that sum to unity), and, "Robust" is robust 
-#' regression (uses \code{\link[robust]{lmRob}}). 
+#' Estimation method "OLS" corresponds to ordinary least squares using 
+#' \code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least 
+#' squares with exponentially declining weights that sum to unity), and, 
+#' "Robust" is robust regression (useing \code{\link[robust]{lmRob}}). 
 #' 
 #' If \code{variable.selection="none"}, all chosen factors are used in the 
 #' factor model. Whereas, "stepwise" performs traditional forward/backward 
-#' stepwise OLS regression (using \code{\link[stats]{step}}), that starts from 
-#' the initial set of factors and adds factors only if the regression fit, as 
-#' measured by the Bayesian Information Criterion (BIC) or Akaike Information 
-#' Criterion (AIC), improves. And, "all subsets" enables subsets selection 
-#' using \code{\link[leaps]{regsubsets}} that chooses the n-best performing 
-#' subsets of any given size (specified as \code{num.factor.subsets} here). 
-#' \code{varaible.selection="lars"} corresponds to least angle regression 
-#' using \code{\link[lars]{lars}} with variants "lasso", "lar", 
-#' "forward.stagewise" or "stepwise". Note: If 
+#' stepwise OLS regression (using \code{\link[stats]{step}} or 
+#' \code{\link[robust]{step.lmRob}}), that starts from the initial set of 
+#' factors and adds factors only if the regression fit, as measured by the 
+#' Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC), 
+#' improves. And, "subsets" enables subsets selection using 
+#' \code{\link[leaps]{regsubsets}}; chooses the best performing subset of any 
+#' given size. See \code{\link{fitTsfm.control}} for more details on the 
+#' control arguments. \code{varaible.selection="lars"} corresponds to least 
+#' angle regression using \code{\link[lars]{lars}} with variants "lasso", 
+#' "lar", "forward.stagewise" or "stepwise". Note: If 
 #' \code{variable.selection="lars"}, \code{fit.method} will be ignored.
 #' 
 #' \code{mkt.timing} allows for market-timing factors to be added to any of the 
@@ -40,12 +41,14 @@
 #' volatility, and \code{market.sqd = (Rm-Rf)^2} is added as a factor in the 
 #' regression. Option "both" adds both of these factors.
 #' 
-#' \code{lars.criterion} selects the criterion (one of "Cp" or "cv") to 
-#' determine the best fitted model for \code{variable.selection="lars"}. The 
-#' "Cp" statistic (defined in page 17 of Efron et al. (2002)) is calculated 
-#' using \code{\link[lars]{summary.lars}}. While, "cv" computes the K-fold 
-#' cross-validated mean squared prediction error using 
-#' \code{\link[lars]{cv.lars}}.
+#' Note about NAs: Before model fitting, incomplete cases are removed for 
+#' every asset (return data combined with respective factors' return data) 
+#' using \code{\link[stats]{na.omit}}. Otherwise, all observations in 
+#' \code{data} are included.
+#' 
+#' Note about spaces in asset/factor names: Spaces in column names of the data 
+#' object will be converetd to periods as the function works with \code{xts} 
+#' objects internally and hence column names can't be retained as such.
 #' 
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
@@ -62,32 +65,13 @@
 #' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
 #' See details. Default is "OLS". 
 #' @param variable.selection the variable selection method, one of "none", 
-#' "stepwise","all subsets","lars". See details. Default is "none".
-#' @param subsets.method one of "exhaustive", "forward", "backward" or "seqrep" 
-#' (sequential replacement) to specify the type of subset search/selection. 
-#' Required if "all subsets" variable selection is chosen. Default is 
-#' "exhaustive".
-#' @param nvmax the maximum size of subsets to examine; an option for 
-#' "all subsets" variable selection. Default is 8. 
-#' @param force.in vector containing the names of factors that should always 
-#' be included in the model; an option for "all subsets" variable selection. 
-#' Default is NULL.
-#' @param num.factors.subset number of factors required in the factor model; 
-#' an option for "all subsets" variable selection. Default is 1. 
-#' Note: nvmax >= num.factors.subset >= length(force.in).
+#' "stepwise","subsets","lars". See details. Default is "none".
 #' @param mkt.timing one of "HM", "TM" or "both". Default is NULL. See Details. 
 #' \code{mkt.name} is required if any of these options are specified.
-#' @param decay a scalar in (0, 1] to specify the decay factor for 
-#' \code{fit.method="DLS"}. Default is 0.95.
-#' @param lars.type One of "lasso", "lar", "forward.stagewise" or "stepwise". 
-#' The names can be abbreviated to any unique substring. Default is "lasso".
-#' @param lars.criterion an option to assess model selection for the "lars" 
-#' method; one of "Cp" or "cv". See details. Default is "Cp".
-#' @param ... optional arguments passed to the \code{step} function for 
-#' variable.selection method "stepwise", such as direction, steps and 
-#' the penalty factor k. Note that argument k is available only for "OLS" 
-#' and "DLS" fits. Scope argument is not available presently. Also plan to
-#' include other controls passed to \code{lmRob} soon.
+#' @param control list of control parameters. The default is constructed by 
+#' the function \code{\link{fitTsfm.control}}. See the documentation for 
+#' \code{\link{fitTsfm.control}} for details.
+#' @param ... arguments passed to \code{\link{fitTsfm.control}}
 #' 
 #' @return fitTsfm returns an object of class \code{tsfm}. 
 #' 
@@ -112,7 +96,7 @@
 #' \item{beta}{N x K matrix of estimated betas.}
 #' \item{r2}{N x 1 vector of R-squared values.}
 #' \item{resid.sd}{N x 1 vector of residual standard deviations.}
-#' \item{fitted}{xts data object of fitted values; if and only if 
+#' \item{fitted}{xts data object of fitted values; iff 
 #' \code{variable.selection="lars"}}
 #' \item{call}{the matched function call.}
 #' \item{data}{xts data object containing the assets and factors.}
@@ -173,30 +157,50 @@
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"),
-                    variable.selection=c("none","stepwise","all subsets",
+                    variable.selection=c("none","stepwise","subsets",
                                          "lars"),
-                    subsets.method=c("exhaustive","backward","forward",
-                                     "seqrep"),
-                    nvmax=8, force.in=NULL, num.factors.subset=1, 
-                    mkt.timing=NULL, decay=0.95,
-                    lars.type=c("lasso","lar","forward.stagewise","stepwise"),
-                    lars.criterion="Cp", ...){
+                    mkt.timing=NULL, control=fitTsfm.control(...), ...) {
   
-  # get all the arguments specified by their full names
+  # record the call as an element to be returned
   call <- match.call()
   
-  fit.method = fit.method[1] # default is OLS
-  variable.selection = variable.selection[1] # default is "none"
-  subsets.method = subsets.method[1] # default is "exhaustive"
-  lars.type=lars.type[1] # default is "lasso"
-  
-  if (!exists("direction")) {direction <- "backward"}
-  if (!exists("steps")) {steps <- 1000}
-  if (!exists("k")) {k <- 2}
+  # set defaults and check input vailidity
+  fit.method = fit.method[1]
+  if (!(fit.method %in% c("OLS","DLS","Robust"))) {
+    stop("Invalid argument: fit.method must be 'OLS', 'DLS' or 'Robust'")
+  }
+  variable.selection = variable.selection[1]
+  if (!(variable.selection %in% c("none","stepwise","subsets","lars"))) {
+    stop("Invalid argument: variable.selection must be either 'none',
+         'stepwise','subsets' or 'lars'")
+  }
   if (xor(is.null(mkt.name), is.null(mkt.timing))) {
     stop("Missing argument: 'mkt.name' and 'mkt.timing' are both required to 
          include market-timing factors.")
   }
+  
+  # extract arguments to pass to different fit and variable selection functions
+  decay <- control$decay
+  subset.size <- control$subset.size
+  lars.criterion <- control$lars.criterion
+  m1 <- match(c("weights","method","model","x","y","qr"), 
+              names(control), 0L)
+  lm.args <- control[m1, drop=TRUE]
+  m2 <-  match(c("weights","model","x","y","nrep"), 
+               names(control), 0L)
+  lmRob.args <- control[m2, drop=TRUE]
+  m3 <-  match(c("scope","scale","direction","trace","steps","k"), 
+               names(control), 0L)
+  step.args <- control[m3, drop=TRUE]
+  m4 <-  match(c("weights","nbest","nvmax","force.in","force.out","method",
+                 "really.big"), names(control), 0L)
+  regsubsets.args <- control[m4, drop=TRUE]
+  m5 <-  match(c("type","normalize","eps","max.steps","trace"), 
+               names(control), 0L)
+  lars.args <- control[m5, drop=TRUE]
+  m6 <-  match(c("K","type","mode","normalize","eps","max.steps","trace"), 
+               names(control), 0L)
+  cv.lars.args <- control[m6, drop=TRUE]
   
   # convert data into an xts object and hereafter work with xts objects
   data.xts <- checkData(data)
@@ -207,12 +211,15 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   # convert all asset and factor returns to excess return form if specified
   if (!is.null(rf.name)) {
-    cat("Excess returns were used for all assets and factors.")
+    cat("Excess returns were computed and used for all assets and factors.")
     dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
                                      FUN.VALUE = numeric(nrow(dat.xts))))
+  } else {
+    cat("Note: fitTsfm was NOT asked to compute EXCESS returns. Input returns 
+        data was used as it is for all factors and assets.")
   }
   
-  # opt add market-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
+  # opt add mkt-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
   if (!is.null(mkt.timing)) {
     if(mkt.timing=="HM" | mkt.timing=="both") {
       up.market <- data.xts[,mkt.name]
@@ -237,17 +244,17 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   # Each method returns a list of fitted factor models for each asset.
   if (variable.selection == "none") {
     reg.list <- NoVariableSelection(dat.xts, asset.names, factor.names, 
-                                    fit.method, decay)
-  } else if (variable.selection == "stepwise"){
-    reg.list <- SelectStepwise(dat.xts, asset.names, factor.names, 
-                               fit.method, decay, direction, steps, k)
-  } else if (variable.selection == "all subsets"){
-    reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names, 
-                                 fit.method, subsets.method, 
-                                 nvmax, force.in, num.factors.subset, decay)
-  } else if (variable.selection == "lars"){
-    result.lars <- SelectLars(dat.xts, asset.names, factor.names, 
-                              lars.type, decay, lars.criterion)
+                                    fit.method, lm.args, lmRob.args, decay)
+  } else if (variable.selection == "stepwise") {
+    reg.list <- SelectStepwise(dat.xts, asset.names, factor.names, fit.method, 
+                               lm.args, lmRob.args, step.args, decay)
+  } else if (variable.selection == "subsets") {
+    reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names,fit.method, 
+                                 lm.args, lmRob.args, regsubsets.args, 
+                                 subset.size, decay)
+  } else if (variable.selection == "lars") {
+    result.lars <- SelectLars(dat.xts, asset.names, factor.names, lars.args, 
+                              cv.lars.args, lars.criterion)
     input <- list(call=call, data=dat.xts, asset.names=asset.names, 
                   factor.names=factor.names, fit.method=fit.method, 
                   variable.selection=variable.selection)
@@ -255,10 +262,6 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     class(result) <- "tsfm"
     return(result)
   } 
-  else {
-    stop("Invalid argument: variable.selection must be either 'none',
-         'stepwise','all subsets','lars'")
-  }
   
   # extract the fitted factor models, coefficients, r2 values and residual vol 
   # from returned factor model fits above
@@ -282,12 +285,12 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
 ### method variable.selection = "none"
 #
 NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
-                                decay){
+                                lm.args, lmRob.args, decay){
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
   # loop through and estimate model for each asset to allow unequal histories
-  for (i in asset.names){
+  for (i in asset.names) {
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
@@ -296,15 +299,16 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # fit based on time series regression method chosen
     if (fit.method == "OLS") {
-      reg.list[[i]] <- lm(fm.formula, data=reg.xts)
+      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "DLS") {
-      w <- WeightsDLS(nrow(reg.xts), decay)
-      reg.list[[i]] <- lm(fm.formula, data=reg.xts, weights=w)
+      if(!"weights" %in% names(lm.args)) {
+        lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
+      }
+      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- lmRob(fm.formula, data=reg.xts)
-    } else {
-      stop("Invalid argument: fit.method must be 'OLS', 'DLS' or 'Robust'")
-    }
+      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts),
+                                        lmRob.args))
+    } 
   } 
   reg.list  
 }
@@ -313,12 +317,12 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
 ### method variable.selection = "stepwise"
 #
 SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method, 
-                           decay, direction, steps, k){
+                           lm.args, lmRob.args, step.args, decay) {
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
   # loop through and estimate model for each asset to allow unequal histories
-  for (i in asset.names){
+  for (i in asset.names) {
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
@@ -327,76 +331,63 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # fit based on time series regression method chosen
     if (fit.method == "OLS") {
-      reg.list[[i]] <- step(lm(fm.formula, data=reg.xts), direction=direction, 
-                            steps=steps, k=k, trace=0)
+      lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
+      reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
     } else if (fit.method == "DLS") {
-      w <- WeightsDLS(nrow(reg.xts), decay)
-      reg.list[[i]] <- step(lm(fm.formula, data=reg.xts, weights=w), 
-                            direction=direction, steps=steps, k=k, trace=0)
+      if(!"weights" %in% names(lm.args)) {
+        lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
+      }
+      lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
+      reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- step.lmRob(lmRob(fm.formula, data=reg.xts), trace=FALSE,
-                                  direction=direction, steps=steps)
-    } else {
-      stop("Invalid argument: fit.method must be 'OLS', 'DLS' or 'Robust'")
-    }
+      lmRob.fit <- do.call(lmRob, c(list(fm.formula,data=reg.xts),lmRob.args))
+      reg.list[[i]] <- do.call(step.lmRob, c(list(lmRob.fit),step.args))
+    } 
   }
   reg.list
 }
 
 
-### method variable.selection = "all subsets"
+### method variable.selection = "subsets"
 #
 SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method, 
-                             subsets.method, nvmax, force.in, 
-                             num.factors.subset, decay){
-  # Check argument validity
-  if (nvmax < num.factors.subset) {
-    stop("Invaid Argument: nvmax should be >= num.factors.subset")
-  }
+                             lm.args, lmRob.args, regsubsets.args, subset.size, 
+                             decay) {
   
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
   # loop through and estimate model for each asset to allow unequal histories
-  for (i in asset.names){
+  for (i in asset.names) {
+    # completely remove NA cases
+    reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
-    # choose best subset of factors depending on specified number of factors
-    if (num.factors.subset == length(force.in)) {
-      reg.xts <- na.omit(dat.xts[, c(i, force.in)])
-    } else if (num.factors.subset > length(force.in)) {
-      reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-      
-      # formula to pass to lm or lmRob
-      fm.formula <- as.formula(paste(i," ~ ."))
-      
-      if (fit.method != "DLS") {decay <- 1}
-      # do weighted least squares if "DLS"
-      w <- WeightsDLS(nrow(reg.xts), decay)
-      
-      # use regsubsets to find the best model with a subset of factors of size 
-      # num.factors.subset
-      fm.subsets <- regsubsets(fm.formula, data=reg.xts, nvmax=nvmax,
-                               force.in=force.in, method=subsets.method, 
-                               weights=w)
-      sum.sub <- summary(fm.subsets)
-      reg.xts <- na.omit(dat.xts[,c(i,names(which(sum.sub$which[
-        as.character(num.factors.subset),-1]==TRUE)))])
-    } else {
-      stop("Invalid Argument: num.factors.subset should be >= 
-             length(force.in)")
+    # formula to pass to lm or lmRob
+    fm.formula <- as.formula(paste(i," ~ ."))
+    
+    if (fit.method == "DLS" && !"weights" %in% names(regsubsets.args)) {
+      regsubsets.args$weights <- WeightsDLS(nrow(reg.xts), decay)
     }
+    
+    # choose best subset of factors depending on specified subset size
+    fm.subsets <- do.call(regsubsets, c(list(fm.formula,data=reg.xts),
+                                        regsubsets.args))
+    sum.sub <- summary(fm.subsets)
+    names.sub <- names(which(sum.sub$which[as.character(subset.size),-1]==TRUE))
+    reg.xts <- na.omit(dat.xts[,c(i,names.sub)])
     
     # fit based on time series regression method chosen
     if (fit.method == "OLS") {
-      reg.list[[i]] <- lm(fm.formula, data=reg.xts)
+      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "DLS") {
-      w <- WeightsDLS(nrow(reg.xts), decay)
-      reg.list[[i]] <- lm(fm.formula, data=reg.xts, weights=w)
+      if(!"weights" %in% names(lm.args)) {
+        lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
+      }
+      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- lmRob(fm.formula, data=reg.xts)
-    } else {
-      stop("Invalid argument: fit.method must be 'OLS', 'DLS' or 'Robust'")
-    }
+      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts),
+                                        lmRob.args))
+    } 
   }
   reg.list
 }
@@ -404,8 +395,8 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
 
 ### method variable.selection = "lars"
 #
-SelectLars <- function(dat.xts, asset.names, factor.names, lars.type, 
-                       decay, lars.criterion) {
+SelectLars <- function(dat.xts, asset.names, factor.names, lars.args, 
+                       cv.lars.args, lars.criterion) {
   # initialize list object to hold the fitted objects and, vectors and matrices
   # for the other results
   asset.fit <- list()
@@ -418,38 +409,33 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.type,
   colnames(beta) <- factor.names
   
   # loop through and estimate model for each asset to allow unequal histories
-  for (i in asset.names){
+  for (i in asset.names) {
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
     # convert to matrix
     reg.mat <- as.matrix(reg.xts)
     # fit lars regression model
-    lars.fit <- lars(reg.mat[,-1], reg.mat[,i], 
-                     type=lars.type, trace = FALSE)
+    lars.fit <- do.call(lars, c(x=list(reg.mat[,-1],y=reg.mat[,i]),lars.args))
     lars.sum <- summary(lars.fit)
+    cv.error <- do.call(cv.lars, c(x=list(reg.mat[,-1],y=reg.mat[,i],
+                                          plot.it=FALSE),cv.lars.args))
     
-    # get the step that minimizes the "Cp" statistic or the "cv" mean-sqd 
-    # prediction error
+    # get the step that minimizes the "Cp" statistic or 
+    # the K-fold "cv" mean-squared prediction error
     if (lars.criterion == "Cp") {
       s <- which.min(lars.sum$Cp)
-    } else if (lars.criterion == "cv") {
-      lars.cv <- cv.lars(reg.mat[,factor.names], reg.mat[,i], trace=FALSE,
-                         type=lars.type, mode="step", plot.it=FALSE)
-      s <- which.min(lars.cv$cv)
     } else {
-      stop("Invalid argument: lars.criterion must be Cp' or 'cv'")
+      s <- which.min(cv.error$cv)
     }
     
     # get factor model coefficients & fitted values at the step obtained above
     coef.lars <- predict(lars.fit, s=s, type="coef", mode="step")
-    fitted.lars <- predict(lars.fit, reg.xts[,-1], s=s, type="fit", 
-                           mode="step")
+    fitted.lars <- predict(lars.fit, reg.xts[,-1], s=s, type="fit",mode="step")
     fitted.list[[i]] <- xts(fitted.lars$fit, index(reg.xts))
     # extract and assign the results
     asset.fit[[i]] = lars.fit
-    alpha[i] <- (fitted.lars$fit - 
-                   reg.xts[,-1]%*%coef.lars$coefficients)[1]
+    alpha[i] <- (fitted.lars$fit - reg.xts[,-1]%*%coef.lars$coefficients)[1]
     beta.names <- names(coef.lars$coefficients)
     beta[i, beta.names] <- coef.lars$coefficients
     r2[i] <-  lars.fit$R2[s]
@@ -459,21 +445,24 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.type,
   fitted.xts <- do.call(merge, fitted.list)
   results.lars <- list(asset.fit=asset.fit, alpha=alpha, beta=beta, r2=r2, 
                        resid.sd=resid.sd, fitted=fitted.xts)
+  # As a special case for variable.selection="lars", fitted values are also 
+  # returned by fitTsfm. Else, shrinkage s from the best fit is needed to get 
+  # fitted values & residuals.
 }
 
 
 ### calculate weights for "DLS"
 #
-WeightsDLS <- function(t,d){
+WeightsDLS <- function(t,d) {
   # more weight given to more recent observations 
   w <- d^seq((t-1),0,-1)    
   # ensure that the weights sum to unity
   w/sum(w)
 }
 
-### make a data frame (padded with NAs) from columns of unequal length
+### make a data frame (padded with NAs) from unequal vectors with named rows
 #
-makePaddedDataFrame <- function(l){
+makePaddedDataFrame <- function(l) {
   DF <- do.call(rbind, lapply(lapply(l, unlist), "[", 
                               unique(unlist(c(sapply(l,names))))))
   DF <- as.data.frame(DF)
@@ -489,12 +478,12 @@ makePaddedDataFrame <- function(l){
 #' @method coef tsfm
 #' @export
 
-coef.tsfm <- function(object,...){
+coef.tsfm <- function(object,...) {
   if (object$variable.selection=="lars") {
     coef.mat <- cbind(object$alpha, object$beta)
     colnames(coef.mat)[1] <- "(Intercept)"
   } else {
-    coef.mat <- t(sapply(object$asset.fit, coef))
+    coef.mat <- t(sapply(object$asset.fit, coef, ...))
   }
   return(coef.mat)
 }
@@ -503,13 +492,14 @@ coef.tsfm <- function(object,...){
 #' @method fitted tsfm
 #' @export
 
-fitted.tsfm <- function(object,...){  
+fitted.tsfm <- function(object,...) {  
   if (object$variable.selection=="lars") {
     fitted.xts <- object$fitted
   } else {
     # get fitted values from each linear factor model fit 
     # and convert them into xts/zoo objects
-    fitted.list = sapply(object$asset.fit, function(x) checkData(fitted(x)))
+    fitted.list = sapply(object$asset.fit, 
+                         function(x) checkData(fitted(x,...)))
     # this is a list of xts objects, indexed by the asset name
     # merge the objects in the list into one xts object
     fitted.xts <- do.call(merge, fitted.list)
@@ -528,7 +518,8 @@ residuals.tsfm <- function(object ,...) {
   } else {
     # get residuals from each linear factor model fit 
     # and convert them into xts/zoo objects
-    residuals.list = sapply(object$asset.fit, function(x) checkData(residuals(x)))
+    residuals.list = sapply(object$asset.fit, 
+                            function(x) checkData(residuals(x,...)))
     # this is a list of xts objects, indexed by the asset name
     # merge the objects in the list into one xts object
     residuals.xts <- do.call(merge, residuals.list)

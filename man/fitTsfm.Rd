@@ -9,11 +9,8 @@
 \usage{
 fitTsfm(asset.names, factor.names, mkt.name = NULL, rf.name = NULL,
   data = data, fit.method = c("OLS", "DLS", "Robust"),
-  variable.selection = c("none", "stepwise", "all subsets", "lars"),
-  subsets.method = c("exhaustive", "backward", "forward", "seqrep"),
-  nvmax = 8, force.in = NULL, num.factors.subset = 1, mkt.timing = NULL,
-  decay = 0.95, lars.type = c("lasso", "lar", "forward.stagewise",
-  "stepwise"), lars.criterion = "Cp", ...)
+  variable.selection = c("none", "stepwise", "subsets", "lars"),
+  mkt.timing = NULL, control = fitTsfm.control(...), ...)
 
 \method{coef}{tsfm}(object, ...)
 
@@ -45,41 +42,16 @@ optionally, \code{mkt.name} and \code{rf.name}.}
 See details. Default is "OLS".}
 
 \item{variable.selection}{the variable selection method, one of "none",
-"stepwise","all subsets","lars". See details. Default is "none".}
-
-\item{subsets.method}{one of "exhaustive", "forward", "backward" or "seqrep"
-(sequential replacement) to specify the type of subset search/selection.
-Required if "all subsets" variable selection is chosen. Default is
-"exhaustive".}
-
-\item{nvmax}{the maximum size of subsets to examine; an option for
-"all subsets" variable selection. Default is 8.}
-
-\item{force.in}{vector containing the names of factors that should always
-be included in the model; an option for "all subsets" variable selection.
-Default is NULL.}
-
-\item{num.factors.subset}{number of factors required in the factor model;
-an option for "all subsets" variable selection. Default is 1.
-Note: nvmax >= num.factors.subset >= length(force.in).}
+"stepwise","subsets","lars". See details. Default is "none".}
 
 \item{mkt.timing}{one of "HM", "TM" or "both". Default is NULL. See Details.
 \code{mkt.name} is required if any of these options are specified.}
 
-\item{decay}{a scalar in (0, 1] to specify the decay factor for
-\code{fit.method="DLS"}. Default is 0.95.}
+\item{control}{list of control parameters. The default is constructed by
+the function \code{\link{fitTsfm.control}}. See the documentation for
+\code{\link{fitTsfm.control}} for details.}
 
-\item{lars.type}{One of "lasso", "lar", "forward.stagewise" or "stepwise".
-The names can be abbreviated to any unique substring. Default is "lasso".}
-
-\item{lars.criterion}{an option to assess model selection for the "lars"
-method; one of "Cp" or "cv". See details. Default is "Cp".}
-
-\item{...}{optional arguments passed to the \code{step} function for
-variable.selection method "stepwise", such as direction, steps and
-the penalty factor k. Note that argument k is available only for "OLS"
-and "DLS" fits. Scope argument is not available presently. Also plan to
-include other controls passed to \code{lmRob} soon.}
+\item{...}{arguments passed to \code{\link{fitTsfm.control}}}
 
 \item{object}{a fit object of class \code{tsfm} which is returned by
 \code{fitTsfm}}
@@ -108,7 +80,7 @@ the \code{fit.method="Robust"}, or class \code{lars} if
 \item{beta}{N x K matrix of estimated betas.}
 \item{r2}{N x 1 vector of R-squared values.}
 \item{resid.sd}{N x 1 vector of residual standard deviations.}
-\item{fitted}{xts data object of fitted values; if and only if
+\item{fitted}{xts data object of fitted values; iff
 \code{variable.selection="lars"}}
 \item{call}{the matched function call.}
 \item{data}{xts data object containing the assets and factors.}
@@ -132,22 +104,23 @@ Typically, factor models are fit using excess returns. \code{rf.name} gives
 the option to supply a risk free rate variable to subtract from each asset
 return and factor to create excess returns.
 
-Estimation method "OLS" corresponds to ordinary least squares, "DLS" is
-discounted least squares (weighted least squares with exponentially
-declining weights that sum to unity), and, "Robust" is robust
-regression (uses \code{\link[robust]{lmRob}}).
+Estimation method "OLS" corresponds to ordinary least squares using
+\code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least
+squares with exponentially declining weights that sum to unity), and,
+"Robust" is robust regression (useing \code{\link[robust]{lmRob}}).
 
 If \code{variable.selection="none"}, all chosen factors are used in the
 factor model. Whereas, "stepwise" performs traditional forward/backward
-stepwise OLS regression (using \code{\link[stats]{step}}), that starts from
-the initial set of factors and adds factors only if the regression fit, as
-measured by the Bayesian Information Criterion (BIC) or Akaike Information
-Criterion (AIC), improves. And, "all subsets" enables subsets selection
-using \code{\link[leaps]{regsubsets}} that chooses the n-best performing
-subsets of any given size (specified as \code{num.factor.subsets} here).
-\code{varaible.selection="lars"} corresponds to least angle regression
-using \code{\link[lars]{lars}} with variants "lasso", "lar",
-"forward.stagewise" or "stepwise". Note: If
+stepwise OLS regression (using \code{\link[stats]{step}} or
+\code{\link[robust]{step.lmRob}}), that starts from the initial set of
+factors and adds factors only if the regression fit, as measured by the
+Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC),
+improves. And, "subsets" enables subsets selection using
+\code{\link[leaps]{regsubsets}}; chooses the best performing subset of any
+given size. See \code{\link{fitTsfm.control}} for more details on the
+control arguments. \code{varaible.selection="lars"} corresponds to least
+angle regression using \code{\link[lars]{lars}} with variants "lasso",
+"lar", "forward.stagewise" or "stepwise". Note: If
 \code{variable.selection="lars"}, \code{fit.method} will be ignored.
 
 \code{mkt.timing} allows for market-timing factors to be added to any of the
@@ -160,12 +133,14 @@ Treynor-Mazuy (1966), to account for market timing with respect to
 volatility, and \code{market.sqd = (Rm-Rf)^2} is added as a factor in the
 regression. Option "both" adds both of these factors.
 
-\code{lars.criterion} selects the criterion (one of "Cp" or "cv") to
-determine the best fitted model for \code{variable.selection="lars"}. The
-"Cp" statistic (defined in page 17 of Efron et al. (2002)) is calculated
-using \code{\link[lars]{summary.lars}}. While, "cv" computes the K-fold
-cross-validated mean squared prediction error using
-\code{\link[lars]{cv.lars}}.
+Note about NAs: Before model fitting, incomplete cases are removed for
+every asset (return data combined with respective factors' return data)
+using \code{\link[stats]{na.omit}}. Otherwise, all observations in
+\code{data} are included.
+
+Note about spaces in asset/factor names: Spaces in column names of the data
+object will be converetd to periods as the function works with \code{xts}
+objects internally and hence column names can't be retained as such.
 }
 \examples{
 # load data from the database
