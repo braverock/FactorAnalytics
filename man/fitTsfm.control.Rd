@@ -8,7 +8,7 @@ fitTsfm.control(decay = 0.95, weights, model = TRUE, x = FALSE,
   trace = FALSE, steps = 1000, k = 2, nbest = 1, nvmax = 8,
   force.in = NULL, force.out = NULL, method, really.big = FALSE,
   subset.size = 1, type, normalize = TRUE, eps = .Machine$double.eps,
-  max.steps, lars.criterion = "Cp", K = 10, mode)
+  max.steps, lars.criterion = "Cp", K = 10)
 }
 \arguments{
 \item{decay}{a scalar in (0, 1] to specify the decay factor for "DLS".
@@ -107,11 +107,6 @@ algorithm has proceeded to the saturated fit, users should check.}
 
 \item{K}{number of folds for computing the K-fold cross-validated mean
 squared prediction error for \code{"lars"}. Default is 10.}
-
-\item{mode}{This refers to the index that is used for cross-validation. The
-default is "fraction" for \code{type="lasso"} or
-\code{type="forward.stagewise"}. For \code{type="lar"} or
-\code{type="stepwise"} the default is "step".}
 }
 \value{
 A list of the above components. This is only meant to be used by
@@ -145,7 +140,7 @@ cross-validated mean squared prediction error using
 }
 \examples{
 # check argument list passed by fitTsfm.control
-tsfm.ctrl <- fitTsfm.control(method="exhaustive", nbest=2)
+tsfm.ctrl <- fitTsfm.control(method="exhaustive", subset.size=2)
 print(tsfm.ctrl)
 
 # used internally by fitTsfm
@@ -153,7 +148,7 @@ data(managers)
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,(7:9)]),
                data=managers, variable.selection="subsets",
-               method="exhaustive", nbest=2)
+               method="exhaustive", subset.size=2)
 }
 \author{
 Sangeetha Srinivasan

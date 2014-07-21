@@ -152,6 +152,18 @@
 #' colnames(dataToPlot) <- c("Fitted","Actual")
 #' chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
 #'                  colorset=c("black","blue"), legend.loc="bottomleft")
+#' 
+#' # example using "subsets" variable selection
+#' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#'                    factor.names=colnames(managers[,(7:9)]), 
+#'                    data=managers, variable.selection="subsets", 
+#'                    method="exhaustive", subset.size=2) 
+#' 
+#' # example using "lars" variable selection and subtracting risk-free rate
+#' fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#'                    factor.names=colnames(managers[,(7:9)]), 
+#'                    rf.name="US 3m TR", data=managers, 
+#'                    variable.selection="lars", lars.criterion="cv") 
 #'
 #'  @export
 
@@ -183,7 +195,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   decay <- control$decay
   subset.size <- control$subset.size
   lars.criterion <- control$lars.criterion
-  m1 <- match(c("weights","method","model","x","y","qr"), 
+  m1 <- match(c("weights","model","x","y","qr"), 
               names(control), 0L)
   lm.args <- control[m1, drop=TRUE]
   m2 <-  match(c("weights","model","x","y","nrep"), 
@@ -198,7 +210,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   m5 <-  match(c("type","normalize","eps","max.steps","trace"), 
                names(control), 0L)
   lars.args <- control[m5, drop=TRUE]
-  m6 <-  match(c("K","type","mode","normalize","eps","max.steps","trace"), 
+  m6 <-  match(c("K","type","normalize","eps","max.steps","trace"), 
                names(control), 0L)
   cv.lars.args <- control[m6, drop=TRUE]
   
@@ -416,10 +428,11 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     # convert to matrix
     reg.mat <- as.matrix(reg.xts)
     # fit lars regression model
-    lars.fit <- do.call(lars, c(x=list(reg.mat[,-1],y=reg.mat[,i]),lars.args))
+    lars.fit <- do.call(lars, c(list(x=reg.mat[,-1],y=reg.mat[,i]),lars.args))
     lars.sum <- summary(lars.fit)
-    cv.error <- do.call(cv.lars, c(x=list(reg.mat[,-1],y=reg.mat[,i],
-                                          plot.it=FALSE),cv.lars.args))
+    cv.error <- 
+      do.call(cv.lars, c(list(x=reg.mat[,-1],y=reg.mat[,i],plot.it=FALSE, 
+                              mode="step"),cv.lars.args))
     
     # get the step that minimizes the "Cp" statistic or 
     # the K-fold "cv" mean-squared prediction error
@@ -439,14 +452,14 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     beta.names <- names(coef.lars$coefficients)
     beta[i, beta.names] <- coef.lars$coefficients
     r2[i] <-  lars.fit$R2[s]
-    resid.sd[i] <- lars.sum$Rss[s]/(nrow(reg.xts)-s)
+    resid.sd[i] <- sqrt(lars.sum$Rss[s]/(nrow(reg.xts)-s))
     
   }
   fitted.xts <- do.call(merge, fitted.list)
   results.lars <- list(asset.fit=asset.fit, alpha=alpha, beta=beta, r2=r2, 
                        resid.sd=resid.sd, fitted=fitted.xts)
   # As a special case for variable.selection="lars", fitted values are also 
-  # returned by fitTsfm. Else, shrinkage s from the best fit is needed to get 
+  # returned by fitTsfm. Else, step s from the best fit is needed to get 
   # fitted values & residuals.
 }
 

@@ -158,6 +158,18 @@ dataToPlot <- cbind(fitted(fit$asset.fit$HAM1), na.omit(managers$HAM1))
 colnames(dataToPlot) <- c("Fitted","Actual")
 chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
                  colorset=c("black","blue"), legend.loc="bottomleft")
+
+# example using "subsets" variable selection
+fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+                   factor.names=colnames(managers[,(7:9)]),
+                   data=managers, variable.selection="subsets",
+                   method="exhaustive", subset.size=2)
+
+# example using "lars" variable selection and subtracting risk-free rate
+fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+                   factor.names=colnames(managers[,(7:9)]),
+                   rf.name="US 3m TR", data=managers,
+                   variable.selection="lars", lars.criterion="cv")
 }
 \author{
 Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.

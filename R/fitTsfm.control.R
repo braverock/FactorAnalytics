@@ -98,10 +98,6 @@
 #' \code{"lars"} method; one of "Cp" or "cv". See details. Default is "Cp".
 #' @param K number of folds for computing the K-fold cross-validated mean 
 #' squared prediction error for \code{"lars"}. Default is 10.
-#' @param mode This refers to the index that is used for cross-validation. The 
-#' default is "fraction" for \code{type="lasso"} or 
-#' \code{type="forward.stagewise"}. For \code{type="lar"} or 
-#' \code{type="stepwise"} the default is "step".
 #' 
 #' @return A list of the above components. This is only meant to be used by 
 #' \code{fitTsfm}.
@@ -122,7 +118,7 @@
 #' @examples
 #' 
 #' # check argument list passed by fitTsfm.control
-#' tsfm.ctrl <- fitTsfm.control(method="exhaustive", nbest=2)
+#' tsfm.ctrl <- fitTsfm.control(method="exhaustive", subset.size=2)
 #' print(tsfm.ctrl)
 #' 
 #' # used internally by fitTsfm
@@ -130,7 +126,7 @@
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
 #'                data=managers, variable.selection="subsets", 
-#'                method="exhaustive", nbest=2)
+#'                method="exhaustive", subset.size=2)
 #' 
 #' @export
 
@@ -140,14 +136,19 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
                             force.in=NULL, force.out=NULL, method, 
                             really.big=FALSE, subset.size=1, type, 
                             normalize=TRUE, eps=.Machine$double.eps, max.steps, 
-                            lars.criterion="Cp", K = 10, mode) {
+                            lars.criterion="Cp", K = 10) {
   
   # get the user-specified arguments (that have no defaults)
-  c <- match.call()
+  call <- match.call()
   m <- match(c("weights","scope","scale","direction","method","type",
-               "max.steps","mode"), names(c), 0L) 
+               "max.steps"), names(call), 0L) 
+  
   # drop unused levels
-  result <- as.list(c[m, drop=TRUE])
+  if (!is.null(call) && sum(m>0) == 0) {
+    args <- list()
+  } else {
+    args <- as.list(call[m, drop=TRUE])
+  }
   
   # check input validity for some of the arguments
   if (decay<=0 || decay>1) {
@@ -184,11 +185,11 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   }
   
   # return list of arguments with defaults if they are unspecified
-  result <- c(result, list(decay=decay, model=model, x=x, y=y, qr=qr, 
-                           nrep=nrep, trace=trace, steps=steps, k=k, 
-                           nbest=nbest, nvmax=nvmax, force.in=force.in, 
-                           force.out=force.out, really.big=really.big, 
-                           subset.size=subset.size, normalize=normalize, 
-                           eps=eps, lars.criterion=lars.criterion, K=K))
+  result <- c(args, list(decay=decay, model=model, x=x, y=y, qr=qr, nrep=nrep, 
+                         trace=trace, steps=steps, k=k, nbest=nbest, 
+                         nvmax=nvmax, force.in=force.in, force.out=force.out, 
+                         really.big=really.big, subset.size=subset.size, 
+                         normalize=normalize, eps=eps, 
+                         lars.criterion=lars.criterion, K=K))
   return(result)
 }
