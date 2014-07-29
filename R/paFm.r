@@ -90,7 +90,7 @@ paFm <- function(fit, ...) {
       
       # specific returns    
       spec.ret.xts <- actual.xts - 
-        xts(as.matrix(fit.lm$model[, -1])%*%as.matrix(fit.lm$coef[-1]), 
+        xts(as.matrix(fit.lm$model[, factorNames])%*%as.matrix(fit.lm$coef[-1]), 
             dates)
       cum.spec.ret[k,1] <- cum.ret - Return.cumulative(actual.xts - spec.ret.xts)
       attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)

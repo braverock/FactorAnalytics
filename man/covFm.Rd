@@ -3,10 +3,12 @@
 \alias{covFm}
 \title{Covariance Matrix for assets' returns from fitted factor model.}
 \usage{
-covFm(object)
+covFm(object, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
+
+\item{...}{optional arguments passed to \code{\link[stats]{cov}}.}
 }
 \value{
 The computed \code{N x N} covariance matrix for asset returns based
@@ -32,6 +34,11 @@ And, the \code{N x N} covariance matrix of N asset returns is \cr \cr
 \code{var(R) = B*var(F(t))*tr(B) + D}, \cr \cr
 where, B is the \code{N x K} matrix of factor betas and \code{D} is a
 diagonal matrix with \code{sig(i)^2} along the diagonal.
+
+Though method for handling NAs and the method for computing covariance can
+be specified via the \dots arguments. As a reasonable default,
+\code{use="pairwise.complete.obs"} is used, which restricts the method to
+"pearson".
 }
 \examples{
 \dontrun{

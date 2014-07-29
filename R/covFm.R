@@ -19,7 +19,13 @@
 #' where, B is the \code{N x K} matrix of factor betas and \code{D} is a 
 #' diagonal matrix with \code{sig(i)^2} along the diagonal.
 #' 
+#' Though method for handling NAs and the method for computing covariance can 
+#' be specified via the \dots arguments. As a reasonable default, 
+#' \code{use="pairwise.complete.obs"} is used, which restricts the method to
+#' "pearson".
+#' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @param ... optional arguments passed to \code{\link[stats]{cov}}.
 #' 
 #' @return The computed \code{N x N} covariance matrix for asset returns based 
 #' on the fitted factor model.
@@ -72,6 +78,6 @@
 #' @rdname covFm
 #' @export
 
-covFm <- function(object){
+covFm <- function(object, ...){
   UseMethod("covFm")
 }

@@ -18,7 +18,7 @@ fitTsfm(asset.names, factor.names, mkt.name = NULL, rf.name = NULL,
 
 \method{residuals}{tsfm}(object, ...)
 
-\method{covFm}{tsfm}(object)
+\method{covFm}{tsfm}(object, ...)
 }
 \arguments{
 \item{asset.names}{vector containing names of assets, whose returns or
@@ -27,7 +27,7 @@ excess returns are the dependent variable.}
 \item{factor.names}{vector containing names of the macroeconomic factors.}
 
 \item{mkt.name}{name of the column for market excess returns (Rm-Rf).
-Is required only if \code{add.up.market} or \code{add.market.sqd}
+Is required if \code{mkt.timing} or \code{add.market.sqd}
 are \code{TRUE}. Default is NULL.}
 
 \item{rf.name}{name of the column of risk free rate variable to calculate
@@ -133,14 +133,17 @@ Treynor-Mazuy (1966), to account for market timing with respect to
 volatility, and \code{market.sqd = (Rm-Rf)^2} is added as a factor in the
 regression. Option "both" adds both of these factors.
 
+\subsection{Data Processing}{
+
 Note about NAs: Before model fitting, incomplete cases are removed for
 every asset (return data combined with respective factors' return data)
 using \code{\link[stats]{na.omit}}. Otherwise, all observations in
 \code{data} are included.
 
-Note about spaces in asset/factor names: Spaces in column names of the data
-object will be converetd to periods as the function works with \code{xts}
-objects internally and hence column names can't be retained as such.
+Note about \code{asset.names} and \code{factor.names}: Spaces in column
+names of \code{data} will be converted to periods as \code{fitTsfm} works
+with \code{xts} objects internally and colnames won't be left as they are.
+}
 }
 \examples{
 # load data from the database

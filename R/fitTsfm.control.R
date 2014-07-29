@@ -4,18 +4,22 @@
 #' All control parameters that are not passed to this function are set to 
 #' default values.
 #' 
-#' @details This control function is primarily used to pass optional arguments 
-#' to \code{\link[stats]{lm}}, \code{\link[robust]{lmRob}}, 
+#' @details This control function is used to process optional arguments passed 
+#' via \code{...} to \code{fitTsfm}. These arguments are validated and defaults
+#' are set if necessary before being passed internally to one of the following
+#' functions: \code{\link[stats]{lm}}, \code{\link[robust]{lmRob}}, 
 #' \code{\link[stats]{step}}, \code{\link[leaps]{regsubsets}}, 
-#' \code{\link[lars]{lars}} and \code{\link[lars]{cv.lars}} within 
-#' \code{fitTsfm}. See their respective help files for more details. The 
-#' arguments to each of these functions are listed approximately in the same 
-#' order for user convenience.
+#' \code{\link[lars]{lars}} and \code{\link[lars]{cv.lars}}. See their 
+#' respective help files for more details. The arguments to each of these 
+#' functions are listed above in approximately the same order for user 
+#' convenience.
 #' 
 #' The scalar \code{decay} is used by \code{\link{fitTsfm}} to compute 
-#' exponentially decaying weights for \code{fit.method="DLS"}. Optionally, one 
+#' exponentially decaying weights for \code{fit.method="DLS"}. Alternately, one 
 #' can directly specify \code{weights}, a weights vector, to be used with 
-#' "OLS" or "Robust".
+#' "OLS" or "Robust". Especially when fitting multiple assets, care should be 
+#' taken to ensure that the length of the weights vector matches the number of
+#' observations (excluding cases ignored due to NAs).
 #' 
 #' \code{lars.criterion} selects the criterion (one of "Cp" or "cv") to 
 #' determine the best fitted model for \code{variable.selection="lars"}. The 
@@ -29,10 +33,9 @@
 #' @param weights an optional vector of weights to be used in the fitting 
 #' process for \code{fit.method="OLS","Robust"}, or 
 #' \code{variable.selection="subsets"}. Should be \code{NULL} or a numeric 
-#' vector. If non-\code{NULL}, weighted least squares is performed with weights 
-#' given by \code{weights} (i.e., minimizing sum(w*e^2)). The length of 
-#' \code{weights} must be the same as the number of observations. The weights 
-#' must be nonnegative and strongly recommended to be strictly positive.
+#' vector. The length of \code{weights} must be the same as the number of 
+#' observations. The weights must be nonnegative and it is strongly 
+#' recommended that they be strictly positive.
 #' @param model,x,y,qr logicals passed to \code{lm} for 
 #' \code{fit.method="OLS"}. If \code{TRUE} the corresponding components of the 
 #' fit (the model frame, the model matrix, the response, the QR decomposition) 
@@ -179,7 +182,6 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   if (!is.logical(normalize) || length(normalize) != 1) {
     stop("Invalid argument: control parameter 'normalize' must be logical")
   }
-  lars.criterion <- lars.criterion[1] # default is "Cp"
   if (!(lars.criterion %in% c("Cp","cv"))) {
     stop("Invalid argument: lars.criterion must be 'Cp' or 'cv'.")
   }

@@ -41,20 +41,23 @@
 #' volatility, and \code{market.sqd = (Rm-Rf)^2} is added as a factor in the 
 #' regression. Option "both" adds both of these factors.
 #' 
+#' \subsection{Data Processing}{
+#' 
 #' Note about NAs: Before model fitting, incomplete cases are removed for 
 #' every asset (return data combined with respective factors' return data) 
 #' using \code{\link[stats]{na.omit}}. Otherwise, all observations in 
 #' \code{data} are included.
 #' 
-#' Note about spaces in asset/factor names: Spaces in column names of the data 
-#' object will be converetd to periods as the function works with \code{xts} 
-#' objects internally and hence column names can't be retained as such.
+#' Note about \code{asset.names} and \code{factor.names}: Spaces in column 
+#' names of \code{data} will be converted to periods as \code{fitTsfm} works 
+#' with \code{xts} objects internally and colnames won't be left as they are.
+#' }
 #' 
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
 #' @param mkt.name name of the column for market excess returns (Rm-Rf). 
-#' Is required only if \code{add.up.market} or \code{add.market.sqd} 
+#' Is required if \code{mkt.timing} or \code{add.market.sqd} 
 #' are \code{TRUE}. Default is NULL.
 #' @param rf.name name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and factors (in 
@@ -216,6 +219,8 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   # convert data into an xts object and hereafter work with xts objects
   data.xts <- checkData(data)
+  # convert index to 'Date' format for uniformity 
+  time(data.xts) <- as.Date(time(data.xts))
   
   # extract columns to be used in the time series regression
   dat.xts <- merge(data.xts[,asset.names], data.xts[,factor.names])
@@ -233,14 +238,14 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   # opt add mkt-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
   if (!is.null(mkt.timing)) {
-    if(mkt.timing=="HM" | mkt.timing=="both") {
+    if(mkt.timing=="HM" || mkt.timing=="both") {
       up.market <- data.xts[,mkt.name]
       up.market [up.market < 0] <- 0
       dat.xts <- merge.xts(dat.xts,up.market)
       colnames(dat.xts)[dim(dat.xts)[2]] <- "up.market"
       factor.names <- c(factor.names, "up.market")
     }
-    if(mkt.timing=="TM" | mkt.timing=="both") {
+    if(mkt.timing=="TM" || mkt.timing=="both") {
       market.sqd <- data.xts[,mkt.name]^2   
       dat.xts <- merge(dat.xts, market.sqd)
       colnames(dat.xts)[dim(dat.xts)[2]] <- "market.sqd"
@@ -268,7 +273,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, lars.args, 
                               cv.lars.args, lars.criterion)
     input <- list(call=call, data=dat.xts, asset.names=asset.names, 
-                  factor.names=factor.names, fit.method=fit.method, 
+                  factor.names=factor.names, fit.method=NULL, 
                   variable.selection=variable.selection)
     result <- c(result.lars, input)
     class(result) <- "tsfm"
@@ -313,9 +318,7 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
     if (fit.method == "OLS") {
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "DLS") {
-      if(!"weights" %in% names(lm.args)) {
-        lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      }
+      lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
       reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts),
@@ -346,9 +349,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
       reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
     } else if (fit.method == "DLS") {
-      if(!"weights" %in% names(lm.args)) {
-        lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      }
+      lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
       reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
     } else if (fit.method == "Robust") {
@@ -377,7 +378,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     # formula to pass to lm or lmRob
     fm.formula <- as.formula(paste(i," ~ ."))
     
-    if (fit.method == "DLS" && !"weights" %in% names(regsubsets.args)) {
+    if (fit.method=="DLS" && !"weights" %in% names(regsubsets.args)) {
       regsubsets.args$weights <- WeightsDLS(nrow(reg.xts), decay)
     }
     
@@ -392,9 +393,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     if (fit.method == "OLS") {
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "DLS") {
-      if(!"weights" %in% names(lm.args)) {
-        lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      }
+      lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
       reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts),
@@ -424,38 +423,45 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
   for (i in asset.names) {
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-    
     # convert to matrix
     reg.mat <- as.matrix(reg.xts)
     # fit lars regression model
-    lars.fit <- do.call(lars, c(list(x=reg.mat[,-1],y=reg.mat[,i]),lars.args))
+    lars.fit <- 
+      do.call(lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i]),lars.args))
     lars.sum <- summary(lars.fit)
-    cv.error <- 
-      do.call(cv.lars, c(list(x=reg.mat[,-1],y=reg.mat[,i],plot.it=FALSE, 
-                              mode="step"),cv.lars.args))
+    lars.cv <- do.call(cv.lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i], 
+                                       mode="step"),cv.lars.args))
+    # including plot.it=FALSE to cv.lars strangely gives an error: "Argument s 
+    # out of range". And, specifying index=seq(nrow(lars.fit$beta)-1) resolves 
+    # the issue, but care needs to be taken for small N
     
     # get the step that minimizes the "Cp" statistic or 
     # the K-fold "cv" mean-squared prediction error
-    if (lars.criterion == "Cp") {
-      s <- which.min(lars.sum$Cp)
+    if (lars.criterion=="Cp") {
+      s <- which.min(lars.sum$Cp)-1 # 2nd row is "step 1"
     } else {
-      s <- which.min(cv.error$cv)
+      s <- which.min(lars.cv$cv)-1
     }
-    
     # get factor model coefficients & fitted values at the step obtained above
     coef.lars <- predict(lars.fit, s=s, type="coef", mode="step")
-    fitted.lars <- predict(lars.fit, reg.xts[,-1], s=s, type="fit",mode="step")
+    fitted.lars <- predict(lars.fit, reg.mat[,factor.names], s=s, type="fit", 
+                           mode="step")
     fitted.list[[i]] <- xts(fitted.lars$fit, index(reg.xts))
     # extract and assign the results
     asset.fit[[i]] = lars.fit
-    alpha[i] <- (fitted.lars$fit - reg.xts[,-1]%*%coef.lars$coefficients)[1]
+    alpha[i] <- (fitted.lars$fit - 
+                   reg.xts[,factor.names]%*%coef.lars$coefficients)[1]
     beta.names <- names(coef.lars$coefficients)
     beta[i, beta.names] <- coef.lars$coefficients
-    r2[i] <-  lars.fit$R2[s]
-    resid.sd[i] <- sqrt(lars.sum$Rss[s]/(nrow(reg.xts)-s))
+    r2[i] <-  lars.fit$R2[s+1]
+    resid.sd[i] <- sqrt(lars.sum$Rss[s+1]/(nrow(reg.xts)-lars.sum$Df[s+1]))
     
   }
-  fitted.xts <- do.call(merge, fitted.list)
+  if (length(asset.names)>1) {
+    fitted.xts <- do.call(merge, fitted.list) 
+  } else {
+    fitted.xts <- fitted.list[[1]]
+  }
   results.lars <- list(asset.fit=asset.fit, alpha=alpha, beta=beta, r2=r2, 
                        resid.sd=resid.sd, fitted=fitted.xts)
   # As a special case for variable.selection="lars", fitted values are also 
@@ -464,7 +470,8 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
 }
 
 
-### calculate weights for "DLS"
+### calculate exponentially decaying weights for fit.method="DLS"
+## t = number of observations; d = decay factor
 #
 WeightsDLS <- function(t,d) {
   # more weight given to more recent observations 
@@ -474,6 +481,7 @@ WeightsDLS <- function(t,d) {
 }
 
 ### make a data frame (padded with NAs) from unequal vectors with named rows
+## l = list of unequal vectors
 #
 makePaddedDataFrame <- function(l) {
   DF <- do.call(rbind, lapply(lapply(l, unlist), "[", 
@@ -491,8 +499,10 @@ makePaddedDataFrame <- function(l) {
 #' @method coef tsfm
 #' @export
 
-coef.tsfm <- function(object,...) {
+coef.tsfm <- function(object, ...) {
   if (object$variable.selection=="lars") {
+    # generic method 'coef' does not exist for "lars" fit objects
+    # so, use cbind to form coef matrix
     coef.mat <- cbind(object$alpha, object$beta)
     colnames(coef.mat)[1] <- "(Intercept)"
   } else {
@@ -505,18 +515,26 @@ coef.tsfm <- function(object,...) {
 #' @method fitted tsfm
 #' @export
 
-fitted.tsfm <- function(object,...) {  
+fitted.tsfm <- function(object, ...) {  
   if (object$variable.selection=="lars") {
+    # generic method 'fitted' does not exist for "lars" fit objects
+    # so, use fitted values returned by 'fitTsfm'
     fitted.xts <- object$fitted
   } else {
-    # get fitted values from each linear factor model fit 
-    # and convert them into xts/zoo objects
-    fitted.list = sapply(object$asset.fit, 
-                         function(x) checkData(fitted(x,...)))
-    # this is a list of xts objects, indexed by the asset name
-    # merge the objects in the list into one xts object
-    fitted.xts <- do.call(merge, fitted.list)
+    if (length(object$asset.names)>1) {
+      # get fitted values from each linear factor model fit 
+      # and convert them into xts/zoo objects
+      fitted.list = sapply(object$asset.fit, 
+                           function(x) checkData(fitted(x,...)))
+      # this is a list of xts objects, indexed by the asset name
+      # merge the objects in the list into one xts object
+      fitted.xts <- do.call(merge, fitted.list) 
+    } else {
+      fitted.xts <- checkData(fitted(object$asset.fit[[1]],...))
+      colnames(fitted.xts) <- object$asset.names
+    }
   }
+  time(fitted.xts) <- as.Date(time(fitted.xts))
   return(fitted.xts)
 }
 
@@ -525,18 +543,26 @@ fitted.tsfm <- function(object,...) {
 #' @method residuals tsfm
 #' @export
 
-residuals.tsfm <- function(object ,...) {
+residuals.tsfm <- function(object, ...) {
   if (object$variable.selection=="lars") {
+    # generic method 'residuals' does not exist for "lars" fit objects
+    # so, calculate them from the actual and fitted values
     residuals.xts <- object$data[,object$asset.names] - object$fitted
   } else {
-    # get residuals from each linear factor model fit 
-    # and convert them into xts/zoo objects
-    residuals.list = sapply(object$asset.fit, 
-                            function(x) checkData(residuals(x,...)))
-    # this is a list of xts objects, indexed by the asset name
-    # merge the objects in the list into one xts object
-    residuals.xts <- do.call(merge, residuals.list)
+    if (length(object$asset.names)>1) {
+      # get residuals from each linear factor model fit 
+      # and convert them into xts/zoo objects
+      residuals.list = sapply(object$asset.fit, 
+                              function(x) checkData(residuals(x,...)))
+      # this is a list of xts objects, indexed by the asset name
+      # merge the objects in the list into one xts object
+      residuals.xts <- do.call(merge, residuals.list) 
+    } else {
+      residuals.xts <- checkData(residuals(object$asset.fit[[1]],...))
+      colnames(residuals.xts) <- object$asset.names
+    }
   }
+  time(residuals.xts) <- as.Date(time(residuals.xts))
   return(residuals.xts)
 }
 
@@ -544,7 +570,7 @@ residuals.tsfm <- function(object ,...) {
 #' @method covFm tsfm
 #' @export
 
-covFm.tsfm <- function(object) {
+covFm.tsfm <- function(object, ...) {
   
   # check input object validity
   if (!inherits(object, c("tsfm", "sfm", "ffm"))) {
@@ -555,10 +581,11 @@ covFm.tsfm <- function(object) {
   beta <- as.matrix(object$beta)
   beta[is.na(beta)] <- 0
   sig2.e = object$resid.sd^2
-  factor <- as.matrix(object$data[, colnames(object$beta)])
+  factor <- as.matrix(object$data[, object$factor.names])
   
+  if (!exists("use")) {use="pairwise.complete.obs"}
   # factor covariance matrix 
-  factor.cov = var(factor, use="na.or.complete")
+  factor.cov = cov(factor, use=use, ...)
   
   # residual covariance matrix D
   if (length(sig2.e) > 1) {

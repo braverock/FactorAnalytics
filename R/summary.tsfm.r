@@ -61,7 +61,7 @@ summary.tsfm <- function(object, se.type="Default", ...){
   if (!inherits(object, "tsfm")) {
     stop("Invalid 'tsfm' object")
   }
-  if (object$fit.method=="Robust" && se.type!="default") {
+  if (!(object$fit.method %in% c("OLS","DLS")) && se.type!="Default") {
     stop("Invalid argument: HC/HAC standard errors are applicable only if 
          fit.method = 'OLS' or 'DLS'")
   }

@@ -3,43 +3,40 @@
 \alias{plot.tsfm}
 \title{Plots from a fitted time series factor model}
 \usage{
-\method{plot}{tsfm}(x, colorset = c(1:12), legend.loc = NULL,
-  which.plot = NULL, max.show = 6, plot.single = FALSE, asset.name,
-  which.plot.single = NULL, VaR.method = "historical", ...)
+\method{plot}{tsfm}(x, which.plot.group = NULL, max.show = 6,
+  plot.single = FALSE, asset.name, which.plot.single = NULL,
+  colorset = (1:12), legend.loc = "bottomright", las = 1,
+  VaR.method = "historical", loop = TRUE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{tsfm} produced by \code{fitTsfm}.}
 
-\item{colorset}{a vector of colors for the bars or bar components. Argument
-is used by \code{\link[graphics]{barplot}}. Default is c(1:12).}
+\item{which.plot.group}{a number to indicate the type of group plot for
+multiple assets. If \code{NULL} (default), the following menu appears: \cr
+1 = Factor model coefficients: Alpha, \cr
+2 = Factor model coefficients: Betas, \cr
+3 = Actual and Fitted asset returns, \cr
+4 = R-squared, \cr
+5 = Residual Volatility,\cr
+6 = Factor Model Residual Correlation \cr
+7 = Factor Model Correlation,\cr
+8 = Factor Contribution to SD,\cr
+9 = Factor Contribution to ES,\cr
+10 = Factor Contribution to VaR}
 
-\item{legend.loc}{places a legend into one of nine locations on the chart:
-bottomright, bottom, bottomleft, left, topleft, top, topright, right, or
-center. Argument is used by
-\code{\link[PerformanceAnalytics]{chart.TimeSeries}}. Default is \code{NULL}.}
+\item{max.show}{maximum number of assets in a given plot. Default is 6.}
 
-\item{which.plot}{a number to indicate the type of group plot for multiple
-assets. Default is NULL; which brings up the following menu: \cr
-1 = "Actual and Fitted asset returns", \cr
-2 = "R-squared", \cr
-3 = "Residual Volatility",\cr
-4 = "Factor Model Correlation",\cr
-5 = "Factors' Contribution to SD",\cr
-6 = "Factors' Contribution to ES",\cr
-7 = "Factors' Contribution to VaR"}
-
-\item{max.show}{maximum number of assets in a plot. Default is 6.}
-
-\item{plot.single}{a logical value. If \code{TRUE}, plots an individual
-asset's linear factor model trait selected by \code{which.plot.single}.
-Default is \code{FALSE}.}
+\item{plot.single}{a logical value. \code{TRUE} plots the characteristics of
+an individual asset's factor model. The type of plot is given by
+\code{which.plot.single}. Default is \code{FALSE}.}
 
 \item{asset.name}{name of the individual asset to be plotted. Is necessary
-if \code{plot.single=TRUE}}
+if multiple assets factor model fits exist in \code{x} and
+\code{plot.single=TRUE}.}
 
 \item{which.plot.single}{a number to indicate the type of group plot for an
-individual asset. Default is NULL; which brings up the following menu: \cr
- 1 = Time series plot of actual and fitted factor returns,\cr
+individual asset. If \code{NULL} (default), the following menu appears: \cr
+ 1 = Time series plot of actual and fitted asset returns,\cr
  2 = Time series plot of residuals with standard error bands, \cr
  3 = Time series plot of squared residuals, \cr
  4 = Time series plot of absolute residuals,\cr
@@ -48,20 +45,55 @@ individual asset. Default is NULL; which brings up the following menu: \cr
  7 = SACF and PACF of absolute residuals,\cr
  8 = Histogram of residuals with normal curve overlayed,\cr
  9 = Normal qq-plot of residuals,\cr
- 10= CUSUM plot of recursive residuals,\cr
- 11= CUSUM plot of OLS residuals,\cr
- 12= CUSUM plot of recursive estimates relative to full sample estimates,\cr
- 13= Rolling estimates over a 24-period observation window}
+ 10 = CUSUM test-Recursive residuals,\cr
+ 11 = CUSUM test-OLS residuals,\cr
+ 12 = Recursive estimates (RE) test of OLS regression coefficients,\cr
+ 13 = Rolling estimates over a 24-period observation window}
+
+\item{colorset}{color palette to use for all the plots. Default is
+\code{c(1:12)}. The 1st element will be used for individual time series
+plots or the 1st series plotted, the 2nd element for the 2nd object in the
+plot and so on.}
+
+\item{legend.loc}{places a legend into one of nine locations on the chart:
+"bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright",
+"right", or "center". Default is "bottomright". Use \code{legend.loc=NULL}
+to suppress the legend.}
+
+\item{las}{one of {0, 1, 2, 3} to set the direction of axis labels, same as
+in \code{plot}. Default here is 1.}
 
 \item{VaR.method}{a method for computing VaR; one of "modified", "gaussian",
 "historical" or "kernel". VaR is computed using
 \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".}
 
-\item{...}{further arguments passed to or from other methods.}
+\item{loop}{logical to indicate if the plot menu should be repeated. Default
+is \code{TRUE}.}
+
+\item{...}{further arguments to be passed to other plotting functions.}
 }
 \description{
 Generic \code{plot} method for object of class \code{tsfm}.
 Plots chosen characteristic(s) for one or more assets.
+}
+\details{
+If the plot type argument is not specified, a menu prompts for user input
+and the corresponding plot is output. And, the menu is repeated for
+user convenience in plotting multiple characteristics. Selecting '0' from
+the menu exits the current \code{plot.tsfm} call. Alternately, setting
+\code{loop=FALSE} will exit after plotting any one chosen characteristic.
+
+For group plots (the default), the first \code{max.show} assets are plotted.
+For individual plots, \code{asset.name} is necessary if multiple assets
+were modeled in \code{x} and \code{plot.single=TRUE}. However, if the
+\code{fitTsfm} object \code{x} only contains one asset's factor model fit,
+\code{plot.tsfm} can infer this automatically, without user input.
+
+CUSUM plots (individual asset plot options 10, 11 and 12) are applicable
+only for \code{fit.method="OLS"}.
+
+Rolling estimates (individual asset plot option 13) is not applicable for
+\code{variable.slection="lars"}.
 }
 \examples{
 \dontrun{
@@ -70,7 +102,7 @@ data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]),
                      rf.name="US 3m TR", data=managers)
-# plot all assets and show only the first 4 assets.
+# plot the 1st 4 assets fitted above.
 plot(fit.macro, max.show=4)
 # plot of an individual asset, "HAM1"
 plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
@@ -80,6 +112,22 @@ plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
 Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 }
 \seealso{
-\code{\link{fitTsfm}}, \code{\link{summary.tsfm}}
+\code{\link{fitTsfm}} and \code{\link{summary.tsfm}} for details
+about the time series factor model fit, extractor functions and summary
+statistics.
+
+\code{\link[strucchange]{efp}} for CUSUM tests.
+
+\code{\link[xts]{plot.xts}},
+\code{\link[PerformanceAnalytics]{chart.TimeSeries}},
+\code{\link[PerformanceAnalytics]{chart.ACFplus}},
+\code{\link[PerformanceAnalytics]{chart.Histogram}},
+\code{\link[PerformanceAnalytics]{chart.QQPlot}},
+\code{\link[graphics]{barplot}} and
+\code{\link[ellipse]{plotcorr}} for plotting methods used.
+
+\code{\link{factorModelSDDecomposition}},
+\code{\link{factorModelEsDecomposition}},
+\code{\link{factorModelVaRDecomposition}} for factor model risk measures.
 }
 
