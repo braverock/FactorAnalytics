@@ -5,7 +5,7 @@
 \usage{
 \method{plot}{tsfm}(x, which.plot.group = NULL, max.show = 6,
   plot.single = FALSE, asset.name, which.plot.single = NULL,
-  colorset = (1:12), legend.loc = "bottomright", las = 1,
+  colorset = (1:12), legend.loc = "topleft", las = 1,
   VaR.method = "historical", loop = TRUE, ...)
 }
 \arguments{
@@ -81,7 +81,8 @@ If the plot type argument is not specified, a menu prompts for user input
 and the corresponding plot is output. And, the menu is repeated for
 user convenience in plotting multiple characteristics. Selecting '0' from
 the menu exits the current \code{plot.tsfm} call. Alternately, setting
-\code{loop=FALSE} will exit after plotting any one chosen characteristic.
+\code{loop=FALSE} will exit after plotting any one chosen characteristic
+without the need for menu selection.
 
 For group plots (the default), the first \code{max.show} assets are plotted.
 For individual plots, \code{asset.name} is necessary if multiple assets
@@ -96,17 +97,23 @@ Rolling estimates (individual asset plot option 13) is not applicable for
 \code{variable.slection="lars"}.
 }
 \examples{
-\dontrun{
 # load data from the database
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]),
                      rf.name="US 3m TR", data=managers)
-# plot the 1st 4 assets fitted above.
-plot(fit.macro, max.show=4)
-# plot of an individual asset, "HAM1"
-plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
-}
+
+# plot the factor betas of 1st 4 assets fitted above.
+plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
+# plot the factor model return correlation, order = hierarchical clustering
+plot(fit.macro, which.plot.group=7, loop=FALSE, order="hclust", addrect=3)
+
+# histogram of residuals from an individual asset's factor model fit
+plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which.plot.single=8,
+     loop=FALSE)
+
+# group plot; type selected from menu prompt; auto-looped for multiple plots
+# plot(fit.macro)
 }
 \author{
 Eric Zivot, Yi-An Chen and Sangeetha Srinivasan

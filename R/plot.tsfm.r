@@ -8,7 +8,8 @@
 #' and the corresponding plot is output. And, the menu is repeated for 
 #' user convenience in plotting multiple characteristics. Selecting '0' from 
 #' the menu exits the current \code{plot.tsfm} call. Alternately, setting
-#' \code{loop=FALSE} will exit after plotting any one chosen characteristic.
+#' \code{loop=FALSE} will exit after plotting any one chosen characteristic 
+#' without the need for menu selection.
 #' 
 #' For group plots (the default), the first \code{max.show} assets are plotted.
 #' For individual plots, \code{asset.name} is necessary if multiple assets 
@@ -96,24 +97,30 @@
 #' 
 #' @examples
 #' 
-#' \dontrun{
 #' # load data from the database
 #' data(managers)
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:8)]),
 #'                      rf.name="US 3m TR", data=managers)
-#' # plot the 1st 4 assets fitted above.
-#' plot(fit.macro, max.show=4)
-#' # plot of an individual asset, "HAM1" 
-#' plot(fit.macro, plot.single=TRUE, asset.name="HAM1")
-#' }
+#'                    
+#' # plot the factor betas of 1st 4 assets fitted above.
+#' plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
+#' # plot the factor model return correlation, order = hierarchical clustering
+#' plot(fit.macro, which.plot.group=7, loop=FALSE, order="hclust", addrect=3)
+#' 
+#' # histogram of residuals from an individual asset's factor model fit 
+#' plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which.plot.single=8, 
+#'      loop=FALSE)
+#' 
+#' # group plot; type selected from menu prompt; auto-looped for multiple plots
+#' # plot(fit.macro)
 #' 
 #' @method plot tsfm
 #' @export
 
 plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE, 
                       asset.name, which.plot.single=NULL, colorset=(1:12), 
-                      legend.loc="bottomright", las=1, 
+                      legend.loc="topleft", las=1, 
                       VaR.method="historical", loop=TRUE, ...) {
   
   if (plot.single==TRUE) {
@@ -131,7 +138,6 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
     colnames(plotData) <- c("Actual","Fitted")
     Residuals <- residuals(x)[,i]
     fit <- x$asset.fit[[i]]
-    par(las=las) # default horizontal axis labels
     
     # plot selection
     repeat {
@@ -164,26 +170,22 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                                 legend.loc=legend.loc, pch=NULL, las=las, ...)
              }, "2L" = {
                ## time series plot of residuals with standard error bands
-               if(!exists("lwd")) {lwd=2} 
-               if(!exists("lty")) {lty="solid"} 
-               chart.TimeSeries(Residuals, main=paste("Residuals:",i), lty=lty,
-                                colorset=colorset, xlab="", 
-                                ylab="Residuals", lwd=lwd, las=las, ...)
-               abline(h=1.96*x$resid.sd[i], lwd=lwd, lty="dotted", col="red")
-               abline(h=-1.96*x$resid.sd[i], lwd=lwd, lty="dotted", col="red")
-               legend(x=legend.loc, lty=c(lty,"dotted"), 
-                      col=c(colorset[1],"red"), lwd=lwd, 
+               chart.TimeSeries(Residuals, main=paste("Residuals:",i), 
+                                colorset=colorset, xlab="", ylab="Residuals", 
+                                lwd=2, lty="solid", las=las, ...)
+               abline(h=1.96*x$resid.sd[i], lwd=2, lty="dotted", col="red")
+               abline(h=-1.96*x$resid.sd[i], lwd=2, lty="dotted", col="red")
+               legend(x=legend.loc, lty=c("solid","dotted"), 
+                      col=c(colorset[1],"red"), lwd=2, 
                       legend=c("Residuals",expression("\u00b1 1.96"*sigma)))
              }, "3L" = {
                ## time series plot of squared residuals
-               if (!is.null(legend.loc)) {legend.loc="topright"}
                chart.TimeSeries(Residuals^2, colorset=colorset, xlab="", 
                                 ylab=" Squared Residuals",
                                 main=paste("Squared Residuals:",i), 
                                 legend.loc=legend.loc, pch=NULL, las=las, ...)
              }, "4L" = {
                ## time series plot of absolute residuals
-               if (!is.null(legend.loc)) {legend.loc="topright"}
                chart.TimeSeries(abs(Residuals), colorset=colorset, xlab="", 
                                 ylab="Absolute Residuals",
                                 main=paste("Absolute Residuals:",i), 
@@ -202,23 +204,22 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                              main=paste("SACF & PACF - Absolute Residuals:",i))
              }, "8L" = {
                ## histogram of residuals with normal curve overlayed
-               if(!exists("methods")) {
-                 methods=c("add.density","add.normal","add.rug","add.risk")
-               } 
-               chart.Histogram(Residuals, methods=methods,
-                               main=paste("Histogram of Residuals:",i), 
-                               xlab="Return residuals", colorset=colorset, ...)
+               methods <- c("add.density","add.normal","add.rug")
+               chart.Histogram(Residuals, xlab="Return residuals",
+                               methods=methods, colorset=colorset, 
+                               main=paste("Histogram of Residuals:",i), ...)
              }, "9L" = {
                ##  normal qq-plot of residuals
-               if(!exists("envelope")) {envelope=0.95} 
-               chart.QQPlot(Residuals, envelope=envelope, col=colorset,
+               chart.QQPlot(Residuals, envelope=0.95, col=colorset,
                             main=paste("QQ-plot of Residuals:",i), ...)
+               legend(x=legend.loc, col="red", lty="dotted", lwd=1,
+                      legend=c("0.95 confidence envelope"))
              }, "10L" = {
                ##  Recursive CUSUM test
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }
-               cusum.rec = efp(formula(fit), type="Rec-CUSUM", data=fit$model)
+               cusum.rec <- efp(formula(fit), type="Rec-CUSUM", data=fit$model)
                plot(cusum.rec, main=paste("Recursive CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "11L" = {
@@ -226,7 +227,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }
-               cusum.ols = efp(formula(fit), type="OLS-CUSUM", data=fit$model)
+               cusum.ols <- efp(formula(fit), type="OLS-CUSUM", data=fit$model)
                plot(cusum.ols, main=paste("OLS-based CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "12L" = {
@@ -234,7 +235,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }        
-               cusum.est = efp(formula(fit), type="RE", data=fit$model)
+               cusum.est <- efp(formula(fit), type="RE", data=fit$model)
                plot(cusum.est, functional=NULL, col=colorset, las=0,
                     main=paste("RE test (Recursive estimates test):",i), ...)
              }, "13L" = {
@@ -243,8 +244,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                  rollReg <- function(data.z, formula) {
                    coef(lm(formula, data=as.data.frame(data.z)))  
                  }
-                 reg.z = zoo(fit$model, as.Date(rownames(fit$model)))
-                 rollReg.z = rollapply(reg.z, FUN=rollReg, formula(fit), 
+                 reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
+                 rollReg.z <- rollapply(reg.z, FUN=rollReg, formula(fit), 
                                        width=24, by.column=FALSE, align="right")
                } else if (x$fit.method=="DLS") {
                  # get decay factor
@@ -259,16 +260,16 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                  rollReg.w <- function(data.z, formula, w) {
                    coef(lm(formula, weights=w, data=as.data.frame(data.z)))  
                  }
-                 reg.z = zoo(fit$model[-length(fit$model)], 
+                 reg.z <- zoo(fit$model[-length(fit$model)], 
                              as.Date(rownames(fit$model)))
-                 rollReg.z = rollapply(reg.z, FUN=rollReg.w, formula(fit), w, 
+                 rollReg.z <- rollapply(reg.z, FUN=rollReg.w, formula(fit), w, 
                                        width=24, by.column=FALSE, align="right")
                } else if (x$fit.method=="Robust") {
                  rollReg.Rob <- function(data.z, formula) {
                    coef(lmRob(formula=formula, data=as.data.frame(data.z)))  
                  }
-                 reg.z = zoo(fit$model, as.Date(rownames(fit$model)))
-                 rollReg.z = rollapply(reg.z, width=24, FUN=rollReg.Rob, 
+                 reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
+                 rollReg.z <- rollapply(reg.z, width=24, FUN=rollReg.Rob, 
                                        formula(fit), by.column=FALSE, 
                                        align="right")
                } else if (is.null(x$fit.method)) {
@@ -287,17 +288,9 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
     } 
   } else { # start of group asset plots
     
-    # extract info from the fitTsfm object
-    n <- length(x$asset.names)
-    if (n > max.show) {
-      cat(paste("Displaying only the first", max.show,"assets, since the 
-                  number of assets > 'max.show' =", max.show))
-      n <- max.show 
-    }
-    
     # plot selection
     repeat {
-      if (is.null(which.plot.single)) {
+      if (is.null(which.plot.group)) {
         which.plot.group <- 
           menu(c("Factor model coefficients: Alpha",
                  "Factor model coefficients: Betas",
@@ -318,7 +311,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
              "1L" = { 
                ## Factor model coefficients: Alpha
                #  ylab="Intercept estimate"
-               barplot(coef(x)[,1], main="Factor model Alpha", 
+               barplot(coef(x)[,1], main="Factor model Alpha (Intercept)", 
                        xlab="Assets", col="darkblue", las=las, ...)
                abline(h=0, lwd=1, lty=1, col=1)
                
@@ -330,8 +323,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                            as the number of factors > 'max.show' =", max.show))
                  k <- max.show 
                }
-               par(mfrow=c(k/2,2))
-               for (i in 2:k+1) {
+               par(mfrow=c(ceiling(k/2),2))
+               for (i in 2:(k+1)) {
                  main=paste("Factor Betas:", colnames(coef(x))[i])
                  barplot(coef(x)[,i], main=main, col="darkblue", xlab="Assets",
                          ylab="Coefficient estimate", las=las, ...)
@@ -340,11 +333,17 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                par(mfrow=c(1,1))
              }, "3L" = {    
                ## Actual and Fitted asset returns
-               par(mfrow=c(n,1))
+               n <- length(x$asset.names)
+               if (n > max.show) {
+                 cat(paste("Displaying only the first", max.show,"assets, since the 
+                  number of assets > 'max.show' =", max.show))
+                 n <- max.show 
+               }
+               par(mfrow=c(ceiling(n/2),2))
                for (i in 1:n) {
                  plotData <- merge.xts(x$data[,i], fitted(x)[,i])
                  colnames(plotData) <- c("Actual","Fitted")
-                 main = paste("Factor model asset returns:", x$asset.names[i])
+                 main <- paste("Factor model asset returns:", x$asset.names[i])
                  chart.TimeSeries(plotData, colorset=colorset, main=main, 
                                   xlab="", ylab="Actual and fitted values", 
                                   legend.loc=legend.loc, pch=NULL, las=las,...)
@@ -367,32 +366,29 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
              },    
              "6L" = {
                ## Factor Model Residual Correlation
-               cor.resid <- cor(residuals(x),use="pairwise.complete.obs")
-               if(!exists("order")) {order="AOE"}
-               corrplot::corrplot(cor.resid, order=order, ...)
+               cor.resid <- cor(residuals(x), use="pairwise.complete.obs")
+               corrplot::corrplot(cor.resid, ...)
              },
              "7L" = {
                ## Factor Model Return Correlation
-               cov.fm<- covFm(x)    
-               cor.fm = cov2cor(cov.fm) 
-               if(!exists("order")) {order="AOE"}
-               corrplot::corrplot(cor.fm, order=order, ...)
+               cor.fm <- cov2cor(covFm(x)) 
+               corrplot::corrplot(cor.fm, ...)
              },
 #              "8L" = {
 #                ## Factor Contribution to SD
-#                factor.sd.decomp.list = list()
+#                factor.sd.decomp.list <- list()
 #                for (i in asset.names) {
 #                  factor.sd.decomp.list[[i]] =
 #                    factorModelSdDecomposition(x$beta[i,],
 #                                               cov.factors, x$resid.variance[i])
 #                }
 #                # function to extract contribution to sd from list
-#                getCSD = function(x) {
+#                getCSD <- function(x) {
 #                  x$cSd.fm
 #                }
 #                # extract contributions to SD from list
-#                cr.sd = sapply(factor.sd.decomp.list, getCSD)
-#                rownames(cr.sd) = c(factor.names, "residual")
+#                cr.sd <- sapply(factor.sd.decomp.list, getCSD)
+#                rownames(cr.sd) <- c(factor.names, "residual")
 #                # create stacked barchart
 #                barplot(cr.sd, main="Factors' Contribution to SD",
 #                        legend.text=T, args.legend=list(x="topleft"))
@@ -400,20 +396,20 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
 #              },
 #              "9L"={
 #                ## Factor Contribution to ES
-#                factor.es.decomp.list = list()
+#                factor.es.decomp.list <- list()
 #                if (variable.selection == "lar" || variable.selection == "lasso") {
 #                  
 #                  for (i in asset.names) {
-#                    idx = which(!is.na(plot.data[,i]))
-#                    alpha = x$alpha[i]
-#                    beta = as.matrix(x$beta[i,])        
-#                    fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
-#                    residual = plot.data[,i]-fitted
-#                    tmpData = cbind(coredata(plot.data[idx,i]),
+#                    idx <- which(!is.na(plot.data[,i]))
+#                    alpha <- x$alpha[i]
+#                    beta <- as.matrix(x$beta[i,])        
+#                    fitted <- alpha+as.matrix(plot.data[,factor.names])%*%beta
+#                    residual <- plot.data[,i]-fitted
+#                    tmpData <- cbind(coredata(plot.data[idx,i]),
 #                                    coredata(plot.data[idx,factor.names]),
 #                                    (residual[idx,]/sqrt(x$resid.variance[i])) )
-#                    colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
-#                    factor.es.decomp.list[[i]] = 
+#                    colnames(tmpData)[c(1,length(tmpData))] <- c(i, "residual")
+#                    factor.es.decomp.list[[i]] <- 
 #                      factorModelEsDecomposition(tmpData, 
 #                                                 x$beta[i,],
 #                                                 x$resid.variance[i], tail.prob=0.05)
@@ -423,12 +419,12 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
 #                  
 #                  for (i in asset.names) {
 #                    # check for missing values in fund data
-#                    idx = which(!is.na(plot.data[,i]))
-#                    tmpData = cbind(coredata(plot.data[idx,i]),
+#                    idx <- which(!is.na(plot.data[,i]))
+#                    tmpData <- cbind(coredata(plot.data[idx,i]),
 #                                    coredata(plot.data[idx,factor.names]),
 #                                    residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
-#                    colnames(tmpData)[c(1,dim(tmpData)[2])] = c(i, "residual")
-#                    factor.es.decomp.list[[i]] = 
+#                    colnames(tmpData)[c(1,dim(tmpData)[2])] <- c(i, "residual")
+#                    factor.es.decomp.list[[i]] <- 
 #                      factorModelEsDecomposition(tmpData, 
 #                                                 x$beta[i,],
 #                                                 x$resid.variance[i], tail.prob=0.05,
@@ -437,32 +433,32 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
 #                }     
 #                
 #                # stacked bar charts of percent contributions to SD
-#                getCETL = function(x) {
+#                getCETL <- function(x) {
 #                  x$cES.fm
 #                }
 #                # report as positive number
-#                cr.etl = sapply(factor.es.decomp.list, getCETL)
-#                rownames(cr.etl) = c(factor.names, "residual")
+#                cr.etl <- sapply(factor.es.decomp.list, getCETL)
+#                rownames(cr.etl) <- c(factor.names, "residual")
 #                barplot(cr.etl, main="Factors' Contribution to ES",
 #                        legend.text=T, args.legend=list(x="topleft")) 
 #              },
 #              "10L" ={
 #                ## Factor Contribution to VaR
-#                factor.VaR.decomp.list = list()
+#                factor.VaR.decomp.list <- list()
 #                
 #                if (variable.selection == "lar" || variable.selection == "lasso") {
 #                  
 #                  for (i in asset.names) {
-#                    idx = which(!is.na(plot.data[,i]))
-#                    alpha = x$alpha[i]
-#                    beta = as.matrix(x$beta[i,])        
-#                    fitted = alpha+as.matrix(plot.data[,factor.names])%*%beta
-#                    residual = plot.data[,i]-fitted
-#                    tmpData = cbind(coredata(plot.data[idx,i]),
+#                    idx <- which(!is.na(plot.data[,i]))
+#                    alpha <- x$alpha[i]
+#                    beta <- as.matrix(x$beta[i,])        
+#                    fitted <- alpha+as.matrix(plot.data[,factor.names])%*%beta
+#                    residual <- plot.data[,i]-fitted
+#                    tmpData <- cbind(coredata(plot.data[idx,i]),
 #                                    coredata(plot.data[idx,factor.names]),
 #                                    (residual[idx,]/sqrt(x$resid.variance[i])) )
-#                    colnames(tmpData)[c(1,length(tmpData))] = c(i, "residual")
-#                    factor.VaR.decomp.list[[i]] = 
+#                    colnames(tmpData)[c(1,length(tmpData))] <- c(i, "residual")
+#                    factor.VaR.decomp.list[[i]] <- 
 #                      factorModelVaRDecomposition(tmpData, 
 #                                                  x$beta[i,],
 #                                                  x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
@@ -471,12 +467,12 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
 #                } else {
 #                  for (i in asset.names) {
 #                    # check for missing values in fund data
-#                    idx = which(!is.na(plot.data[,i]))
-#                    tmpData = cbind(coredata(plot.data[idx,i]),
+#                    idx <- which(!is.na(plot.data[,i]))
+#                    tmpData <- cbind(coredata(plot.data[idx,i]),
 #                                    coredata(plot.data[idx,factor.names]),
 #                                    residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
-#                    colnames(tmpData)[c(1,dim(tmpData)[2])] = c(i, "residual")
-#                    factor.VaR.decomp.list[[i]] = 
+#                    colnames(tmpData)[c(1,dim(tmpData)[2])] <- c(i, "residual")
+#                    factor.VaR.decomp.list[[i]] <- 
 #                      factorModelVaRDecomposition(tmpData, 
 #                                                  x$beta[i,],
 #                                                  x$resid.variance[i], tail.prob=0.05,
@@ -485,12 +481,12 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
 #                }
 #                
 #                # stacked bar charts of percent contributions to SD
-#                getCVaR = function(x) {
+#                getCVaR <- function(x) {
 #                  x$cVaR.fm
 #                }
 #                # report as positive number
-#                cr.VaR = sapply(factor.VaR.decomp.list, getCVaR)
-#                rownames(cr.VaR) = c(factor.names, "residual")
+#                cr.VaR <- sapply(factor.VaR.decomp.list, getCVaR)
+#                rownames(cr.VaR) <- c(factor.names, "residual")
 #                barplot(cr.VaR, main="Factors' Contribution to VaR",
 #                        legend.text=T, args.legend=list(x="topleft"))
 #              },

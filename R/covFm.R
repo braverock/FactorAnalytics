@@ -19,12 +19,16 @@
 #' where, B is the \code{N x K} matrix of factor betas and \code{D} is a 
 #' diagonal matrix with \code{sig(i)^2} along the diagonal.
 #' 
-#' Though method for handling NAs and the method for computing covariance can 
-#' be specified via the \dots arguments. As a reasonable default, 
-#' \code{use="pairwise.complete.obs"} is used, which restricts the method to
-#' "pearson".
+#' The method for computing covariance can be specified via the \dots 
+#' argument. Note that the default of \code{use="pairwise.complete.obs"} for 
+#' handling NAs restricts the method to "pearson".
 #' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @param use an optional character string giving a method for computing 
+#' covariances in the presence of missing values. This must be (an 
+#' abbreviation of) one of the strings "everything", "all.obs", 
+#' "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
+#' "pairwise.complete.obs".
 #' @param ... optional arguments passed to \code{\link[stats]{cov}}.
 #' 
 #' @return The computed \code{N x N} covariance matrix for asset returns based 
@@ -39,6 +43,9 @@
 #' }
 #' 
 #' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+#' 
+#' \code{\link[stats]{cov}} for more details on arguments \code{use} and 
+#' \code{method}.
 #' 
 #' @examples
 #' \dontrun{
@@ -80,4 +87,40 @@
 
 covFm <- function(object, ...){
   UseMethod("covFm")
+}
+
+#' @rdname covFm
+#' @method covFm tsfm
+#' @export
+
+covFm.tsfm <- function(object, use="pairwise.complete.obs", ...) {
+  
+  # check input object validity
+  if (!inherits(object, c("tsfm", "sfm", "ffm"))) {
+    stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
+  }
+  
+  # get parameters and factors from factor model
+  beta <- as.matrix(object$beta)
+  beta[is.na(beta)] <- 0
+  sig2.e = object$resid.sd^2
+  factor <- as.matrix(object$data[, object$factor.names])
+  
+  # factor covariance matrix 
+  factor.cov = cov(factor, use=use, ...)
+  
+  # residual covariance matrix D
+  if (length(sig2.e) > 1) {
+    D.e = diag(sig2.e)
+  } else {
+    D.e =  as.vector(sig2.e)
+  }
+  
+  cov.fm = beta %*% factor.cov %*% t(beta) + D.e
+  
+  if (any(diag(chol(cov.fm))==0)) {
+    warning("Covariance matrix is not positive definite!")
+  }
+  
+  return(cov.fm)
 }

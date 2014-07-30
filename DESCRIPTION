@@ -21,7 +21,7 @@ Depends:
     leaps,
     lars,
     lmtest,
-    PerformanceAnalytics (>= 1.1.0),
+    PerformanceAnalytics (>= 1.1.3),
     sn,
     tseries,
     strucchange,

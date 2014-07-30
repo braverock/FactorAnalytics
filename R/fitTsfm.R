@@ -74,7 +74,9 @@
 #' @param control list of control parameters. The default is constructed by 
 #' the function \code{\link{fitTsfm.control}}. See the documentation for 
 #' \code{\link{fitTsfm.control}} for details.
-#' @param ... arguments passed to \code{\link{fitTsfm.control}}
+#' @param ... For \code{fitTsfm}: arguments passed to 
+#' \code{\link{fitTsfm.control}}. \cr
+#' For S3 methods: further arguments passed to or from other methods 
 #' 
 #' @return fitTsfm returns an object of class \code{tsfm}. 
 #' 
@@ -145,16 +147,13 @@
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
 #'                mkt.name="SP500 TR", mkt.timing="both", data=managers)
-#' # summary 
 #' summary(fit)
-#' # fitted values for all assets' returns
 #' fitted(fit)
-#' # plot actual vs. fitted over time for HAM1
-#' # using chart.TimeSeries() function from PerformanceAnalytics package
-#' dataToPlot <- cbind(fitted(fit$asset.fit$HAM1), na.omit(managers$HAM1))
-#' colnames(dataToPlot) <- c("Fitted","Actual")
-#' chart.TimeSeries(dataToPlot, main="FM fit for HAM1",
-#'                  colorset=c("black","blue"), legend.loc="bottomleft")
+#' # plot actual returns vs. fitted factor model returns for HAM1
+#' plot(fit, plot.single=TRUE, asset.name="HAM1", which.plot.single=1, 
+#'      loop=FALSE)
+#' # group plot; type selected from menu prompt; auto-looped for multiple plots
+#' # plot(fit)
 #' 
 #' # example using "subsets" variable selection
 #' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
@@ -564,41 +563,4 @@ residuals.tsfm <- function(object, ...) {
   }
   time(residuals.xts) <- as.Date(time(residuals.xts))
   return(residuals.xts)
-}
-
-#' @rdname fitTsfm
-#' @method covFm tsfm
-#' @export
-
-covFm.tsfm <- function(object, ...) {
-  
-  # check input object validity
-  if (!inherits(object, c("tsfm", "sfm", "ffm"))) {
-    stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
-  }
-  
-  # get parameters and factors from factor model
-  beta <- as.matrix(object$beta)
-  beta[is.na(beta)] <- 0
-  sig2.e = object$resid.sd^2
-  factor <- as.matrix(object$data[, object$factor.names])
-  
-  if (!exists("use")) {use="pairwise.complete.obs"}
-  # factor covariance matrix 
-  factor.cov = cov(factor, use=use, ...)
-  
-  # residual covariance matrix D
-  if (length(sig2.e) > 1) {
-    D.e = diag(sig2.e)
-  } else {
-    D.e =  as.vector(sig2.e)
-  }
-  
-  cov.fm = beta %*% factor.cov %*% t(beta) + D.e
-  
-  #   if (any(diag(chol(cov.fm)) == 0)) {
-  #     warning("Covariance matrix is not positive definite!")
-  #   }
-  
-  return(cov.fm)
 }
