@@ -1,0 +1,172 @@
+#' @title Decompose VaR into individual factor contributions
+#' 
+#' @description Compute the factor contributions to Value-at-Risk (VaR) of 
+#' assets' returns based on Euler's theorem, given the fitted factor model. 
+#' The partial derivative of VaR wrt factor beta is computed as the expected 
+#' factor return given fund return is equal to its VaR and approximated by a
+#' kernel estimator. VaR is computed either as the sample quantile or as an 
+#' estimated quantile using the Cornish-Fisher expansion.
+#' 
+#' @details The factor model for an asset's return at time \code{t} has the 
+#' form \cr \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)} \cr \cr 
+#' where, \code{beta.star=(beta,sig.e)} and \code{F.star(t)=[F(t)',z(t)]'}. By 
+#' Euler's theorem, the VaR of the asset's return is given by: 
+#' \cr \cr \code{VaR.fm = sum(cVaR_k) = sum(beta.star_k*mVaR_k)} \cr \cr 
+#' where, summation is across the \code{K} factors and the residual, 
+#' \code{cVaR} and \code{mVaR} are the component and marginal 
+#' contributions to \code{VaR} respectively. The marginal contribution to VaR 
+#' is defined as the expectation of \code{F.star}, conditional on the loss 
+#' being equal to \code{VaR.fm}. This is approximated as described in 
+#' Epperlein & Smillie (2006); a triangular smoothing kernel is used here. 
+#' 
+#' Computation of the risk measure is done using 
+#' \code{\link[PerformanceAnalytics]{VaR}}. Arguments \code{p}, \code{method} 
+#' and \code{invert} are passed to this function. Refer to their help file for 
+#' details and other options.
+#' 
+#' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @param p confidence level for calculation. Default is 0.95.
+#' @param method method for computing VaR, one of "modified","gaussian",
+#' "historical", "kernel". Default is "modified". See details.
+#' @param invert logical; whether to invert the VaR measure. Default is 
+#' \code{FALSE}.
+#' @param ... other optional arguments passed to 
+#' \code{\link[PerformanceAnalytics]{VaR}}.
+#' 
+#' @return A list containing 
+#' \item{VaR.fm}{length-N vector of factor model VaRs of N-asset returns.}
+#' \item{n.exceed}{length-N vector of number of observations beyond VaR for 
+#' each asset.}
+#' \item{idx.exceed}{list of numeric vector of index values of exceedances.}
+#' \item{mVaR}{N x (K+1) matrix of marginal contributions to VaR.}
+#' \item{cVaR}{N x (K+1) matrix of component contributions to VaR.}
+#' \item{pcVaR}{N x (K+1) matrix of percentage component contributions to VaR.}
+#' Where, \code{K} is the number of factors and N is the number of assets.
+#' 
+#' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+#' 
+#' @references 
+#' Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
+#' The Journal of Risk, 5(2), 1-18.
+#' 
+#' Meucci, A. (2007). Risk contributions from generic user-defined factors. 
+#' RISK-LONDON-RISK MAGAZINE LIMITED-, 20(6), 84. 
+#' 
+#' Yamai, Y., & Yoshiba, T. (2002). Comparative analyses of expected shortfall 
+#' and value-at-risk: their estimation error, decomposition, and optimization. 
+#' Monetary and economic studies, 20(1), 87-121.
+#' 
+#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+#' for the different factor model fitting functions.
+#' 
+#' \code{\link[PerformanceAnalytics]{VaR}} for VaR computation.
+#' \code{\link{fmSdDecomp}} for factor model SD decomposition.
+#' \code{\link{fmEsDecomp}} for factor model ES decomposition.
+#' 
+#' @examples
+#' # Time Series Factor Model
+#' data(managers)
+#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#'                      factor.names=colnames(managers[,(7:8)]), data=managers)
+#'
+#' VaR.decomp <- fmVaRDecomp(fit.macro)
+#' # get the component contributions
+#' VaR.decomp$cVaR
+#' 
+#' @export
+
+fmVaRDecomp <- function(object, ...){
+  # check input object validity
+  if (!inherits(object, c("tsfm", "sfm", "ffm"))) {
+    stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
+  }
+  UseMethod("fmVaRDecomp")
+}
+
+#' @rdname fmVaRDecomp
+#' @method fmVaRDecomp tsfm
+#' @export
+
+fmVaRDecomp.tsfm <- function(object, p=0.95, 
+                             method=c("modified","gaussian","historical",
+                                      "kernel"), invert=FALSE, ...) {
+  
+  # set defaults and check input vailidity
+  method = method[1]
+  
+  if (!(method %in% c("modified", "gaussian", "historical", "kernel"))) {
+    stop("Invalid argument: method must be 'modified', 'gaussian',
+         'historical' or 'kernel'")
+  }
+  
+  # get beta.star
+  beta.star <- as.matrix(cbind(object$beta, object$resid.sd))
+  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  
+  # factor returns and residuals data
+  factors.xts <- object$data[,object$factor.names]
+  resid.xts <- checkData(t(t(residuals(object))/object$resid.sd))
+  time(resid.xts) <- as.Date(time(resid.xts))
+  
+  # initialize lists and matrices
+  N <- length(object$asset.names)
+  K <- length(object$factor.names)
+  VaR.fm <- rep(NA, N)
+  idx.exceed <- list()
+  n.exceed <- rep(NA, N)
+  names(VaR.fm) = names(n.exceed) = object$asset.names
+  mVaR <- matrix(NA, N, K+1)
+  cVaR <- matrix(NA, N, K+1)
+  pcVaR <- matrix(NA, N, K+1)
+  rownames(mVaR)=rownames(cVaR)=rownames(pcVaR)=object$asset.names
+  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(object$factor.names,
+                                                  "residuals")
+  
+  for (i in object$asset.names) {
+    # return data for asset i
+    R.xts <- object$data[,i]
+    # get VaR for asset i
+    VaR.fm[i] <- VaR(R.xts, p=p, method=method, invert=invert, ...)
+    # index of VaR exceedances
+    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+    # number of VaR exceedances
+    n.exceed[i] <- length(idx.exceed[[i]])
+    
+    #     # plot exceedances for asset i
+    #     plot(R.xts, type="b", main="Asset Returns and 5% VaR Violations",
+    #          ylab="Returns")
+    #     abline(h=0)
+    #     abline(h=VaR.fm[i], lwd=2, col="red")
+    #     points(R.xts[idx.exceed[[i]]], type="p", pch=16, col="red")
+    
+    # get F.star data object
+    factor.star <- merge(factors.xts, resid.xts[,i])
+    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    
+    if (!invert) {inv=-1} else {inv=1}
+    
+    # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
+    # the constant 2.575 corresponds to a triangular kernel 
+    eps <- 2.575*sd(R.xts, na.rm =TRUE) * (nrow(R.xts)^(-1/5))
+    # compute marginal VaR as expected value of factor returns, such that the
+    # asset return was incident in the triangular kernel region peaked at the 
+    # VaR value and bandwidth = epsilon.
+    k.weight <- as.vector(1 - abs(R.xts - VaR.fm[i]) / eps)
+    k.weight[k.weight<0] <- 0
+    mVaR[i,] <- inv * colMeans(factor.star*k.weight, na.rm =TRUE)
+    
+    # correction factor to ensure that sum(cVaR) = portfolio VaR
+    cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,]) )
+    
+    # compute marginal, component and percentage contributions to VaR
+    # each of these have dimensions: N x (K+1)
+    mVaR[i,] <- cf * mVaR[i,]
+    cVaR[i,] <- mVaR[i,] * beta.star[i,]
+    pcVaR[i,] <- cVaR[i,] / VaR.fm[i]
+  }
+  
+  fm.VaR.decomp <- list(VaR.fm=VaR.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
+                        mVaR=mVaR, cVaR=cVaR, pcVaR=pcVaR)
+  
+  return(fm.VaR.decomp)
+}

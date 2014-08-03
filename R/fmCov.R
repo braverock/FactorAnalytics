@@ -37,10 +37,8 @@
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.
 #' 
 #' @references 
-#' \enumerate{
-#' \item Zivot, Eric, and W. A. N. G. Jia-hui. "Modeling Financial Time Series 
-#' with S-Plus Springer-Verlag." (2006).
-#' }
+#' Zivot, E., & Jia-hui, W. A. N. G. (2006). Modeling Financial Time 
+#' Series with S-Plus Springer-Verlag.
 #' 
 #' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
 #' 
@@ -48,23 +46,22 @@
 #' \code{method}.
 #' 
 #' @examples
-#' \dontrun{
 #' # Time Series Factor model
 #' data(managers)
-#' factors = managers[, (7:9)]
 #' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
 #'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)                              
-#' covFm(fit)
+#' fmCov(fit)
 #' 
+#' \dontrun{
 #' # Statistical Factor Model
 #' data(stat.fm.data)
 #' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
-#' #' covFm(t(sfm.pca.fit$loadings), var(sfm.pca.fit$factors), 
+#' #' fmCov(t(sfm.pca.fit$loadings), var(sfm.pca.fit$factors), 
 #'                          sfm.pca.fit$resid.sd)
 #' 
 #' sfm.apca.fit <- fitSfm(sfm.apca.dat, k=2)
 #' 
-#' covFm(t(sfm.apca.fit$loadings), var(sfm.apca.fit$factors), 
+#' fmCov(t(sfm.apca.fit$loadings), var(sfm.apca.fit$factors), 
 #'                       sfm.apca.fit$resid.sd)
 #'
 #' # Fundamental Factor Model
@@ -78,27 +75,26 @@
 #'                    data=stock, returnsvar="RETURN", datevar="DATE", 
 #'                    assetvar="TICKER", wls=TRUE, regression="classic", 
 #'                    covariance="classic", full.resid.cov=FALSE)
-#' ret.cov.fundm <- covFm(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.sd)
+#' ret.cov.fundm <- fmCov(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.sd)
 #' fit.fund$returns.cov$cov == ret.cov.fundm
 #' }
 #' 
-#' @rdname covFm
+#' @rdname fmCov
 #' @export
 
-covFm <- function(object, ...){
-  UseMethod("covFm")
-}
-
-#' @rdname covFm
-#' @method covFm tsfm
-#' @export
-
-covFm.tsfm <- function(object, use="pairwise.complete.obs", ...) {
-  
+fmCov <- function(object, ...){
   # check input object validity
   if (!inherits(object, c("tsfm", "sfm", "ffm"))) {
     stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
   }
+  UseMethod("fmCov")
+}
+
+#' @rdname fmCov
+#' @method fmCov tsfm
+#' @export
+
+fmCov.tsfm <- function(object, use="pairwise.complete.obs", ...) {
   
   # get parameters and factors from factor model
   beta <- as.matrix(object$beta)

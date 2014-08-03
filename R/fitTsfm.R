@@ -1,7 +1,7 @@
 #' @title Fit a time series factor model using time series regression
 #' 
-#' @description Fits a time series (or, macroeconomic) factor model for one 
-#' or more asset returns (or, excess returns) using time series regression. 
+#' @description Fits a time series (a.k.a. macroeconomic) factor model for one 
+#' or more asset returns or excess returns using time series regression. 
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
 #' including Stepwise, Subsets, Lars are available as well. An object of class 
@@ -10,7 +10,7 @@
 #' @details 
 #' Typically, factor models are fit using excess returns. \code{rf.name} gives 
 #' the option to supply a risk free rate variable to subtract from each asset 
-#' return and factor to create excess returns. 
+#' return and factor to compute excess returns. 
 #' 
 #' Estimation method "OLS" corresponds to ordinary least squares using 
 #' \code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least 
@@ -33,12 +33,12 @@
 #' 
 #' \code{mkt.timing} allows for market-timing factors to be added to any of the 
 #' above methods. Market timing accounts for the price movement of the general 
-#' stock market relative to fixed income securities). "HM" follows 
-#' Henriksson & Merton (1981) and \code{up-market = max(0, Rm-Rf)}, is added 
-#' as a factor in the regression. The coefficient of this up-market factor can 
-#' be interpreted as the number of free put options. Similarly, "TM" follows 
+#' stock market relative to fixed income securities. "HM" follows 
+#' Henriksson & Merton (1981) and \code{up-market=max(0,Rm-Rf)}, is added to 
+#' the regression. The coefficient of this up-market factor can be 
+#' interpreted as the number of free put options. Similarly, "TM" follows 
 #' Treynor-Mazuy (1966), to account for market timing with respect to 
-#' volatility, and \code{market.sqd = (Rm-Rf)^2} is added as a factor in the 
+#' volatility, and \code{market.sqd=(Rm-Rf)^2} is added as a factor in the 
 #' regression. Option "both" adds both of these factors.
 #' 
 #' \subsection{Data Processing}{
@@ -74,22 +74,15 @@
 #' @param control list of control parameters. The default is constructed by 
 #' the function \code{\link{fitTsfm.control}}. See the documentation for 
 #' \code{\link{fitTsfm.control}} for details.
-#' @param ... For \code{fitTsfm}: arguments passed to 
-#' \code{\link{fitTsfm.control}}. \cr
-#' For S3 methods: further arguments passed to or from other methods 
+#' @param ... arguments passed to \code{\link{fitTsfm.control}}
 #' 
-#' @return fitTsfm returns an object of class \code{tsfm}. 
+#' @return fitTsfm returns an object of class \code{tsfm} for which 
+#' \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist. 
 #' 
-#' The generic functions \code{summary}, \code{predict} and \code{plot} are 
-#' used to obtain and print a summary, predicted asset returns for new factor 
-#' data and plot selected characteristics for one or more assets. The generic 
-#' accessor functions \code{coef}, \code{fitted} and \code{residuals} 
-#' extract various useful features of the fit object. \code{coef.tsfm} extracts 
-#' coefficients from the fitted factor model and returns an N x (K+1) matrix of 
-#' all coefficients, \code{fitted.tsfm} gives an N x T data object of fitted 
-#' values and \code{residuals.tsfm} gives an N x T data object of residuals. 
-#' Additionally, \code{covFm} computes the \code{N x N} covariance matrix for 
-#' asset returns based on the fitted factor model
+#' The generic accessor functions \code{coef}, \code{fitted} and 
+#' \code{residuals} extract various useful features of the fit object. 
+#' Additionally, \code{fmCov} computes the covariance matrix for asset returns 
+#' based on the fitted factor model
 #' 
 #' An object of class \code{tsfm} is a list containing the following 
 #' components:
@@ -97,10 +90,10 @@
 #' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
 #' the \code{fit.method="Robust"}, or class \code{lars} if 
 #' \code{variable.selection="lars"}.}
-#' \item{alpha}{N x 1 vector of estimated alphas.}
+#' \item{alpha}{length-N vector of estimated alphas.}
 #' \item{beta}{N x K matrix of estimated betas.}
-#' \item{r2}{N x 1 vector of R-squared values.}
-#' \item{resid.sd}{N x 1 vector of residual standard deviations.}
+#' \item{r2}{length-N vector of R-squared values.}
+#' \item{resid.sd}{length-N vector of residual standard deviations.}
 #' \item{fitted}{xts data object of fitted values; iff 
 #' \code{variable.selection="lars"}}
 #' \item{call}{the matched function call.}
@@ -115,29 +108,31 @@
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.
 #' 
 #' @references 
-#' \enumerate{
-#' \item Christopherson, Jon A., David R. Carino, and Wayne E. Ferson. 
-#' Portfolio performance measurement and benchmarking. McGraw Hill 
-#' Professional, 2009.
-#' \item Efron, Bradley, Trevor Hastie, Iain Johnstone, and Robert Tibshirani. 
-#' "Least angle regression." The Annals of statistics 32, no.2 (2004): 407-499. 
-#' \item Hastie, Trevor, Robert Tibshirani, Jerome Friedman, T. Hastie, J. 
-#' Friedman, and R. Tibshirani. The elements of statistical learning. Vol. 2, 
-#' no. 1. New York: Springer, 2009.
-#' \item Henriksson, Roy D., and Robert C. Merton. "On market timing and 
-#' investment performance. II. Statistical procedures for evaluating 
-#' forecasting skills." Journal of business (1981): 513-533.
-#' \item Treynor, Jack, and Kay Mazuy. "Can mutual funds outguess the market." 
-#' Harvard business review 44, no. 4 (1966): 131-136.
-#' }
+#' Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 
+#' performance measurement and benchmarking. McGraw Hill Professional.
+#' 
+#' Efron, B., Hastie, T., Johnstone, I., & Tibshirani, R. (2004). Least angle 
+#' regression. The Annals of statistics, 32(2), 407-499. 
+#' 
+#' Hastie, T., Tibshirani, R., Friedman, J., Hastie, T., Friedman, J., & 
+#' Tibshirani, R. (2009). The elements of statistical learning (Vol. 2, No. 1). 
+#' New York: Springer.
+#' 
+#' Henriksson, R. D., & Merton, R. C. (1981). On market timing and investment 
+#' performance. II. Statistical procedures for evaluating forecasting skills. 
+#' Journal of business, 513-533.
+#' 
+#' Treynor, J., & Mazuy, K. (1966). Can mutual funds outguess the market. 
+#' Harvard business review, 44(4), 131-136.
 #' 
 #' @seealso The \code{tsfm} methods for generic functions: 
 #' \code{\link{plot.tsfm}}, \code{\link{predict.tsfm}}, 
 #' \code{\link{print.tsfm}} and \code{\link{summary.tsfm}}. 
 #' 
 #' And, the following extractor functions: \code{\link[stats]{coef}}, 
-#' \code{\link{covFm}}, \code{\link[stats]{fitted}} and 
-#' \code{\link[stats]{residuals}}.
+#' \code{\link[stats]{fitted}}, \code{\link[stats]{residuals}},
+#' \code{\link{fmCov}}, \code{\link{fmSdDecomp}}, \code{\link{fmVaRDecomp}} 
+#' and \code{\link{fmEsDecomp}}.
 #' 
 #' \code{\link{paFm}} for Performance Attribution. 
 #' 
@@ -171,8 +166,7 @@
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"),
-                    variable.selection=c("none","stepwise","subsets",
-                                         "lars"),
+                    variable.selection=c("none","stepwise","subsets","lars"),
                     mkt.timing=NULL, control=fitTsfm.control(...), ...) {
   
   # record the call as an element to be returned
@@ -493,6 +487,7 @@ makePaddedDataFrame <- function(l) {
 
 #' @param object a fit object of class \code{tsfm} which is returned by 
 #' \code{fitTsfm}
+#' @param ... further arguments passed to or from other methods 
 
 #' @rdname fitTsfm
 #' @method coef tsfm

@@ -142,6 +142,7 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
                             lars.criterion="Cp", K = 10) {
   
   # get the user-specified arguments (that have no defaults)
+  # this part of the code was adapted from stats::lm
   call <- match.call()
   m <- match(c("weights","scope","scale","direction","method","type",
                "max.steps"), names(call), 0L) 

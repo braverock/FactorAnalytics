@@ -106,7 +106,8 @@ fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 # plot the factor betas of 1st 4 assets fitted above.
 plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
 # plot the factor model return correlation, order = hierarchical clustering
-plot(fit.macro, which.plot.group=7, loop=FALSE, order="hclust", addrect=3)
+plot(fit.macro, which.plot.group=7, loop=FALSE,
+     order="AOE", method="ellipse", tl.pos = "d")
 
 # histogram of residuals from an individual asset's factor model fit
 plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which.plot.single=8,
@@ -131,7 +132,7 @@ statistics.
 \code{\link[PerformanceAnalytics]{chart.Histogram}},
 \code{\link[PerformanceAnalytics]{chart.QQPlot}},
 \code{\link[graphics]{barplot}} and
-\code{\link[ellipse]{plotcorr}} for plotting methods used.
+\code{\link[corrplot]{corrplot}} for plotting methods used.
 
 \code{\link{factorModelSDDecomposition}},
 \code{\link{factorModelEsDecomposition}},

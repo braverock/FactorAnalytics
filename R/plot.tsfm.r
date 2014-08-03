@@ -89,7 +89,7 @@
 #' \code{\link[PerformanceAnalytics]{chart.Histogram}},
 #' \code{\link[PerformanceAnalytics]{chart.QQPlot}}, 
 #' \code{\link[graphics]{barplot}} and 
-#' \code{\link[ellipse]{plotcorr}} for plotting methods used.
+#' \code{\link[corrplot]{corrplot}} for plotting methods used.
 #' 
 #' \code{\link{factorModelSDDecomposition}}, 
 #' \code{\link{factorModelEsDecomposition}},
@@ -106,7 +106,8 @@
 #' # plot the factor betas of 1st 4 assets fitted above.
 #' plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
 #' # plot the factor model return correlation, order = hierarchical clustering
-#' plot(fit.macro, which.plot.group=7, loop=FALSE, order="hclust", addrect=3)
+#' plot(fit.macro, which.plot.group=7, loop=FALSE, 
+#'      order="AOE", method="ellipse", tl.pos = "d")
 #' 
 #' # histogram of residuals from an individual asset's factor model fit 
 #' plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which.plot.single=8, 
@@ -314,8 +315,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                barplot(coef(x)[,1], main="Factor model Alpha (Intercept)", 
                        xlab="Assets", col="darkblue", las=las, ...)
                abline(h=0, lwd=1, lty=1, col=1)
-               
-             }, "2L" = {
+             }, 
+             "2L" = {
                ## Factor model coefficients: Betas
                k <- ncol(coef(x))-1
                if (k > max.show) {
@@ -331,7 +332,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                  abline(h=0, lwd=1, lty=1, col=1)
                }
                par(mfrow=c(1,1))
-             }, "3L" = {    
+             }, 
+             "3L" = {    
                ## Actual and Fitted asset returns
                n <- length(x$asset.names)
                if (n > max.show) {
@@ -349,147 +351,55 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                                   legend.loc=legend.loc, pch=NULL, las=las,...)
                }
                par(mfrow=c(1,1))
-             },
+             }, 
              "4L" ={
                ## R-squared
                barplot(x$r2, main="R-squared values for factor model fits", 
                        xlab="Assets", ylab="R-squared", col="darkblue", 
                        las=las, ...)
                abline(h=0, lwd=1, lty=1, col=1)
-             },
+             }, 
              "5L" = {
                ## Residual Volatility
                barplot(x$resid.sd, xlab="Assets", ylab="Residual volatility",
                        main="Residual volatility for factor model fits", 
                        col="darkblue", las=las, ...) 
                abline(h=0, lwd=1, lty=1, col=1)
-             },    
+             }, 
              "6L" = {
                ## Factor Model Residual Correlation
                cor.resid <- cor(residuals(x), use="pairwise.complete.obs")
                corrplot::corrplot(cor.resid, ...)
-             },
+             }, 
              "7L" = {
                ## Factor Model Return Correlation
-               cor.fm <- cov2cor(covFm(x)) 
+               cor.fm <- cov2cor(fmCov(x)) 
                corrplot::corrplot(cor.fm, ...)
              },
-#              "8L" = {
-#                ## Factor Contribution to SD
-#                factor.sd.decomp.list <- list()
-#                for (i in asset.names) {
-#                  factor.sd.decomp.list[[i]] =
-#                    factorModelSdDecomposition(x$beta[i,],
-#                                               cov.factors, x$resid.variance[i])
-#                }
-#                # function to extract contribution to sd from list
-#                getCSD <- function(x) {
-#                  x$cSd.fm
-#                }
-#                # extract contributions to SD from list
-#                cr.sd <- sapply(factor.sd.decomp.list, getCSD)
-#                rownames(cr.sd) <- c(factor.names, "residual")
-#                # create stacked barchart
-#                barplot(cr.sd, main="Factors' Contribution to SD",
-#                        legend.text=T, args.legend=list(x="topleft"))
-#                
-#              },
-#              "9L"={
-#                ## Factor Contribution to ES
-#                factor.es.decomp.list <- list()
-#                if (variable.selection == "lar" || variable.selection == "lasso") {
-#                  
-#                  for (i in asset.names) {
-#                    idx <- which(!is.na(plot.data[,i]))
-#                    alpha <- x$alpha[i]
-#                    beta <- as.matrix(x$beta[i,])        
-#                    fitted <- alpha+as.matrix(plot.data[,factor.names])%*%beta
-#                    residual <- plot.data[,i]-fitted
-#                    tmpData <- cbind(coredata(plot.data[idx,i]),
-#                                    coredata(plot.data[idx,factor.names]),
-#                                    (residual[idx,]/sqrt(x$resid.variance[i])) )
-#                    colnames(tmpData)[c(1,length(tmpData))] <- c(i, "residual")
-#                    factor.es.decomp.list[[i]] <- 
-#                      factorModelEsDecomposition(tmpData, 
-#                                                 x$beta[i,],
-#                                                 x$resid.variance[i], tail.prob=0.05)
-#                    
-#                  }
-#                } else {
-#                  
-#                  for (i in asset.names) {
-#                    # check for missing values in fund data
-#                    idx <- which(!is.na(plot.data[,i]))
-#                    tmpData <- cbind(coredata(plot.data[idx,i]),
-#                                    coredata(plot.data[idx,factor.names]),
-#                                    residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
-#                    colnames(tmpData)[c(1,dim(tmpData)[2])] <- c(i, "residual")
-#                    factor.es.decomp.list[[i]] <- 
-#                      factorModelEsDecomposition(tmpData, 
-#                                                 x$beta[i,],
-#                                                 x$resid.variance[i], tail.prob=0.05,
-#                                                 VaR.method=VaR.method)
-#                  }
-#                }     
-#                
-#                # stacked bar charts of percent contributions to SD
-#                getCETL <- function(x) {
-#                  x$cES.fm
-#                }
-#                # report as positive number
-#                cr.etl <- sapply(factor.es.decomp.list, getCETL)
-#                rownames(cr.etl) <- c(factor.names, "residual")
-#                barplot(cr.etl, main="Factors' Contribution to ES",
-#                        legend.text=T, args.legend=list(x="topleft")) 
-#              },
-#              "10L" ={
-#                ## Factor Contribution to VaR
-#                factor.VaR.decomp.list <- list()
-#                
-#                if (variable.selection == "lar" || variable.selection == "lasso") {
-#                  
-#                  for (i in asset.names) {
-#                    idx <- which(!is.na(plot.data[,i]))
-#                    alpha <- x$alpha[i]
-#                    beta <- as.matrix(x$beta[i,])        
-#                    fitted <- alpha+as.matrix(plot.data[,factor.names])%*%beta
-#                    residual <- plot.data[,i]-fitted
-#                    tmpData <- cbind(coredata(plot.data[idx,i]),
-#                                    coredata(plot.data[idx,factor.names]),
-#                                    (residual[idx,]/sqrt(x$resid.variance[i])) )
-#                    colnames(tmpData)[c(1,length(tmpData))] <- c(i, "residual")
-#                    factor.VaR.decomp.list[[i]] <- 
-#                      factorModelVaRDecomposition(tmpData, 
-#                                                  x$beta[i,],
-#                                                  x$resid.variance[i], tail.prob=0.05,VaR.method=VaR.method)
-#                    
-#                  }
-#                } else {
-#                  for (i in asset.names) {
-#                    # check for missing values in fund data
-#                    idx <- which(!is.na(plot.data[,i]))
-#                    tmpData <- cbind(coredata(plot.data[idx,i]),
-#                                    coredata(plot.data[idx,factor.names]),
-#                                    residuals(x$asset.fit[[i]])/sqrt(x$resid.variance[i]))
-#                    colnames(tmpData)[c(1,dim(tmpData)[2])] <- c(i, "residual")
-#                    factor.VaR.decomp.list[[i]] <- 
-#                      factorModelVaRDecomposition(tmpData, 
-#                                                  x$beta[i,],
-#                                                  x$resid.variance[i], tail.prob=0.05,
-#                                                  VaR.method=VaR.method)
-#                  }
-#                }
-#                
-#                # stacked bar charts of percent contributions to SD
-#                getCVaR <- function(x) {
-#                  x$cVaR.fm
-#                }
-#                # report as positive number
-#                cr.VaR <- sapply(factor.VaR.decomp.list, getCVaR)
-#                rownames(cr.VaR) <- c(factor.names, "residual")
-#                barplot(cr.VaR, main="Factors' Contribution to VaR",
-#                        legend.text=T, args.legend=list(x="topleft"))
-#              },
+             "8L" = {
+               ## Factor Contribution to SD
+               cSd.fm <- fmSdDecomp(x)$cSd
+               barplot(t(cSd.fm), main="Factor Contributions to SD", 
+                       xlab="Assets", legend.text=T, args.legend=legend.loc, 
+                       col=colorset, ...)
+               mtext("(pairwise complete obs)", line=0.5)
+             },
+             "9L"={
+               ## Factor Contribution to ES
+               cES.fm <- fmVaRDecomp(x)$cES
+               barplot(t(cES.fm), main="Factor Contributions to ES", 
+                       xlab="Assets", legend.text=T, args.legend=legend.loc, 
+                       col=colorset, ...)
+               mtext("(pairwise complete obs)", line=0.5)
+             },
+             "10L" ={
+               ## Factor Contribution to VaR
+               cVaR.fm <- fmVaRDecomp(x)$cVaR
+               barplot(t(cVaR.fm), main="Factor Contributions to VaR", 
+                       xlab="Assets", legend.text=T, args.legend=legend.loc, 
+                       col=colorset, ...)
+               mtext("(pairwise complete obs)", line=0.5)
+             },
              invisible()       
       )         
       # repeat menu if user didn't choose to exit from the plot options
@@ -498,7 +408,3 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
     }
   } # end of group plots
 }
-
-
-#   plot.data <- x$data[,c(asset.names,factor.names)]
-#   cov.factors <- var(plot.data[,factor.names])
