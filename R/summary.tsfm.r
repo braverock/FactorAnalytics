@@ -9,8 +9,8 @@
 #' heteroskedasticity-consistent (HC) or 
 #' heteroskedasticity-autocorrelation-consistent (HAC) standard errors and 
 #' t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful 
-#' only if \code{fit.method = "OLS" or "DLS"}. This option is currently not 
-#' available for \code{variable.selection = "lar" or "lasso"}.
+#' only if \code{fit.method = "OLS" or "DLS"}. HC/HAC errors are currently not 
+#' available for \code{variable.selection = "lars"}.
 #'  
 #' @param object an object of class \code{tsfm} returned by \code{fitTsfm}.
 #' @param se.type one of "Default", "HC" or "HAC"; option for computing 
@@ -61,6 +61,7 @@ summary.tsfm <- function(object, se.type="Default", ...){
   if (!inherits(object, "tsfm")) {
     stop("Invalid 'tsfm' object")
   }
+  # note: fit.method=NULL for "lars" objects
   if (!(object$fit.method %in% c("OLS","DLS")) && se.type!="Default") {
     stop("Invalid argument: HC/HAC standard errors are applicable only if 
          fit.method = 'OLS' or 'DLS'")

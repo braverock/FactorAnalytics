@@ -5,7 +5,7 @@
 \usage{
 \method{plot}{tsfm}(x, which.plot.group = NULL, max.show = 6,
   plot.single = FALSE, asset.name, which.plot.single = NULL,
-  colorset = (1:12), legend.loc = "topleft", las = 1,
+  colorset = (1:12), legend.loc = "topleft", las = 1, horiz = TRUE,
   VaR.method = "historical", loop = TRUE, ...)
 }
 \arguments{
@@ -63,6 +63,10 @@ to suppress the legend.}
 \item{las}{one of {0, 1, 2, 3} to set the direction of axis labels, same as
 in \code{plot}. Default here is 1.}
 
+\item{horiz}{a logical value. If \code{FALSE}, the bars are drawn vertically
+with the first bar to the left. If \code{TRUE}, the bars are drawn
+horizontally with the first at the bottom. Default here is \code{TRUE}.}
+
 \item{VaR.method}{a method for computing VaR; one of "modified", "gaussian",
 "historical" or "kernel". VaR is computed using
 \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".}
@@ -105,7 +109,7 @@ fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 
 # plot the factor betas of 1st 4 assets fitted above.
 plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
-# plot the factor model return correlation, order = hierarchical clustering
+# plot factor model return correlation; angular order of the eigenvectors
 plot(fit.macro, which.plot.group=7, loop=FALSE,
      order="AOE", method="ellipse", tl.pos = "d")
 
@@ -134,8 +138,7 @@ statistics.
 \code{\link[graphics]{barplot}} and
 \code{\link[corrplot]{corrplot}} for plotting methods used.
 
-\code{\link{factorModelSDDecomposition}},
-\code{\link{factorModelEsDecomposition}},
-\code{\link{factorModelVaRDecomposition}} for factor model risk measures.
+\code{\link{fmSdDecomp}}, \code{\link{fmEsDecomp}},
+\code{\link{fmVaRDecomp}} for factor model risk measures.
 }
 

@@ -24,8 +24,8 @@ Collection of common factors as both monthly and quarterly time series
 \format{
   xts time series object
   \describe{
-    \item{\code{factor.M}}{Jan-1997 through May-2014}
-    \item{\code{factor.Q}}{Q1-1997 through Q1-2014}
+    \item{\code{factors.M}}{Jan-1997 through May-2014}
+    \item{\code{factors.Q}}{Q1-1997 through Q1-2014}
   }
 }
 \source{

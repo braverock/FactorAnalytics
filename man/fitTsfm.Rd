@@ -52,8 +52,6 @@ the function \code{\link{fitTsfm.control}}. See the documentation for
 
 \item{object}{a fit object of class \code{tsfm} which is returned by
 \code{fitTsfm}}
-
-\item{...}{further arguments passed to or from other methods}
 }
 \value{
 fitTsfm returns an object of class \code{tsfm} for which

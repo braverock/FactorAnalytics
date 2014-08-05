@@ -1,33 +1,37 @@
 #' @title Compute cumulative mean attribution for factor models
 #' 
 #' @description Decompose total returns into returns attributed to factors and 
-#' specific returns. An object of class \code{"pafm"} is generated and generic 
-#' functions such as \code{plot}, \code{summary} and \code{print} can be used.
+#' specific returns. An object of class \code{"pafm"} is generated, with 
+#' methods for generic functions \code{plot}, \code{summary} and \code{print}.
 #' 
 #' @details Total returns can be decomposed into returns attributed to factors 
-#' and specific returns. \cr \eqn{R_t = \sum  b_j * f_jt + u_t,t=1...T} \cr
-#' \code{b_j} is exposure to factor j and \code{f_jt} is factor j. 
-#' The returns attributed to factor j is \code{b_j * f_jt} and specific 
-#' returns is \code{u_t}. 
+#' and specific returns. \cr \eqn{R_t = \sum  b_k * f_kt + u_t, t=1...T} \cr
+#' \code{b_k} is exposure to factor k and \code{f_kt} is factor k's return at 
+#' time t. The return attributed to factor k is \code{b_k * f_kt} and specific 
+#' return is \code{u_t}. 
 #' 
 #' @param fit an object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param ... other arguments/controls passed to the fit methods.
 #' 
 #' @return The returned object is of class \code{"pafm"} containing
-#' \describe{
-#' \item{cum.ret.attr.f}{N X J matrix of cumulative return attributed to
+#' \item{cum.ret.attr.f}{N X K matrix of cumulative return attributed to
 #' factors.}
-#' \item{cum.spec.ret}{1 x N vector of cumulative specific returns.}
+#' \item{cum.spec.ret}{length-N vector of cumulative specific returns.}
 #' \item{attr.list}{list of time series of attributed returns for every
 #' portfolio.}
-#' }
 #' 
 #' @author Yi-An Chen and Sangeetha Srinivasan
 #' 
-#' @references Grinold, R. and Kahn, R. \emph{Active Portfolio Management},
+#' @references Grinold, R. and Kahn, R. (1999) Active Portfolio Management: A 
+#' Quantitative Approach for Producing Superior Returns and Controlling Risk. 
 #' McGraw-Hill.
 #' 
-#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}} 
+#' for the factor model fitting functions.
+#' 
+#' The \code{pafm} methods for generic functions: 
+#' \code{\link{plot.pafm}}, \code{\link{print.pafm}} and 
+#' \code{\link{summary.pafm}}. 
 #' 
 #' @examples
 #' data(managers)
@@ -41,8 +45,9 @@
 
 paFm <- function(fit, ...) {
   
-  if (class(fit)!="tsfm" & class(fit)!="ffm" & class(fit)!="sfm") {
-    stop("Class has to be one of 'tsfm', 'ffm' or 'sfm'.")
+  # check input object validity
+  if (!inherits(fit, c("tsfm", "sfm", "ffm"))) {
+    stop("Invalid argument: fit should be of class 'tsfm', 'sfm' or 'ffm'.")
   }
   
   # TSFM chunk  
@@ -52,18 +57,18 @@ paFm <- function(fit, ...) {
     # return attributed to factors
     cum.attr.ret <- fit$beta
     cum.spec.ret <- fit$alpha
-    factorNames = fit$factor.names
-    fundNames = fit$asset.names
+    factorNames <- fit$factor.names
+    fundNames <- fit$asset.names
     
     attr.list <- list()
     
     for (k in fundNames) {
-      fit.lm = fit$asset.fit[[k]]
+      fit.lm <- fit$asset.fit[[k]]
       
       ## extract information from lm, lmRob or lars object
       reg.xts <- na.omit(fit$data[, c(k, factorNames)])
       dates <- as.Date(index(reg.xts))
-      actual.xts = xts(fit.lm$model[1], dates)
+      actual.xts <- xts(fit.lm$model[1], dates)
       # attributed returns
       # active portfolio management p.512 17A.9 
       # top-down method
@@ -83,16 +88,16 @@ paFm <- function(fit, ...) {
             xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), 
                 dates)  
           cum.attr.ret[k, i] <- cum.ret - 
-            Return.cumulative(actual.xts - attr.ret.xts)  
+            Return.cumulative(actual.xts-attr.ret.xts)  
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
         }
       }
       
       # specific returns    
       spec.ret.xts <- actual.xts - 
-        xts(as.matrix(fit.lm$model[, factorNames])%*%as.matrix(fit.lm$coef[-1]), 
+        xts(as.matrix(fit.lm$model[,factorNames])%*%as.matrix(fit.lm$coef[-1]), 
             dates)
-      cum.spec.ret[k,1] <- cum.ret - Return.cumulative(actual.xts - spec.ret.xts)
+      cum.spec.ret[k,1] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
       attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
       colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")
     }
@@ -155,8 +160,8 @@ paFm <- function(fit, ...) {
     # return attributed to factors
     cum.attr.ret <- t(fit$loadings)
     cum.spec.ret <- fit$r2
-    factorNames = rownames(fit$loadings)
-    fundNames = colnames(fit$loadings)
+    factorNames <- rownames(fit$loadings)
+    fundNames <- colnames(fit$loadings)
     data <- checkData(fit$data)
     # create list for attribution
     attr.list <- list()
@@ -165,11 +170,11 @@ paFm <- function(fit, ...) {
     if ( dim(fit$asset.ret)[1] > dim(fit$asset.ret)[2] ) {
       
       for (k in fundNames) {
-        fit.lm = fit$asset.fit[[k]]
+        fit.lm <- fit$asset.fit[[k]]
         ## extract information from lm object
         date <- index(data[, k])
         # probably needs more general Date setting
-        actual.xts = xts(fit.lm$model[1], as.Date(date))
+        actual.xts <- xts(fit.lm$model[1], as.Date(date))
         # attributed returns
         # active portfolio management p.512 17A.9 
         cum.ret <-   Return.cumulative(actual.xts)
@@ -220,15 +225,16 @@ paFm <- function(fit, ...) {
     } 
   }
   
-  ans = list(cum.ret.attr.f=cum.attr.ret, cum.spec.ret=cum.spec.ret, 
+  ans <- list(cum.ret.attr.f=cum.attr.ret, cum.spec.ret=cum.spec.ret, 
              attr.list=attr.list)
-  class(ans) = "pafm"      
+  class(ans) <- "pafm"      
   return(ans)
 }
 
 
 # If benchmark is provided, active return attribution will be calculated.
 #  active returns = total returns  - benchmark returns. Specifically,  
-# \eqn{R_t^A = \sum_j b_{j}^A * f_{jt} + u_t^A},t=1..T, \eqn{b_{j}^A} is \emph{active exposure} to factor j 
-# and \eqn{f_{jt}} is factor j. The active returns attributed to factor j is 
-# \eqn{b_{j}^A * f_{jt}} specific returns is \eqn{u_t^A} 
+# \eqn{R_t^A = \sum_j b_{j}^A * f_{jt} + u_t^A},t=1..T, \eqn{b_{j}^A} is 
+# \emph{active exposure} to factor j and \eqn{f_{jt}} is factor j. The active 
+# returns attributed to factor j is \eqn{b_{j}^A * f_{jt}} specific returns is 
+# \eqn{u_t^A} 

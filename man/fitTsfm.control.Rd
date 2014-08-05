@@ -157,10 +157,8 @@ fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 Sangeetha Srinivasan
 }
 \references{
-\enumerate{
-\item Efron, Bradley, Trevor Hastie, Iain Johnstone, and Robert Tibshirani.
-"Least angle regression." The Annals of statistics 32, no.2 (2004): 407-499.
-}
+Efron, B., Hastie, T., Johnstone, I., & Tibshirani, R. (2004). Least angle
+regression. The Annals of statistics, 32(2), 407-499.
 }
 \seealso{
 \code{\link{fitTsfm}}, \code{\link[stats]{lm}},

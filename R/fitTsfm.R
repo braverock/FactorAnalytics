@@ -487,7 +487,6 @@ makePaddedDataFrame <- function(l) {
 
 #' @param object a fit object of class \code{tsfm} which is returned by 
 #' \code{fitTsfm}
-#' @param ... further arguments passed to or from other methods 
 
 #' @rdname fitTsfm
 #' @method coef tsfm

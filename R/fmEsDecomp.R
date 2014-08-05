@@ -93,8 +93,8 @@ fmEsDecomp <- function(object, ...){
 #' @export
 
 fmEsDecomp.tsfm <- function(object, p=0.95, 
-                             method=c("modified","gaussian","historical",
-                                      "kernel"), invert=FALSE, ...) {
+                            method=c("modified","gaussian","historical",
+                                     "kernel"), invert=FALSE, ...) {
   
   # set defaults and check input vailidity
   method = method[1]
@@ -110,7 +110,8 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
   
   # factor returns and residuals data
   factors.xts <- object$data[,object$factor.names]
-  resid.xts <- t(t(residuals(object))/object$resid.sd)
+  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
+  time(resid.xts) <- as.Date(time(resid.xts))
   
   # initialize lists and matrices
   N <- length(object$asset.names)
@@ -167,59 +168,4 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
                        ES.fm=ES.fm, mES=mES, cES=cES, pcES=pcES)
   
   return(fm.ES.decomp)
-  }
-
-
-
-
-
-factorModelEsDecomposition <-
-  function(Data, beta.vec, sig.e, tail.prob = 0.05,
-           VaR.method=c("modified", "gaussian", "historical", "kernel")) {
-    
-    Data = as.matrix(Data)
-    ncol.Data = ncol(Data)
-    if(is.matrix(beta.vec)) {
-      beta.names = c(rownames(beta.vec), "residual")
-    } else if(is.vector(beta.vec)) {
-      beta.names = c(names(beta.vec), "residual")
-    } else {
-      stop("beta.vec is not an n x 1 matrix or a vector")
-    }  
-    beta.names = c(names(beta.vec), "residual")
-    beta.star.vec = c(beta.vec, sig.e)
-    names(beta.star.vec) = beta.names
-    
-    ## epsilon is calculated in the sense of minimizing mean square error by Silverman 1986
-    epi <- 2.575*sd(Data[,1]) * (nrow(Data)^(-1/5))
-    VaR.fm = as.numeric(VaR(Data[, 1], p=(1-tail.prob), method=VaR.method))
-    idx = which(Data[, 1] <= VaR.fm + epi & Data[,1] >= VaR.fm - epi)
-    
-    
-    
-    ES.fm = -mean(Data[idx, 1])
-    
-    ##
-    ## compute marginal contribution to ES
-    ##
-    ## compute marginal ES as expected value of factor return given fund
-    ## return is less than or equal to VaR
-    mcES.fm = -as.matrix(colMeans(Data[idx, -1]))
-    
-    ## compute correction factor so that sum of weighted marginal ES adds to portfolio ES
-    cf = as.numeric( ES.fm / sum(mcES.fm*beta.star.vec) )
-    mcES.fm = cf*mcES.fm
-    cES.fm = mcES.fm*beta.star.vec
-    pcES.fm = cES.fm/ES.fm
-    colnames(mcES.fm) = "MCES"
-    colnames(cES.fm) = "CES"
-    colnames(pcES.fm) = "PCES"
-    ans = list(VaR.fm = -VaR.fm,
-               n.exceed = length(idx),
-               idx.exceed = idx,
-               ES.fm = ES.fm, 
-               mES.fm = t(mcES.fm), 
-               cES.fm = t(cES.fm),
-               pcES.fm = t(pcES.fm))
-    return(ans)
-  }
+}

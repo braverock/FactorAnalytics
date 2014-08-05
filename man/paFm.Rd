@@ -12,25 +12,23 @@ paFm(fit, ...)
 }
 \value{
 The returned object is of class \code{"pafm"} containing
-\describe{
-\item{cum.ret.attr.f}{N X J matrix of cumulative return attributed to
+\item{cum.ret.attr.f}{N X K matrix of cumulative return attributed to
 factors.}
-\item{cum.spec.ret}{1 x N vector of cumulative specific returns.}
+\item{cum.spec.ret}{length-N vector of cumulative specific returns.}
 \item{attr.list}{list of time series of attributed returns for every
 portfolio.}
 }
-}
 \description{
 Decompose total returns into returns attributed to factors and
-specific returns. An object of class \code{"pafm"} is generated and generic
-functions such as \code{plot}, \code{summary} and \code{print} can be used.
+specific returns. An object of class \code{"pafm"} is generated, with
+methods for generic functions \code{plot}, \code{summary} and \code{print}.
 }
 \details{
 Total returns can be decomposed into returns attributed to factors
-and specific returns. \cr \eqn{R_t = \sum  b_j * f_jt + u_t,t=1...T} \cr
-\code{b_j} is exposure to factor j and \code{f_jt} is factor j.
-The returns attributed to factor j is \code{b_j * f_jt} and specific
-returns is \code{u_t}.
+and specific returns. \cr \eqn{R_t = \sum  b_k * f_kt + u_t, t=1...T} \cr
+\code{b_k} is exposure to factor k and \code{f_kt} is factor k's return at
+time t. The return attributed to factor k is \code{b_k * f_kt} and specific
+return is \code{u_t}.
 }
 \examples{
 data(managers)
@@ -43,10 +41,16 @@ fm.attr <- paFm(fit)
 Yi-An Chen and Sangeetha Srinivasan
 }
 \references{
-Grinold, R. and Kahn, R. \emph{Active Portfolio Management},
+Grinold, R. and Kahn, R. (1999) Active Portfolio Management: A
+Quantitative Approach for Producing Superior Returns and Controlling Risk.
 McGraw-Hill.
 }
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+for the factor model fitting functions.
+
+The \code{pafm} methods for generic functions:
+\code{\link{plot.pafm}}, \code{\link{print.pafm}} and
+\code{\link{summary.pafm}}.
 }
 

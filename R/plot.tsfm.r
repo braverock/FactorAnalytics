@@ -68,6 +68,9 @@
 #' to suppress the legend.
 #' @param las one of {0, 1, 2, 3} to set the direction of axis labels, same as 
 #' in \code{plot}. Default here is 1.
+#' @param horiz a logical value. If \code{FALSE}, the bars are drawn vertically 
+#' with the first bar to the left. If \code{TRUE}, the bars are drawn 
+#' horizontally with the first at the bottom. Default here is \code{TRUE}.
 #' @param VaR.method a method for computing VaR; one of "modified", "gaussian",
 #' "historical" or "kernel". VaR is computed using 
 #' \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".
@@ -91,9 +94,8 @@
 #' \code{\link[graphics]{barplot}} and 
 #' \code{\link[corrplot]{corrplot}} for plotting methods used.
 #' 
-#' \code{\link{factorModelSDDecomposition}}, 
-#' \code{\link{factorModelEsDecomposition}},
-#' \code{\link{factorModelVaRDecomposition}} for factor model risk measures.
+#' \code{\link{fmSdDecomp}}, \code{\link{fmEsDecomp}}, 
+#' \code{\link{fmVaRDecomp}} for factor model risk measures.
 #' 
 #' @examples
 #' 
@@ -105,7 +107,7 @@
 #'                    
 #' # plot the factor betas of 1st 4 assets fitted above.
 #' plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
-#' # plot the factor model return correlation, order = hierarchical clustering
+#' # plot factor model return correlation; angular order of the eigenvectors
 #' plot(fit.macro, which.plot.group=7, loop=FALSE, 
 #'      order="AOE", method="ellipse", tl.pos = "d")
 #' 
@@ -121,7 +123,7 @@
 
 plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE, 
                       asset.name, which.plot.single=NULL, colorset=(1:12), 
-                      legend.loc="topleft", las=1, 
+                      legend.loc="topleft", las=1, horiz=TRUE,
                       VaR.method="historical", loop=TRUE, ...) {
   
   if (plot.single==TRUE) {
@@ -311,10 +313,10 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
       switch(which.plot.group,
              "1L" = { 
                ## Factor model coefficients: Alpha
-               #  ylab="Intercept estimate"
+               #  xlab="Intercept estimate", ylab="Assets"
                barplot(coef(x)[,1], main="Factor model Alpha (Intercept)", 
-                       xlab="Assets", col="darkblue", las=las, ...)
-               abline(h=0, lwd=1, lty=1, col=1)
+                       col="darkblue", las=las, horiz=horiz, ...)
+               abline(v=0, lwd=1, lty=1, col=1)
              }, 
              "2L" = {
                ## Factor model coefficients: Betas
@@ -326,10 +328,11 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                }
                par(mfrow=c(ceiling(k/2),2))
                for (i in 2:(k+1)) {
-                 main=paste("Factor Betas:", colnames(coef(x))[i])
-                 barplot(coef(x)[,i], main=main, col="darkblue", xlab="Assets",
-                         ylab="Coefficient estimate", las=las, ...)
-                 abline(h=0, lwd=1, lty=1, col=1)
+                 main=paste(colnames(coef(x))[i], "factor Betas")
+                 # xlab="Beta estimate", ylab="Assets"
+                 barplot(coef(x)[,i], main=main, col="darkblue", las=las, 
+                         horiz=horiz, ...)
+                 abline(v=0, lwd=1, lty=1, col=1)
                }
                par(mfrow=c(1,1))
              }, 
@@ -337,8 +340,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                ## Actual and Fitted asset returns
                n <- length(x$asset.names)
                if (n > max.show) {
-                 cat(paste("Displaying only the first", max.show,"assets, since the 
-                  number of assets > 'max.show' =", max.show))
+                 cat(paste("Displaying only the first", max.show,
+                           "assets, since the number of assets > 'max.show'"))
                  n <- max.show 
                }
                par(mfrow=c(ceiling(n/2),2))
@@ -354,17 +357,17 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
              }, 
              "4L" ={
                ## R-squared
+               # ylab="Assets", xlab="R-squared"
                barplot(x$r2, main="R-squared values for factor model fits", 
-                       xlab="Assets", ylab="R-squared", col="darkblue", 
-                       las=las, ...)
-               abline(h=0, lwd=1, lty=1, col=1)
+                       col="darkblue", las=las, horiz=horiz, ...)
+               abline(v=0, lwd=1, lty=1, col=1)
              }, 
              "5L" = {
                ## Residual Volatility
-               barplot(x$resid.sd, xlab="Assets", ylab="Residual volatility",
-                       main="Residual volatility for factor model fits", 
-                       col="darkblue", las=las, ...) 
-               abline(h=0, lwd=1, lty=1, col=1)
+               # ylab="Assets", xlab="Residual volatility"
+               barplot(x$resid.sd, col="darkblue", las=las, horiz=horiz,
+                       main="Residual volatility for factor model fits", ...) 
+               abline(v=0, lwd=1, lty=1, col=1)
              }, 
              "6L" = {
                ## Factor Model Residual Correlation
@@ -380,24 +383,24 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                ## Factor Contribution to SD
                cSd.fm <- fmSdDecomp(x)$cSd
                barplot(t(cSd.fm), main="Factor Contributions to SD", 
-                       xlab="Assets", legend.text=T, args.legend=legend.loc, 
-                       col=colorset, ...)
+                       legend.text=T, args.legend=legend.loc, col=colorset, 
+                       horiz=horiz, ...)
                mtext("(pairwise complete obs)", line=0.5)
              },
              "9L"={
                ## Factor Contribution to ES
-               cES.fm <- fmVaRDecomp(x)$cES
+               cES.fm <- fmEsDecomp(x)$cES
                barplot(t(cES.fm), main="Factor Contributions to ES", 
-                       xlab="Assets", legend.text=T, args.legend=legend.loc, 
-                       col=colorset, ...)
+                       legend.text=T, args.legend=legend.loc, col=colorset, 
+                       horiz=horiz, ...)
                mtext("(pairwise complete obs)", line=0.5)
              },
              "10L" ={
                ## Factor Contribution to VaR
                cVaR.fm <- fmVaRDecomp(x)$cVaR
                barplot(t(cVaR.fm), main="Factor Contributions to VaR", 
-                       xlab="Assets", legend.text=T, args.legend=legend.loc, 
-                       col=colorset, ...)
+                       legend.text=T, args.legend=legend.loc, col=colorset, 
+                       horiz=horiz, ...)
                mtext("(pairwise complete obs)", line=0.5)
              },
              invisible()       
