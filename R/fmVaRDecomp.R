@@ -8,8 +8,8 @@
 #' estimated quantile using the Cornish-Fisher expansion.
 #' 
 #' @details The factor model for an asset's return at time \code{t} has the 
-#' form \cr \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)} \cr \cr 
-#' where, \code{beta.star=(beta,sig.e)} and \code{F.star(t)=[F(t)',z(t)]'}. By 
+#' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
+#' where, \code{beta.star=(beta,sig.e)} and \code{f.star(t)=[f(t)',z(t)]'}. By 
 #' Euler's theorem, the VaR of the asset's return is given by: 
 #' \cr \cr \code{VaR.fm = sum(cVaR_k) = sum(beta.star_k*mVaR_k)} \cr \cr 
 #' where, summation is across the \code{K} factors and the residual, 
@@ -100,12 +100,14 @@ fmVaRDecomp.tsfm <- function(object, p=0.95,
   }
   
   # get beta.star
-  beta.star <- as.matrix(cbind(object$beta, object$resid.sd))
+  beta <- object$beta
+  beta[is.na(beta)] <- 0
+  beta.star <- as.matrix(cbind(beta, object$resid.sd))
   colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
   # factor returns and residuals data
   factors.xts <- object$data[,object$factor.names]
-  resid.xts <- checkData(t(t(residuals(object))/object$resid.sd))
+  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
   time(resid.xts) <- as.Date(time(resid.xts))
   
   # initialize lists and matrices
@@ -156,13 +158,13 @@ fmVaRDecomp.tsfm <- function(object, p=0.95,
     mVaR[i,] <- inv * colMeans(factor.star*k.weight, na.rm =TRUE)
     
     # correction factor to ensure that sum(cVaR) = portfolio VaR
-    cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,]) )
+    cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,], na.rm=TRUE) )
     
     # compute marginal, component and percentage contributions to VaR
     # each of these have dimensions: N x (K+1)
     mVaR[i,] <- cf * mVaR[i,]
     cVaR[i,] <- mVaR[i,] * beta.star[i,]
-    pcVaR[i,] <- cVaR[i,] / VaR.fm[i]
+    pcVaR[i,] <- 100* cVaR[i,] / VaR.fm[i]
   }
   
   fm.VaR.decomp <- list(VaR.fm=VaR.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 

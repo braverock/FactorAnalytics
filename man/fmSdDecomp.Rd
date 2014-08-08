@@ -33,8 +33,8 @@ assets' returns based on Euler's theorem, given the fitted factor model.
 }
 \details{
 The factor model for an asset's return at time \code{t} has the
-form \cr \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)} \cr \cr
-where, \code{beta.star=(beta,sig.e)} and \code{F.star(t)=[F(t)',z(t)]'}.
+form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr
+where, \code{beta.star=(beta,sig.e)} and \code{f.star(t)=[f(t)',z(t)]'}.
 \cr \cr By Euler's theorem, the standard deviation of the asset's return
 is given as: \cr \cr
 \code{Sd.fm = sum(cSd_k) = sum(beta.star_k*mSd_k)} \cr \cr

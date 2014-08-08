@@ -73,9 +73,9 @@ summary.tsfm <- function(object, se.type="Default", ...){
   # convert to HC/HAC standard errors and t-stats if specified
   # extract coefficients separately for "lars" variable.selection method
   for (i in object$asset.names) {
-    if (se.type == "HC") {
+    if (se.type=="HC") {
       sum[[i]]$coefficients <- coeftest(object$asset.fit[[i]], vcovHC)[,1:4]
-    } else if (se.type == "HAC") {
+    } else if (se.type=="HAC") {
       sum[[i]]$coefficients <- coeftest(object$asset.fit[[i]], vcovHAC)[,1:4]
     }
   }
@@ -92,7 +92,7 @@ summary.tsfm <- function(object, se.type="Default", ...){
   }
   
   # include the call and se.type to fitTsfm
-  sum <- c(list(call=object$call, Type=se.type), sum)
+  sum <- c(list(call=object$call, se.type=se.type), sum)
   class(sum) <- "summary.tsfm"
   return(sum)
 }
@@ -112,7 +112,7 @@ print.summary.tsfm <- function(x, digits=3, ...) {
   n <- length(x)
   for (i in 3:n) {
     options(digits = digits)  
-    cat("\nAsset", i-2, ": ", names(x[i]), "\n(",x$Type,
+    cat("\nAsset", i-2, ": ", names(x[i]), "\n(",x$se.type,
         " Standard Errors & T-stats)\n\n", sep = "")  
     table.coef <- x[[i]]$coefficients
     print(table.coef, digits = digits, ...)

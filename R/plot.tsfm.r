@@ -68,9 +68,6 @@
 #' to suppress the legend.
 #' @param las one of {0, 1, 2, 3} to set the direction of axis labels, same as 
 #' in \code{plot}. Default here is 1.
-#' @param horiz a logical value. If \code{FALSE}, the bars are drawn vertically 
-#' with the first bar to the left. If \code{TRUE}, the bars are drawn 
-#' horizontally with the first at the bottom. Default here is \code{TRUE}.
 #' @param VaR.method a method for computing VaR; one of "modified", "gaussian",
 #' "historical" or "kernel". VaR is computed using 
 #' \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".
@@ -91,7 +88,7 @@
 #' \code{\link[PerformanceAnalytics]{chart.ACFplus}}, 
 #' \code{\link[PerformanceAnalytics]{chart.Histogram}},
 #' \code{\link[PerformanceAnalytics]{chart.QQPlot}}, 
-#' \code{\link[graphics]{barplot}} and 
+#' \code{\link[graphics]{barplot}}, \code{\link[lattice]{barchart}} and 
 #' \code{\link[corrplot]{corrplot}} for plotting methods used.
 #' 
 #' \code{\link{fmSdDecomp}}, \code{\link{fmEsDecomp}}, 
@@ -123,8 +120,8 @@
 
 plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE, 
                       asset.name, which.plot.single=NULL, colorset=(1:12), 
-                      legend.loc="topleft", las=1, horiz=TRUE,
-                      VaR.method="historical", loop=TRUE, ...) {
+                      legend.loc="topleft", las=1, VaR.method="historical", 
+                      loop=TRUE, ...) {
   
   if (plot.single==TRUE) {
     
@@ -249,7 +246,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                  }
                  reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
                  rollReg.z <- rollapply(reg.z, FUN=rollReg, formula(fit), 
-                                       width=24, by.column=FALSE, align="right")
+                                        width=24, by.column=FALSE, align="right")
                } else if (x$fit.method=="DLS") {
                  # get decay factor
                  if (as.character(x$call["decay"])=="NULL") {
@@ -264,17 +261,17 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                    coef(lm(formula, weights=w, data=as.data.frame(data.z)))  
                  }
                  reg.z <- zoo(fit$model[-length(fit$model)], 
-                             as.Date(rownames(fit$model)))
+                              as.Date(rownames(fit$model)))
                  rollReg.z <- rollapply(reg.z, FUN=rollReg.w, formula(fit), w, 
-                                       width=24, by.column=FALSE, align="right")
+                                        width=24, by.column=FALSE, align="right")
                } else if (x$fit.method=="Robust") {
                  rollReg.Rob <- function(data.z, formula) {
                    coef(lmRob(formula=formula, data=as.data.frame(data.z)))  
                  }
                  reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
                  rollReg.z <- rollapply(reg.z, width=24, FUN=rollReg.Rob, 
-                                       formula(fit), by.column=FALSE, 
-                                       align="right")
+                                        formula(fit), by.column=FALSE, 
+                                        align="right")
                } else if (is.null(x$fit.method)) {
                  stop("Rolling estimates is not available for 'lars' fits.")
                }
@@ -313,9 +310,9 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
       switch(which.plot.group,
              "1L" = { 
                ## Factor model coefficients: Alpha
-               #  xlab="Intercept estimate", ylab="Assets"
                barplot(coef(x)[,1], main="Factor model Alpha (Intercept)", 
-                       col="darkblue", las=las, horiz=horiz, ...)
+                       names.arg=rownames(coef(x)), col="darkblue", las=las, 
+                       horiz=TRUE, ...)
                abline(v=0, lwd=1, lty=1, col=1)
              }, 
              "2L" = {
@@ -329,9 +326,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                par(mfrow=c(ceiling(k/2),2))
                for (i in 2:(k+1)) {
                  main=paste(colnames(coef(x))[i], "factor Betas")
-                 # xlab="Beta estimate", ylab="Assets"
-                 barplot(coef(x)[,i], main=main, col="darkblue", las=las, 
-                         horiz=horiz, ...)
+                 barplot(coef(x)[,i], main=main, names.arg=rownames(coef(x)), 
+                         col="darkblue", las=las, horiz=TRUE, ...)
                  abline(v=0, lwd=1, lty=1, col=1)
                }
                par(mfrow=c(1,1))
@@ -357,51 +353,65 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
              }, 
              "4L" ={
                ## R-squared
-               # ylab="Assets", xlab="R-squared"
-               barplot(x$r2, main="R-squared values for factor model fits", 
-                       col="darkblue", las=las, horiz=horiz, ...)
-               abline(v=0, lwd=1, lty=1, col=1)
+               plot(
+                 barchart(x$r2, main="R-squared values", xlab="", 
+                          col="darkblue", ...)
+               )
              }, 
              "5L" = {
                ## Residual Volatility
-               # ylab="Assets", xlab="Residual volatility"
-               barplot(x$resid.sd, col="darkblue", las=las, horiz=horiz,
-                       main="Residual volatility for factor model fits", ...) 
-               abline(v=0, lwd=1, lty=1, col=1)
+               plot(
+                 barchart(x$resid.sd, main="Residual volatility", xlab="", 
+                          col="darkblue", ...)
+               )
              }, 
              "6L" = {
                ## Factor Model Residual Correlation
                cor.resid <- cor(residuals(x), use="pairwise.complete.obs")
                corrplot::corrplot(cor.resid, ...)
+               # mtext("pairwise complete obs", line=0.5)
              }, 
              "7L" = {
                ## Factor Model Return Correlation
                cor.fm <- cov2cor(fmCov(x)) 
                corrplot::corrplot(cor.fm, ...)
+               # mtext("pairwise complete obs", line=0.5)
              },
              "8L" = {
-               ## Factor Contribution to SD
-               cSd.fm <- fmSdDecomp(x)$cSd
-               barplot(t(cSd.fm), main="Factor Contributions to SD", 
-                       legend.text=T, args.legend=legend.loc, col=colorset, 
-                       horiz=horiz, ...)
-               mtext("(pairwise complete obs)", line=0.5)
+               ## Factor Percentage Contribution to SD
+               pcSd.fm <- fmSdDecomp(x)$pcSd
+               plot(
+                 barchart(pcSd.fm, main="Factor % Contribution to SD", xlab="",
+                          auto.key=list(space="bottom",columns=3, 
+                                        points=FALSE,rectangles=TRUE), 
+                          par.settings=list(superpose.polygon=list(col=colorset)),
+                          panel=function(...){panel.grid(h=0, v=-1); 
+                                              panel.barchart(...)}, ...)
+               )
              },
              "9L"={
-               ## Factor Contribution to ES
-               cES.fm <- fmEsDecomp(x)$cES
-               barplot(t(cES.fm), main="Factor Contributions to ES", 
-                       legend.text=T, args.legend=legend.loc, col=colorset, 
-                       horiz=horiz, ...)
-               mtext("(pairwise complete obs)", line=0.5)
+               ## Factor Percentage Contribution to ES
+               pcES.fm <- fmEsDecomp(x, method=VaR.method)$pcES
+               plot(
+                 barchart(pcES.fm, main="Factor % Contribution to ES", xlab="",
+                          auto.key=list(space="bottom",columns=3, 
+                                        points=FALSE,rectangles=TRUE), 
+                          par.settings=list(superpose.polygon=list(col=colorset)),
+                          panel=function(...){panel.grid(h=0, v=-1); 
+                                              panel.barchart(...)}, ...)
+               )
              },
              "10L" ={
-               ## Factor Contribution to VaR
-               cVaR.fm <- fmVaRDecomp(x)$cVaR
-               barplot(t(cVaR.fm), main="Factor Contributions to VaR", 
-                       legend.text=T, args.legend=legend.loc, col=colorset, 
-                       horiz=horiz, ...)
-               mtext("(pairwise complete obs)", line=0.5)
+               ## Factor Percentage Contribution to VaR
+               pcVaR.fm <- fmVaRDecomp(x, method=VaR.method)$pcVaR
+               plot(
+                 barchart(pcVaR.fm, main="Factor % Contribution to VaR", 
+                          xlab="", auto.key=list(space="bottom",columns=3, 
+                                        points=FALSE,rectangles=TRUE), 
+                          par.settings=list(superpose.polygon=list(col=colorset)),
+                          panel=function(...){panel.grid(h=0, v=-1); 
+                                              panel.barchart(...)}, ...)
+               )
              },
              invisible()       
       )         

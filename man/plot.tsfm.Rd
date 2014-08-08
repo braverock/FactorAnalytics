@@ -5,7 +5,7 @@
 \usage{
 \method{plot}{tsfm}(x, which.plot.group = NULL, max.show = 6,
   plot.single = FALSE, asset.name, which.plot.single = NULL,
-  colorset = (1:12), legend.loc = "topleft", las = 1, horiz = TRUE,
+  colorset = (1:12), legend.loc = "topleft", las = 1,
   VaR.method = "historical", loop = TRUE, ...)
 }
 \arguments{
@@ -62,10 +62,6 @@ to suppress the legend.}
 
 \item{las}{one of {0, 1, 2, 3} to set the direction of axis labels, same as
 in \code{plot}. Default here is 1.}
-
-\item{horiz}{a logical value. If \code{FALSE}, the bars are drawn vertically
-with the first bar to the left. If \code{TRUE}, the bars are drawn
-horizontally with the first at the bottom. Default here is \code{TRUE}.}
 
 \item{VaR.method}{a method for computing VaR; one of "modified", "gaussian",
 "historical" or "kernel". VaR is computed using
@@ -135,7 +131,7 @@ statistics.
 \code{\link[PerformanceAnalytics]{chart.ACFplus}},
 \code{\link[PerformanceAnalytics]{chart.Histogram}},
 \code{\link[PerformanceAnalytics]{chart.QQPlot}},
-\code{\link[graphics]{barplot}} and
+\code{\link[graphics]{barplot}}, \code{\link[lattice]{barchart}} and
 \code{\link[corrplot]{corrplot}} for plotting methods used.
 
 \code{\link{fmSdDecomp}}, \code{\link{fmEsDecomp}},

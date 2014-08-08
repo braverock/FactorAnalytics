@@ -23,9 +23,8 @@ excess returns are the dependent variable.}
 
 \item{factor.names}{vector containing names of the macroeconomic factors.}
 
-\item{mkt.name}{name of the column for market excess returns (Rm-Rf).
-Is required if \code{mkt.timing} or \code{add.market.sqd}
-are \code{TRUE}. Default is NULL.}
+\item{mkt.name}{name of the column for market excess returns (Rm-Rf); this
+is necessary to add market timing factors. Default is NULL.}
 
 \item{rf.name}{name of the column of risk free rate variable to calculate
 excess returns for all assets (in \code{asset.names}) and factors (in
@@ -42,7 +41,7 @@ See details. Default is "OLS".}
 "stepwise","subsets","lars". See details. Default is "none".}
 
 \item{mkt.timing}{one of "HM", "TM" or "both". Default is NULL. See Details.
-\code{mkt.name} is required if any of these options are specified.}
+\code{mkt.name} is required if any of these options are to be implemented.}
 
 \item{control}{list of control parameters. The default is constructed by
 the function \code{\link{fitTsfm.control}}. See the documentation for
@@ -110,20 +109,20 @@ Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC),
 improves. And, "subsets" enables subsets selection using
 \code{\link[leaps]{regsubsets}}; chooses the best performing subset of any
 given size. See \code{\link{fitTsfm.control}} for more details on the
-control arguments. \code{varaible.selection="lars"} corresponds to least
+control arguments. \code{variable.selection="lars"} corresponds to least
 angle regression using \code{\link[lars]{lars}} with variants "lasso",
 "lar", "forward.stagewise" or "stepwise". Note: If
 \code{variable.selection="lars"}, \code{fit.method} will be ignored.
 
-\code{mkt.timing} allows for market-timing factors to be added to any of the
-above methods. Market timing accounts for the price movement of the general
-stock market relative to fixed income securities. "HM" follows
-Henriksson & Merton (1981) and \code{up-market=max(0,Rm-Rf)}, is added to
-the regression. The coefficient of this up-market factor can be
-interpreted as the number of free put options. Similarly, "TM" follows
-Treynor-Mazuy (1966), to account for market timing with respect to
-volatility, and \code{market.sqd=(Rm-Rf)^2} is added as a factor in the
-regression. Option "both" adds both of these factors.
+Arguments \code{mkt.name} and \code{mkt.timing} allow for market-timing
+factors to be added to any of the above methods. Market timing accounts for
+the price movement of the general stock market relative to fixed income
+securities. "HM" follows Henriksson & Merton (1981) and
+\code{up.market=max(0,Rm-Rf)}, is added to the regression. The coefficient
+of this up-market factor can be interpreted as the number of free put
+options. Similarly, "TM" follows Treynor-Mazuy (1966), to account for market
+timing with respect to volatility, and \code{market.sqd=(Rm-Rf)^2} is added
+as a factor in the regression. Option "both" adds both of these factors.
 
 \subsection{Data Processing}{
 

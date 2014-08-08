@@ -8,8 +8,8 @@
 #' simulated data.
 #' 
 #' @details The factor model for an asset's return at time \code{t} has the 
-#' form \cr \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)} \cr \cr 
-#' where, \code{beta.star=(beta,sig.e)} and \code{F.star(t)=[F(t)',z(t)]'}. By 
+#' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
+#' where, \code{beta.star=(beta,sig.e)} and \code{f.star(t)=[f(t)',z(t)]'}. By 
 #' Euler's theorem, the ES of the asset's return is given by:
 #' \cr \cr \code{ES.fm = sum(cES_k) = sum(beta.star_k*mES_k)} \cr \cr
 #' where, summation is across the \code{K} factors and the residual, 
@@ -105,7 +105,9 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
   }
   
   # get beta.star
-  beta.star <- as.matrix(cbind(object$beta, object$resid.sd))
+  beta <- object$beta
+  beta[is.na(beta)] <- 0
+  beta.star <- as.matrix(cbind(beta, object$resid.sd))
   colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
   # factor returns and residuals data
@@ -155,13 +157,13 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
     mES[i,] <- inv * colMeans(factor.star[idx,], na.rm =TRUE)
     
     # correction factor to ensure that sum(cES) = portfolio ES
-    cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,]) )
+    cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
     
     # compute marginal, component and percentage contributions to ES
     # each of these have dimensions: N x (K+1)
     mES[i,] <- cf * mES[i,]
     cES[i,] <- mES[i,] * beta.star[i,]
-    pcES[i,] <- cES[i,] / ES.fm[i]
+    pcES[i,] <- 100* cES[i,] / ES.fm[i]
   }
   
   fm.ES.decomp <- list(VaR.fm=VaR.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 

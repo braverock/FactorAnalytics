@@ -44,8 +44,8 @@ estimated quantile using the Cornish-Fisher expansion.
 }
 \details{
 The factor model for an asset's return at time \code{t} has the
-form \cr \cr \code{R(t) = beta'F(t) + e(t) = beta.star'F.star(t)} \cr \cr
-where, \code{beta.star=(beta,sig.e)} and \code{F.star(t)=[F(t)',z(t)]'}. By
+form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr
+where, \code{beta.star=(beta,sig.e)} and \code{f.star(t)=[f(t)',z(t)]'}. By
 Euler's theorem, the VaR of the asset's return is given by:
 \cr \cr \code{VaR.fm = sum(cVaR_k) = sum(beta.star_k*mVaR_k)} \cr \cr
 where, summation is across the \code{K} factors and the residual,

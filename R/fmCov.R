@@ -6,16 +6,16 @@
 #' 
 #' @details \code{R(i, t)}, the return on asset \code{i} at time \code{t}, 
 #' is assumed to follow a factor model of the form, \cr \cr 
-#' \code{R(i,t) = alpha(i) + beta*F(t) + e(i,t)}, \cr \cr  
-#' where, \code{alpha(i)} is the intercept, \code{F(t)} is a {K x 1} vector of 
-#' the \code{K} factor values at time \code{t}, \code{beta} is a \code{1 x K} 
-#' vector of factor exposures and the error terms \code{e(i,t)} are serially 
+#' \code{R(i,t) = alpha(i) + beta(i)*f(t) + e(i,t)}, \cr \cr  
+#' where, \code{alpha(i)} is the intercept, \code{f(t)} is a {K x 1} vector of 
+#' factor returns at time \code{t}, \code{beta(i)} is a \code{1 x K} vector of 
+#' factor exposures and the error terms \code{e(i,t)} are serially 
 #' uncorrelated across time and contemporaneously uncorrelated across assets 
 #' so that \code{e(i,t) ~ iid(0,sig(i)^2)}. Thus, the variance of asset 
 #' \code{i}'s return is given by \cr \cr
-#' \code{var(R(i,t)) = beta*var(F(t))*tr(beta) + sig(i)^2}. \cr \cr
-#' And, the \code{N x N} covariance matrix of N asset returns is \cr \cr
-#' \code{var(R) = B*var(F(t))*tr(B) + D}, \cr \cr 
+#' \code{var(R(i)) = beta(i)*cov(F)*tr(beta(i)) + sig(i)^2}. \cr \cr
+#' And, the \code{N x N} covariance matrix of asset returns is \cr \cr
+#' \code{var(R) = B*cov(F)*tr(B) + D}, \cr \cr 
 #' where, B is the \code{N x K} matrix of factor betas and \code{D} is a 
 #' diagonal matrix with \code{sig(i)^2} along the diagonal.
 #' 
@@ -98,6 +98,7 @@ fmCov.tsfm <- function(object, use="pairwise.complete.obs", ...) {
   
   # get parameters and factors from factor model
   beta <- as.matrix(object$beta)
+  # convert NAs to 0 to enable matrix multiplication
   beta[is.na(beta)] <- 0
   sig2.e = object$resid.sd^2
   factor <- as.matrix(object$data[, object$factor.names])
