@@ -75,7 +75,7 @@
 #' is \code{TRUE}.
 #' @param ... further arguments to be passed to other plotting functions.
 #' 
-#' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+#' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 #' 
 #' @seealso \code{\link{fitTsfm}} and \code{\link{summary.tsfm}} for details
 #' about the time series factor model fit, extractor functions and summary 

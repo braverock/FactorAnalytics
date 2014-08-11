@@ -45,7 +45,7 @@
 #' \item{pcES}{N x (K+1) matrix of percentage component contributions to VaR.}
 #' Where, \code{K} is the number of factors and N is the number of assets. 
 #' 
-#' @author Eric Zviot, Yi-An Chen and Sangeetha Srinivasan
+#' @author Eric Zviot, Sangeetha Srinivasan and Yi-An Chen
 #' 
 #' @references 
 #' Epperlein, E., & Smillie, A. (2006). Portfolio risk analysis Cracking VAR 

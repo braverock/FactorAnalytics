@@ -59,7 +59,7 @@ decomp <- fmSdDecomp(fit.macro)
 decomp$pcSd
 }
 \author{
-Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 }
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis.

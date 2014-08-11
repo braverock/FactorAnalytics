@@ -73,7 +73,7 @@ ES.decomp <- fmEsDecomp(fit.macro)
 ES.decomp$cES
 }
 \author{
-Eric Zviot, Yi-An Chen and Sangeetha Srinivasan
+Eric Zviot, Sangeetha Srinivasan and Yi-An Chen
 }
 \references{
 Epperlein, E., & Smillie, A. (2006). Portfolio risk analysis Cracking VAR

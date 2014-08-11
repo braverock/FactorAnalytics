@@ -43,7 +43,7 @@
 #' \item{pcVaR}{N x (K+1) matrix of percentage component contributions to VaR.}
 #' Where, \code{K} is the number of factors and N is the number of assets.
 #' 
-#' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+#' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 #' 
 #' @references 
 #' Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 

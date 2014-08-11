@@ -39,7 +39,8 @@
 #' of this up-market factor can be interpreted as the number of free put 
 #' options. Similarly, "TM" follows Treynor-Mazuy (1966), to account for market
 #' timing with respect to volatility, and \code{market.sqd=(Rm-Rf)^2} is added
-#' as a factor in the regression. Option "both" adds both of these factors.
+#' as a factor in the regression. Option "both" (default) adds both of these 
+#' factors.
 #' 
 #' \subsection{Data Processing}{
 #' 
@@ -68,7 +69,7 @@
 #' See details. Default is "OLS". 
 #' @param variable.selection the variable selection method, one of "none", 
 #' "stepwise","subsets","lars". See details. Default is "none".
-#' @param mkt.timing one of "HM", "TM" or "both". Default is NULL. See Details.
+#' @param mkt.timing one of "HM", "TM" or "both" (default). See Details.
 #' \code{mkt.name} is required if any of these options are to be implemented.
 #' @param control list of control parameters. The default is constructed by 
 #' the function \code{\link{fitTsfm.control}}. See the documentation for 
@@ -104,7 +105,7 @@
 #' Where N is the number of assets, K is the number of factors and T is the 
 #' number of time periods.
 #' 
-#' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.
+#' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen.
 #' 
 #' @references 
 #' Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 
@@ -140,7 +141,7 @@
 #' data(managers)
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
-#'                mkt.name="SP500 TR", mkt.timing="both", data=managers)
+#'                mkt.name="SP500 TR", mkt.timing="HM", data=managers)
 #' summary(fit)
 #' fitted(fit)
 #' # plot actual returns vs. fitted factor model returns for HAM1
@@ -148,6 +149,10 @@
 #'      loop=FALSE)
 #' # group plot; type selected from menu prompt; auto-looped for multiple plots
 #' # plot(fit)
+#' 
+#' # example: Market-timing factors with robust fit
+#' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]), factor.names=NULL, 
+#'                mkt.name="SP500 TR", data=managers, fit.method="Robust")
 #' 
 #' # example using "subsets" variable selection
 #' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
@@ -166,7 +171,7 @@
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"), 
                     variable.selection=c("none","stepwise","subsets","lars"), 
-                    mkt.timing=NULL, control=fitTsfm.control(...), ...) {
+                    mkt.timing="both", control=fitTsfm.control(...), ...) {
   
   # record the call as an element to be returned
   call <- match.call()
@@ -180,10 +185,6 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   if (!(variable.selection %in% c("none","stepwise","subsets","lars"))) {
     stop("Invalid argument: variable.selection must be either 'none',
          'stepwise','subsets' or 'lars'")
-  }
-  if (xor(is.null(mkt.name), is.null(mkt.timing))) {
-    stop("Missing argument: 'mkt.name' and 'mkt.timing' are both required to 
-         include market-timing factors.")
   }
   
   # extract arguments to pass to different fit and variable selection functions
@@ -220,12 +221,11 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   # convert all asset and factor returns to excess return form if specified
   if (!is.null(rf.name)) {
-    cat("Excess returns were computed and used for all assets and factors.")
     dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
                                      FUN.VALUE = numeric(nrow(dat.xts))))
   } else {
-    cat("Note: fitTsfm was NOT asked to compute EXCESS returns. Input returns 
-        data was used as it is for all factors and assets.")
+    warning("Excess returns were not computed. Returns data were used as input 
+            for all factors and assets.")
   }
   
   # opt add mkt-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2

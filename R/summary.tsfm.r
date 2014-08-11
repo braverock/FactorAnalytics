@@ -37,7 +37,7 @@
 #' format the coefficients, standard errors, etc. and additionally give 
 #' significance stars if \code{signif.stars} is TRUE. 
 #' 
-#' @author Yi-An Chen & Sangeetha Srinivasan.
+#' @author Sangeetha Srinivasan & Yi-An Chen.
 #' 
 #' @seealso \code{\link{fitTsfm}}, \code{\link[stats]{summary.lm}}
 #' 

@@ -117,7 +117,7 @@ plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which.plot.single=8,
 # plot(fit.macro)
 }
 \author{
-Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 }
 \seealso{
 \code{\link{fitTsfm}} and \code{\link{summary.tsfm}} for details

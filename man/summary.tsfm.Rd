@@ -67,7 +67,7 @@ summary(fit, "HAC")
 summary(fit$asset.fit[[1]])
 }
 \author{
-Yi-An Chen & Sangeetha Srinivasan.
+Sangeetha Srinivasan & Yi-An Chen.
 }
 \seealso{
 \code{\link{fitTsfm}}, \code{\link[stats]{summary.lm}}
