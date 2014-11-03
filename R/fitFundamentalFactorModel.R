@@ -1,27 +1,32 @@
-#' fit fundamental factor model by classic OLS or Robust regression technique
+#' @title Fit a fundamental factor model using classic OLS or Robust regression
 #' 
-#' fit fundamental factor model or cross-sectional factor model by
-#' classic OLS or Robust regression.  Fundamental factor models use
+#' @description Fit a fundamental (cross-sectional) factor model using Ordinary 
+#' Least Squares (OLS) or Robust regression.  Fundamental factor models use
 #' observable asset specific characteristics (fundamentals) like industry
 #' classification, market capitalization, style classification (value, growth)
-#' etc. to calculate the common risk factors. The function creates the class
-#' "FundamentalFactorModel".
+#' etc. to calculate the common risk factors. An object of class \code{"ffm"} 
+#' is returned.
 #' 
 #' @details
-#' If style factor exposure is standardized to regression-weighted mean zero, this makes
-#' style factors orthogonal to the world factor (intercept term), which in turn facilitted 
-#' interpretation of the style factor returns. See Menchero 2010.    
+#' If style factor exposure is standardized to have a regression-weighted mean 
+#' of zero, style factors become orthogonal to the world factor (intercept 
+#' term), which in turn facilitates the interpretation of the style factor 
+#' returns. See Menchero (2010).    
 #' 
-#' The original function was designed by Doug Martin and originally implemented
-#' in S-PLUS by a number of UW Ph.D. students: Christopher Green, Eric Aldrich,
-#' and Yindeng Jiang. Guy Yullen re-implemented the function in R. Yi-An Chen from 
-#' University of Washington re-writes the codes and finalizes the function.  
+#' The original function was designed by Doug Martin and initially implemented
+#' in S-PLUS by a number of University of Washington Ph.D. students: 
+#' Christopher Green, Eric Aldrich, and Yindeng Jiang. Guy Yollin 
+#' re-implemented the function in R. Yi-An Chen and Sangeetha Srinivasan 
+#' (UW PhD students; as part of Google Summer of Code 2013 & 2014 respectively) 
+#' further updated the code.
 #'  
 #'
-#' @param data data.frame, data must have \emph{assetvar}, \emph{returnvar}, \emph{datevar}
-#' , and exposure.names. Generally, data has to look like panel data. It needs firm variabales 
-#' and time variables. Data has to be a balanced panel. 
-#' @param exposure.names a character vector of exposure names for the factor model
+#' @param data data.frame, data must have \emph{assetvar}, \emph{returnvar}, 
+#' \emph{datevar}, and exposure.names. Generally, data has to look like panel 
+#' data. It needs firm variabales and time variables. Data has to be a balanced 
+#' panel. 
+#' @param exposure.names a character vector of exposure names for the factor 
+#' model
 #' @param wls logical flag, TRUE for weighted least squares, FALSE for ordinary
 #' least squares
 #' @param regression A character string, "robust" for regression via lmRob,
@@ -39,47 +44,49 @@
 #' the data.
 #' @param assetvar A character string gives the name of the asset variable in
 #' the data.
-#' @param standardized.factor.exposure logical flag. Factor exposure will be standardized 
-#' to regression weighted mean 0 and standardized deviation to 1 if \code{TRUE}. 
-#' Default is \code{FALSE}. See Detail. 
-#' @param weight.var A character strping gives the name of the weight used for standarizing factor exposures. 
-#' @return an S3 object containing
-#' \itemize{
-#' \item returns.cov A "list" object contains covariance information for
-#' asset returns, includes covariance, mean and eigenvalus. Beta of taken as latest
-#' date input. 
-#' \item factor.cov An object of class "cov" or "covRob" which
-#' contains the covariance matrix of the factor returns (including intercept).
-#' \item resids.cov An object of class "cov" or "covRob" which contains
+#' @param standardized.factor.exposure logical flag. Factor exposure will be 
+#' standardized to regression weighted mean 0 and standardized deviation to 1 
+#' if \code{TRUE}. Default is \code{FALSE}. See Details. 
+#' @param weight.var A character strping gives the name of the weight used for 
+#' standarizing factor exposures. 
+#' 
+#' @return An object of class \code{"ffm"} is a list containing the following 
+#' components:
+#' \item{returns.cov}{A "list" object contains covariance information for
+#' asset returns, includes covariance, mean and eigenvalus. Beta of taken as 
+#' latest date input.} 
+#' \item{factor.cov}{An object of class "cov" or "covRob" which contains the 
+#' covariance matrix of the factor returns (including intercept).}
+#' \item{resids.cov}{An object of class "cov" or "covRob" which contains
 #' the covariance matrix of the residuals, if "full.resid.cov" is TRUE.  NULL
-#' if "full.resid.cov" is FALSE.
-#' \item returns.corr Correlation matrix of assets returns. 
-#' \item factor.corr  An object of class "cov" or "covRob" which
-#' contains the correlation matrix of the factor returns (including intercept). 
-#' \item resids.corr Correlation matrix of returns returns.
-#' \item resid.variance A vector of variances estimated from the OLS
+#' if "full.resid.cov" is FALSE.} 
+#' \item{returns.corr}{Correlation matrix of assets returns.}
+#' \item{factor.corr}{An object of class "cov" or "covRob" which contains the 
+#' correlation matrix of the factor returns (including intercept).}
+#' \item{resids.corr}{Correlation matrix of returns returns.}
+#' \item{resid.variance}{A vector of variances estimated from the OLS
 #' residuals for each asset. If "wls" is TRUE, these are the weights used in
 #' the weighted least squares regressions.  If "cov = robust" these values are
-#' computed with "scale.tau".  Otherwise they are computed with "var".
-#' \item factor.returns A "xts" object containing the times series of
-#' estimated factor returns and intercepts.
-#' \item residuals A "xts" object containing the time series of residuals
-#' for each asset.
-#' \item tstats A "xts" object containing the time series of t-statistics
-#' for each exposure.
-#' \item call function call
-#' \item exposure.names A character string giving the name of the exposure variable in
-#' the data.
-#' }
-#' @author Guy Yullen and Yi-An Chen
-#' @references
-#' \itemize{
-#' \item "The Characteristics of Factor Portfolios", Fall 2010, MENCHERO Jose, 
-#' Journal of Performance Measurement. 
-#' \item Grinold,R and Kahn R, \emph{Active Portfolio Management}.
-#' }
+#' computed with "scale.tau".  Otherwise they are computed with "var".}
+#' \item{factor.returns}{A "xts" object containing the times series of
+#' estimated factor returns and intercepts.}
+#' \item{residuals}{A "xts" object containing the time series of residuals for 
+#' each asset.}
+#' \item{tstats}{A "xts" object containing the time series of t-statistics
+#' for each exposure.}
+#' \item{call}{function call}
+#' \item{exposure.names}{A character string giving the name of the exposure 
+#' variable in the data.}
 #' 
-#' @export
+#' @author Guy Yollin, Yi-An Chen and Sangeetha Srinivasan
+#' 
+#' @references
+#' Menchero, J. (2010). The Characteristics of Factor Portfolios. Journal of 
+#' Performance Measurement, 15(1), 52-62. 
+#' 
+#' Grinold, R. C., & Kahn, R. N. (2000). Active portfolio management (Second 
+#' Ed.). New York: McGraw-Hill.
+#' 
 #' @examples
 #' 
 #' # BARRA type factor model
@@ -125,19 +132,15 @@
 #' test.fit2$tstats 
 #' test.fit2$call
 #' 
-#' 
-#' 
-#' 
+#' @export
 
-
-
-fitFundamentalFactorModel <-
-  function(data,exposure.names, datevar, returnsvar, assetvar,
-           wls = TRUE, regression = "classic", 
-           covariance = "classic", full.resid.cov = FALSE, robust.scale = FALSE,
-           standardized.factor.exposure = FALSE, weight.var) {
-    
-    
+fitFundamentalFactorModel <- function(data, exposure.names, datevar, 
+                                      returnsvar, assetvar, wls=TRUE, 
+                                      regression="classic", 
+                                      covariance="classic", 
+                                      full.resid.cov=FALSE, robust.scale=FALSE,
+                                      standardized.factor.exposure=FALSE, 
+                                      weight.var) {
     
     assets = unique(data[[assetvar]])
     timedates = as.Date(unique(data[[datevar]]))    

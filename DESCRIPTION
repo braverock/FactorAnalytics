@@ -1,8 +1,8 @@
 Package: factorAnalytics
 Type: Package
 Title: Factor Analytics
-Version: 2.0.0.99
-Date: 2014-07-30
+Version: 2.0.1
+Date: 2014-11-03
 Author: Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
 Description: An R package for the estimation and risk analysis of linear factor

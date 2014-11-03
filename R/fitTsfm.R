@@ -5,7 +5,7 @@
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
 #' including Stepwise, Subsets, Lars are available as well. An object of class 
-#' \code{tsfm} is returned.
+#' \code{"tsfm"} is returned.
 #' 
 #' @details 
 #' Typically, factor models are fit using excess returns. \code{rf.name} gives 
@@ -76,7 +76,7 @@
 #' \code{\link{fitTsfm.control}} for details.
 #' @param ... arguments passed to \code{\link{fitTsfm.control}}
 #' 
-#' @return fitTsfm returns an object of class \code{tsfm} for which 
+#' @return fitTsfm returns an object of class \code{"tsfm"} for which 
 #' \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist. 
 #' 
 #' The generic accessor functions \code{coef}, \code{fitted} and 
@@ -84,7 +84,7 @@
 #' Additionally, \code{fmCov} computes the covariance matrix for asset returns 
 #' based on the fitted factor model
 #' 
-#' An object of class \code{tsfm} is a list containing the following 
+#' An object of class \code{"tsfm"} is a list containing the following 
 #' components:
 #' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
 #' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
@@ -185,6 +185,9 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   if (!(variable.selection %in% c("none","stepwise","subsets","lars"))) {
     stop("Invalid argument: variable.selection must be either 'none',
          'stepwise','subsets' or 'lars'")
+  }
+  if (missing(factor.names) && !is.null(mkt.name)) {
+    factor.names <- NULL
   }
   
   # extract arguments to pass to different fit and variable selection functions
