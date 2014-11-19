@@ -20,8 +20,8 @@
 #' @method print pafm  
 #' @export   
 #' 
-print.pafm <- function(x,...) {
+print.pafm <- function(x, ...) {
   cat("\nMean of returns attributed to factors
       \n")
-  print(sapply(x[[3]],function(x) apply(x,2,mean)))
+  print(sapply(x[[3]], function(x) apply(x,2,mean)))
  }

@@ -15,7 +15,7 @@
 #' Estimation method "OLS" corresponds to ordinary least squares using 
 #' \code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least 
 #' squares with exponentially declining weights that sum to unity), and, 
-#' "Robust" is robust regression (useing \code{\link[robust]{lmRob}}). 
+#' "Robust" is robust regression (using \code{\link[robust]{lmRob}}). 
 #' 
 #' If \code{variable.selection="none"}, all chosen factors are used in the 
 #' factor model. Whereas, "stepwise" performs traditional forward/backward 
@@ -261,7 +261,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     reg.list <- SelectStepwise(dat.xts, asset.names, factor.names, fit.method, 
                                lm.args, lmRob.args, step.args, decay)
   } else if (variable.selection == "subsets") {
-    reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names,fit.method, 
+    reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names, fit.method, 
                                  lm.args, lmRob.args, regsubsets.args, 
                                  subset.size, decay)
   } else if (variable.selection == "lars") {
@@ -317,8 +317,8 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts),
-                                        lmRob.args))
+      reg.list[[i]] <- do.call(robust::lmRob, c(list(fm.formula,data=reg.xts),
+                                                lmRob.args))
     } 
   } 
   reg.list  
@@ -349,8 +349,10 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
       reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
     } else if (fit.method == "Robust") {
-      lmRob.fit <- do.call(lmRob, c(list(fm.formula,data=reg.xts),lmRob.args))
-      reg.list[[i]] <- do.call(step.lmRob, c(list(lmRob.fit),step.args))
+      lmRob.fit <- do.call(robust::lmRob, c(list(fm.formula,data=reg.xts), 
+                                            lmRob.args))
+      reg.list[[i]] <- do.call(robust::step.lmRob, c(list(lmRob.fit), 
+                                                     step.args))
     } 
   }
   reg.list
@@ -379,8 +381,8 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     }
     
     # choose best subset of factors depending on specified subset size
-    fm.subsets <- do.call(regsubsets, c(list(fm.formula,data=reg.xts),
-                                        regsubsets.args))
+    fm.subsets <- do.call(leaps::regsubsets, c(list(fm.formula,data=reg.xts),
+                                               regsubsets.args))
     sum.sub <- summary(fm.subsets)
     names.sub <- names(which(sum.sub$which[as.character(subset.size),-1]==TRUE))
     reg.xts <- na.omit(dat.xts[,c(i,names.sub)])
@@ -392,8 +394,8 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts),
-                                        lmRob.args))
+      reg.list[[i]] <- do.call(robust::lmRob, c(list(fm.formula,data=reg.xts), 
+                                                lmRob.args))
     } 
   }
   reg.list
@@ -422,11 +424,12 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     # convert to matrix
     reg.mat <- as.matrix(reg.xts)
     # fit lars regression model
-    lars.fit <- 
-      do.call(lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i]),lars.args))
+    lars.fit <- do.call(lars::lars, c(list(x=reg.mat[,factor.names],
+                                           y=reg.mat[,i]),lars.args))
     lars.sum <- summary(lars.fit)
-    lars.cv <- do.call(cv.lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i], 
-                                       mode="step"),cv.lars.args))
+    lars.cv <- 
+      do.call(lars::cv.lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i],
+                                    mode="step"),cv.lars.args))
     # including plot.it=FALSE to cv.lars strangely gives an error: "Argument s 
     # out of range". And, specifying index=seq(nrow(lars.fit$beta)-1) resolves 
     # the issue, but care needs to be taken for small N

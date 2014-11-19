@@ -22,15 +22,15 @@
 #' 
 #' @method summary pafm  
 #' @export   
-#' 
-summary.pafm <- function(object ,digits = max(3, .Options$digits - 3),...) {
-#   n <- dim(fm.attr[[1]])[1]
-#   k <- dim(fm.attr[[1]])[2]+1 
-# table.mat <- matrix(rep(NA,n*k*2),ncol=n)
-  cat("\nMean of returns attributed to factors
-      \n")
-  print(sapply(object[[3]],function(x) apply(x,2,mean)),digits = digits,...)
-  cat("\nStandard Deviation of returns attributed to factors
-      \n")
-  print(sapply(object[[3]],function(x) apply(x,2,sd)),digits = digits,...)  
+
+summary.pafm <- function(object, digits=max(3, .Options$digits - 3), ...) {
+  
+  #   n <- dim(fm.attr[[1]])[1]
+  #   k <- dim(fm.attr[[1]])[2]+1 
+  # table.mat <- matrix(rep(NA,n*k*2),ncol=n)
+  
+  cat("\nMean of returns attributed to factors \n")
+  print(sapply(object[[3]], function(x) apply(x,2,mean)), digits=digits, ...)
+  cat("\nStandard Deviation of returns attributed to factors \n")
+  print(sapply(object[[3]], function(x) apply(x,2,sd)), digits=digits, ...)  
 }

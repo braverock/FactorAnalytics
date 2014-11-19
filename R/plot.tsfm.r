@@ -219,7 +219,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }
-               cusum.rec <- efp(formula(fit), type="Rec-CUSUM", data=fit$model)
+               cusum.rec <- strucchange::efp(formula(fit), type="Rec-CUSUM", 
+                                             data=fit$model)
                plot(cusum.rec, main=paste("Recursive CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "11L" = {
@@ -227,7 +228,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }
-               cusum.ols <- efp(formula(fit), type="OLS-CUSUM", data=fit$model)
+               cusum.ols <- strucchange::efp(formula(fit), type="OLS-CUSUM", 
+                                             data=fit$model)
                plot(cusum.ols, main=paste("OLS-based CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "12L" = {
@@ -235,7 +237,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }        
-               cusum.est <- efp(formula(fit), type="RE", data=fit$model)
+               cusum.est <- strucchange::efp(formula(fit), type="RE", 
+                                             data=fit$model)
                plot(cusum.est, functional=NULL, col=colorset, las=0,
                     main=paste("RE test (Recursive estimates test):",i), ...)
              }, "13L" = {
@@ -266,7 +269,8 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                                         width=24, by.column=FALSE, align="right")
                } else if (x$fit.method=="Robust") {
                  rollReg.Rob <- function(data.z, formula) {
-                   coef(lmRob(formula=formula, data=as.data.frame(data.z)))  
+                   coef(robust::lmRob(formula=formula, 
+                                      data=as.data.frame(data.z)))  
                  }
                  reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
                  rollReg.z <- rollapply(reg.z, width=24, FUN=rollReg.Rob, 

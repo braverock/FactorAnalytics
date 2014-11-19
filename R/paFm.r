@@ -105,7 +105,6 @@ paFm <- function(fit, ...) {
   
   if (class(fit)=="ffm" ) {
     # if benchmark is provided
-    #       
     #       if (!is.null(benchmark)) {
     #         stop("use fitFundamentalFactorModel instead")
     #       }

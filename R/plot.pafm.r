@@ -41,8 +41,8 @@
 #' @export
 #' 
 plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
-                                date=NULL,plot.single=FALSE,fundName,
-                                which.plot.single=c("none","1L","2L","3L"),...) {
+                      date=NULL,plot.single=FALSE,fundName,
+                      which.plot.single=c("none","1L","2L","3L"),...) {
   # ... for  chart.TimeSeries
   if (is.null(date)){
     date = index(x[[3]][[1]])[1]
@@ -54,24 +54,26 @@ plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
     which.plot.single<-which.plot.single[1]
     
     if (which.plot.single=="none")
-      which.plot.single<-menu(c("attributed cumulative returns",
-                                paste("attributed returns","on",date,sep=" "),
-                                "Time series of attributed returns"),
-                              title="performance attribution plot \nMake a plot selection (or 0 to exit):\n")
+      which.plot.single <- menu(c("attributed cumulative returns",
+                                  paste("attributed returns","on",date,sep=" "),
+                                  "Time series of attributed returns"), 
+                                title="performance attribution plot 
+                                \nMake a plot selection (or 0 to exit):\n")
     switch(which.plot.single,
-           "1L" =  {  
+           "1L" = {  
              bar <- c(x$cum.spec.ret[fundName],x$cum.ret.attr.f[fundName,])
              names(bar)[1] <- "specific.returns"
-             barplot(bar,horiz=TRUE,main="cumulative attributed returns",las=1)
+             barplot(bar, horiz=TRUE, main="cumulative attributed returns", las=1)
            },
            "2L" ={
              bar <- coredata(x$attr.list[[fundName]][as.Date(date)])
-             tryCatch( {barplot(bar,horiz=TRUE,main=fundName,las=1)
-                        },error=function(e){cat("\nthis date is not available for this assets.\n")})
+             tryCatch({barplot(bar, horiz=TRUE, main=fundName, las=1)},
+                      error=function(e){cat("\this date is not available for this asset.\n")})
            },
            "3L" = {
              chart.TimeSeries(x$attr.list[[fundName]],
-                              main=paste("Time series of attributed returns of ",fundName,sep=""),... )
+                              main=paste("Time series of attributed returns of", 
+                                         fundName, sep=" "), ...)
            },
            invisible())
   }
@@ -82,13 +84,14 @@ plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
     n <- length(fundnames)
     
     if(which.plot=='none') 
-      which.plot<-menu(c("attributed cumulative returns",
-                         paste("attributed returns","on",date,sep=" "),
-                         "time series of attributed returns"),
-                       title="performance attribution plot \nMake a plot selection (or 0 to exit):\n") 
+      which.plot <- menu(c("attributed cumulative returns",
+                           paste("attributed returns","on",date,sep=" "),
+                           "time series of attributed returns"),
+                         title="performance attribution plot 
+                         \nMake a plot selection (or 0 to exit):\n") 
     if (n >= max.show) {
-      cat(paste("numbers of assets are greater than",max.show,", show only first",
-                max.show,"assets",sep=" "))
+      cat(paste("numbers of assets are greater than ", max.show, 
+                "; showing only first ", max.show, " assets.", sep=""))
       n <- max.show 
     }
     switch(which.plot,
@@ -96,9 +99,9 @@ plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
            "1L" = {
              par(mfrow=c(2,n/2))
              for (i in fundnames[1:n]) {
-               bar <- c(x$cum.spec.ret[i],x$cum.ret.attr.f[i,])
+               bar <- c(x$cum.spec.ret[i], x$cum.ret.attr.f[i,])
                names(bar)[1] <- "specific.returns"
-               barplot(bar,horiz=TRUE,main=i,las=1)  
+               barplot(bar, horiz=TRUE, main=i, las=1)  
              }
              par(mfrow=c(1,1))
            },
@@ -106,24 +109,23 @@ plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
              par(mfrow=c(2,n/2))
              for (i in fundnames[1:n]) {
                tryCatch({
-               bar <- coredata(x$attr.list[[i]][as.Date(date)])
-               barplot(bar,horiz=TRUE,main=i,las=1)
+                 bar <- coredata(x$attr.list[[i]][as.Date(date)])
+                 barplot(bar, horiz=TRUE, main=i, las=1)
                }, error=function(e) {
-                cat("\nDate for some assets returns is not available.\n")
-                dev.off()
-                } )
-               }
+                 cat("\nDate for some assets returns is not available.\n")
+                 dev.off()
+               } )
+             }
              par(mfrow=c(1,1))
            }, 
            "3L" = {
              par(mfrow=c(2,n/2))
              for (i in fundnames[1:n]) {
-               chart.TimeSeries(x$attr.list[[i]],main=i,...)
+               chart.TimeSeries(x$attr.list[[i]], main=i, ...)
              }
              par(mfrow=c(1,1))
            },     
            invisible()
     )
-    
   }
 }

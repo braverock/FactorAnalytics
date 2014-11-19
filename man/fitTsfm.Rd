@@ -98,7 +98,7 @@ return and factor to compute excess returns.
 Estimation method "OLS" corresponds to ordinary least squares using
 \code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least
 squares with exponentially declining weights that sum to unity), and,
-"Robust" is robust regression (useing \code{\link[robust]{lmRob}}).
+"Robust" is robust regression (using \code{\link[robust]{lmRob}}).
 
 If \code{variable.selection="none"}, all chosen factors are used in the
 factor model. Whereas, "stepwise" performs traditional forward/backward
