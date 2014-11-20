@@ -17,16 +17,17 @@ Description: An R package for the estimation and risk analysis of linear factor
 License: GPL-2
 Depends:
     R (>= 3.0.0),
-    xts (>= 0.9),
-    PerformanceAnalytics(>= 1.1.0),
-    lmtest,
-    sandwich
+    xts (>= 0.9)
 Imports: 
+    PerformanceAnalytics(>= 1.1.0),
     corrplot,  
     robust, 
     leaps, 
     lars,
-    strucchange
+    strucchange,
+    lmtest,
+    sandwich,
+    lattice
 Suggests:
     testthat, quantmod, knitr
 LazyLoad: yes

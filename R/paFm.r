@@ -40,6 +40,8 @@
 #' # without benchmark
 #' fm.attr <- paFm(fit)
 #' 
+#' @importFrom PerformanceAnalytics Return.cumulative
+#' 
 #' @export
 #' 
 
@@ -85,8 +87,7 @@ paFm <- function(fit, ...) {
                                     xts(rep(NA, length(date)), dates))  
         } else {
           attr.ret.xts <- actual.xts - 
-            xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), 
-                dates)  
+            xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), dates)  
           cum.attr.ret[k, i] <- cum.ret - 
             Return.cumulative(actual.xts-attr.ret.xts)  
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)

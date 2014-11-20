@@ -53,6 +53,9 @@
 #' # summary of lm fit for a single asset
 #' summary(fit$asset.fit[[1]])
 #' 
+#' @importFrom lmtest coeftest.default
+#' @importFrom sandwich vcovHC.default vcovHAC.default
+#' 
 #' @method summary tsfm
 #' @export
 
@@ -74,11 +77,11 @@ summary.tsfm <- function(object, se.type="Default", ...){
   # extract coefficients separately for "lars" variable.selection method
   for (i in object$asset.names) {
     if (se.type=="HC") {
-      sum[[i]]$coefficients <- coeftest(object$asset.fit[[i]], 
-                                        vcov.=vcovHC)[,1:4]
+      sum[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]],
+                                                vcov.=vcovHC.default)[,1:4]
     } else if (se.type=="HAC") {
-      sum[[i]]$coefficients <- coeftest(object$asset.fit[[i]], 
-                                        vcov.=vcovHAC)[,1:4]
+      sum[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]], 
+                                                vcov.=vcovHAC.default)[,1:4]
     }
   }
   

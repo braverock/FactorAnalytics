@@ -78,6 +78,8 @@
 #' # get the component contributions
 #' ES.decomp$cES
 #' 
+#' @importFrom PerformanceAnalytics VaR
+#' 
 #' @export
 
 fmEsDecomp <- function(object, ...){

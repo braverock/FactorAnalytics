@@ -3,7 +3,6 @@
 #' Generic function of plot method for paFm.
 #' Either plot all assets or choose a single asset to plot.
 #' 
-#' 
 #' @param x object of class \code{"pafm"} created by
 #' \code{paFm}.
 #' @param which.plot Integer indicates which plot to create: "none" will
@@ -23,7 +22,9 @@
 #'  3 = time series of attributed returns
 #' @param ...  more arguements for \code{chart.TimeSeries} used for plotting
 #' time series
+#' 
 #' @author Yi-An Chen.
+#' 
 #' @examples
 #' \dontrun{
 #' data(managers)
@@ -37,12 +38,15 @@
 #' plot(fm.attr, plot.single=TRUE, fundName="HAM1")
 #' }
 #' 
+#' @importFrom PerformanceAnalytics chart.TimeSeries 
+#' 
 #' @method plot pafm  
 #' @export
 #' 
 plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
                       date=NULL,plot.single=FALSE,fundName,
                       which.plot.single=c("none","1L","2L","3L"),...) {
+  
   # ... for  chart.TimeSeries
   if (is.null(date)){
     date = index(x[[3]][[1]])[1]
@@ -63,12 +67,14 @@ plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
            "1L" = {  
              bar <- c(x$cum.spec.ret[fundName],x$cum.ret.attr.f[fundName,])
              names(bar)[1] <- "specific.returns"
-             barplot(bar, horiz=TRUE, main="cumulative attributed returns", las=1)
+             barplot(bar, horiz=TRUE, main="cumulative attributed returns", 
+                     las=1)
            },
            "2L" ={
              bar <- coredata(x$attr.list[[fundName]][as.Date(date)])
              tryCatch({barplot(bar, horiz=TRUE, main=fundName, las=1)},
-                      error=function(e){cat("\this date is not available for this asset.\n")})
+                      error=function(e){cat("\this date is not available for 
+                                            this asset.\n")})
            },
            "3L" = {
              chart.TimeSeries(x$attr.list[[fundName]],
@@ -77,6 +83,7 @@ plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
            },
            invisible())
   }
+  
   # plot all assets 
   else {
     which.plot<-which.plot[1]

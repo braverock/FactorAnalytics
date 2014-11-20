@@ -1,20 +1,21 @@
-#' @title Density, distribution function, quantile function and random 
-#' generation for the Cornish-Fisher distribution.
+#' @title Cornish-Fisher expansion
+#' 
+#' @aliases Cornish-Fisher dCornishFisher pCornishFisher 
+#' qCornishFisher rCornishFisher
+#' 
+#' @description Density, distribution function, quantile function and random 
+#' generation using Cornish-Fisher approximation.
 #'
 #' @details CDF(q) = Pr(sqrt(n)*(x_bar-mu)/sigma < q)
-#' \itemize{
-#' \item \code{dCornishFisher} Computes Cornish-Fisher density from two term 
+#' \code{dCornishFisher} Computes Cornish-Fisher density from two term Edgeworth 
+#' expansion given mean, standard deviation, skewness and excess kurtosis.
+#' \code{pCornishFisher} Computes Cornish-Fisher CDF from two term Edgeworth 
+#' expansion given mean, standard deviation, skewness and excess kurtosis.
+#' \code{qCornishFisher} Computes Cornish-Fisher quantiles from two term 
 #' Edgeworth expansion given mean, standard deviation, skewness and excess 
 #' kurtosis.
-#' \item \code{pCornishFisher} Computes Cornish-Fisher CDF from two term 
-#' Edgeworth expansion given mean, standard deviation, skewness and excess 
-#' kurtosis.
-#' \item \code{qCornishFisher} Computes Cornish-Fisher quantiles from two term 
-#' Edgeworth expansion given mean, standard deviation, skewness and excess 
-#' kurtosis.
-#' \item \code{rCornishFisher} simulate observations based on Cornish-Fisher 
-#' quantile expansion given mean, standard deviation, skewness and excess 
-#' kurtosis.}
+#' \code{rCornishFisher} simulates observations based on Cornish-Fisher quantile 
+#' expansion given mean, standard deviation, skewness and excess kurtosis.
 #'
 #' @param n scalar; number of simulated values in random simulation, sample 
 #' length in density, distribution and quantile functions.

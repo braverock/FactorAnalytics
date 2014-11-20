@@ -115,6 +115,13 @@
 #' # group plot; type selected from menu prompt; auto-looped for multiple plots
 #' # plot(fit.macro)
 #' 
+#' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus
+#' chart.Histogram chart.QQPlot
+#' @importFrom lattice barchart panel.barchart panel.grid
+#' @importFrom corrplot corrplot
+#' @importFrom strucchange efp
+#' @importFrom robust lmRob
+#' 
 #' @method plot tsfm
 #' @export
 
@@ -219,8 +226,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }
-               cusum.rec <- strucchange::efp(formula(fit), type="Rec-CUSUM", 
-                                             data=fit$model)
+               cusum.rec <- efp(formula(fit), type="Rec-CUSUM", data=fit$model)
                plot(cusum.rec, main=paste("Recursive CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "11L" = {
@@ -228,8 +234,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }
-               cusum.ols <- strucchange::efp(formula(fit), type="OLS-CUSUM", 
-                                             data=fit$model)
+               cusum.ols <- efp(formula(fit), type="OLS-CUSUM", data=fit$model)
                plot(cusum.ols, main=paste("OLS-based CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "12L" = {
@@ -237,8 +242,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
                }        
-               cusum.est <- strucchange::efp(formula(fit), type="RE", 
-                                             data=fit$model)
+               cusum.est <- efp(formula(fit), type="RE", data=fit$model)
                plot(cusum.est, functional=NULL, col=colorset, las=0,
                     main=paste("RE test (Recursive estimates test):",i), ...)
              }, "13L" = {
@@ -269,8 +273,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                                         width=24, by.column=FALSE, align="right")
                } else if (x$fit.method=="Robust") {
                  rollReg.Rob <- function(data.z, formula) {
-                   coef(robust::lmRob(formula=formula, 
-                                      data=as.data.frame(data.z)))  
+                   coef(lmRob(formula=formula, data=as.data.frame(data.z)))  
                  }
                  reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
                  rollReg.z <- rollapply(reg.z, width=24, FUN=rollReg.Rob, 
@@ -372,13 +375,13 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
              "6L" = {
                ## Factor Model Residual Correlation
                cor.resid <- cor(residuals(x), use="pairwise.complete.obs")
-               corrplot::corrplot(cor.resid, ...)
+               corrplot(cor.resid, ...)
                # mtext("pairwise complete obs", line=0.5)
              }, 
              "7L" = {
                ## Factor Model Return Correlation
                cor.fm <- cov2cor(fmCov(x)) 
-               corrplot::corrplot(cor.fm, ...)
+               corrplot(cor.fm, ...)
                # mtext("pairwise complete obs", line=0.5)
              },
              "8L" = {

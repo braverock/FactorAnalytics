@@ -165,8 +165,13 @@
 #'                    factor.names=colnames(managers[,(7:9)]), 
 #'                    rf.name="US 3m TR", data=managers, 
 #'                    variable.selection="lars", lars.criterion="cv") 
-#'
-#'  @export
+#' 
+#' @importFrom PerformanceAnalytics checkData
+#' @importFrom robust lmRob step.lmRob
+#' @importFrom leaps regsubsets
+#' @importFrom lars lars cv.lars
+#' 
+#' @export
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"), 
@@ -317,8 +322,8 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- do.call(robust::lmRob, c(list(fm.formula,data=reg.xts),
-                                                lmRob.args))
+      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts), 
+                                        lmRob.args))
     } 
   } 
   reg.list  
@@ -349,10 +354,8 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
       reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
     } else if (fit.method == "Robust") {
-      lmRob.fit <- do.call(robust::lmRob, c(list(fm.formula,data=reg.xts), 
-                                            lmRob.args))
-      reg.list[[i]] <- do.call(robust::step.lmRob, c(list(lmRob.fit), 
-                                                     step.args))
+      lmRob.fit <- do.call(lmRob, c(list(fm.formula,data=reg.xts), lmRob.args))
+      reg.list[[i]] <- do.call(step.lmRob, c(list(lmRob.fit), step.args))
     } 
   }
   reg.list
@@ -381,8 +384,8 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     }
     
     # choose best subset of factors depending on specified subset size
-    fm.subsets <- do.call(leaps::regsubsets, c(list(fm.formula,data=reg.xts),
-                                               regsubsets.args))
+    fm.subsets <- do.call(regsubsets, c(list(fm.formula,data=reg.xts), 
+                                        regsubsets.args))
     sum.sub <- summary(fm.subsets)
     names.sub <- names(which(sum.sub$which[as.character(subset.size),-1]==TRUE))
     reg.xts <- na.omit(dat.xts[,c(i,names.sub)])
@@ -394,8 +397,8 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- do.call(robust::lmRob, c(list(fm.formula,data=reg.xts), 
-                                                lmRob.args))
+      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts), 
+                                        lmRob.args))
     } 
   }
   reg.list
@@ -424,12 +427,11 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     # convert to matrix
     reg.mat <- as.matrix(reg.xts)
     # fit lars regression model
-    lars.fit <- do.call(lars::lars, c(list(x=reg.mat[,factor.names],
-                                           y=reg.mat[,i]),lars.args))
+    lars.fit <- do.call(lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i]),
+                                lars.args))
     lars.sum <- summary(lars.fit)
-    lars.cv <- 
-      do.call(lars::cv.lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i],
-                                    mode="step"),cv.lars.args))
+    lars.cv <- do.call(cv.lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i], 
+                                       mode="step"),cv.lars.args))
     # including plot.it=FALSE to cv.lars strangely gives an error: "Argument s 
     # out of range". And, specifying index=seq(nrow(lars.fit$beta)-1) resolves 
     # the issue, but care needs to be taken for small N
