@@ -25,11 +25,12 @@
 #' Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC), 
 #' improves. And, "subsets" enables subsets selection using 
 #' \code{\link[leaps]{regsubsets}}; chooses the best performing subset of any 
-#' given size. See \code{\link{fitTsfm.control}} for more details on the 
-#' control arguments. \code{variable.selection="lars"} corresponds to least 
-#' angle regression using \code{\link[lars]{lars}} with variants "lasso", 
-#' "lar", "forward.stagewise" or "stepwise". Note: If 
-#' \code{variable.selection="lars"}, \code{fit.method} will be ignored.
+#' given size or within a range of subset sizes. See 
+#' \code{\link{fitTsfm.control}} for more details on the control arguments. 
+#' \code{variable.selection="lars"} corresponds to least angle regression 
+#' using \code{\link[lars]{lars}} with variants "lasso", "lar", "stepwise" or 
+#' "forward.stagewise". Note: If \code{variable.selection="lars"}, 
+#' \code{fit.method} will be ignored.
 #' 
 #' Arguments \code{mkt.name} and \code{mkt.timing} allow for market-timing 
 #' factors to be added to any of the above methods. Market timing accounts for 
@@ -197,6 +198,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   # extract arguments to pass to different fit and variable selection functions
   decay <- control$decay
+  nvmin <- control$nvmin
   subset.size <- control$subset.size
   lars.criterion <- control$lars.criterion
   m1 <- match(c("weights","model","x","y","qr"), 
@@ -208,7 +210,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   m3 <-  match(c("scope","scale","direction","trace","steps","k"), 
                names(control), 0L)
   step.args <- control[m3, drop=TRUE]
-  m4 <-  match(c("weights","nbest","nvmax","force.in","force.out","method",
+  m4 <-  match(c("weights","nvmax","force.in","force.out","method",
                  "really.big"), names(control), 0L)
   regsubsets.args <- control[m4, drop=TRUE]
   m5 <-  match(c("type","normalize","eps","max.steps","trace"), 
@@ -268,7 +270,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   } else if (variable.selection == "subsets") {
     reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names, fit.method, 
                                  lm.args, lmRob.args, regsubsets.args, 
-                                 subset.size, decay)
+                                 nvmin, subset.size, decay)
   } else if (variable.selection == "lars") {
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, lars.args, 
                               cv.lars.args, lars.criterion)
@@ -365,8 +367,8 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
 ### method variable.selection = "subsets"
 #
 SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method, 
-                             lm.args, lmRob.args, regsubsets.args, subset.size, 
-                             decay) {
+                             lm.args, lmRob.args, regsubsets.args, nvmin, 
+                             subset.size, decay) {
   
   # initialize list object to hold the fitted objects
   reg.list <- list()
@@ -387,7 +389,19 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     fm.subsets <- do.call(regsubsets, c(list(fm.formula,data=reg.xts), 
                                         regsubsets.args))
     sum.sub <- summary(fm.subsets)
-    names.sub <- names(which(sum.sub$which[as.character(subset.size),-1]==TRUE))
+    
+    # choose best model of a given subset.size (or) 
+    # best model amongst subset sizes in [nvmin, nvmax]
+    if (!is.null(subset.size)) { 
+      names.sub <- names(which(sum.sub$which[subset.size,-1]==TRUE))
+      bic <- sum.sub$bic[subset.size - nvmin + 1]
+    } else { 
+      best.size <- which.min(sum.sub$bic[nvmin:length(sum.sub$bic)]) + nvmin -1
+      names.sub <- names(which(sum.sub$which[best.size,-1]==TRUE))
+      bic <- min(sum.sub$bic[nvmin:length(sum.sub$bic)])
+    }
+    
+    # completely remove NA cases for chosen subset
     reg.xts <- na.omit(dat.xts[,c(i,names.sub)])
     
     # fit based on time series regression method chosen

@@ -108,11 +108,12 @@ factors and adds factors only if the regression fit, as measured by the
 Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC),
 improves. And, "subsets" enables subsets selection using
 \code{\link[leaps]{regsubsets}}; chooses the best performing subset of any
-given size. See \code{\link{fitTsfm.control}} for more details on the
-control arguments. \code{variable.selection="lars"} corresponds to least
-angle regression using \code{\link[lars]{lars}} with variants "lasso",
-"lar", "forward.stagewise" or "stepwise". Note: If
-\code{variable.selection="lars"}, \code{fit.method} will be ignored.
+given size or within a range of subset sizes. See
+\code{\link{fitTsfm.control}} for more details on the control arguments.
+\code{variable.selection="lars"} corresponds to least angle regression
+using \code{\link[lars]{lars}} with variants "lasso", "lar", "stepwise" or
+"forward.stagewise". Note: If \code{variable.selection="lars"},
+\code{fit.method} will be ignored.
 
 Arguments \code{mkt.name} and \code{mkt.timing} allow for market-timing
 factors to be added to any of the above methods. Market timing accounts for

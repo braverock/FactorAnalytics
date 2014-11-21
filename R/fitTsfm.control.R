@@ -63,7 +63,7 @@
 #' @param k the multiple of the number of degrees of freedom used for the 
 #' penalty in \code{"stepwise"}. Only \code{k = 2} gives the genuine AIC. 
 #' \code{k = log(n)} is sometimes referred to as BIC or SBC. Default is 2.
-#' @param nbest number of subsets of each size to record for \code{"subsets"}. 
+#' @param nvmin minimum size of subsets to examine for \code{"subsets"}. 
 #' Default is 1.
 #' @param nvmax maximum size of subsets to examine for \code{"subsets"}. 
 #' Default is 8.
@@ -77,9 +77,10 @@
 #' "exhaustive".
 #' @param really.big option for \code{"subsets"}; Must be \code{TRUE} to 
 #' perform exhaustive search on more than 50 variables.
-#' @param subset.size number of factors required in the factor model; 
-#' an option for \code{"subsets"} variable selection. Default is 1. 
-#' Note: \code{nvmax >= subset.size >= length(force.in)}.
+#' @param subset.size number of factors required in the factor model; an 
+#' option for \code{"subsets"} variable selection. \code{NULL} selects the 
+#' best model (BIC) from amongst subset sizes in [\code{nvmin},\code{nvmax}]. 
+#' Default is \code{NULL}.
 #' @param type option for \code{"lars"}. One of "lasso", "lar", 
 #' "forward.stagewise" or "stepwise". The names can be abbreviated to any 
 #' unique substring. Default is "lasso".
@@ -133,11 +134,11 @@
 
 fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE, 
                             qr=TRUE, nrep=NULL, scope, scale, direction, 
-                            trace=FALSE, steps=1000, k=2, nbest=1, nvmax=8, 
+                            trace=FALSE, steps=1000, k=2, nvmin=1, nvmax=8, 
                             force.in=NULL, force.out=NULL, method, 
-                            really.big=FALSE, subset.size=1, type, 
+                            really.big=FALSE, subset.size=NULL, type, 
                             normalize=TRUE, eps=.Machine$double.eps, max.steps, 
-                            lars.criterion="Cp", K = 10) {
+                            lars.criterion="Cp", K=10) {
   
   # get the user-specified arguments (that have no defaults)
   # this part of the code was adapted from stats::lm
@@ -171,12 +172,14 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   if (!is.logical(really.big) || length(really.big) != 1) {
     stop("Invalid argument: control parameter 'really.big' must be logical")
   }
-  if (subset.size <= 0 || round(subset.size) != subset.size) {
-    stop("control parameter 'subset.size' must be a positive integer")
-  }
-  if (nvmax < subset.size || subset.size < length(force.in)) {
-    stop("Invaid Argument: nvmax should be >= subset.size and subset.size 
-         should be >= length(force.in)")
+  if (!is.null(subset.size)) {
+    if (subset.size <= 0 || round(subset.size) != subset.size) {
+      stop("Control parameter 'subset.size' must be a positive integer or NULL")
+    }
+    if (nvmax < subset.size || subset.size < length(force.in)) {
+      stop("Invaid Argument: nvmax should be >= subset.size and subset.size 
+           should be >= length(force.in)")
+    }
   }
   if (!is.logical(normalize) || length(normalize) != 1) {
     stop("Invalid argument: control parameter 'normalize' must be logical")
@@ -187,7 +190,7 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   
   # return list of arguments with defaults if they are unspecified
   result <- c(args, list(decay=decay, model=model, x=x, y=y, qr=qr, nrep=nrep, 
-                         trace=trace, steps=steps, k=k, nbest=nbest, 
+                         trace=trace, steps=steps, k=k, nvmin=nvmin, 
                          nvmax=nvmax, force.in=force.in, force.out=force.out, 
                          really.big=really.big, subset.size=subset.size, 
                          normalize=normalize, eps=eps, 

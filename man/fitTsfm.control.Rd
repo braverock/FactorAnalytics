@@ -5,9 +5,9 @@
 \usage{
 fitTsfm.control(decay = 0.95, weights, model = TRUE, x = FALSE,
   y = FALSE, qr = TRUE, nrep = NULL, scope, scale, direction,
-  trace = FALSE, steps = 1000, k = 2, nbest = 1, nvmax = 8,
+  trace = FALSE, steps = 1000, k = 2, nvmin = 1, nvmax = 8,
   force.in = NULL, force.out = NULL, method, really.big = FALSE,
-  subset.size = 1, type, normalize = TRUE, eps = .Machine$double.eps,
+  subset.size = NULL, type, normalize = TRUE, eps = .Machine$double.eps,
   max.steps, lars.criterion = "Cp", K = 10)
 }
 \arguments{
@@ -56,7 +56,7 @@ typically used to stop the process early.}
 penalty in \code{"stepwise"}. Only \code{k = 2} gives the genuine AIC.
 \code{k = log(n)} is sometimes referred to as BIC or SBC. Default is 2.}
 
-\item{nbest}{number of subsets of each size to record for \code{"subsets"}.
+\item{nvmin}{minimum size of subsets to examine for \code{"subsets"}.
 Default is 1.}
 
 \item{nvmax}{maximum size of subsets to examine for \code{"subsets"}.
@@ -76,9 +76,10 @@ Required if \code{variable selection="subsets"} is chosen. Default is
 \item{really.big}{option for \code{"subsets"}; Must be \code{TRUE} to
 perform exhaustive search on more than 50 variables.}
 
-\item{subset.size}{number of factors required in the factor model;
-an option for \code{"subsets"} variable selection. Default is 1.
-Note: \code{nvmax >= subset.size >= length(force.in)}.}
+\item{subset.size}{number of factors required in the factor model; an
+option for \code{"subsets"} variable selection. \code{NULL} selects the
+best model (BIC) from amongst subset sizes in [\code{nvmin},\code{nvmax}].
+Default is \code{NULL}.}
 
 \item{type}{option for \code{"lars"}. One of "lasso", "lar",
 "forward.stagewise" or "stepwise". The names can be abbreviated to any

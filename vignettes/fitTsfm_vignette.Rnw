@@ -158,7 +158,7 @@ plot(fit1, which.plot.group=5, loop=FALSE, xlim=c(0,0.043))
 plot(fit2, which.plot.group=5, loop=FALSE, xlim=c(0,0.043))
 @
 
-By adding more factors in fit1 and fit2, though the R-squared values have improved (when compared to Sharpe's single index model), one might prefer to employ variable selection methods such as \verb"stepwise", \verb"subsets" or \verb"lars" to avoid over-fitting. The method can be selected via the \code{variable.selection} argument. The default \verb"none", uses all the factors and performs no variable selection. \verb"stepwise" performs traditional forward or backward stepwise OLS regression, starting from an initial (given) set of factors and adds factors only if the regression fit, as measured by the Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC), improves. \verb"subsets" enables subsets selection using \code{regsubsets}; chooses the best performing subset of any given size. \verb"lars" corresponds to least angle regression using \code{lars} with variants "lasso", "lar", "forward.stagewise" or "stepwise".  
+By adding more factors in fit1 and fit2, though the R-squared values have improved (when compared to Sharpe's single index model), one might prefer to employ variable selection methods such as \verb"stepwise", \verb"subsets" or \verb"lars" to avoid over-fitting. The method can be selected via the \code{variable.selection} argument. The default \verb"none", uses all the factors and performs no variable selection. \verb"stepwise" performs traditional forward or backward stepwise OLS regression, starting from an initial (given) set of factors and adds factors only if the regression fit, as measured by the Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC), improves. \verb"subsets" enables subsets selection using \code{regsubsets}; chooses the best performing subset of any given size or within a range of subset sizes. \verb"lars" corresponds to least angle regression using \code{lars} with variants "lasso", "lar", "forward.stagewise" or "stepwise".  
 
 Remarks:
 \begin{itemize}
@@ -205,15 +205,16 @@ Here's an ordered list of control parameters passed by \code{fitTsfm} matched wi
 \item \verb"lm": "weights","model","x","y","qr"
 \item \verb"lmRob": "weights","model","x","y","nrep"
 \item \verb"step": "scope","scale","direction","trace","steps","k"
-\item \verb"regsubsets": "weights","nbest","nvmax","force.in","force.out","method","really.big"
+\item \verb"regsubsets": "weights","nvmax","force.in","force.out","method","really.big"
 \item \verb"lars": "type","normalize","eps","max.steps","trace"
 \item \verb"cv.lars": "K","type","normalize","eps","max.steps","trace"
 \end{itemize}
 
-There are 3 other important arguments passed to \code{fitTsfm.control} that determine the type of factor model fit chosen.
+There are 4 other arguments passed to \code{fitTsfm.control} that determine the type of factor model fit chosen.
 \begin{itemize}
 \item \verb"decay": Determines the decay factor for \code{fit.method="DLS"}, which performs exponentially weighted least squares, with weights adding to unity.
-\item \verb"subset.size": Number of factors required in the factor model when performing \verb"subsets" selection. This might be meaningful when looking for the best model of a certain size (perhaps for parsimony, perhaps to compare with a different model of the same size, perhaps to avoid over-fitting/ data dredging etc.) 
+\item \verb"nvmin": The lower limit for the range of subset sizes from which the best model (BIC) is found when performing \verb"subsets" selection. Note that the upper limit was already passed to \verb"regsubsets" function.
+\item \verb"subset.size": Number of factors required in the factor model when performing \verb"subsets" selection. This might be meaningful when looking for the best model of a certain size (perhaps for parsimony, perhaps to compare with a different model of the same size, perhaps to avoid over-fitting/ data dredging etc.) Alternately, users can specify \code{NULL} to get the best model from amongst subset sizes in the range \code{[nvmin,nvmax]}.
 \item \verb"lars.criterion": An option (one of "Cp" or "cv") to assess model selection for the \code{"lars"} variable selection method. "Cp" is Mallow's Cp statistic and "cv" is K-fold cross-validated mean squared prediction error.
 \end{itemize}
 
