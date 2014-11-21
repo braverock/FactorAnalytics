@@ -160,7 +160,7 @@ fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]), factor.names=NULL,
 fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                    factor.names=colnames(managers[,(7:9)]),
                    data=managers, variable.selection="subsets",
-                   method="exhaustive", subset.size=2)
+                   method="exhaustive", nvmin=2)
 
 # example using "lars" variable selection and subtracting risk-free rate
 fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),

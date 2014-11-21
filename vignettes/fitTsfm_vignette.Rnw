@@ -178,7 +178,7 @@ fit.lars$r2
 fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]), 
                    factor.names=colnames(managers[,(7:9)]), data=managers, 
                    rf.name="US 3m TR", mkt.name="SP500 TR", 
-                   variable.selection="subsets", subset.size=4)
+                   variable.selection="subsets", nvmin=4, nvmax=4)
 fit.sub$beta
 fit.sub$r2
 @
@@ -213,8 +213,7 @@ Here's an ordered list of control parameters passed by \code{fitTsfm} matched wi
 There are 4 other arguments passed to \code{fitTsfm.control} that determine the type of factor model fit chosen.
 \begin{itemize}
 \item \verb"decay": Determines the decay factor for \code{fit.method="DLS"}, which performs exponentially weighted least squares, with weights adding to unity.
-\item \verb"nvmin": The lower limit for the range of subset sizes from which the best model (BIC) is found when performing \verb"subsets" selection. Note that the upper limit was already passed to \verb"regsubsets" function.
-\item \verb"subset.size": Number of factors required in the factor model when performing \verb"subsets" selection. This might be meaningful when looking for the best model of a certain size (perhaps for parsimony, perhaps to compare with a different model of the same size, perhaps to avoid over-fitting/ data dredging etc.) Alternately, users can specify \code{NULL} to get the best model from amongst subset sizes in the range \code{[nvmin,nvmax]}.
+\item \verb"nvmin": The lower limit for the range of subset sizes from which the best model (BIC) is found when performing \verb"subsets" selection. Note that the upper limit was already passed to \verb"regsubsets" function. By specifying \code{nvmin=nvmax}, users can obtain the best model of a particular size (meaningful to those who want a parsimonious model, or to compare with a different model of the same size, or perhaps to avoid over-fitting/ data dredging etc.).
 \item \verb"lars.criterion": An option (one of "Cp" or "cv") to assess model selection for the \code{"lars"} variable selection method. "Cp" is Mallow's Cp statistic and "cv" is K-fold cross-validated mean squared prediction error.
 \end{itemize}
 

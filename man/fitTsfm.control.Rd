@@ -6,9 +6,9 @@
 fitTsfm.control(decay = 0.95, weights, model = TRUE, x = FALSE,
   y = FALSE, qr = TRUE, nrep = NULL, scope, scale, direction,
   trace = FALSE, steps = 1000, k = 2, nvmin = 1, nvmax = 8,
-  force.in = NULL, force.out = NULL, method, really.big = FALSE,
-  subset.size = NULL, type, normalize = TRUE, eps = .Machine$double.eps,
-  max.steps, lars.criterion = "Cp", K = 10)
+  force.in = NULL, force.out = NULL, method, really.big = FALSE, type,
+  normalize = TRUE, eps = .Machine$double.eps, max.steps,
+  lars.criterion = "Cp", K = 10)
 }
 \arguments{
 \item{decay}{a scalar in (0, 1] to specify the decay factor for "DLS".
@@ -76,11 +76,6 @@ Required if \code{variable selection="subsets"} is chosen. Default is
 \item{really.big}{option for \code{"subsets"}; Must be \code{TRUE} to
 perform exhaustive search on more than 50 variables.}
 
-\item{subset.size}{number of factors required in the factor model; an
-option for \code{"subsets"} variable selection. \code{NULL} selects the
-best model (BIC) from amongst subset sizes in [\code{nvmin},\code{nvmax}].
-Default is \code{NULL}.}
-
 \item{type}{option for \code{"lars"}. One of "lasso", "lar",
 "forward.stagewise" or "stepwise". The names can be abbreviated to any
 unique substring. Default is "lasso".}
@@ -144,7 +139,7 @@ cross-validated mean squared prediction error using
 }
 \examples{
 # check argument list passed by fitTsfm.control
-tsfm.ctrl <- fitTsfm.control(method="exhaustive", subset.size=2)
+tsfm.ctrl <- fitTsfm.control(method="exhaustive", nvmin=2)
 print(tsfm.ctrl)
 
 # used internally by fitTsfm
@@ -152,7 +147,7 @@ data(managers)
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,(7:9)]),
                data=managers, variable.selection="subsets",
-               method="exhaustive", subset.size=2)
+               method="exhaustive", nvmin=2)
 }
 \author{
 Sangeetha Srinivasan

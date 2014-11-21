@@ -159,7 +159,7 @@
 #' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                    factor.names=colnames(managers[,(7:9)]), 
 #'                    data=managers, variable.selection="subsets", 
-#'                    method="exhaustive", subset.size=2) 
+#'                    method="exhaustive", nvmin=2) 
 #' 
 #' # example using "lars" variable selection and subtracting risk-free rate
 #' fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
@@ -199,7 +199,6 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   # extract arguments to pass to different fit and variable selection functions
   decay <- control$decay
   nvmin <- control$nvmin
-  subset.size <- control$subset.size
   lars.criterion <- control$lars.criterion
   m1 <- match(c("weights","model","x","y","qr"), 
               names(control), 0L)
@@ -270,7 +269,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   } else if (variable.selection == "subsets") {
     reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names, fit.method, 
                                  lm.args, lmRob.args, regsubsets.args, 
-                                 nvmin, subset.size, decay)
+                                 nvmin, decay)
   } else if (variable.selection == "lars") {
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, lars.args, 
                               cv.lars.args, lars.criterion)
@@ -368,7 +367,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
 #
 SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method, 
                              lm.args, lmRob.args, regsubsets.args, nvmin, 
-                             subset.size, decay) {
+                             decay) {
   
   # initialize list object to hold the fitted objects
   reg.list <- list()
@@ -390,16 +389,12 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
                                         regsubsets.args))
     sum.sub <- summary(fm.subsets)
     
-    # choose best model of a given subset.size (or) 
+    # choose best model of a given subset size nvmax=nvmin (or) 
     # best model amongst subset sizes in [nvmin, nvmax]
-    if (!is.null(subset.size)) { 
-      names.sub <- names(which(sum.sub$which[subset.size,-1]==TRUE))
-      bic <- sum.sub$bic[subset.size - nvmin + 1]
-    } else { 
-      best.size <- which.min(sum.sub$bic[nvmin:length(sum.sub$bic)]) + nvmin -1
-      names.sub <- names(which(sum.sub$which[best.size,-1]==TRUE))
-      bic <- min(sum.sub$bic[nvmin:length(sum.sub$bic)])
-    }
+    nvmax <- length(sum.sub$bic)
+    best.size <- which.min(sum.sub$bic[nvmin:nvmax]) + nvmin -1
+    names.sub <- names(which(sum.sub$which[best.size,-1]==TRUE))
+    bic <- min(sum.sub$bic[nvmin:nvmax])
     
     # completely remove NA cases for chosen subset
     reg.xts <- na.omit(dat.xts[,c(i,names.sub)])

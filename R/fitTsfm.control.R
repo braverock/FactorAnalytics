@@ -77,10 +77,6 @@
 #' "exhaustive".
 #' @param really.big option for \code{"subsets"}; Must be \code{TRUE} to 
 #' perform exhaustive search on more than 50 variables.
-#' @param subset.size number of factors required in the factor model; an 
-#' option for \code{"subsets"} variable selection. \code{NULL} selects the 
-#' best model (BIC) from amongst subset sizes in [\code{nvmin},\code{nvmax}]. 
-#' Default is \code{NULL}.
 #' @param type option for \code{"lars"}. One of "lasso", "lar", 
 #' "forward.stagewise" or "stepwise". The names can be abbreviated to any 
 #' unique substring. Default is "lasso".
@@ -120,7 +116,7 @@
 #' @examples
 #' 
 #' # check argument list passed by fitTsfm.control
-#' tsfm.ctrl <- fitTsfm.control(method="exhaustive", subset.size=2)
+#' tsfm.ctrl <- fitTsfm.control(method="exhaustive", nvmin=2)
 #' print(tsfm.ctrl)
 #' 
 #' # used internally by fitTsfm
@@ -128,7 +124,7 @@
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
 #'                data=managers, variable.selection="subsets", 
-#'                method="exhaustive", subset.size=2)
+#'                method="exhaustive", nvmin=2)
 #' 
 #' @export
 
@@ -136,8 +132,8 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
                             qr=TRUE, nrep=NULL, scope, scale, direction, 
                             trace=FALSE, steps=1000, k=2, nvmin=1, nvmax=8, 
                             force.in=NULL, force.out=NULL, method, 
-                            really.big=FALSE, subset.size=NULL, type, 
-                            normalize=TRUE, eps=.Machine$double.eps, max.steps, 
+                            really.big=FALSE, type, normalize=TRUE, 
+                            eps=.Machine$double.eps, max.steps, 
                             lars.criterion="Cp", K=10) {
   
   # get the user-specified arguments (that have no defaults)
@@ -172,14 +168,12 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   if (!is.logical(really.big) || length(really.big) != 1) {
     stop("Invalid argument: control parameter 'really.big' must be logical")
   }
-  if (!is.null(subset.size)) {
-    if (subset.size <= 0 || round(subset.size) != subset.size) {
-      stop("Control parameter 'subset.size' must be a positive integer or NULL")
-    }
-    if (nvmax < subset.size || subset.size < length(force.in)) {
-      stop("Invaid Argument: nvmax should be >= subset.size and subset.size 
+  if (nvmin <= 0 || round(nvmin) != nvmin) {
+    stop("Control parameter 'nvmin' must be a positive integer")
+  }
+  if (nvmax < nvmin || nvmin < length(force.in)) {
+    stop("Invaid Argument: nvmax should be >= nvmin and nvmin 
            should be >= length(force.in)")
-    }
   }
   if (!is.logical(normalize) || length(normalize) != 1) {
     stop("Invalid argument: control parameter 'normalize' must be logical")
@@ -192,8 +186,7 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   result <- c(args, list(decay=decay, model=model, x=x, y=y, qr=qr, nrep=nrep, 
                          trace=trace, steps=steps, k=k, nvmin=nvmin, 
                          nvmax=nvmax, force.in=force.in, force.out=force.out, 
-                         really.big=really.big, subset.size=subset.size, 
-                         normalize=normalize, eps=eps, 
+                         really.big=really.big, normalize=normalize, eps=eps, 
                          lars.criterion=lars.criterion, K=K))
   return(result)
 }
