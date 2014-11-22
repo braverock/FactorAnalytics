@@ -164,7 +164,7 @@ Remarks:
 \begin{itemize}
 \item Variable selection methods \verb"stepwise" and \verb"subsets" can be combined with any of the fit methods, "OLS", "DLS" or "Robust".
 \item If variable selection method selected is \verb"lars", \code{fit.method} will be ignored. 
-\item Refer to the section on \code{fitTsfm.control} for more details on the control arguments to the different variable selection methods. 
+\item Refer to the next section on \code{fitTsfm control} for more details on the control arguments that can be passed to the different variable selection methods. 
 \end{itemize}
 
 The next example uses the \verb"lars" variable selection method. The default type and criterion used are \verb"lasso" and the \verb"Cp" statistic. The \verb"subsets" variable selection method is demonstrated next for comparison using the same set of factors. However, the best subset of size 4 for each asset is chosen. Figures 3 and 4 display the factor betas from the two fits.
@@ -192,15 +192,11 @@ plot(fit.sub, which.plot.group=2, loop=FALSE)
 @
 \newpage
 
-\subsection{fitTsfm.control}
+\subsection{fitTsfm control}
 
 Since \code{fitTsfm} calls many different regression fitting and variable selection methods, it made sense to collect all the optional controls for these functions and process them via \code{fitTsfm.control}. This function is meant to be used internally by \code{fitTsfm} when arguments are passed to it via the ellipsis. The use of control parameters was demonstrated with subset.size in the fit.sub example earlier. 
 
-<<tidy=TRUE>>=
-args(fitTsfm.control)
-@
-
-Here's an ordered list of control parameters passed by \code{fitTsfm} matched with their respective functions for easy reference. See the corresponding help files for more details on each parameter.
+For easy reference, here's a classified list of control parameters accepted and passed by \code{fitTsfm} to their respective model fitting (or) model selection functions in other packages. See the corresponding help files for more details on each parameter.
 \begin{itemize}
 \item \verb"lm": "weights","model","x","y","qr"
 \item \verb"lmRob": "weights","model","x","y","nrep"
@@ -210,12 +206,14 @@ Here's an ordered list of control parameters passed by \code{fitTsfm} matched wi
 \item \verb"cv.lars": "K","type","normalize","eps","max.steps","trace"
 \end{itemize}
 
-There are 4 other arguments passed to \code{fitTsfm.control} that determine the type of factor model fit chosen.
+There are 3 other significant arguments that can be passed through the \code{...} argument to \code{fitTsfm}.
 \begin{itemize}
 \item \verb"decay": Determines the decay factor for \code{fit.method="DLS"}, which performs exponentially weighted least squares, with weights adding to unity.
 \item \verb"nvmin": The lower limit for the range of subset sizes from which the best model (BIC) is found when performing \verb"subsets" selection. Note that the upper limit was already passed to \verb"regsubsets" function. By specifying \code{nvmin=nvmax}, users can obtain the best model of a particular size (meaningful to those who want a parsimonious model, or to compare with a different model of the same size, or perhaps to avoid over-fitting/ data dredging etc.).
 \item \verb"lars.criterion": An option (one of "Cp" or "cv") to assess model selection for the \code{"lars"} variable selection method. "Cp" is Mallow's Cp statistic and "cv" is K-fold cross-validated mean squared prediction error.
 \end{itemize}
+
+\newpage
 
 \subsection{Summary, Predict, Coefficients, Fitted values and Residuals}
 

@@ -114,19 +114,19 @@
 #' \code{\link[lars]{cv.lars}}
 #' 
 #' @examples
-#' 
+#' \dontrun{
 #' # check argument list passed by fitTsfm.control
 #' tsfm.ctrl <- fitTsfm.control(method="exhaustive", nvmin=2)
 #' print(tsfm.ctrl)
+#' }
 #' 
-#' # used internally by fitTsfm
+#' # used internally by fitTsfm in the example below
 #' data(managers)
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
 #'                data=managers, variable.selection="subsets", 
 #'                method="exhaustive", nvmin=2)
-#' 
-#' @export
+#'
 
 fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE, 
                             qr=TRUE, nrep=NULL, scope, scale, direction, 

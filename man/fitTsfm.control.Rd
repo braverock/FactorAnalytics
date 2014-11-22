@@ -138,11 +138,13 @@ cross-validated mean squared prediction error using
 \code{\link[lars]{cv.lars}}.
 }
 \examples{
+\dontrun{
 # check argument list passed by fitTsfm.control
 tsfm.ctrl <- fitTsfm.control(method="exhaustive", nvmin=2)
 print(tsfm.ctrl)
+}
 
-# used internally by fitTsfm
+# used internally by fitTsfm in the example below
 data(managers)
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,(7:9)]),

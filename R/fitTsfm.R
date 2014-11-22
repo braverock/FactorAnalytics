@@ -281,14 +281,18 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     return(result)
   } 
   
-  # extract the fitted factor models, coefficients, r2 values and residual vol 
-  # from returned factor model fits above
+  # extract coefficients from fitted factor models returned above
   coef.mat <- makePaddedDataFrame(lapply(reg.list, coef))
   alpha <- coef.mat[, 1, drop=FALSE]
   # to get alpha of class numeric, do: aplha <- coef.mat[,1]
   beta <- coef.mat[, -1, drop=FALSE]
-  # reorder the columns to match factor names vector
-  beta <- subset(beta, select=factor.names)
+  # reorder and expand columns of beta to match factor.names
+  tmp <- matrix(NA, length(asset.names), length(factor.names))
+  colnames(tmp) <- factor.names
+  rownames(tmp) <- asset.names
+  beta <- merge(beta, tmp, all.x=TRUE, sort=FALSE)[,factor.names]
+  rownames(beta) <- asset.names
+  # extract r2 and residual sd
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
   resid.sd <- sapply(reg.list, function(x) summary(x)$sigma)
   # create list of return values.
