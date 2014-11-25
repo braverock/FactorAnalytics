@@ -68,8 +68,7 @@
 #' \item{r2}{length-N vector of R-squared values.}
 #' \item{resid.sd}{length-N vector of residual standard deviations.}
 #' \item{residuals}{T x N xts object of residuals from the OLS regression.}
-#' \item{Omega}{M x M return covariance matrix estimated by the factor model, 
-#' where M = min(N,T).}
+#' \item{Omega}{N x N return covariance matrix estimated by the factor model.}
 #' \item{eigen}{length-K vector of eigenvalues of the sample covariance matrix.}
 #' \item{mimic}{N x K matrix of factor mimicking portfolio weights.}
 #' \item{call}{the matched function call.}
@@ -131,13 +130,13 @@
 #' sfm.pca.fit$mimic
 #' 
 #' # apca with number of factors, k=15
-#' # sfm.apca.fit <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
+#' sfm.apca.fit <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
 #' 
 #' # apca with the Bai & Ng method
 #' sfm.apca.fit.bn <- fitSfm(sfm.apca.dat, k="bn")
 #' 
 #' # apca with the Connor-Korajczyk method
-#' # sfm.apca.fit.ck <- fitSfm(sfm.apca.dat, k="ck")
+#' sfm.apca.fit.ck <- fitSfm(sfm.apca.dat, k="ck")
 #' 
 #' @importFrom PerformanceAnalytics checkData
 #' 
@@ -254,6 +253,7 @@ UsePCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs) {
   
   # assign row and column names
   names(eig.val) = names(r2) = names(resid.sd) = colnames(R.xts)
+  colnames(B) <- colnames(f)
   
   # return list
   list(asset.fit=asset.fit, k=k, factors=f, loadings=B, alpha=alpha, r2=r2, 
@@ -313,6 +313,7 @@ UseAPCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, refine=refine, n=n, obs=obs) 
   # assign row and column names
   names(eig.val) = 1:obs
   names(r2) = names(resid.sd) = colnames(R.xts)
+  colnames(B) <- colnames(f)
   
   # return list
   list(asset.fit=asset.fit, k=k, factors=f, loadings=B, alpha=alpha, r2=r2, 
@@ -338,7 +339,7 @@ UseAPCA_ck <- function(R.xts=R.xts, R.mat=R.mat, max.k=max.k, refine=refine,
     # dof-adjusted squared residuals for k
     fit <- UseAPCA(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs, refine=refine)
     eps2.star <- fit$residuals^2 / (1-(k+1)/obs-k/n)
-    mu.star <- rowMeans(eps2[idx,,drop=FALSE])
+    mu.star <- rowMeans(eps2.star[idx,,drop=FALSE])
     # cross sectional differences in sqd. errors btw odd & even time periods
     delta <- mu - mu.star
     # test for a positive mean value for Delta
@@ -397,6 +398,7 @@ coef.sfm <- function(object, ...) {
 #' @export
 
 fitted.sfm <- function(object, ...) {
+  # use residuals already computed via fitSfm function
   fitted.xts <- object$data - object$residuals
   return(fitted.xts)
 }
@@ -406,5 +408,6 @@ fitted.sfm <- function(object, ...) {
 #' @export
 
 residuals.sfm <- function(object, ...) {
+  # already computed via fitSfm function
   return(object$residuals)
 }

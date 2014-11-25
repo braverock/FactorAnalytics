@@ -59,9 +59,14 @@
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
 #'                      rf.name="US 3m TR", data=managers)
-#' 
 #' decomp <- fmSdDecomp(fit.macro)
 #' # get the percentage component contributions
+#' decomp$pcSd
+#' 
+#' # Statistical Factor Model
+#' data(stat.fm.data)
+#' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
+#' decomp <- fmSdDecomp(sfm.pca.fit)
 #' decomp$pcSd
 #'  
 #' @export                                       
@@ -122,3 +127,41 @@ fmSdDecomp.tsfm <- function(object, use="pairwise.complete.obs", ...) {
   
   return(fm.sd.decomp)
 }
+
+#' @rdname fmSdDecomp
+#' @method fmSdDecomp sfm
+#' @export
+
+fmSdDecomp.sfm <- function(object, use="pairwise.complete.obs", ...) {
+  
+  # get beta.star: N x (K+1)
+  beta <- object$loadings
+  beta[is.na(beta)] <- 0
+  beta.star <- as.matrix(cbind(beta, object$resid.sd))
+  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  
+  # get cov(F): K x K
+  factor <- as.matrix(object$factors)
+  factor.cov = cov(factor, use=use, ...)
+  
+  # get cov(F.star): (K+1) x (K+1)
+  K <- object$k
+  factor.star.cov <- diag(K+1)
+  factor.star.cov[1:K, 1:K] <- factor.cov
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  
+  # compute factor model sd; a vector of length N
+  Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))
+  
+  # compute marginal, component and percentage contributions to sd
+  # each of these have dimensions: N x (K+1)
+  mSd <- (t(factor.star.cov %*% t(beta.star)))/Sd.fm 
+  cSd <- mSd * beta.star 
+  pcSd = 100* cSd/Sd.fm 
+  
+  fm.sd.decomp <- list(Sd.fm=Sd.fm, mSd=mSd, cSd=cSd, pcSd=pcSd)
+  
+  return(fm.sd.decomp)
+}
+

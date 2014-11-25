@@ -158,21 +158,21 @@ paFm <- function(fit, ...) {
   if (class(fit)=="sfm") {
     
     # return attributed to factors
-    cum.attr.ret <- t(fit$loadings)
+    cum.attr.ret <- fit$loadings
     cum.spec.ret <- fit$r2
-    factorNames <- rownames(fit$loadings)
-    fundNames <- colnames(fit$loadings)
+    factorNames <- colnames(fit$loadings)
+    fundNames <- rownames(fit$loadings)
     data <- checkData(fit$data)
     # create list for attribution
     attr.list <- list()
     # pca method
     
-    if ( dim(fit$asset.ret)[1] > dim(fit$asset.ret)[2] ) {
+    if ( dim(fit$data)[1] > dim(fit$data)[2] ) {
       
       for (k in fundNames) {
         fit.lm <- fit$asset.fit[[k]]
         ## extract information from lm object
-        date <- index(data[, k])
+        date <- index(data[,k])
         # probably needs more general Date setting
         actual.xts <- xts(fit.lm$model[1], as.Date(date))
         # attributed returns
@@ -181,11 +181,11 @@ paFm <- function(fit, ...) {
         # setup initial value
         attr.ret.xts.all <- xts(, as.Date(date))
         
-        for ( i in factorNames ) {
+        for (i in factorNames) {
           attr.ret.xts <- actual.xts - 
             xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), 
                 as.Date(date))  
-          cum.attr.ret[k, i] <- cum.ret - 
+          cum.attr.ret[k,i] <- cum.ret - 
             Return.cumulative(actual.xts - attr.ret.xts)  
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
         }
@@ -194,31 +194,30 @@ paFm <- function(fit, ...) {
         spec.ret.xts <- actual.xts - 
           xts(as.matrix(fit.lm$model[, -1])%*%as.matrix(fit.lm$coef[-1]), 
               as.Date(date))
-        cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
+        cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts- spec.ret.xts)
         attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
         colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")
       }
     } else {
       # apca method:
-      #   fit$loadings # f X K
-      #   fit$factors  # T X f
+      #   fit$loadings # N X K
+      #   fit$factors  # T X K
       date <- index(fit$factors)
       
-      for ( k in fundNames) {
+      for (k in fundNames) {
         attr.ret.xts.all <- xts(, as.Date(date))
-        actual.xts <- xts(fit$asset.ret[, k], as.Date(date))
-        cum.ret <-   Return.cumulative(actual.xts)
+        actual.xts <- xts(fit$data[,k], as.Date(date))
+        cum.ret <- Return.cumulative(actual.xts)
         
         for (i in factorNames) {
-          attr.ret.xts <- xts(fit$factors[, i] * fit$loadings[i, k], 
-                              as.Date(date))
+          attr.ret.xts <- xts(fit$factors[,i]*fit$loadings[k,i], as.Date(date))
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
-          cum.attr.ret[k, i] <- cum.ret - Return.cumulative(actual.xts - 
-                                                              attr.ret.xts)
+          cum.attr.ret[k,i] <- cum.ret - Return.cumulative(actual.xts - 
+                                                             attr.ret.xts)
         }
-        spec.ret.xts <- actual.xts - xts(fit$factors%*%fit$loadings[, k], 
+        spec.ret.xts <- actual.xts - xts(fit$factors%*%t(fit$loadings[k,]), 
                                          as.Date(date))
-        cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
+        cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts- spec.ret.xts)
         attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
         colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")  
       }
@@ -226,7 +225,7 @@ paFm <- function(fit, ...) {
   }
   
   ans <- list(cum.ret.attr.f=cum.attr.ret, cum.spec.ret=cum.spec.ret, 
-             attr.list=attr.list)
+              attr.list=attr.list)
   class(ans) <- "pafm"      
   return(ans)
 }

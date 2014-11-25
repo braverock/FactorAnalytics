@@ -73,9 +73,14 @@
 #' data(managers)
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:8)]), data=managers)
-#'
 #' ES.decomp <- fmEsDecomp(fit.macro)
 #' # get the component contributions
+#' ES.decomp$cES
+#' 
+#' # Statistical Factor Model
+#' data(stat.fm.data)
+#' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
+#' ES.decomp <- fmEsDecomp(sfm.pca.fit)
 #' ES.decomp$cES
 #' 
 #' @importFrom PerformanceAnalytics VaR
@@ -173,3 +178,89 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
   
   return(fm.ES.decomp)
 }
+
+#' @rdname fmEsDecomp
+#' @method fmEsDecomp sfm
+#' @export
+
+fmEsDecomp.sfm <- function(object, p=0.95, 
+                            method=c("modified","gaussian","historical",
+                                     "kernel"), invert=FALSE, ...) {
+  
+  # set defaults and check input vailidity
+  method = method[1]
+  
+  if (!(method %in% c("modified", "gaussian", "historical", "kernel"))) {
+    stop("Invalid argument: method must be 'modified', 'gaussian',
+         'historical' or 'kernel'")
+  }
+  
+  # get beta.star
+  beta <- object$loadings
+  beta[is.na(beta)] <- 0
+  beta.star <- as.matrix(cbind(beta, object$resid.sd))
+  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  
+  # factor returns and residuals data
+  factors.xts <- object$factors
+  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
+  time(resid.xts) <- as.Date(time(resid.xts))
+  
+  # initialize lists and matrices
+  N <- length(object$asset.names)
+  K <- object$k
+  VaR.fm <- rep(NA, N)
+  ES.fm <- rep(NA, N)
+  idx.exceed <- list()
+  n.exceed <- rep(NA, N)
+  names(VaR.fm) = names(ES.fm) = names(n.exceed) = object$asset.names
+  mES <- matrix(NA, N, K+1)
+  cES <- matrix(NA, N, K+1)
+  pcES <- matrix(NA, N, K+1)
+  rownames(mES)=rownames(cES)=rownames(pcES)=object$asset.names
+  colnames(mES)=colnames(cES)=colnames(pcES)=c(paste("F",1:K,sep="."),
+                                               "residuals")
+  
+  for (i in object$asset.names) {
+    # return data for asset i
+    R.xts <- object$data[,i]
+    # get VaR for asset i
+    VaR.fm[i] <- VaR(R.xts, p=p, method=method, invert=invert, ...)
+    # index of VaR exceedances
+    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+    # number of VaR exceedances
+    n.exceed[i] <- length(idx.exceed[[i]])
+    
+    # get F.star data object
+    factor.star <- merge(factors.xts, resid.xts[,i])
+    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    
+    if (!invert) {inv=-1} else {inv=1}
+    
+    # compute ES as expected value of asset return, such that the given asset 
+    # return is less than or equal to its value-at-risk (VaR) and approximated
+    # by a kernel estimator.
+    idx <- which(R.xts <= inv*VaR.fm[i])
+    ES.fm[i] <- inv * mean(R.xts[idx], na.rm =TRUE)
+    
+    # compute marginal ES as expected value of factor returns, such that the
+    # given asset return is less than or equal to its value-at-risk (VaR) and 
+    # approximated by a kernel estimator.
+    mES[i,] <- inv * colMeans(factor.star[idx,], na.rm =TRUE)
+    
+    # correction factor to ensure that sum(cES) = portfolio ES
+    cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
+    
+    # compute marginal, component and percentage contributions to ES
+    # each of these have dimensions: N x (K+1)
+    mES[i,] <- cf * mES[i,]
+    cES[i,] <- mES[i,] * beta.star[i,]
+    pcES[i,] <- 100* cES[i,] / ES.fm[i]
+  }
+  
+  fm.ES.decomp <- list(VaR.fm=VaR.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
+                       ES.fm=ES.fm, mES=mES, cES=cES, pcES=pcES)
+  
+  return(fm.ES.decomp)
+}
+

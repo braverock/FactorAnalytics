@@ -233,8 +233,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
                                      FUN.VALUE = numeric(nrow(dat.xts))))
   } else {
-    warning("Excess returns were not computed. Returns data were used as input 
-            for all factors and assets.")
+    warning("Excess returns were not computed.")
   }
   
   # opt add mkt-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
@@ -290,7 +289,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   tmp <- matrix(NA, length(asset.names), length(factor.names))
   colnames(tmp) <- factor.names
   rownames(tmp) <- asset.names
-  beta <- merge(beta, tmp, all.x=TRUE, sort=FALSE)[,factor.names]
+  beta <- merge(beta, tmp, all.x=TRUE, sort=FALSE)[,factor.names, drop=FALSE]
   rownames(beta) <- asset.names
   # extract r2 and residual sd
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)

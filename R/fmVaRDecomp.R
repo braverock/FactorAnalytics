@@ -73,6 +73,12 @@
 #' # get the component contributions
 #' VaR.decomp$cVaR
 #' 
+#' # Statistical Factor Model
+#' data(stat.fm.data)
+#' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
+#' VaR.decomp <- fmVaRDecomp(sfm.pca.fit)
+#' VaR.decomp$cVaR
+#' 
 #' @importFrom PerformanceAnalytics VaR
 #' 
 #' @export
@@ -174,3 +180,94 @@ fmVaRDecomp.tsfm <- function(object, p=0.95,
   
   return(fm.VaR.decomp)
 }
+
+#' @rdname fmVaRDecomp
+#' @method fmVaRDecomp sfm
+#' @export
+
+fmVaRDecomp.sfm <- function(object, p=0.95, 
+                             method=c("modified","gaussian","historical",
+                                      "kernel"), invert=FALSE, ...) {
+  
+  # set defaults and check input vailidity
+  method = method[1]
+  
+  if (!(method %in% c("modified", "gaussian", "historical", "kernel"))) {
+    stop("Invalid argument: method must be 'modified', 'gaussian',
+         'historical' or 'kernel'")
+  }
+  
+  # get beta.star
+  beta <- object$loadings
+  beta[is.na(beta)] <- 0
+  beta.star <- as.matrix(cbind(beta, object$resid.sd))
+  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  
+  # factor returns and residuals data
+  factors.xts <- object$factors
+  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
+  time(resid.xts) <- as.Date(time(resid.xts))
+  
+  # initialize lists and matrices
+  N <- length(object$asset.names)
+  K <- object$k
+  VaR.fm <- rep(NA, N)
+  idx.exceed <- list()
+  n.exceed <- rep(NA, N)
+  names(VaR.fm) = names(n.exceed) = object$asset.names
+  mVaR <- matrix(NA, N, K+1)
+  cVaR <- matrix(NA, N, K+1)
+  pcVaR <- matrix(NA, N, K+1)
+  rownames(mVaR)=rownames(cVaR)=rownames(pcVaR)=object$asset.names
+  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(paste("F",1:K,sep="."),
+                                                  "residuals")
+  
+  for (i in object$asset.names) {
+    # return data for asset i
+    R.xts <- object$data[,i]
+    # get VaR for asset i
+    VaR.fm[i] <- VaR(R.xts, p=p, method=method, invert=invert, ...)
+    # index of VaR exceedances
+    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+    # number of VaR exceedances
+    n.exceed[i] <- length(idx.exceed[[i]])
+    
+    #     # plot exceedances for asset i
+    #     plot(R.xts, type="b", main="Asset Returns and 5% VaR Violations",
+    #          ylab="Returns")
+    #     abline(h=0)
+    #     abline(h=VaR.fm[i], lwd=2, col="red")
+    #     points(R.xts[idx.exceed[[i]]], type="p", pch=16, col="red")
+    
+    # get F.star data object
+    factor.star <- merge(factors.xts, resid.xts[,i])
+    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    
+    if (!invert) {inv=-1} else {inv=1}
+    
+    # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
+    # the constant 2.575 corresponds to a triangular kernel 
+    eps <- 2.575*sd(R.xts, na.rm =TRUE) * (nrow(R.xts)^(-1/5))
+    # compute marginal VaR as expected value of factor returns, such that the
+    # asset return was incident in the triangular kernel region peaked at the 
+    # VaR value and bandwidth = epsilon.
+    k.weight <- as.vector(1 - abs(R.xts - VaR.fm[i]) / eps)
+    k.weight[k.weight<0] <- 0
+    mVaR[i,] <- inv * colMeans(factor.star*k.weight, na.rm =TRUE)
+    
+    # correction factor to ensure that sum(cVaR) = portfolio VaR
+    cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,], na.rm=TRUE) )
+    
+    # compute marginal, component and percentage contributions to VaR
+    # each of these have dimensions: N x (K+1)
+    mVaR[i,] <- cf * mVaR[i,]
+    cVaR[i,] <- mVaR[i,] * beta.star[i,]
+    pcVaR[i,] <- 100* cVaR[i,] / VaR.fm[i]
+  }
+  
+  fm.VaR.decomp <- list(VaR.fm=VaR.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
+                        mVaR=mVaR, cVaR=cVaR, pcVaR=pcVaR)
+  
+  return(fm.VaR.decomp)
+}
+

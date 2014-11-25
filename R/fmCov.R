@@ -52,18 +52,12 @@
 #'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)                              
 #' fmCov(fit)
 #' 
-#' \dontrun{
 #' # Statistical Factor Model
 #' data(stat.fm.data)
 #' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
-#' #' fmCov(t(sfm.pca.fit$loadings), var(sfm.pca.fit$factors), 
-#'                          sfm.pca.fit$resid.sd)
-#' 
-#' sfm.apca.fit <- fitSfm(sfm.apca.dat, k=2)
-#' 
-#' fmCov(t(sfm.apca.fit$loadings), var(sfm.apca.fit$factors), 
-#'                       sfm.apca.fit$resid.sd)
-#'
+#' fmCov(sfm.pca.fit)
+#'                       
+#' \dontrun{
 #' # Fundamental Factor Model
 #' data(stock)
 #' # there are 447 assets  
@@ -121,3 +115,14 @@ fmCov.tsfm <- function(object, use="pairwise.complete.obs", ...) {
   
   return(cov.fm)
 }
+
+#' @rdname fmCov
+#' @method fmCov sfm
+#' @export
+
+fmCov.sfm <- function(object, use="pairwise.complete.obs", ...) {
+  
+  # already computed via fitSfm function
+  return(object$Omega)
+}
+

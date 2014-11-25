@@ -22,7 +22,7 @@
 
 \begin{document}
 
-\title{Fitting a Time series Factor Model with fitTsfm in factorAnalytics}
+\title{Fitting Time Series Factor Models: factorAnalytics vignette}
 \author{Sangeetha Srinivasan}
 \maketitle
 
@@ -44,6 +44,7 @@ install.packages("factorAnalytics", repos="http://R-Forge.R-project.org")
 Load the package and it's dependencies.
 <<message=FALSE>>=
 library(factorAnalytics)
+options(digits=3)
 @
 
 \subsection{Summary of related functions}
@@ -102,7 +103,7 @@ data(CommonFactors)
 names(factors.Q)
 range(index(factors.Q))
 @
-
+\newpage
 \section{Fit a time series factor model}
 
 In a time series or macroeconomic factor model, observable economic time series such as industrial production growth rate, interest rates, market returns and inflation are used as common factors that contribute to asset returns. For example, the famous single factor model by \citet{sharpe1970portfolio} uses the market excess return as the common factor (captures economy-wide or market risk) for all assets and the unexplained returns in the error term represents the non-market firm specific risk. Whereas, \citet{chen1986economic} find that surprise inflation, the spread between long and short-term interest rates and between high and low grade bonds are significantly priced, while the market portfolio, aggregate consumption risk and oil price risk are not priced separately. 
@@ -190,8 +191,8 @@ plot(fit.lars, which.plot.group=2, loop=FALSE)
 <<fig.cap="Factor betas: fit.sub", fig.show='hold'>>=
 plot(fit.sub, which.plot.group=2, loop=FALSE)
 @
-\newpage
 
+\newpage
 \subsection{fitTsfm control}
 
 Since \code{fitTsfm} calls many different regression fitting and variable selection methods, it made sense to collect all the optional controls for these functions and process them via \code{fitTsfm.control}. This function is meant to be used internally by \code{fitTsfm} when arguments are passed to it via the ellipsis. The use of control parameters was demonstrated with subset.size in the fit.sub example earlier. 
@@ -214,7 +215,6 @@ There are 3 other significant arguments that can be passed through the \code{...
 \end{itemize}
 
 \newpage
-
 \subsection{Summary, Predict, Coefficients, Fitted values and Residuals}
 
 <<>>=
@@ -352,7 +352,7 @@ decomp2$pcES
 # plot the percentage component contributions to ES
 plot(fit.sub, which.plot.group=9, loop=FALSE)
 @
-
+\newpage
 \section{Plot}
 
 Many types of individual asset (Figure 1) and group plots (Figures 2-8) have already been demonstrated. Let's take a look at all available arguments for plotting a "tsfm" object.

@@ -36,6 +36,8 @@ Default is \code{FALSE}.}
 
 \item{object}{a fit object of class \code{sfm} which is returned by
 \code{fitSfm}}
+
+\item{...}{arguments passed to other functions.}
 }
 \value{
 fitTsfm returns an object of class \code{"sfm"} for which
@@ -58,8 +60,7 @@ regressing the asset returns on estimated factors.}
 \item{r2}{length-N vector of R-squared values.}
 \item{resid.sd}{length-N vector of residual standard deviations.}
 \item{residuals}{T x N xts object of residuals from the OLS regression.}
-\item{Omega}{M x M return covariance matrix estimated by the factor model,
-where M = min(N,T).}
+\item{Omega}{N x N return covariance matrix estimated by the factor model.}
 \item{eigen}{length-K vector of eigenvalues of the sample covariance matrix.}
 \item{mimic}{N x K matrix of factor mimicking portfolio weights.}
 \item{call}{the matched function call.}
