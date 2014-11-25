@@ -14,3 +14,4 @@
 #' @importFrom lattice barchart panel.barchart panel.grid
 #' @importFrom corrplot corrplot
 #' @importFrom strucchange efp
+#' @importFrom MASS ginv 

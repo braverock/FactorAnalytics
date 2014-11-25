@@ -2,7 +2,7 @@
 #' 
 #' @description Creates a list of control parameters for \code{\link{fitTsfm}}. 
 #' All control parameters that are not passed to this function are set to 
-#' default values.
+#' default values. This function is meant for internal use only!! 
 #' 
 #' @details This control function is used to process optional arguments passed 
 #' via \code{...} to \code{fitTsfm}. These arguments are validated and defaults
