@@ -44,8 +44,11 @@ homoskedasticty. Argument \code{se.type} gives the option to compute
 heteroskedasticity-consistent (HC) or
 heteroskedasticity-autocorrelation-consistent (HAC) standard errors and
 t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful
-only if \code{fit.method = "OLS" or "DLS"}. HC/HAC errors are currently not
-available for \code{variable.selection = "lars"}.
+only if \code{fit.method = "OLS" or "DLS"}.
+Standard errors are currently not available for
+\code{variable.selection="lars"} as there seems to be no consensus on a
+statistically valid method of calculating standard errors for the lasso
+predictions.
 }
 \note{
 For a more detailed printed summary for each asset, refer to

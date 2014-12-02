@@ -87,7 +87,7 @@ without the need for menu selection.
 For group plots (the default), the first \code{max.show} assets are plotted.
 For individual plots, \code{asset.name} is necessary if multiple assets
 were modeled in \code{x} and \code{plot.single=TRUE}. However, if the
-\code{fitTsfm} object \code{x} only contains one asset's factor model fit,
+\code{fitTsfm} object contains only one asset's factor model fit,
 \code{plot.tsfm} can infer this automatically, without user input.
 
 CUSUM plots (individual asset plot options 10, 11 and 12) are applicable

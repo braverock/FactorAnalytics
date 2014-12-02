@@ -1,6 +1,7 @@
 
 ## ----message=FALSE-------------------------------------------------------
 library(factorAnalytics)
+options(digits=3)
 
 
 ## ------------------------------------------------------------------------
@@ -27,66 +28,77 @@ args(fitTsfm)
 
 
 ## ------------------------------------------------------------------------
-fit.Sharpe <- fitTsfm(asset.names=asset.names, factor.names="SP500 TR", 
-                      rf.name="US 3m TR", data=managers)
-names(fit.Sharpe)
-fit.Sharpe
+# Single Index Model using SP500
+fit.singleIndex <- fitTsfm(asset.names=asset.names, factor.names="SP500 TR", 
+                           rf.name="US 3m TR", data=managers)
 
 
 ## ------------------------------------------------------------------------
-# adding up-market timing factor ("HM") to the model 
-fit1 <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                mkt.name="SP500 TR", mkt.timing="HM", data=managers)
-fit1$beta
-fit1$r2
-fit1$resid.sd
+class(fit.singleIndex)
+names(fit.singleIndex)
 
 
 ## ------------------------------------------------------------------------
-fit2 <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                mkt.name="SP500 TR", data=managers, fit.method="Robust")
-fit2$beta
-fit2$r2
-fit2$resid.sd
+fit.singleIndex # print the fitted "tsfm" object
 
 
-## ----fig.cap="HAM3 Returns: fit1-OLS (top) vs fit2-Robust (bottom)", fig.show='hold'----
+## ------------------------------------------------------------------------
+# Henriksson-Merton's market timing model
+fit.mktTiming <- fitTsfm(asset.names=asset.names, rf.name="US 3m TR", 
+                         mkt.name="SP500 TR", mkt.timing="HM", data=managers)
+fit.mktTiming
+
+
+## ------------------------------------------------------------------------
+fit.ols <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
+                    rf.name="US 3m TR", data=managers)
+fit.ols$beta
+fit.ols$r2
+fit.ols$resid.sd
+
+
+## ------------------------------------------------------------------------
+fit.robust <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
+                       rf.name="US 3m TR", data=managers, fit.method="Robust")
+fit.robust$beta
+fit.robust$r2
+fit.robust$resid.sd
+
+
+## ----fig.cap="HAM3 Returns: OLS (top) vs Robust (bottom)", fig.show='hold'----
 par(mfrow=c(2,1))
-plot(fit1, plot.single=TRUE, which.plot.single=1, asset.name="HAM3", loop=FALSE)
-plot(fit2, plot.single=TRUE, which.plot.single=1, asset.name="HAM3", loop=FALSE)
+plot(fit.ols, plot.single=TRUE, which.plot.single=1, asset.name="HAM3", loop=FALSE)
+mtext("OLS", side=3)
+plot(fit.robust, plot.single=TRUE, which.plot.single=1, asset.name="HAM3", loop=FALSE)
+mtext("Robust", side=3)
 
 
-## ----fig.cap="Residual vol: fit1-OLS (left) vs fit2-Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'----
+## ----fig.cap="Residual vol: OLS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'----
 par(mfrow=c(1,2))
-plot(fit1, which.plot.group=5, loop=FALSE, xlim=c(0,0.043))
-plot(fit2, which.plot.group=5, loop=FALSE, xlim=c(0,0.043))
+plot(fit.ols, which.plot.group=5, loop=FALSE, xlim=c(0,0.043), sub="OLS")
+plot(fit.robust, which.plot.group=5, loop=FALSE, xlim=c(0,0.043), sub="Robust")
+
+
+## ----fig.show='hide'-----------------------------------------------------
+fit.lars <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
+                    data=managers, rf.name="US 3m TR", 
+                    variable.selection="lars")
+fit.lars
 
 
 ## ------------------------------------------------------------------------
-fit.lars <- fitTsfm(asset.names=colnames(managers[,(1:6)]), 
-                    factor.names=colnames(managers[,(7:9)]), data=managers, 
-                    rf.name="US 3m TR", mkt.name="SP500 TR")
-fit.lars$beta
-fit.lars$r2
-
-fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]), 
-                   factor.names=colnames(managers[,(7:9)]), data=managers, 
-                   rf.name="US 3m TR", mkt.name="SP500 TR", 
-                   variable.selection="subsets", subset.size=4)
-fit.sub$beta
-fit.sub$r2
-
-
-## ----fig.cap="Factor betas: fit.lars", fig.show='hold'-------------------
-plot(fit.lars, which.plot.group=2, loop=FALSE)
+fit.sub <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
+                   data=managers, rf.name="US 3m TR", 
+                   variable.selection="subsets", nvmin=2, nvmax=2)
+fit.sub
 
 
 ## ----fig.cap="Factor betas: fit.sub", fig.show='hold'--------------------
 plot(fit.sub, which.plot.group=2, loop=FALSE)
 
 
-## ----tidy=TRUE-----------------------------------------------------------
-args(fitTsfm.control)
+## ----fig.cap="Factor betas: fit.lars", fig.show='hold'-------------------
+plot(fit.lars, which.plot.group=2, loop=FALSE)
 
 
 ## ------------------------------------------------------------------------
@@ -94,16 +106,17 @@ methods(class="tsfm")
 
 
 ## ------------------------------------------------------------------------
-coef(fit.sub)
-tail(fitted(fit.sub))
-tail(residuals(fit.sub))
+# all estimated coefficients from the OLS fit using all 3 factors
+coef(fit.ols)
 
-# comparing data, fitted and residual values for HAM1
-tail(merge(fit.sub$data[,1], fitted(fit.sub)[,1], residuals(fit.sub)[,1]))
+# compare returns data with fitted and residual values for HAM1 from fit.lars
+HAM1.ts <- merge(fit.lars$data[,1], fitted(fit.lars)[,1], 
+                      residuals(fit.lars)[,1])
+colnames(HAM1.ts) <- c("HAM1.return","HAM1.fitted","HAM1.residual")
+tail(HAM1.ts)
 
-# printed summary for the time series factor model
+# summary for fit.sub computing HAC standard erros
 summary(fit.sub, se.type="HAC")
-
 
 
 ## ----fig.cap="Factor model return correlation (pairwise complete obs)"----
@@ -115,6 +128,7 @@ plot(fit.sub, which.plot.group=7, loop=FALSE, order="AOE", method="ellipse",
 
 ## ----fig.cap="Percentage factor contribution to SD"----------------------
 decomp <- fmSdDecomp(fit.sub)
+names(decomp)
 # get the factor model standard deviation for all assets
 decomp$Sd.fm
 # get the component contributions to Sd
@@ -128,24 +142,22 @@ plot(fit.sub, which.plot.group=8, loop=FALSE)
 
 
 ## ----fig.cap="Percentage factor contribution to VaR"---------------------
-decomp2 <- fmVaRDecomp(fit.sub)
+decomp1 <- fmVaRDecomp(fit.sub)
+names(decomp1)
 # get the factor model value-at-risk for all assets
-decomp2$VaR.fm
-# get the component contributions to VaR
-decomp2$cVaR
-# get the marginal factor contributions to VaR
-decomp2$mVaR
+decomp1$VaR.fm
 # get the percentage component contributions to VaR
-decomp2$pcVaR
+decomp1$pcVaR
 # plot the percentage component contributions to VaR
 plot(fit.sub, which.plot.group=10, loop=FALSE)
 
 
 ## ----fig.cap="Percentage factor contribution to ES"----------------------
 decomp2 <- fmEsDecomp(fit.sub, method="historical")
+names(decomp2)
 # get the factor model expected shortfall for all assets
 decomp2$ES.fm
-# get the component contributions to ES
+# get the component contributions to Sd
 decomp2$cES
 # get the marginal factor contributions to ES
 decomp2$mES
@@ -156,7 +168,7 @@ plot(fit.sub, which.plot.group=9, loop=FALSE)
 
 
 ## ----eval=FALSE----------------------------------------------------------
-## ## S3 method for class 'tsfm'
+## ## S3 method for class "tsfm"
 ## plot(x, which.plot.group=NULL, max.show=6, plot.single=FALSE, asset.name,
 ##      which.plot.single=NULL, colorset=(1:12), legend.loc="topleft", las=1,
 ##      VaR.method="historical", loop=TRUE, ...)

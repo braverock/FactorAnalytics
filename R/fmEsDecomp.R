@@ -35,11 +35,10 @@
 #' \code{\link[PerformanceAnalytics]{VaR}}.
 #' 
 #' @return A list containing 
-#' \item{VaR.fm}{length-N vector of factor model VaRs of N-asset returns.}
+#' \item{ES.fm}{length-N vector of factor model ES of N-asset returns.}
 #' \item{n.exceed}{length-N vector of number of observations beyond VaR for 
 #' each asset.}
 #' \item{idx.exceed}{list of numeric vector of index values of exceedances.}
-#' \item{ES.fm}{length-N vector of factor model ES of N-asset returns.}
 #' \item{mES}{N x (K+1) matrix of marginal contributions to VaR.}
 #' \item{cES}{N x (K+1) matrix of component contributions to VaR.}
 #' \item{pcES}{N x (K+1) matrix of percentage component contributions to VaR.}
@@ -173,8 +172,8 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
     pcES[i,] <- 100* cES[i,] / ES.fm[i]
   }
   
-  fm.ES.decomp <- list(VaR.fm=VaR.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
-                       ES.fm=ES.fm, mES=mES, cES=cES, pcES=pcES)
+  fm.ES.decomp <- list(ES.fm=ES.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
+                       mES=mES, cES=cES, pcES=pcES)
   
   return(fm.ES.decomp)
 }
@@ -258,8 +257,8 @@ fmEsDecomp.sfm <- function(object, p=0.95,
     pcES[i,] <- 100* cES[i,] / ES.fm[i]
   }
   
-  fm.ES.decomp <- list(VaR.fm=VaR.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
-                       ES.fm=ES.fm, mES=mES, cES=cES, pcES=pcES)
+  fm.ES.decomp <- list(ES.fm=ES.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
+                       mES=mES, cES=cES, pcES=pcES)
   
   return(fm.ES.decomp)
 }

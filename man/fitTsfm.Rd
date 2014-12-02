@@ -9,7 +9,7 @@
 fitTsfm(asset.names, factor.names, mkt.name = NULL, rf.name = NULL,
   data = data, fit.method = c("OLS", "DLS", "Robust"),
   variable.selection = c("none", "stepwise", "subsets", "lars"),
-  mkt.timing = "both", control = fitTsfm.control(...), ...)
+  mkt.timing = NULL, control = fitTsfm.control(...), ...)
 
 \method{coef}{tsfm}(object, ...)
 
@@ -40,7 +40,7 @@ See details. Default is "OLS".}
 \item{variable.selection}{the variable selection method, one of "none",
 "stepwise","subsets","lars". See details. Default is "none".}
 
-\item{mkt.timing}{one of "HM", "TM" or "both" (default). See Details.
+\item{mkt.timing}{one of "HM", "TM" or "both". See Details. Default is NULL.
 \code{mkt.name} is required if any of these options are to be implemented.}
 
 \item{control}{list of control parameters. The default is constructed by
@@ -100,31 +100,35 @@ Estimation method "OLS" corresponds to ordinary least squares using
 squares with exponentially declining weights that sum to unity), and,
 "Robust" is robust regression (using \code{\link[robust]{lmRob}}).
 
-If \code{variable.selection="none"}, all chosen factors are used in the
-factor model. Whereas, "stepwise" performs traditional forward/backward
-stepwise OLS regression (using \code{\link[stats]{step}} or
+If \code{variable.selection="none"}, uses all the factors and performs no
+variable selection. Whereas, "stepwise" performs traditional stepwise
+LS or Robust regression (using \code{\link[stats]{step}} or
 \code{\link[robust]{step.lmRob}}), that starts from the initial set of
-factors and adds factors only if the regression fit, as measured by the
-Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC),
-improves. And, "subsets" enables subsets selection using
+factors and adds/subtracts factors only if the regression fit, as measured
+by the Bayesian Information Criterion (BIC) or Akaike Information Criterion
+(AIC), improves. And, "subsets" enables subsets selection using
 \code{\link[leaps]{regsubsets}}; chooses the best performing subset of any
-given size or within a range of subset sizes. See
-\code{\link{fitTsfm.control}} for more details on the control arguments.
+given size or within a range of subset sizes. Different methods such as
+exhaustive search (default), forward or backward stepwise, or sequential
+replacement can be employed.See \code{\link{fitTsfm.control}} for more
+details on the control arguments.
+
 \code{variable.selection="lars"} corresponds to least angle regression
-using \code{\link[lars]{lars}} with variants "lasso", "lar", "stepwise" or
-"forward.stagewise". Note: If \code{variable.selection="lars"},
+using \code{\link[lars]{lars}} with variants "lasso" (default), "lar",
+"stepwise" or "forward.stagewise". Note: If \code{variable.selection="lars"},
 \code{fit.method} will be ignored.
 
 Arguments \code{mkt.name} and \code{mkt.timing} allow for market-timing
 factors to be added to any of the above methods. Market timing accounts for
 the price movement of the general stock market relative to fixed income
-securities. "HM" follows Henriksson & Merton (1981) and
-\code{up.market=max(0,Rm-Rf)}, is added to the regression. The coefficient
-of this up-market factor can be interpreted as the number of free put
-options. Similarly, "TM" follows Treynor-Mazuy (1966), to account for market
-timing with respect to volatility, and \code{market.sqd=(Rm-Rf)^2} is added
-as a factor in the regression. Option "both" (default) adds both of these
-factors.
+securities. Specifying \code{mkt.timing="HM"}, includes
+$up.market = max(0, R_m-R_f)$ as a factor, followinhg Henriksson & Merton
+(1981). The coefficient of this up-market factor can be interpreted as the
+number of free put options. Similarly, to account for market timing with
+respect to volatility, one can specify \code{mkt.timing="TM"}. Following
+\citet{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor. To
+include both these market-timing factors in the model, one can specify
+\code{mkt.timing=c("HM","TM")}.
 
 \subsection{Data Processing}{
 

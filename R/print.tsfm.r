@@ -36,7 +36,9 @@ print.tsfm <- function(x, digits=max(3, .Options$digits - 3), ...){
   cat("\nRegression Alphas:\n")
   print(t(x$alpha), digits=digits, ...)
   cat("\nFactor Betas:\n")
-  print(x$beta, digits=digits, ...)
+  B <- as.matrix(t(x$beta))
+  if (x$variable.selection=="lars") { B[B==0] <- NA }
+  print(B, digits=digits, na.print="-", ...)
   cat("\nR-squared values:\n")
   print(x$r2, digits=digits, ...)
   cat("\nResidual Volatilities:\n")

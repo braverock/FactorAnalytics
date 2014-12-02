@@ -118,23 +118,23 @@ class(sfm.apca.dat)
 
 # pca
 args(fitSfm)
-sfm.pca.fit <- fitSfm(sfm.dat, k=2)
-class(sfm.pca.fit)
-names(sfm.pca.fit)
-head(sfm.pca.fit$factors)
-head(sfm.pca.fit$loadings)
-sfm.pca.fit$r2
-sfm.pca.fit$resid.sd
-sfm.pca.fit$mimic
+fit.pca <- fitSfm(sfm.dat, k=2)
+class(fit.pca)
+names(fit.pca)
+head(fit.pca$factors)
+head(fit.pca$loadings)
+fit.pca$r2
+fit.pca$resid.sd
+fit.pca$mimic
 
 # apca with number of factors, k=15
-sfm.apca.fit <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
+fit.apca <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
 
 # apca with the Bai & Ng method
-sfm.apca.fit.bn <- fitSfm(sfm.apca.dat, k="bn")
+fit.apca.bn <- fitSfm(sfm.apca.dat, k="bn")
 
 # apca with the Connor-Korajczyk method
-sfm.apca.fit.ck <- fitSfm(sfm.apca.dat, k="ck")
+fit.apca.ck <- fitSfm(sfm.apca.dat, k="ck")
 }
 \author{
 Eric Zivot, Sangeetha Srinivasan and Yi-An Chen

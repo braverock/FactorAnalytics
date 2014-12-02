@@ -29,11 +29,10 @@ fmEsDecomp(object, ...)
 }
 \value{
 A list containing
-\item{VaR.fm}{length-N vector of factor model VaRs of N-asset returns.}
+\item{ES.fm}{length-N vector of factor model ES of N-asset returns.}
 \item{n.exceed}{length-N vector of number of observations beyond VaR for
 each asset.}
 \item{idx.exceed}{list of numeric vector of index values of exceedances.}
-\item{ES.fm}{length-N vector of factor model ES of N-asset returns.}
 \item{mES}{N x (K+1) matrix of marginal contributions to VaR.}
 \item{cES}{N x (K+1) matrix of component contributions to VaR.}
 \item{pcES}{N x (K+1) matrix of percentage component contributions to VaR.}
