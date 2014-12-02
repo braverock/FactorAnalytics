@@ -126,7 +126,7 @@ $up.market = max(0, R_m-R_f)$ as a factor, followinhg Henriksson & Merton
 (1981). The coefficient of this up-market factor can be interpreted as the
 number of free put options. Similarly, to account for market timing with
 respect to volatility, one can specify \code{mkt.timing="TM"}. Following
-\citet{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor. To
+Treynor & Mazuy (1966), $market.sqd = (R_m-R_f)^2$ is added as a factor. To
 include both these market-timing factors in the model, one can specify
 \code{mkt.timing=c("HM","TM")}.
 
@@ -146,8 +146,7 @@ with \code{xts} objects internally and colnames won't be left as they are.
 # load data from the database
 data(managers)
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-               factor.names=colnames(managers[,(7:9)]),
-               mkt.name="SP500 TR", mkt.timing="HM", data=managers)
+               factor.names=colnames(managers[,(7:9)]), data=managers)
 summary(fit)
 fitted(fit)
 # plot actual returns vs. fitted factor model returns for HAM1
@@ -158,7 +157,8 @@ plot(fit, plot.single=TRUE, asset.name="HAM1", which.plot.single=1,
 
 # example: Market-timing factors with robust fit
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]), factor.names=NULL,
-               mkt.name="SP500 TR", data=managers, fit.method="Robust")
+               mkt.name="SP500 TR", mkt.timing="HM", data=managers,
+               fit.method="Robust")
 
 # example using "subsets" variable selection
 fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),

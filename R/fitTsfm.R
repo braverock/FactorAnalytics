@@ -43,7 +43,7 @@
 #' (1981). The coefficient of this up-market factor can be interpreted as the 
 #' number of free put options. Similarly, to account for market timing with 
 #' respect to volatility, one can specify \code{mkt.timing="TM"}. Following 
-#' \citet{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor. To 
+#' Treynor & Mazuy (1966), $market.sqd = (R_m-R_f)^2$ is added as a factor. To 
 #' include both these market-timing factors in the model, one can specify 
 #' \code{mkt.timing=c("HM","TM")}. 
 #' 
@@ -145,8 +145,7 @@
 #' # load data from the database
 #' data(managers)
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-#'                factor.names=colnames(managers[,(7:9)]), 
-#'                mkt.name="SP500 TR", mkt.timing="HM", data=managers)
+#'                factor.names=colnames(managers[,(7:9)]), data=managers)
 #' summary(fit)
 #' fitted(fit)
 #' # plot actual returns vs. fitted factor model returns for HAM1
@@ -157,7 +156,8 @@
 #' 
 #' # example: Market-timing factors with robust fit
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]), factor.names=NULL, 
-#'                mkt.name="SP500 TR", data=managers, fit.method="Robust")
+#'                mkt.name="SP500 TR", mkt.timing="HM", data=managers, 
+#'                fit.method="Robust")
 #' 
 #' # example using "subsets" variable selection
 #' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
@@ -200,8 +200,9 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     factor.names <- NULL
   }
   
-  if (is.null(mkt.name) && !is.null(mkt.timing)) {
-    stop("Missing argument: mkt.name is necessary to add market timing factors")
+  if (xor(is.null(mkt.name), is.null(mkt.timing))) {
+    stop("Missing argument: Both mkt.name and mkt.timing are necessary to add 
+         market timing factors")
   }
   
   # extract arguments to pass to different fit and variable selection functions
