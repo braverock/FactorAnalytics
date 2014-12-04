@@ -37,12 +37,11 @@
 #' 9 = Factor Contribution to ES,\cr
 #' 10 = Factor Contribution to VaR
 #' @param max.show maximum number of assets in a given plot. Default is 6.
-#' @param plot.single a logical value. \code{TRUE} plots the characteristics of
-#' an individual asset's factor model. The type of plot is given by 
+#' @param plot.single logical; If \code{TRUE} plots the characteristics of an 
+#' individual asset's factor model. The type of plot is given by 
 #' \code{which.plot.single}. Default is \code{FALSE}.
 #' @param asset.name name of the individual asset to be plotted. Is necessary 
-#' if multiple assets factor model fits exist in \code{x} and 
-#' \code{plot.single=TRUE}.
+#' if \code{x} contains multiple asset fits and \code{plot.single=TRUE}.
 #' @param which.plot.single a number to indicate the type of group plot for an 
 #' individual asset. If \code{NULL} (default), the following menu appears: \cr
 #'  1 = Time series plot of actual and fitted asset returns,\cr
@@ -101,9 +100,15 @@
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:8)]),
 #'                      rf.name="US 3m TR", data=managers)
-#'                    
-#' # plot the factor betas of 1st 4 assets fitted above.
+#'     
+#' # group plot(default); select type from menu prompt
+#' # menu is auto-looped to get multiple types of plots based on the same fit
+#' # plot(fit.macro)
+#'                
+#' # plot the factor betas of 1st 4 assets fitted above
+#' # loop disabled to get one type of plot without interative menu
 #' plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
+#' 
 #' # plot factor model return correlation; angular order of the eigenvectors
 #' plot(fit.macro, which.plot.group=7, loop=FALSE, 
 #'      order="AOE", method="ellipse", tl.pos = "d")
@@ -111,9 +116,6 @@
 #' # histogram of residuals from an individual asset's factor model fit 
 #' plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which.plot.single=8, 
 #'      loop=FALSE)
-#' 
-#' # group plot; type selected from menu prompt; auto-looped for multiple plots
-#' # plot(fit.macro)
 #' 
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus
 #' chart.Histogram chart.QQPlot
@@ -134,7 +136,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
     
     if (missing(asset.name) && length(x$asset.names)>1) {
       stop("Missing input: 'asset.name' is required if plot.single is TRUE and 
-           multiple assets factor model fits exist in 'x'.")   
+           the factor model fits multiple assets.")   
     } else if (length(x$asset.names)==1) {
       i <- x$asset.names[1]
     } else {
@@ -326,8 +328,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                ## Factor model coefficients: Betas
                k <- ncol(coef(x))-1
                if (k > max.show) {
-                 cat(paste("Displaying only the first", max.show,"factor betas, 
-                           as the number of factors > 'max.show' =", max.show))
+                 cat(paste("Displaying only the first", max.show,"factor betas, as the number of factors > 'max.show' =", max.show))
                  k <- max.show 
                }
                par(mfrow=c(ceiling(k/2),2))
@@ -343,8 +344,7 @@ plot.tsfm <- function(x, which.plot.group=NULL, max.show=6, plot.single=FALSE,
                ## Actual and Fitted asset returns
                n <- length(x$asset.names)
                if (n > max.show) {
-                 cat(paste("Displaying only the first", max.show,
-                           "assets, since the number of assets > 'max.show'"))
+                 cat(paste("Displaying only the first", max.show, "assets, since the number of assets > 'max.show'"))
                  n <- max.show 
                }
                par(mfrow=c(ceiling(n/2),2))

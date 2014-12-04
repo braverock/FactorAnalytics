@@ -26,13 +26,12 @@ multiple assets. If \code{NULL} (default), the following menu appears: \cr
 
 \item{max.show}{maximum number of assets in a given plot. Default is 6.}
 
-\item{plot.single}{a logical value. \code{TRUE} plots the characteristics of
-an individual asset's factor model. The type of plot is given by
+\item{plot.single}{logical; If \code{TRUE} plots the characteristics of an
+individual asset's factor model. The type of plot is given by
 \code{which.plot.single}. Default is \code{FALSE}.}
 
 \item{asset.name}{name of the individual asset to be plotted. Is necessary
-if multiple assets factor model fits exist in \code{x} and
-\code{plot.single=TRUE}.}
+if \code{x} contains multiple asset fits and \code{plot.single=TRUE}.}
 
 \item{which.plot.single}{a number to indicate the type of group plot for an
 individual asset. If \code{NULL} (default), the following menu appears: \cr
@@ -103,8 +102,14 @@ fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]),
                      rf.name="US 3m TR", data=managers)
 
-# plot the factor betas of 1st 4 assets fitted above.
+# group plot(default); select type from menu prompt
+# menu is auto-looped to get multiple types of plots based on the same fit
+# plot(fit.macro)
+
+# plot the factor betas of 1st 4 assets fitted above
+# loop disabled to get one type of plot without interative menu
 plot(fit.macro, max.show=4, which.plot.group=2, loop=FALSE)
+
 # plot factor model return correlation; angular order of the eigenvectors
 plot(fit.macro, which.plot.group=7, loop=FALSE,
      order="AOE", method="ellipse", tl.pos = "d")
@@ -112,9 +117,6 @@ plot(fit.macro, which.plot.group=7, loop=FALSE,
 # histogram of residuals from an individual asset's factor model fit
 plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which.plot.single=8,
      loop=FALSE)
-
-# group plot; type selected from menu prompt; auto-looped for multiple plots
-# plot(fit.macro)
 }
 \author{
 Eric Zivot, Sangeetha Srinivasan and Yi-An Chen

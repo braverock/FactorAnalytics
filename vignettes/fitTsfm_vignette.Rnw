@@ -265,7 +265,7 @@ There are 3 other significant arguments that can be passed through the \code{...
 \end{itemize}
 
 \newpage
-\subsection{Summary, Predict, Coefficients, Fitted values and Residuals}
+\subsection{S3 generic methods}
 
 <<>>=
 methods(class="tsfm")
@@ -277,6 +277,8 @@ Many useful generic accessor functions are available for "tsfm" fit objects. \co
 \code{summary()} prints standard errors and t-statistics for all estimated coefficients in addition to R-squared values and residual volatilities. The \code{se.type} argument enables computing heteroskedasticity and auto-correlation consistent ("HC" and "HAC") estimates and standard errors whenever possible. A "summary.tsfm" object is returned which contains the summary objects returned by "lm", "lm.Rob" or "lars" for each asset fit. 
 
 Note: Standard errors are currently not available for the "lars" variable selection method, as there seems to be no consensus on a statistically valid method of calculating standard errors for the lasso predictions.
+
+Factor model covariance and risk decomposition functions are explained in section 3 and \code{plot()} method is discussed separately in Section 4.
 
 Here are some examples using the time series factor models fitted earlier.
 <<>>=
