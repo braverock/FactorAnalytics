@@ -3,13 +3,15 @@
 #' @description Fits a statistical factor model using principal component 
 #' analysis for one or more asset returns or excess returns. When the number of 
 #' assets exceeds the number of time periods, APCA (Asymptotic Principal 
-#' Component Analysis) is performed. This function is based on the S+FinMetric 
-#' function \code{mfactor}. An object of class \code{"sfm"} is returned.
+#' Component Analysis) is performed. An object of class \code{"sfm"} is 
+#' returned. This function is based on the S+FinMetric function \code{mfactor}.
 #' 
 #' @details
 #' If \code{data} is not of class \code{"xts"}, rownames must provide an 
-#' \code{xts} compatible time index. If the data contains missing values, 
-#' \code{na.rm} should be set to \code{TRUE} to remove NAs. 
+#' \code{xts} compatible time index. Before model fitting, incomplete cases in 
+#' \code{data} are removed using \code{\link[stats]{na.omit}}. Also, if 
+#' \code{check=TRUE}, a warning is issued if any asset is found to have 
+#' identical observations. 
 #' 
 #' Let \code{N} be the number of columns or assets and \code{T} be the number 
 #' of rows or observations. When \code{N < T}, Principal Component Analysis 
@@ -27,12 +29,17 @@
 #' \code{refine} specifies whether a refinement of the APCA procedure (that may 
 #' improve efficiency) from Connor and Korajczyk (1988) is to be used. 
 #' 
-#' If \code{check=TRUE}, a warning is issued if any asset is found to have 
-#' identical observations. 
+#' \code{corr} specifies if the correlation matrix of returns should be used 
+#' for finding the principal components instead of the covariance matrix. This 
+#' is decided on a case-by-case basis. The variable with the highest variance 
+#' dominates the PCA when the covariance matrix is used (but, this may be 
+#' justified if a volatile asset is more interesting for some reason and 
+#' volatility information shouldn't be discarded). On the other hand, using the 
+#' correlation matrix standardizes the variables and makes them comparable, 
+#' avoiding penalizing variables with less dispersion. 
 #' 
-#' Note about NAs: Before model fitting, incomplete cases in \code{data} are 
-#' removed using \code{\link[stats]{na.omit}}. Otherwise, all observations are 
-#' included.
+#' Note: If the median of the 1st principal component is negative, all it's
+#' factor realizations are inverted to enable more meaningful interpretation.
 #' 
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object with 
 #' asset returns. See details.
@@ -46,7 +53,9 @@
 #' specified. Default is 0.05.
 #' @param check logical; to check if any asset has identical observations. 
 #' Default is \code{FALSE}.
-#' @param ... arguments passed to other functions.
+#' @param corr logical; whether to use the correlation instead of the covariance 
+#' matrix when finding the principal components. Default is \code{FALSE}.
+#' @param ... optional arguments passed to \code{\link[stats]{lm}}.
 #' 
 #' @return fitTsfm returns an object of class \code{"sfm"} for which 
 #' \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist. 
@@ -118,47 +127,45 @@
 #' class(sfm.dat)
 #' class(sfm.apca.dat)
 #' 
-#' # pca
+#' # PCA
 #' args(fitSfm)
-#' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
-#' class(sfm.pca.fit)
-#' names(sfm.pca.fit)
-#' head(sfm.pca.fit$factors)
-#' head(sfm.pca.fit$loadings)
-#' sfm.pca.fit$r2
-#' sfm.pca.fit$resid.sd
-#' sfm.pca.fit$mimic
+#' fit.pca <- fitSfm(sfm.dat, k=2)
+#' class(fit.pca)
+#' names(fit.pca)
+#' head(fit.pca$factors)
+#' head(fit.pca$loadings)
+#' fit.pca$r2
+#' fit.pca$resid.sd
+#' fit.pca$mimic
 #' 
-#' # apca with number of factors, k=15
-#' sfm.apca.fit <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
+#' # APCA with number of factors, k=15
+#' fit.apca <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
 #' 
-#' # apca with the Bai & Ng method
-#' sfm.apca.fit.bn <- fitSfm(sfm.apca.dat, k="bn")
+#' # APCA with the Bai & Ng method
+#' fit.apca.bn <- fitSfm(sfm.apca.dat, k="bn")
 #' 
-#' # apca with the Connor-Korajczyk method
-#' sfm.apca.fit.ck <- fitSfm(sfm.apca.dat, k="ck")
+#' # APCA with the Connor-Korajczyk method
+#' fit.apca.ck <- fitSfm(sfm.apca.dat, k="ck")
 #' 
 #' @importFrom PerformanceAnalytics checkData
 #' 
 #' @export
 
-fitSfm <- function(data, k=1, max.k=NULL, refine=TRUE, sig=0.05, check=FALSE) {
+fitSfm <- function(data, k=1, max.k=NULL, refine=TRUE, sig=0.05, check=FALSE, 
+                   corr=FALSE, ...) {
   
   # record the call as an element to be returned
   call <- match.call()  
   
-  # check input data type and format and coerce to desired type for use
-  R.xts <- checkData(data, method="xts")
-  R.mat <- coredata(R.xts) 
-  
-  # remove NAs
-  R.mat <- na.omit(R.mat)
+  # check input data type and coerce to xts; remove NAs
+  R.xts <- na.omit(checkData(data, method="xts"))
   
   # dim and dimnames of R.mat
-  n <- ncol(R.mat)     
-  obs <- nrow(R.mat)   
-  if (is.null(dimnames(data))) {
-    dimnames(R.mat) <- list(1:obs, paste("V", 1:n, sep = "."))
+  n <- ncol(R.xts)     
+  obs <- nrow(R.xts)
+  
+  # assign generic variable names, if they are missing
+  if (is.null(colnames(data))) {
     colnames(R.xts) <- paste("V", 1:n, sep = ".")
   }
   
@@ -185,29 +192,32 @@ fitSfm <- function(data, k=1, max.k=NULL, refine=TRUE, sig=0.05, check=FALSE) {
   # check input vailidity or assign default for argument max.k
   if (is.null(max.k)) {
     max.k <- min(10, obs - 1)
+  } else if (!is.numeric(max.k) || max.k <= 0 || round(max.k) != max.k) {
+    stop("Invalid argument: max.k, the maximum number of factors, must be a 
+         positive integer.")
   } else if (max.k >= obs) {
     stop("Invalid argument: max.k must be less than the number of observations")
   }
   
   # check if any asset has identical observations
-  temp <- apply(data, 2, range)
-  if(any(abs(temp[2,  ] - temp[1,  ]) < .Machine$single.eps)) {
-    warning("Some variables have identical observations.")
+  if (check) {
+    temp <- apply(data, 2, range)
+    if(any(abs(temp[2,  ] - temp[1,  ]) < .Machine$single.eps)) {
+      warning("Some variables have identical observations.")
+    } 
   }
   
   # select method to estimate factors based on k and n
   # in each case a partial list of return values are obtained
   if (n < obs) {
-    result <- UsePCA(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs) 
-  } else if (k == "ck") {
-    result <- UseAPCA_ck(R.xts=R.xts, R.mat=R.mat, max.k=max.k, refine=refine, 
-                         sig=sig, n=n, obs=obs)
-  } else if (k == "bn") {
-    result <- UseAPCA_bn(R.xts=R.xts, R.mat=R.mat, max.k=max.k, refine=refine, 
-                         n=n, obs=obs)
+    result <- UsePCA(R.xts=R.xts, k=k, corr=corr, ...) 
+  } else if (k=="ck") {
+    result <- UseAPCA_ck(R.xts=R.xts, max.k=max.k, refine=refine, sig=sig, 
+                         corr=corr, ...)
+  } else if (k=="bn") {
+    result <- UseAPCA_bn(R.xts=R.xts, max.k=max.k, refine=refine, corr=corr, ...)
   } else {
-    result <- UseAPCA(R.xts=R.xts, R.mat=R.mat, k=k, refine=refine, n=n, 
-                      obs=obs)
+    result <- UseAPCA(R.xts=R.xts, k=k, refine=refine, corr=corr, ...)
   }
   
   # create list of return values.
@@ -217,14 +227,21 @@ fitSfm <- function(data, k=1, max.k=NULL, refine=TRUE, sig=0.05, check=FALSE) {
   return(result)
 }
 
+
 ### Principal Component Analysis when N < T
 #
-UsePCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs) {
+UsePCA <- function(R.xts=R.xts, k=k, corr=corr, ...) {
   
+  R.mat <- coredata(R.xts) # TxN
+  n <- ncol(R.mat)
+  obs <- nrow(R.mat)
   # demean TxN matrix of returns
   R.mat.d <- t(t(R.mat) - colMeans(R.mat))
   # NxN return covariance matrix
   Omega.N <- crossprod(R.mat.d)/obs
+  if (corr) {
+    Omega.N <- cov2cor(Omega.N)
+  }
   # get eigen decomposition
   eig.decomp <- eigen(Omega.N, symmetric=TRUE)
   eig.val <- eig.decomp$values
@@ -233,10 +250,12 @@ UsePCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs) {
   # get TxK factor realizations
   f <- R.mat %*% X 
   colnames(f) <- paste("F", 1:k, sep = ".")
+  # invert 1st principal component if most values are negative
+  if (median(f[,1]) < 0) {f[,1] <- -f[,1]}
   
   # OLS time series regression to get B: NxK matrix of factor loadings
   f <- xts(f, index(R.xts))
-  asset.fit <- lm(R.xts ~ f)
+  asset.fit <- lm(R.xts ~ f, ...)
   B <- t(coef(asset.fit)[-1, , drop=FALSE])
   alpha <- coef(asset.fit)[1,]
   
@@ -252,8 +271,9 @@ UsePCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs) {
   mimic <- X / colSums(X)
   
   # assign row and column names
-  names(eig.val) = names(r2) = names(resid.sd) = colnames(R.xts)
-  colnames(B) <- colnames(f)
+  names(eig.val) <- paste("F", 1:n, sep = ".")
+  names(r2) = names(resid.sd) = colnames(R.xts)
+  colnames(B) = colnames(f)
   
   # return list
   list(asset.fit=asset.fit, k=k, factors=f, loadings=B, alpha=alpha, r2=r2, 
@@ -264,22 +284,30 @@ UsePCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs) {
 
 ### Asymptotic Principal Component Analysis when N >= T
 #
-UseAPCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, refine=refine, n=n, obs=obs) {
+UseAPCA <- function(R.xts=R.xts, k=k, refine=refine, corr=corr, ...) {
   
+  R.mat <- coredata(R.xts) # TxN
+  n <- ncol(R.mat)
+  obs <- nrow(R.mat)
   # demean TxN matrix of returns
   R.mat.d <- t(t(R.mat) - colMeans(R.mat))
   # TxT return covariance matrix
   Omega.T <- tcrossprod(R.mat.d)/n
+  if (corr) {
+    Omega.T <- cov2cor(Omega.T)
+  }
   # get eigen decomposition
   eig.decomp <- eigen(Omega.T, symmetric=TRUE)
   eig.val <- eig.decomp$values
   # get TxK factor realizations
   X <- eig.decomp$vectors[, 1:k, drop=FALSE] # TxK
   dimnames(X) <- list(1:obs, paste("F", 1:k, sep = "."))
+  f <- xts(X, index(R.xts))
+  # invert 1st principal component if most values are negative
+  if (median(f[,1]) < 0) {f[,1] <- -f[,1]}
   
   # OLS time series regression to get B: NxK matrix of factor loadings
-  f <- xts(X, index(R.xts))
-  asset.fit <- lm(R.xts ~ f)
+  asset.fit <- lm(R.xts ~ f, ...)
   B <- t(coef(asset.fit)[-1, , drop=FALSE])
   alpha <- coef(asset.fit)[1,]
   
@@ -289,12 +317,16 @@ UseAPCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, refine=refine, n=n, obs=obs) 
   if (refine) {
     R.mat.rescaled <- t(R.mat.d)/resid.sd
     Omega.T <- crossprod(R.mat.rescaled)/n
+    if (corr) {
+      Omega.T <- cov2cor(Omega.T)
+    }
     eig.decomp <- eigen(Omega.T, symmetric=TRUE)
     eig.val <- eig.decomp$values
     X <- eig.decomp$vectors[, 1:k, drop=FALSE]
     dimnames(X) <- list(1:obs, paste("F", 1:k, sep = "."))
     f <- xts(X, index(R.xts))
-    asset.fit <- lm(R.xts ~ f)
+    if (median(f[,1]) < 0) {f[,1] <- -f[,1]}
+    asset.fit <- lm(R.xts ~ f, ...)
     B <- t(coef(asset.fit)[-1, , drop=FALSE])
     alpha <- coef(asset.fit)[1,]
     resid.sd <- as.numeric(sapply(X=summary(asset.fit), FUN="[", "sigma"))
@@ -311,9 +343,9 @@ UseAPCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, refine=refine, n=n, obs=obs) 
   r2 <- as.numeric(sapply(X=summary(asset.fit), FUN="[", "r.squared"))
   
   # assign row and column names
-  names(eig.val) = 1:obs
+  names(eig.val) = paste("F", 1:obs, sep = ".")
   names(r2) = names(resid.sd) = colnames(R.xts)
-  colnames(B) <- colnames(f)
+  colnames(B) = colnames(f)
   
   # return list
   list(asset.fit=asset.fit, k=k, factors=f, loadings=B, alpha=alpha, r2=r2, 
@@ -324,20 +356,21 @@ UseAPCA <- function(R.xts=R.xts, R.mat=R.mat, k=k, refine=refine, n=n, obs=obs) 
 
 ### Asymptotic Principal Component Analysis using 'ck' method to determine k
 #
-UseAPCA_ck <- function(R.xts=R.xts, R.mat=R.mat, max.k=max.k, refine=refine, 
-                       sig=sig, n=n, obs=obs) {
-  
+UseAPCA_ck <- function(R.xts=R.xts, max.k=max.k, refine=refine, sig=sig, 
+                       corr=corr, ...) {
+  n <- ncol(R.xts)
+  obs <- nrow(R.xts)
   idx <- 2*(1:(obs/2))
   
   # dof-adjusted squared residuals for k=1
-  fit <- UseAPCA(R.xts=R.xts, R.mat=R.mat, k=1, n=n, obs=obs, refine=refine)
+  fit <- UseAPCA(R.xts=R.xts, k=1, refine=refine, corr=corr, ...)
   eps2 <- fit$residuals^2 / (1-2/obs-1/n)
   
   for (k in 2:max.k) {
     f <- fit
     mu <- rowMeans(eps2[idx-1,,drop=FALSE])
     # dof-adjusted squared residuals for k
-    fit <- UseAPCA(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs, refine=refine)
+    fit <- UseAPCA(R.xts=R.xts, k=k, refine=refine, corr=corr, ...)
     eps2.star <- fit$residuals^2 / (1-(k+1)/obs-k/n)
     mu.star <- rowMeans(eps2.star[idx,,drop=FALSE])
     # cross sectional differences in sqd. errors btw odd & even time periods
@@ -352,14 +385,16 @@ UseAPCA_ck <- function(R.xts=R.xts, R.mat=R.mat, max.k=max.k, refine=refine,
 
 ### Asymptotic Principal Component Analysis using 'bn' method to determine k
 #
-UseAPCA_bn <- function(R.xts=R.xts, R.mat=R.mat, max.k=max.k, refine=refine, 
-                       n=n, obs=obs) {
+UseAPCA_bn <- function(R.xts=R.xts, max.k=max.k, refine=refine, corr=corr, ...) {
+  
+  n <- ncol(R.xts)
+  obs <- nrow(R.xts)
   # intialize sigma
   sigma <- rep(NA, max.k)
   
   for (k in 1:max.k) {
     # fit APCA for k factors
-    fit <- UseAPCA(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs, refine=refine)
+    fit <- UseAPCA(R.xts=R.xts, k=k, refine=refine, corr=corr, ...)
     # get cross-sectional average of residual variances
     sigma[k] <- mean(fit$resid.sd^2)
   } 
@@ -374,7 +409,7 @@ UseAPCA_bn <- function(R.xts=R.xts, R.mat=R.mat, max.k=max.k, refine=refine,
             used.")
   }
   k <- min(order(PC_p1)[1], order(PC_p2)[1])
-  UseAPCA(R.xts=R.xts, R.mat=R.mat, k=k, n=n, obs=obs, refine=refine)
+  UseAPCA(R.xts=R.xts, k=k, refine=refine, corr=corr, ...)
 }
 
 

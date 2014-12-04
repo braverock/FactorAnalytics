@@ -7,7 +7,7 @@
 \title{Fit a statistical factor model using principal component analysis}
 \usage{
 fitSfm(data, k = 1, max.k = NULL, refine = TRUE, sig = 0.05,
-  check = FALSE)
+  check = FALSE, corr = FALSE, ...)
 
 \method{coef}{sfm}(object, ...)
 
@@ -34,10 +34,13 @@ specified. Default is 0.05.}
 \item{check}{logical; to check if any asset has identical observations.
 Default is \code{FALSE}.}
 
+\item{corr}{logical; whether to use the correlation instead of the covariance
+matrix when finding the principal components. Default is \code{FALSE}.}
+
+\item{...}{optional arguments passed to \code{\link[stats]{lm}}.}
+
 \item{object}{a fit object of class \code{sfm} which is returned by
 \code{fitSfm}}
-
-\item{...}{arguments passed to other functions.}
 }
 \value{
 fitTsfm returns an object of class \code{"sfm"} for which
@@ -76,13 +79,15 @@ number of observations.
 Fits a statistical factor model using principal component
 analysis for one or more asset returns or excess returns. When the number of
 assets exceeds the number of time periods, APCA (Asymptotic Principal
-Component Analysis) is performed. This function is based on the S+FinMetric
-function \code{mfactor}. An object of class \code{"sfm"} is returned.
+Component Analysis) is performed. An object of class \code{"sfm"} is
+returned. This function is based on the S+FinMetric function \code{mfactor}.
 }
 \details{
 If \code{data} is not of class \code{"xts"}, rownames must provide an
-\code{xts} compatible time index. If the data contains missing values,
-\code{na.rm} should be set to \code{TRUE} to remove NAs.
+\code{xts} compatible time index. Before model fitting, incomplete cases in
+\code{data} are removed using \code{\link[stats]{na.omit}}. Also, if
+\code{check=TRUE}, a warning is issued if any asset is found to have
+identical observations.
 
 Let \code{N} be the number of columns or assets and \code{T} be the number
 of rows or observations. When \code{N < T}, Principal Component Analysis
@@ -100,12 +105,17 @@ default maximum is calculated from \code{min(10, T-1)}.
 \code{refine} specifies whether a refinement of the APCA procedure (that may
 improve efficiency) from Connor and Korajczyk (1988) is to be used.
 
-If \code{check=TRUE}, a warning is issued if any asset is found to have
-identical observations.
+\code{corr} specifies if the correlation matrix of returns should be used
+for finding the principal components instead of the covariance matrix. This
+is decided on a case-by-case basis. The variable with the highest variance
+dominates the PCA when the covariance matrix is used (but, this may be
+justified if a volatile asset is more interesting for some reason and
+volatility information shouldn't be discarded). On the other hand, using the
+correlation matrix standardizes the variables and makes them comparable,
+avoiding penalizing variables with less dispersion.
 
-Note about NAs: Before model fitting, incomplete cases in \code{data} are
-removed using \code{\link[stats]{na.omit}}. Otherwise, all observations are
-included.
+Note: If the median of the 1st principal component is negative, all it's
+factor realizations are inverted to enable more meaningful interpretation.
 }
 \examples{
 # load data for fitSfm.r
@@ -116,7 +126,7 @@ data(stat.fm.data)
 class(sfm.dat)
 class(sfm.apca.dat)
 
-# pca
+# PCA
 args(fitSfm)
 fit.pca <- fitSfm(sfm.dat, k=2)
 class(fit.pca)
@@ -127,13 +137,13 @@ fit.pca$r2
 fit.pca$resid.sd
 fit.pca$mimic
 
-# apca with number of factors, k=15
+# APCA with number of factors, k=15
 fit.apca <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
 
-# apca with the Bai & Ng method
+# APCA with the Bai & Ng method
 fit.apca.bn <- fitSfm(sfm.apca.dat, k="bn")
 
-# apca with the Connor-Korajczyk method
+# APCA with the Connor-Korajczyk method
 fit.apca.ck <- fitSfm(sfm.apca.dat, k="ck")
 }
 \author{
