@@ -11,8 +11,8 @@
 \arguments{
 \item{object}{an object of class \code{sfm} returned by \code{fitSfm}.}
 
-\item{se.type}{one of "Default" or "HC"; option for computing HC standard
-errors and t-statistics.}
+\item{se.type}{one of "Default", "HC" or "HAC"; option for computing HC/HAC
+standard errors and t-statistics.}
 
 \item{...}{futher arguments passed to or from other methods.}
 
@@ -30,7 +30,9 @@ residual volatilty (under the homoskedasticity assumption) for all assets.
 Object of class \code{summary.sfm} is a list of length N+2 containing:
 \item{call}{the function call to \code{fitSfm}}
 \item{se.type}{standard error type as input}
-\item{}{summary of the fit object of class \code{mlm} for the factor model.}
+\item{sum.list}{list of summaries for the N fit objects of class \code{lm}
+for each asset in the factor model.}
+\item{mimic}{N x K matrix of factor mimicking portfolio weights.}
 }
 \description{
 \code{summary} method for object of class \code{sfm}.
@@ -40,15 +42,9 @@ Returned object is of class {summary.sfm}.
 The default \code{summary} method for a fitted \code{lm} object
 computes the standard errors and t-statistics under the assumption of
 homoskedasticty. Argument \code{se.type} gives the option to compute
-heteroskedasticity-consistent (HC) standard errors and t-statistics using
-\code{\link[lmtest]{coeftest}}.
-}
-\note{
-For a more detailed printed summary for each asset, refer to
-\code{\link[stats]{summary.lm}}, which includes F-statistics,
-Multiple R-squared, Adjusted R-squared, further formats the coefficients,
-standard errors, etc. and additionally gives significance stars if
-\code{signif.stars} is TRUE.
+heteroskedasticity-consistent (HC) or
+heteroskedasticity-autocorrelation-consistent (HAC) standard errors and
+t-statistics using \code{\link[lmtest]{coeftest}}.
 }
 \examples{
 data(stat.fm.data)

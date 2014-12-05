@@ -53,8 +53,8 @@ based on the fitted factor model
 
 An object of class \code{"sfm"} is a list containing the following
 components:
-\item{asset.fit}{list of fitted objects of class \code{lm} for each asset,
-from the time-series OLS regression of asset returns on estimated factors.}
+\item{asset.fit}{fitted object of class \code{"mlm"} or \code{"lm"} from the
+time-series OLS regression of asset returns on estimated factors.}
 \item{k}{number of factors; as input or determined by "ck" or "bn" methods.}
 \item{factors}{T x K xts object of estimated factor realizations.}
 \item{loadings}{N x K matrix of factor loadings estimated by

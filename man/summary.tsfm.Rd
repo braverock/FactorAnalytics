@@ -30,8 +30,8 @@ residual volatilty (under the homoskedasticity assumption) for all assets.
 Object of class \code{summary.tsfm} is a list of length N + 2 containing:
 \item{call}{the function call to \code{fitTsfm}}
 \item{se.type}{standard error type as input}
-\item{}{summaries of the N fit objects (of class \code{lm}, \code{lmRob}
-or \code{lars}) for each asset in the factor model.}
+\item{sum.list}{list of summaries of the N fit objects (of class \code{lm},
+\code{lmRob} or \code{lars}) for each asset in the factor model.}
 }
 \description{
 \code{summary} method for object of class \code{tsfm}.
@@ -49,13 +49,6 @@ Standard errors are currently not available for
 \code{variable.selection="lars"} as there seems to be no consensus on a
 statistically valid method of calculating standard errors for the lasso
 predictions.
-}
-\note{
-For a more detailed printed summary for each asset, refer to
-\code{\link[stats]{summary.lm}} or \code{\link[robust]{lmRob}}, which
-include F-statistics, Multiple R-squared, Adjusted R-squared and further
-format the coefficients, standard errors, etc. and additionally give
-significance stars if \code{signif.stars} is TRUE.
 }
 \examples{
 data(managers)

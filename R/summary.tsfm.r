@@ -31,14 +31,8 @@
 #' Object of class \code{summary.tsfm} is a list of length N + 2 containing:
 #' \item{call}{the function call to \code{fitTsfm}}
 #' \item{se.type}{standard error type as input} 
-#' \item{}{summaries of the N fit objects (of class \code{lm}, \code{lmRob} 
-#' or \code{lars}) for each asset in the factor model.}
-#' 
-#' @note For a more detailed printed summary for each asset, refer to 
-#' \code{\link[stats]{summary.lm}} or \code{\link[robust]{lmRob}}, which 
-#' include F-statistics, Multiple R-squared, Adjusted R-squared and further 
-#' format the coefficients, standard errors, etc. and additionally give 
-#' significance stars if \code{signif.stars} is TRUE. 
+#' \item{sum.list}{list of summaries of the N fit objects (of class \code{lm}, 
+#' \code{lmRob} or \code{lars}) for each asset in the factor model.}
 #' 
 #' @author Sangeetha Srinivasan & Yi-An Chen.
 #' 
@@ -74,33 +68,33 @@ summary.tsfm <- function(object, se.type="Default", ...){
   }
   
   # extract summary.lm objects for each asset
-  sum <- lapply(object$asset.fit, summary)
+  sum.list <- lapply(object$asset.fit, summary)
   
   # convert to HC/HAC standard errors and t-stats if specified
   # extract coefficients separately for "lars" variable.selection method
   for (i in object$asset.names) {
     if (se.type=="HC") {
-      sum[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]],
-                                                vcov.=vcovHC.default)[,1:4]
+      sum.list[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]],
+                                                     vcov.=vcovHC.default)[,1:4]
     } else if (se.type=="HAC") {
-      sum[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]], 
-                                                vcov.=vcovHAC.default)[,1:4]
+      sum.list[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]], 
+                                                     vcov.=vcovHAC.default)[,1:4]
     }
   }
   
   if (object$variable.selection=="lars") {
-    sum <- list()
+    sum.list <- list()
     for (i in object$asset.names) {
-      sum[[i]]$coefficients <- as.matrix(c(object$alpha[i], object$beta[i,]))
-      rownames(sum[[i]]$coefficients)[1]="(Intercept)"
-      colnames(sum[[i]]$coefficients)[1]="Estimate"
-      sum[[i]]$r.squared <- as.numeric(object$r2[i])
-      sum[[i]]$sigma <- as.numeric(object$resid.sd[i]) 
+      sum.list[[i]]$coefficients <- as.matrix(c(object$alpha[i], object$beta[i,]))
+      rownames(sum.list[[i]]$coefficients)[1]="(Intercept)"
+      colnames(sum.list[[i]]$coefficients)[1]="Estimate"
+      sum.list[[i]]$r.squared <- as.numeric(object$r2[i])
+      sum.list[[i]]$sigma <- as.numeric(object$resid.sd[i]) 
     }
   }
   
   # include the call and se.type to fitTsfm
-  sum <- c(list(call=object$call, se.type=se.type), sum)
+  sum <- list(call=object$call, se.type=se.type, sum.list=sum.list)
   class(sum) <- "summary.tsfm"
   return(sum)
 }
@@ -115,20 +109,20 @@ print.summary.tsfm <- function(x, digits=3, ...) {
     cat("\nCall:\n")
     dput(cl)
   }
-  cat("\nFactor Model Coefficients:\n", 
-      sep="")
-  n <- length(x)
-  for (i in 3:n) {
+  cat("\nFactor Model Coefficients:\n", sep="")
+  n <- length(x$sum.list)
+  for (i in 1:n) {
     options(digits = digits)  
-    if (dim(x[[i]]$coefficients)[2] > 1) {
-      cat("\nAsset", i-2, ": ", names(x[i]), "\n(", x$se.type, 
+    table.coef <- (x$sum.list)[[i]]$coefficients
+    if (dim(table.coef)[2] > 1) {
+      cat("\nAsset", i, ": ", names(x$sum.list[i]), "\n(", x$se.type, 
           " Standard Errors & T-stats)\n\n", sep="")  
     } else {
-      cat("\nAsset", i-2, ": ", names(x[i]), "\n\n", sep="")  
+      cat("\nAsset", i, ": ", names(x$sum.list[i]), "\n\n", sep="")  
     }
-    table.coef <- x[[i]]$coefficients
+    r2 <- x$sum.list[[i]]$r.squared
+    sigma <- x$sum.list[[i]]$sigma
     printCoefmat(table.coef, digits=digits, ...)
-    cat("\nR-squared: ", x[[i]]$r.squared,", Residual Volatility: "
-        , x[[i]]$sigma,"\n", sep="")
+    cat("\nR-squared: ", r2,", Residual Volatility: ", sigma,"\n", sep="")
   }
 }

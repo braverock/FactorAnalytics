@@ -53,7 +53,7 @@ Here's a list of the functions and methods demonstrated in this vignette:
 
 \begin{itemize}
 
-\item \verb"fitTsfm(asset.names, factor.names, data, fit.method, variable.selection)": Fits a time series (a.k.a. macroeconomic) factor model for one or more asset returns or excess returns using time series regression. Ordinary least squares (OLS), discounted least squares (DLS) and robust regression fitting are possible. Variable selection methods include "stepwise", "subsets" and "lars". An object of class "tsfm" containing the fitted objects, model coefficients, R-squared and residual volatility are returned.
+\item \verb"fitTsfm(asset.names, factor.names, data, fit.method, variable.selection)": Fits a time series (a.k.a. macroeconomic) factor model for one or more asset returns or excess returns using time series regression. Ordinary least squares (OLS), discounted least squares (DLS) and robust regression fitting are possible. Variable selection methods include "stepwise", "subsets" and "lars". An object of class "tsfm" containing the fitted objects, model coefficients, R-squared and residual volatility is returned.
 
 \item \verb"coef(object)": Extracts the coefficient matrix (intercept and factor betas) for all assets fit by the "tsfm" object.
 
@@ -69,7 +69,7 @@ Here's a list of the functions and methods demonstrated in this vignette:
 
 \item \verb"fmEsDecomp(object, p, method, invert)": Returns a list containing the expected shortfall for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. Arguments \code{"p"}, \code{"method"} and \code{invert} are the same as above.
 
-\item \verb"plot(x)": The \code{plot} method for class "tsfm" can be used for plotting factor model characteristics of an individual asset or a group of assets (default). The type of individual/group plot can be specified or chosen from a menu prompt (default if type not specified). Further the menu reappears (default) to enable multiple plots for the same asset(s) unless looping is disabled by setting \code{loop=FALSE}.
+\item \verb"plot(x)": The \code{plot} method for class "tsfm" can be used for plotting factor model characteristics of an individual asset or a group of assets (default). The type of individual/group plot can be specified or chosen from a menu prompt, which is the default if type is not specified. Further the menu reappears (default) to access multiple plots for the same asset(s) unless looping is disabled by setting \code{loop=FALSE}.
 
 \item \verb"predict(object, newdata)": The \code{predict} method for class "tsfm" returns a vector or matrix of predicted values for a new data sample or simulated values.
 
@@ -274,7 +274,7 @@ methods(class="tsfm")
 Many useful generic accessor functions are available for "tsfm" fit objects. \code{coef()} returns a matrix of estimated model coefficients including the intercept. \code{fitted()} returns an xts data object of the component of asset returns explained by the factor model. \code{residuals()} returns an xts data object with the component of asset returns not explained by the factor model. 
 \code{predict()} uses the fitted factor model to estimate asset returns given a set of new or simulated factor return data.  
 
-\code{summary()} prints standard errors and t-statistics for all estimated coefficients in addition to R-squared values and residual volatilities. The \code{se.type} argument enables computing heteroskedasticity and auto-correlation consistent ("HC" and "HAC") estimates and standard errors whenever possible. A "summary.tsfm" object is returned which contains the summary objects returned by "lm", "lm.Rob" or "lars" for each asset fit. 
+\code{summary()} prints standard errors and t-statistics for all estimated coefficients in addition to R-squared values and residual volatilities. The \code{se.type} argument enables computing heteroskedasticity and auto-correlation consistent ("HC" and "HAC") estimates and standard errors whenever possible. A "summary.tsfm" object is returned which contains a list of summary objects returned by "lm", "lm.Rob" or "lars" for each asset fit. 
 
 Note: Standard errors are currently not available for the "lars" variable selection method, as there seems to be no consensus on a statistically valid method of calculating standard errors for the lasso predictions.
 
