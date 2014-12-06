@@ -75,8 +75,8 @@ ES.decomp <- fmEsDecomp(fit.macro)
 ES.decomp$cES
 
 # Statistical Factor Model
-data(stat.fm.data)
-sfm.pca.fit <- fitSfm(sfm.dat, k=2)
+data(StockReturns)
+sfm.pca.fit <- fitSfm(r.M, k=2)
 ES.decomp <- fmEsDecomp(sfm.pca.fit)
 ES.decomp$cES
 }

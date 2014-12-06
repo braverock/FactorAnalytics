@@ -19,8 +19,8 @@ the call, factor model dimension, factor loadings, r-squared and residual
 volatilities from the fitted object.
 }
 \examples{
-data(stat.fm.data)
-fit <- fitSfm(sfm.dat, k=2)
+data(StockReturns)
+fit <- fitSfm(r.M, k=2)
 print(fit)
 }
 \author{

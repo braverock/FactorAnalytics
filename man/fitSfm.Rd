@@ -76,10 +76,10 @@ number of observations.
 \item{asset.ret}{N x T matrix of fitted asset returns from the factor model.}
 }
 \description{
-Fits a statistical factor model using principal component
-analysis for one or more asset returns or excess returns. When the number of
-assets exceeds the number of time periods, APCA (Asymptotic Principal
-Component Analysis) is performed. An object of class \code{"sfm"} is
+Fits a statistical factor model using Principal Component
+Analysis (PCA) for one or more asset returns or excess returns. When the
+number of assets exceeds the number of time periods, Asymptotic Principal
+Component Analysis (APCA) is performed. An object of class \code{"sfm"} is
 returned. This function is based on the S+FinMetric function \code{mfactor}.
 }
 \details{
@@ -118,17 +118,19 @@ Note: If the median of the 1st principal component is negative, all it's
 factor realizations are inverted to enable more meaningful interpretation.
 }
 \examples{
-# load data for fitSfm.r
-data(stat.fm.data)
-# data is from finmetric berndt.dat and folio.dat
+# load return data
+data(StockReturns)
 
-# PCA is performed on sfm.dat and APCA on sfm.apca.dat
-class(sfm.dat)
-class(sfm.apca.dat)
+# PCA is performed on r.M and APCA on r.W
+class(r.M)
+dim(r.M)
+range(rownames(r.M))
+class(r.W)
+dim(r.W)
 
 # PCA
 args(fitSfm)
-fit.pca <- fitSfm(sfm.dat, k=2)
+fit.pca <- fitSfm(r.M, k=2)
 class(fit.pca)
 names(fit.pca)
 head(fit.pca$factors)
@@ -138,13 +140,13 @@ fit.pca$resid.sd
 fit.pca$mimic
 
 # APCA with number of factors, k=15
-fit.apca <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
+fit.apca <- fitSfm(r.W, k=15, refine=TRUE)
 
 # APCA with the Bai & Ng method
-fit.apca.bn <- fitSfm(sfm.apca.dat, k="bn")
+fit.apca.bn <- fitSfm(r.W, k="bn")
 
 # APCA with the Connor-Korajczyk method
-fit.apca.ck <- fitSfm(sfm.apca.dat, k="ck")
+fit.apca.ck <- fitSfm(r.W, k="ck")
 }
 \author{
 Eric Zivot, Sangeetha Srinivasan and Yi-An Chen

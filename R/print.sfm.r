@@ -14,8 +14,8 @@
 #' @seealso \code{\link{fitSfm}}, \code{\link{summary.sfm}}
 #' 
 #' @examples
-#' data(stat.fm.data)
-#' fit <- fitSfm(sfm.dat, k=2)
+#' data(StockReturns)
+#' fit <- fitSfm(r.M, k=2)
 #' print(fit)
 #' 
 #' @method print sfm

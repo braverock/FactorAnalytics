@@ -11,7 +11,7 @@
 #' @importFrom lars lars cv.lars
 #' @importFrom lmtest coeftest.default
 #' @importFrom sandwich vcovHC.default vcovHAC.default
-#' @importFrom lattice barchart panel.barchart panel.grid
+#' @importFrom lattice barchart panel.barchart panel.grid xyplot
 #' @importFrom corrplot corrplot
 #' @importFrom strucchange efp
 #' @importFrom MASS ginv 

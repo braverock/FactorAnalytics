@@ -22,12 +22,12 @@ calls the \code{predict} method for fitted objects of class \code{lm}.
 }
 \examples{
 # load data from the database
-data(stat.fm.data)
+data(StockReturns)
 # fit the factor model with PCA
-fit <- fitSfm(sfm.dat, k=2)
+fit <- fitSfm(r.M, k=2)
 
 pred.fit <- predict(fit)
-newdata <- data.frame("EDHEC LS EQ"=rnorm(n=120), "SP500 TR"=rnorm(n=120))
+newdata <- data.frame("CITCRP"=rnorm(n=120), "CONED"=rnorm(n=120))
 rownames(newdata) <- rownames(fit$data)
 pred.fit2 <- predict(fit, newdata, interval="confidence")
 }

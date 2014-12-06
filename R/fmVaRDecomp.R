@@ -74,8 +74,8 @@
 #' VaR.decomp$cVaR
 #' 
 #' # Statistical Factor Model
-#' data(stat.fm.data)
-#' sfm.pca.fit <- fitSfm(sfm.dat, k=2)
+#' data(StockReturns)
+#' sfm.pca.fit <- fitSfm(r.M, k=2)
 #' VaR.decomp <- fmVaRDecomp(sfm.pca.fit)
 #' VaR.decomp$cVaR
 #' 

@@ -35,9 +35,9 @@
 #' @seealso \code{\link{fitSfm}}, \code{\link[stats]{summary.lm}}
 #' 
 #' @examples
-#' data(stat.fm.data)
+#' data(StockReturns)
 #' # fit the factor model with PCA
-#' fit <- fitSfm(sfm.dat, k=2)
+#' fit <- fitSfm(r.M, k=2)
 #' 
 #' # summary of factor model fit for all assets
 #' summary(fit, "HAC")

@@ -61,8 +61,8 @@ decomp <- fmSdDecomp(fit.macro)
 decomp$pcSd
 
 # Statistical Factor Model
-data(stat.fm.data)
-sfm.pca.fit <- fitSfm(sfm.dat, k=2)
+data(StockReturns)
+sfm.pca.fit <- fitSfm(r.M, k=2)
 decomp <- fmSdDecomp(sfm.pca.fit)
 decomp$pcSd
 }

@@ -53,27 +53,27 @@ Here's a list of the functions and methods demonstrated in this vignette:
 
 \begin{itemize}
 
-\item \verb"fitTsfm(asset.names, factor.names, data, fit.method, variable.selection)": Fits a time series (a.k.a. macroeconomic) factor model for one or more asset returns or excess returns using time series regression. Ordinary least squares (OLS), discounted least squares (DLS) and robust regression fitting are possible. Variable selection methods include "stepwise", "subsets" and "lars". An object of class "tsfm" containing the fitted objects, model coefficients, R-squared and residual volatility is returned.
+\item \verb"fitTsfm(asset.names, factor.names, data, fit.method, variable.selection, ...)": Fits a time series (a.k.a. macroeconomic) factor model for one or more asset returns or excess returns using time series regression. Ordinary least squares (OLS), discounted least squares (DLS) and robust regression fitting are possible. Variable selection methods include "stepwise", "subsets" and "lars". An object of class "tsfm" containing the fitted objects, model coefficients, R-squared and residual volatility is returned.
 
-\item \verb"coef(object)": Extracts the coefficient matrix (intercept and factor betas) for all assets fit by the "tsfm" object.
+\item \verb"coef(object, ...)": Extracts the coefficient matrix (intercept and factor betas) for all assets fit by the "tsfm" object.
 
-\item \verb"fitted(object)": Returns an "xts" data object of fitted asset returns from the factor model for all assets.
+\item \verb"fitted(object, ...)": Returns an "xts" data object of fitted asset returns from the factor model for all assets.
 
-\item \verb"residuals(object)": Returns an "xts" data object of residuals from the fitted factor model for all assets.
+\item \verb"residuals(object, ...)": Returns an "xts" data object of residuals from the fitted factor model for all assets.
 
-\item \verb"fmCov(object, use)": Returns the \code{N x N} symmetric covariance matrix for asset returns based on the fitted factor model. \code{"use"} specifies how missing values are to be handled.
+\item \verb"fmCov(object, use, ...)": Returns the \code{N x N} symmetric covariance matrix for asset returns based on the fitted factor model. \code{"use"} specifies how missing values are to be handled.
 
-\item \verb"fmSdDecomp(object, use)": Returns a list containing the standard deviation of asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"use"} specifies how missing values are to be handled.
+\item \verb"fmSdDecomp(object, use, ...)": Returns a list containing the standard deviation of asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"use"} specifies how missing values are to be handled.
 
-\item \verb"fmVaRDecomp(object, p, method, invert)": Returns a list containing the value-at-risk for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"p"} and \code{"method"} specify the confidence level and method (one of "modified","gaussian", "historical" or "kernel") to calculate  VaR. VaR is by default a positive quantity and specifying \code{"invert=TRUE"} allows the VaR value to be expressed as a negative quantity. These 3 arguments, \code{"p"}, \code{"method"} and \code{"invert"} are passed on to the \code{VaR} function in the \code{PerformanceAnalytics} package to calculate VaR.
+\item \verb"fmVaRDecomp(object, p, method, invert, ...)": Returns a list containing the value-at-risk for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"p"} and \code{"method"} specify the confidence level and method (one of "modified","gaussian", "historical" or "kernel") to calculate  VaR. VaR is by default a positive quantity and specifying \code{"invert=TRUE"} allows the VaR value to be expressed as a negative quantity. These 3 arguments, \code{"p"}, \code{"method"} and \code{"invert"} are passed on to the \code{VaR} function in the \code{PerformanceAnalytics} package to calculate VaR.
 
-\item \verb"fmEsDecomp(object, p, method, invert)": Returns a list containing the expected shortfall for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. Arguments \code{"p"}, \code{"method"} and \code{invert} are the same as above.
+\item \verb"fmEsDecomp(object, p, method, invert, ...)": Returns a list containing the expected shortfall for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. Arguments \code{"p"}, \code{"method"} and \code{invert} are the same as above.
 
 \item \verb"plot(x)": The \code{plot} method for class "tsfm" can be used for plotting factor model characteristics of an individual asset or a group of assets (default). The type of individual/group plot can be specified or chosen from a menu prompt, which is the default if type is not specified. Further the menu reappears (default) to access multiple plots for the same asset(s) unless looping is disabled by setting \code{loop=FALSE}.
 
-\item \verb"predict(object, newdata)": The \code{predict} method for class "tsfm" returns a vector or matrix of predicted values for a new data sample or simulated values.
+\item \verb"predict(object, newdata, ...)": The \code{predict} method for class "tsfm" returns a vector or matrix of predicted values for a new data sample or simulated values.
 
-\item \verb"summary(object, se.type)": The \code{summary} method for class "tsfm" returns an object of class \code{"summary.tsfm"} containing the summaries of the fitted "lm", "lmRob" or "lars" objects and the chosen type (HC/HAC) of standard errors and t-statistics to display. Printing the factor model summary object outputs the call, coefficients (with standard errors and t-statistics), r-squared and residual volatility (under the homo-skedasticity assumption) for all assets. 
+\item \verb"summary(object, se.type, ...)": The \code{summary} method for class "tsfm" returns an object of class \code{"summary.tsfm"} containing the summaries of the fitted "lm", "lmRob" or "lars" objects and the chosen type (HC/HAC) of standard errors and t-statistics to display. Printing the factor model summary object outputs the call, coefficients (with standard errors and t-statistics), r-squared and residual volatility (under the homo-skedasticity assumption) for all assets. 
 
 \end{itemize}
 

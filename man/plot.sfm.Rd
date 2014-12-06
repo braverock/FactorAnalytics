@@ -106,10 +106,10 @@ without user input.
 }
 \examples{
 # load data from the database
-data(stat.fm.data)
+data(StockReturns)
 
 # APCA with number of factors, k=15
-fit.apca <- fitSfm(sfm.apca.dat, k=15, refine=TRUE)
+fit.apca <- fitSfm(r.W, k=15, refine=TRUE)
 
 # group plot(default); select type from menu prompt
 # menu is auto-looped to get multiple types of plots based on the same fit
