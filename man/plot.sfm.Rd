@@ -3,11 +3,11 @@
 \alias{plot.sfm}
 \title{Plots from a fitted statistical factor model}
 \usage{
-\method{plot}{sfm}(x, which.plot.group = NULL, k.max = 6, n.max = 10,
-  plot.single = FALSE, asset.name, which.plot.single = NULL,
-  colorset = (1:12), legend.loc = "topleft", las = 1,
-  VaR.method = "historical", cum.var = TRUE, eig.max = 0.9, loop = TRUE,
-  ...)
+\method{plot}{sfm}(x, which.plot.group = NULL, factor.subset = 1:4,
+  asset.subset = 1:5, n.top = 3, plot.single = FALSE, asset.name,
+  which.plot.single = NULL, colorset = (1:12), legend.loc = "topleft",
+  las = 1, VaR.method = "historical", cum.var = TRUE, eig.max = 0.9,
+  loop = TRUE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{sfm} produced by \code{fitSfm}.}
@@ -18,18 +18,23 @@ multiple assets. If \code{NULL} (default), the following menu appears: \cr
 2 = Time series plot of estimated factors, \cr
 3 = Estimated factor loadings, \cr
 4 = Histogram of R-squared, \cr
-5 = Histogram of Residual volatility,\cr
+5 = Histogram of residual volatility,\cr
 6 = Factor model residual correlation \cr
 7 = Factor model correlation,\cr
 8 = Factor contribution to SD,\cr
 9 = Factor contribution to ES,\cr
-10 = Factor contribution to VaR}
+10 = Factor contribution to VaR, \cr
+11 = Factor mimicking portfolio weights - top long and short positions in each factor, \cr
+12 = Asset correlations - top long and short positions in each factor}
 
-\item{k.max}{maximum number of factors to add per plot device for group
-plots. Default is 6.}
+\item{factor.subset}{vector of names/indices of factors to show for group
+plots. Default is 1:4.}
 
-\item{n.max}{maximum number of variables to add per plot device for group
-plots. Default is 10.}
+\item{asset.subset}{vector of names/indices of assets to show for group
+plots. Default is 1:5.}
+
+\item{n.top}{scalar; number of largest and smallest weights to display for
+each factor mimicking portfolio. Default is 3.}
 
 \item{plot.single}{logical; If \code{TRUE} plots the characteristics of an
 individual asset's factor model. The type of plot is given by
@@ -95,8 +100,9 @@ the menu exits the current \code{plot.sfm} call. Alternately, setting
 \code{loop=FALSE} will exit after plotting any one chosen characteristic
 without the need for menu selection.
 
-Group plots are the default. The first \code{n.max} variables and
-\code{n.max} factors are plotted depending on the characteristic chosen.
+Group plots are the default. The variables in \code{asset.subset} and factors
+in \code{asset.subset} are plotted depending on the characteristic chosen.
+The default is to show the first 4 factors and first 5 assets.
 
 Individual asset plots are selected by specifying \code{plot.single=TRUE}.
 In which case, \code{asset.name} is necessary if multiple assets
@@ -117,7 +123,7 @@ fit.apca <- fitSfm(r.W, k=15, refine=TRUE)
 
 # plot the factor betas of 1st 4 assets fitted above
 # loop disabled to get one type of plot without interative menu
-plot(fit.apca, n.max=4, which.plot.group=3, loop=FALSE)
+plot(fit.apca, asset.subset=1:4, which.plot.group=3, loop=FALSE)
 
 # plot factor model return correlation; angular order of the eigenvectors
 plot(fit.apca, which.plot.group=7, loop=FALSE,

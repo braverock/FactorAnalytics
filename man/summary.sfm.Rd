@@ -4,7 +4,7 @@
 \alias{summary.sfm}
 \title{Summarizing a fitted time series factor model}
 \usage{
-\method{summary}{sfm}(object, se.type = "Default", ...)
+\method{summary}{sfm}(object, se.type = "Default", n.top = 3, ...)
 
 \method{print}{summary.sfm}(x, digits = 3, ...)
 }
@@ -13,6 +13,9 @@
 
 \item{se.type}{one of "Default", "HC" or "HAC"; option for computing HC/HAC
 standard errors and t-statistics.}
+
+\item{n.top}{scalar; number of largest and smallest weights to display for
+each factor mimicking portfolio. Default is 3.}
 
 \item{...}{futher arguments passed to or from other methods.}
 
@@ -25,14 +28,16 @@ Default is 3.}
 Returns an object of class \code{summary.sfm}.
 The print method for class \code{summary.sfm} outputs the call,
 coefficients (with standard errors and t-statistics), r-squared and
-residual volatilty (under the homoskedasticity assumption) for all assets.
+residual volatilty (under the homoskedasticity assumption) for all assets as
+well as a summary of the factor mimicking portfolio weights.
 
 Object of class \code{summary.sfm} is a list of length N+2 containing:
 \item{call}{the function call to \code{fitSfm}}
 \item{se.type}{standard error type as input}
 \item{sum.list}{list of summaries for the N fit objects of class \code{lm}
 for each asset in the factor model.}
-\item{mimic}{N x K matrix of factor mimicking portfolio weights.}
+\item{mimic.sum}{list of matrices containing \code{n.top} largest and
+smallest weights for each factor mimicking portfolio.}
 }
 \description{
 \code{summary} method for object of class \code{sfm}.

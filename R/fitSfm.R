@@ -150,6 +150,7 @@
 #' fit.apca.ck <- fitSfm(r.W, k="ck")
 #' 
 #' @importFrom PerformanceAnalytics checkData
+#' @importFrom MASS ginv
 #' 
 #' @export
 
@@ -270,7 +271,7 @@ UsePCA <- function(R.xts=R.xts, k=k, corr=corr, ...) {
   Omega.fm <- B %*% var(f) %*% t(B) + diag(resid.sd^2)
   
   # compute factor mimicking portfolio weights: NxK
-  mimic <- X / colSums(X)
+  mimic <- t(t(X)/colSums(X))
   
   # assign row and column names
   names(eig.val) <- paste("F", 1:n, sep = ".")
@@ -338,7 +339,8 @@ UseAPCA <- function(R.xts=R.xts, k=k, refine=refine, corr=corr, ...) {
   Omega.fm <- B %*% var(f) %*% t(B) + diag(resid.sd^2)
   
   # compute factor mimicking portfolio weights
-  mimic <- X / colSums(X)
+  mimic <- ginv(R.mat) %*% f
+  mimic <- t(t(mimic)/colSums(mimic))
   
   # extract r2, residuals
   resid.xts <- do.call(merge, sapply(X=summary(asset.fit), FUN="[", "residuals"))
@@ -346,7 +348,7 @@ UseAPCA <- function(R.xts=R.xts, k=k, refine=refine, corr=corr, ...) {
   
   # assign row and column names
   names(eig.val) = paste("F", 1:obs, sep = ".")
-  names(r2) = names(resid.sd) = colnames(R.xts)
+  names(r2) = names(resid.sd) = rownames(mimic) = colnames(R.xts)
   colnames(B) = colnames(f)
   
   # return list

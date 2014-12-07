@@ -13,6 +13,8 @@
 #' @param object an object of class \code{sfm} returned by \code{fitSfm}.
 #' @param se.type one of "Default", "HC" or "HAC"; option for computing HC/HAC 
 #' standard errors and t-statistics.
+#' @param n.top scalar; number of largest and smallest weights to display for 
+#' each factor mimicking portfolio. Default is 3.
 #' @param x an object of class \code{summary.sfm}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
@@ -21,14 +23,16 @@
 #' @return Returns an object of class \code{summary.sfm}. 
 #' The print method for class \code{summary.sfm} outputs the call, 
 #' coefficients (with standard errors and t-statistics), r-squared and 
-#' residual volatilty (under the homoskedasticity assumption) for all assets. 
+#' residual volatilty (under the homoskedasticity assumption) for all assets as 
+#' well as a summary of the factor mimicking portfolio weights.
 #' 
 #' Object of class \code{summary.sfm} is a list of length N+2 containing:
 #' \item{call}{the function call to \code{fitSfm}}
 #' \item{se.type}{standard error type as input} 
 #' \item{sum.list}{list of summaries for the N fit objects of class \code{lm} 
 #' for each asset in the factor model.}
-#' \item{mimic}{N x K matrix of factor mimicking portfolio weights.}
+#' \item{mimic.sum}{list of matrices containing \code{n.top} largest and 
+#' smallest weights for each factor mimicking portfolio.}
 #' 
 #' @author Sangeetha Srinivasan
 #' 
@@ -48,7 +52,7 @@
 #' @method summary sfm
 #' @export
 
-summary.sfm <- function(object, se.type="Default", ...){
+summary.sfm <- function(object, se.type="Default", n.top=3, ...){
   
   # check input object validity
   if (!inherits(object, "sfm")) {
@@ -72,9 +76,22 @@ summary.sfm <- function(object, se.type="Default", ...){
     }
   }
   
+  # get n.top largest and smallest weights for each factor mimicking portfolio
+  mimic <- object$mimic
+  mimic.sum <- list()
+  for (j in 1:object$k) {
+    short <- sort(mimic[,j])[1:n.top]
+    long <- sort(mimic[,j], decreasing=TRUE)[1:n.top]
+    mimic.sum[[j]] <- cbind(names(long),long,names(short),short)
+    rownames(mimic.sum[[j]]) <- 1:n.top
+    colnames(mimic.sum[[j]]) <- c("Top.Long.Name", "Top.Long.Weight", 
+                                  "Top.Short.Name", "Top.Short.Weight")
+  }
+  names(mimic.sum) <- paste("F", 1:object$k, sep = ".")
+  
   # include the call and se.type to fitSfm
   sum <- list(call=object$call, se.type=se.type, sum.list=sum.list, 
-              mimic=object$mimic)
+              mimic.sum=mimic.sum)
   class(sum) <- "summary.sfm"
   return(sum)
 }
@@ -105,4 +122,6 @@ print.summary.sfm <- function(x, digits=3, ...) {
     printCoefmat(table.coef, digits=digits, ...)
     cat("\nR-squared: ", r2,", Residual Volatility: ", sigma,"\n", sep="")
   }
+  cat("\nFactor mimicking portfolio weights:\n\n", sep="")
+  print(x$mimic.sum, digits=digits, ...)
 }

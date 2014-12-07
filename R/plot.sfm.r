@@ -11,8 +11,9 @@
 #' \code{loop=FALSE} will exit after plotting any one chosen characteristic 
 #' without the need for menu selection.
 #' 
-#' Group plots are the default. The first \code{n.max} variables and 
-#' \code{n.max} factors are plotted depending on the characteristic chosen. 
+#' Group plots are the default. The variables in \code{asset.subset} and factors
+#' in \code{asset.subset} are plotted depending on the characteristic chosen. 
+#' The default is to show the first 4 factors and first 5 assets.
 #' 
 #' Individual asset plots are selected by specifying \code{plot.single=TRUE}. 
 #' In which case, \code{asset.name} is necessary if multiple assets 
@@ -27,16 +28,20 @@
 #' 2 = Time series plot of estimated factors, \cr
 #' 3 = Estimated factor loadings, \cr
 #' 4 = Histogram of R-squared, \cr
-#' 5 = Histogram of Residual volatility,\cr
+#' 5 = Histogram of residual volatility,\cr
 #' 6 = Factor model residual correlation \cr
 #' 7 = Factor model correlation,\cr
 #' 8 = Factor contribution to SD,\cr
 #' 9 = Factor contribution to ES,\cr
-#' 10 = Factor contribution to VaR
-#' @param k.max maximum number of factors to add per plot device for group 
-#' plots. Default is 6.
-#' @param n.max maximum number of variables to add per plot device for group 
-#' plots. Default is 10. 
+#' 10 = Factor contribution to VaR, \cr
+#' 11 = Factor mimicking portfolio weights - top long and short positions in each factor, \cr
+#' 12 = Asset correlations - top long and short positions in each factor
+#' @param factor.subset vector of names/indices of factors to show for group 
+#' plots. Default is 1:4.
+#' @param asset.subset vector of names/indices of assets to show for group 
+#' plots. Default is 1:5. 
+#' @param n.top scalar; number of largest and smallest weights to display for 
+#' each factor mimicking portfolio. Default is 3.
 #' @param plot.single logical; If \code{TRUE} plots the characteristics of an 
 #' individual asset's factor model. The type of plot is given by 
 #' \code{which.plot.single}. Default is \code{FALSE}.
@@ -112,7 +117,7 @@
 #' 
 #' # plot the factor betas of 1st 4 assets fitted above
 #' # loop disabled to get one type of plot without interative menu
-#' plot(fit.apca, n.max=4, which.plot.group=3, loop=FALSE)
+#' plot(fit.apca, asset.subset=1:4, which.plot.group=3, loop=FALSE)
 #' 
 #' # plot factor model return correlation; angular order of the eigenvectors
 #' plot(fit.apca, which.plot.group=7, loop=FALSE, 
@@ -131,11 +136,11 @@
 #' @method plot sfm
 #' @export
 
-plot.sfm <- function(x, which.plot.group=NULL, k.max=6, n.max=10, 
-                     plot.single=FALSE, asset.name, which.plot.single=NULL, 
-                     colorset=(1:12), legend.loc="topleft", las=1, 
-                     VaR.method="historical", cum.var=TRUE, eig.max=0.9, 
-                     loop=TRUE, ...) {
+plot.sfm <- function(x, which.plot.group=NULL, factor.subset=1:4, 
+                     asset.subset=1:5, n.top=3, plot.single=FALSE, asset.name, 
+                     which.plot.single=NULL, colorset=(1:12), 
+                     legend.loc="topleft", las=1, VaR.method="historical", 
+                     cum.var=TRUE, eig.max=0.9, loop=TRUE, ...) {
   
   if (plot.single==TRUE) {
     
@@ -272,63 +277,62 @@ plot.sfm <- function(x, which.plot.group=NULL, k.max=6, n.max=10,
                  "Time series plot of estimated factors",
                  "Estimated factor loadings", 
                  "Histogram of R-squared", 
-                 "Histogram of Residual volatility", 
+                 "Histogram of residual volatility", 
                  "Factor model residual correlation",
                  "Factor model return correlation",
                  "Factor contribution to SD", 
                  "Factor contribution to ES", 
-                 "Factor contribution to VaR"), 
+                 "Factor contribution to VaR",
+                 "Factor mimicking portfolio weights - top long and short positions in each factor",
+                 "Asset correlations - top long and short positions in each factor"), 
                title="\nMake a plot selection (or 0 to exit):") 
       }
       
       par(las=las) # default horizontal axis labels
       k <- x$k
+      f.names <- paste("F", 1:k, sep = ".")
+      a.names <- x$asset.names
       n <- nrow(x$loadings)
+      
+      if (!(all(factor.subset %in% f.names) || all(factor.subset %in% 1:k))) {
+        stop("Invalid argument: factor.subset is not a valid subset of factor names in the fit object.") 
+      }
+      if (!(all(asset.subset %in% a.names) || all(asset.subset %in% 1:n))) {
+        stop("Invalid argument: factor.subset is not a valid subset of factor names in the fit object.") 
+      }
       
       switch(which.plot.group,
              "1L" = { 
                ## Screeplot of eigenvalues
                cumv <- cumsum(x$eigen)/sum(x$eigen)
                limit <- length(cumv[cumv<eig.max]) + 1
-               eig.pct <- (x$eigen/sum(x$eigen))[1:limit]
-               scree <- barplot(eig.pct, main="Screeplot of eigenvalues", 
-                                ylab="Proportion of Variance", col="darkblue", 
-                                ylim=c(0, 1.1*max(eig.pct)), las=las, ...)
+               eig <- x$eigen[1:limit]
+               scree <- barplot(eig, main="Screeplot of eigenvalues", 
+                                ylab="Variance", col="darkblue", 
+                                ylim=c(0, 1.1*max(eig)), las=las, ...)
                if (cum.var) {
-                 text(scree, eig.pct, label=round(cumv,3), pos=3, cex=0.75)
+                 text(scree, eig, label=round(cumv[1:limit],3), pos=3, cex=0.75)
                }
              }, 
              "2L" = {
                ## Time series plot of estimated factors
-               if (k > k.max) {
-                 cat(paste("Displaying only the first", k.max,"factors, as the number of factors > 'k.max' =", k.max))
-                 k <- k.max 
-               }
                plot(
-                 xyplot(x$factors[,1:k],type=c("l","g"),xlab="", 
-                        scales=list(y=list(rot=0)), strip.left=TRUE, strip=FALSE)
+                 xyplot(x$factors[,factor.subset], type=c("l","g"), xlab="", 
+                        scales=list(y=list(rot=0)), strip.left=TRUE, strip=FALSE, ...)
                )
              }, 
              "3L" = {    
                ## Estimated factor loadings
-               if (k > k.max) {
-                 cat(paste("Displaying only the first", k.max,"factors, as the number of factors > 'k.max' =", k.max))
-                 k <- k.max 
-               }
-               if (n > n.max) {
-                 cat(paste("Displaying only the first", n.max,"variables, as the number of variables > 'n.max' =", n.max))
-                 n <- n.max 
-               }
-               par(mfrow=c(ceiling(k/2),2))
-               for (i in 1:k) {
+               par(mfrow=c(ceiling(length(factor.subset)/2),2))
+               for (i in factor.subset) {
                  main=paste("Beta values for ", colnames(x$loadings)[i])
-                 barplot(x$loadings[1:n,i], main=main, names.arg=x$asset.names[1:n], 
+                 barplot(x$loadings[asset.subset,i], main=main, names.arg=asset.subset, 
                          col="darkblue", las=las, horiz=TRUE, ...)
                  abline(v=0, lwd=1, lty=1, col=1)
                }
                par(mfrow=c(1,1))
              }, 
-             "4L" ={
+             "4L" = {
                ## Histogram of R-squared
                methods <- c("add.density","add.rug")
                chart.Histogram(x$r2, xlab="R-squared",
@@ -344,35 +348,19 @@ plot.sfm <- function(x, which.plot.group=NULL, k.max=6, n.max=10,
              }, 
              "6L" = {
                ## Factor Model Residual Correlation
-               if (n > n.max) {
-                 cat(paste("Displaying only the first", n.max,"variables, as the number of variables > 'n.max' =", n.max))
-                 n <- n.max 
-               }
-               cor.resid <- cor(residuals(x)[,1:n], use="pairwise.complete.obs")
+               cor.resid <- cor(residuals(x)[,asset.subset], use="pairwise.complete.obs")
                corrplot(cor.resid, ...)
                # mtext("pairwise complete obs", line=0.5)
              }, 
              "7L" = {
                ## Factor Model Return Correlation
-               if (n > n.max) {
-                 cat(paste("Displaying only the first", n.max,"variables, as the number of variables > 'n.max' =", n.max))
-                 n <- n.max 
-               }
-               cor.fm <- cov2cor(fmCov(x))[1:n,1:n]
+               cor.fm <- cov2cor(fmCov(x))[asset.subset,asset.subset]
                corrplot(cor.fm, ...)
                # mtext("pairwise complete obs", line=0.5)
              },
              "8L" = {
                ## Factor Percentage Contribution to SD
-               if (k > k.max) {
-                 cat(paste("Displaying only the first", k.max,"factors, as the number of factors > 'k.max' =", k.max))
-                 k <- k.max 
-               }
-               if (n > n.max) {
-                 cat(paste("Displaying only the first", n.max,"variables, as the number of variables > 'n.max' =", n.max))
-                 n <- n.max 
-               }
-               pcSd.fm <- fmSdDecomp(x)$pcSd[1:n,1:k]
+               pcSd.fm <- fmSdDecomp(x)$pcSd[asset.subset,factor.subset]
                plot(
                  barchart(pcSd.fm, main="Factor % Contribution to SD", xlab="",
                           auto.key=list(space="bottom",columns=3, 
@@ -382,17 +370,9 @@ plot.sfm <- function(x, which.plot.group=NULL, k.max=6, n.max=10,
                                               panel.barchart(...)}, ...)
                )
              },
-             "9L"={
+             "9L" = {
                ## Factor Percentage Contribution to ES
-               if (k > k.max) {
-                 cat(paste("Displaying only the first", k.max,"factors, as the number of factors > 'k.max' =", k.max))
-                 k <- k.max 
-               }
-               if (n > n.max) {
-                 cat(paste("Displaying only the first", n.max,"variables, as the number of variables > 'n.max' =", n.max))
-                 n <- n.max 
-               }
-               pcES.fm <- fmEsDecomp(x, method=VaR.method)$pcES[1:n,1:k]
+               pcES.fm <- fmEsDecomp(x, method=VaR.method)$pcES[asset.subset,factor.subset]
                plot(
                  barchart(pcES.fm, main="Factor % Contribution to ES", xlab="",
                           auto.key=list(space="bottom",columns=3, 
@@ -402,17 +382,9 @@ plot.sfm <- function(x, which.plot.group=NULL, k.max=6, n.max=10,
                                               panel.barchart(...)}, ...)
                )
              },
-             "10L" ={
+             "10L" = {
                ## Factor Percentage Contribution to VaR
-               if (k > k.max) {
-                 cat(paste("Displaying only the first", k.max,"factors, as the number of factors > 'k.max' =", k.max))
-                 k <- k.max 
-               }
-               if (n > n.max) {
-                 cat(paste("Displaying only the first", n.max,"variables, as the number of variables > 'n.max' =", n.max))
-                 n <- n.max 
-               }
-               pcVaR.fm <- fmVaRDecomp(x, method=VaR.method)$pcVaR[1:n,1:k]
+               pcVaR.fm <- fmVaRDecomp(x, method=VaR.method)$pcVaR[asset.subset,factor.subset]
                plot(
                  barchart(pcVaR.fm, main="Factor % Contribution to VaR", 
                           xlab="", auto.key=list(space="bottom",columns=3, 
@@ -421,6 +393,30 @@ plot.sfm <- function(x, which.plot.group=NULL, k.max=6, n.max=10,
                           panel=function(...){panel.grid(h=0, v=-1); 
                                               panel.barchart(...)}, ...)
                )
+             },
+             "11L" = {
+               ## Factor mimicking portfolio weights - top long and short positions in each factor
+               par(mfrow=c(ceiling(length(factor.subset)/2),2))
+               for (i in factor.subset) {
+                 main=paste("Top positions in ", colnames(x$loadings)[i])
+                 s <- summary(x, n.top=n.top)$mimic.sum[[i]]
+                 top <- as.numeric(s[,c(2,4)])
+                 names.arg <- as.vector(s[,c(1,3)])
+                 barplot(top, main=main, names.arg=names.arg, col="darkblue", 
+                         las=las, horiz=TRUE, ...)
+                 abline(v=0, lwd=1, lty=1, col=1)
+               }
+               par(mfrow=c(1,1))
+             },
+             "12L" = {
+               ## Asset correlations - top long and short positions in each factor
+               for (i in factor.subset) {
+                 main=paste("Correlations of top positions in ", colnames(x$loadings)[i])
+                 s <- summary(x, n.top=n.top)$mimic.sum[[i]]
+                 names.arg <- as.vector(s[,c(1,3)])
+                 cor.fm <- cov2cor(fmCov(x))[names.arg,names.arg]
+                 corrplot(cor.fm, ...)
+               }
              },
              invisible()       
       )         
