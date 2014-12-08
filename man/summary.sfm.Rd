@@ -4,7 +4,8 @@
 \alias{summary.sfm}
 \title{Summarizing a fitted time series factor model}
 \usage{
-\method{summary}{sfm}(object, se.type = "Default", n.top = 3, ...)
+\method{summary}{sfm}(object, se.type = c("Default", "HC", "HAC"),
+  n.top = 3, ...)
 
 \method{print}{summary.sfm}(x, digits = 3, ...)
 }
@@ -12,7 +13,7 @@
 \item{object}{an object of class \code{sfm} returned by \code{fitSfm}.}
 
 \item{se.type}{one of "Default", "HC" or "HAC"; option for computing HC/HAC
-standard errors and t-statistics.}
+standard errors and t-statistics. Default is "Default".}
 
 \item{n.top}{scalar; number of largest and smallest weights to display for
 each factor mimicking portfolio. Default is 3.}
@@ -36,8 +37,8 @@ Object of class \code{summary.sfm} is a list of length N+2 containing:
 \item{se.type}{standard error type as input}
 \item{sum.list}{list of summaries for the N fit objects of class \code{lm}
 for each asset in the factor model.}
-\item{mimic.sum}{list of matrices containing \code{n.top} largest and
-smallest weights for each factor mimicking portfolio.}
+\item{mimic.sum}{list of data.frame objects containing \code{n.top} largest
+and smallest weights for each factor mimicking portfolio.}
 }
 \description{
 \code{summary} method for object of class \code{sfm}.

@@ -12,7 +12,7 @@
 #'  
 #' @param object an object of class \code{sfm} returned by \code{fitSfm}.
 #' @param se.type one of "Default", "HC" or "HAC"; option for computing HC/HAC 
-#' standard errors and t-statistics.
+#' standard errors and t-statistics. Default is "Default".
 #' @param n.top scalar; number of largest and smallest weights to display for 
 #' each factor mimicking portfolio. Default is 3.
 #' @param x an object of class \code{summary.sfm}.
@@ -31,8 +31,8 @@
 #' \item{se.type}{standard error type as input} 
 #' \item{sum.list}{list of summaries for the N fit objects of class \code{lm} 
 #' for each asset in the factor model.}
-#' \item{mimic.sum}{list of matrices containing \code{n.top} largest and 
-#' smallest weights for each factor mimicking portfolio.}
+#' \item{mimic.sum}{list of data.frame objects containing \code{n.top} largest 
+#' and smallest weights for each factor mimicking portfolio.}
 #' 
 #' @author Sangeetha Srinivasan
 #' 
@@ -52,12 +52,15 @@
 #' @method summary sfm
 #' @export
 
-summary.sfm <- function(object, se.type="Default", n.top=3, ...){
+summary.sfm <- function(object, se.type=c("Default","HC","HAC"), n.top=3, ...){
   
   # check input object validity
   if (!inherits(object, "sfm")) {
     stop("Invalid 'sfm' object")
   }
+  
+  #set default for se.type
+  se.type = se.type[1]
   
   # extract list of summary.lm objects for all assets
   sum.list <- summary(object$asset.fit)
@@ -82,10 +85,11 @@ summary.sfm <- function(object, se.type="Default", n.top=3, ...){
   for (j in 1:object$k) {
     short <- sort(mimic[,j])[1:n.top]
     long <- sort(mimic[,j], decreasing=TRUE)[1:n.top]
-    mimic.sum[[j]] <- cbind(names(long),long,names(short),short)
+    mimic.sum[[j]] <- data.frame(names(long), long, names(short), short, 
+                                 stringsAsFactors=FALSE)
     rownames(mimic.sum[[j]]) <- 1:n.top
-    colnames(mimic.sum[[j]]) <- c("Top.Long.Name", "Top.Long.Weight", 
-                                  "Top.Short.Name", "Top.Short.Weight")
+    names(mimic.sum[[j]]) <- c("Top.Long.Name", "Top.Long.Weight", 
+                               "Top.Short.Name", "Top.Short.Weight")
   }
   names(mimic.sum) <- paste("F", 1:object$k, sep = ".")
   

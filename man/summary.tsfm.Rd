@@ -4,7 +4,7 @@
 \alias{summary.tsfm}
 \title{Summarizing a fitted time series factor model}
 \usage{
-\method{summary}{tsfm}(object, se.type = "Default", ...)
+\method{summary}{tsfm}(object, se.type = c("Default", "HC", "HAC"), ...)
 
 \method{print}{summary.tsfm}(x, digits = 3, ...)
 }
@@ -12,7 +12,7 @@
 \item{object}{an object of class \code{tsfm} returned by \code{fitTsfm}.}
 
 \item{se.type}{one of "Default", "HC" or "HAC"; option for computing
-HC/HAC standard errors and t-statistics.}
+HC/HAC standard errors and t-statistics. Default is "Default".}
 
 \item{...}{futher arguments passed to or from other methods.}
 
@@ -45,6 +45,7 @@ heteroskedasticity-consistent (HC) or
 heteroskedasticity-autocorrelation-consistent (HAC) standard errors and
 t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful
 only if \code{fit.method = "OLS" or "DLS"}.
+
 Standard errors are currently not available for
 \code{variable.selection="lars"} as there seems to be no consensus on a
 statistically valid method of calculating standard errors for the lasso

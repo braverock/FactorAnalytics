@@ -169,9 +169,9 @@ plot(fit.sub, which.plot.group=9, loop=FALSE)
 
 ## ----eval=FALSE----------------------------------------------------------
 ## ## S3 method for class "tsfm"
-## plot(x, which.plot.group=NULL, max.show=6, plot.single=FALSE, asset.name,
-##      which.plot.single=NULL, colorset=(1:12), legend.loc="topleft", las=1,
-##      VaR.method="historical", loop=TRUE, ...)
+## plot (x, which.plot.group=NULL, max.show=6, plot.single=FALSE, asset.name,
+##       which.plot.single=NULL, colorset=(1:12), legend.loc="topleft", las=1,
+##       VaR.method="historical", loop=TRUE, ...)
 
 
 ## ----eval=FALSE, results='hide'------------------------------------------

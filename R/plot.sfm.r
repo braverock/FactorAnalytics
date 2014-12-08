@@ -326,7 +326,8 @@ plot.sfm <- function(x, which.plot.group=NULL, factor.subset=1:4,
                par(mfrow=c(ceiling(length(factor.subset)/2),2))
                for (i in factor.subset) {
                  main=paste("Beta values for ", colnames(x$loadings)[i])
-                 barplot(x$loadings[asset.subset,i], main=main, names.arg=asset.subset, 
+                 barplot(x$loadings[asset.subset,i], main=main, 
+                         names.arg=rownames(x$loadings)[asset.subset], 
                          col="darkblue", las=las, horiz=TRUE, ...)
                  abline(v=0, lwd=1, lty=1, col=1)
                }
@@ -398,10 +399,10 @@ plot.sfm <- function(x, which.plot.group=NULL, factor.subset=1:4,
                ## Factor mimicking portfolio weights - top long and short positions in each factor
                par(mfrow=c(ceiling(length(factor.subset)/2),2))
                for (i in factor.subset) {
-                 main=paste("Top positions in ", colnames(x$loadings)[i])
+                 main=paste("Top positions (%) in ", colnames(x$loadings)[i])
                  s <- summary(x, n.top=n.top)$mimic.sum[[i]]
-                 top <- as.numeric(s[,c(2,4)])
-                 names.arg <- as.vector(s[,c(1,3)])
+                 top <- 100*stack(s[,c(2,4)])$values
+                 names.arg <- stack(s[,c(1,3)])$values
                  barplot(top, main=main, names.arg=names.arg, col="darkblue", 
                          las=las, horiz=TRUE, ...)
                  abline(v=0, lwd=1, lty=1, col=1)
@@ -413,7 +414,7 @@ plot.sfm <- function(x, which.plot.group=NULL, factor.subset=1:4,
                for (i in factor.subset) {
                  main=paste("Correlations of top positions in ", colnames(x$loadings)[i])
                  s <- summary(x, n.top=n.top)$mimic.sum[[i]]
-                 names.arg <- as.vector(s[,c(1,3)])
+                 names.arg <- stack(s[,c(1,3)])$values
                  cor.fm <- cov2cor(fmCov(x))[names.arg,names.arg]
                  corrplot(cor.fm, ...)
                }

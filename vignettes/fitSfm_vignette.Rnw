@@ -1,0 +1,561 @@
+\documentclass[a4paper]{article}
+\usepackage{Rd}
+\usepackage{amsmath}
+\usepackage[round]{natbib}
+\usepackage{bm}
+\usepackage{verbatim}
+\usepackage[latin1]{inputenc}
+\bibliographystyle{abbrvnat}
+\usepackage{url}
+
+\let\proglang=\textsf
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\baselinestretch}{1.5}
+\setlength{\textwidth}{15cm} \setlength{\textheight}{22cm} \topmargin-1cm \evensidemargin0.5cm \oddsidemargin0.5cm
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+% \VignetteIndexEntry{Fitting Statistical Factor Models: factorAnalytics vignette}
+%\VignetteEngine{knitr::knitr}
+
+\begin{document}
+
+\title{Fitting Statistical Factor Models: factorAnalytics vignette}
+\author{Sangeetha Srinivasan}
+\maketitle
+
+\begin{abstract}
+The purpose of this vignette is to demonstrate the use of \code{fitSfm} and related control, analysis and plot functions in the \code{factorAnalytics} package.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+\newpage
+\section{Overview}
+
+\subsection{Load Package}
+
+The latest version of the \verb"factorAnalytics" package can be downloaded from R-forge through the following command:
+\begin{verbatim}
+install.packages("factorAnalytics", repos="http://R-Forge.R-project.org")
+\end{verbatim}
+Load the package and it's dependencies.
+<<message=FALSE>>=
+library(factorAnalytics)
+options(digits=3)
+@
+
+\subsection{Summary of related functions}
+Here's a list of the functions and methods demonstrated in this vignette:
+
+\begin{itemize}
+
+\item \verb"fitSfm(data, k, max.k, refine, sig, check, corr, ...)": Fits a statistical factor model for one or more asset returns using Principal Component Analysis (PCA). When the number of assets exceeds the number of time periods, Asymptotic Principal Component Analysis (APCA) is performed. Additionaly for APCA, user can specify a method (one of \citet{connor1993test} or \citet{bai2002determining}) to determine the number of factors and/or choose to use the \citet{connor1988risk} refinement to the APCA procedure. The returned object is of class "sfm" and contains the fitted "lm" object, estimated factor realizations, factor loadings, R-squared, residual volatility, factor model return covariance and the factor mimicking portfolio weights.
+
+\item \verb"coef(object, ...)": Extracts the coefficient matrix (intercept and factor betas) for all assets fit by the "sfm" object.
+
+\item \verb"fitted(object, ...)": Returns an "xts" data object of fitted asset returns from the factor model for all assets.
+
+\item \verb"residuals(object, ...)": Returns an "xts" data object of residuals from the fitted factor model for all assets.
+
+\item \verb"fmCov(object, use, ...)": Returns the \code{N x N} symmetric covariance matrix for asset returns based on the fitted factor model. \code{"use"} specifies how missing values are to be handled.
+
+\item \verb"fmSdDecomp(object, use, ...)": Returns a list containing the standard deviation of asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"use"} specifies how missing values are to be handled.
+
+\item \verb"fmVaRDecomp(object, p, method, invert, ...)": Returns a list containing the value-at-risk for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"p"} and \code{"method"} specify the confidence level and method (one of "modified","gaussian", "historical" or "kernel") to calculate  VaR. VaR is by default a positive quantity and specifying \code{"invert=TRUE"} allows the VaR value to be expressed as a negative quantity. These 3 arguments, \code{"p"}, \code{"method"} and \code{"invert"} are passed on to the \code{VaR} function in the \code{PerformanceAnalytics} package to calculate VaR.
+
+\item \verb"fmEsDecomp(object, p, method, invert, ...)": Returns a list containing the expected shortfall for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. Arguments \code{"p"}, \code{"method"} and \code{invert} are the same as above.
+
+\item \verb"plot(x)": The \code{plot} method for class "sfm" can be used for plotting factor model characteristics of an individual asset or a group of assets (default). The type of individual/group plot can be specified or chosen from a menu prompt, which is the default, if type is not specified. Further the menu reappears (default) to access multiple plots for the same asset(s) unless looping is disabled by setting \code{loop=FALSE}.
+
+\item \verb"predict(object, newdata, ...)": The \code{predict} method for class "sfm" returns a vector or matrix of predicted values for a new data sample or simulated values.
+
+\item \verb"summary(object, se.type, n.top, ...)": The \code{summary} method for class "sfm" returns an object of class \code{"summary.sfm"} containing the summaries of the fitted "lm" objects, factor loadings, residual volatilities (under the homo-skedasticity assumption), R-squared values and factor mimicking portfolio weights. Printing the factor model summary object outputs the call, coefficients (with standard errors and t-statistics), r-squared and residual volatility for all assets, and top long and short positions for each factor mimicking portfolio. 
+
+\end{itemize}
+
+\newpage
+\subsection{Data}
+
+The examples in this vignette primarily use the \code{StockReturns} dataset available in the \verb"factorAnalytics" package. It contains two "data.frame" objects, \code{r.M} and \code{r.W}. 
+<<>>=
+# load the Rdata object
+data(StockReturns)
+# view class and dimensions
+class(r.M)
+dim(r.M)
+# variable names
+colnames(r.M)
+# range of observations
+range(rownames(r.M))
+@
+The \code{r.M} data object, originally used in \citet{berndt1991practice}, has 120 observations of 15 variables (U.S. stock returns) and the frequency is monthly. 
+
+<<>>=
+class(r.W)
+dim(r.W)
+range(rownames(r.W))
+@ 
+Whereas, the \code{r.W} data.frame object has 182 observations of 1618 variables (U.S. stock returns) and the frequency is weekly.
+
+The yield curve example in section 3, uses the \code{TreasuryYields} dataset in the \verb"factorAnalytics" package. This containes an "xts" data object \code{tr.yields}. The data was obtained as a "txt" file from the companion website to \citet{ruppert2010statistics}.
+<<>>=
+data(TreasuryYields)
+head(tr.yields)
+range(index(tr.yields))
+@ 
+The "xts" data object, \code{tr.yields}, contains yields on Treasury bonds at 11 maturities, T = 1, 3, and 6 months and 1, 2, 3, 5, 7, 10, 20, and 30 years. Daily yields were taken from a U.S. Treasury website for the time period January 2, 1990, to October 31, 2008.
+
+Daily yields are missing from some values of T because, the 20-year constant maturity series were discontinued at the end of calendar year 1986 and reinstated on October 1, 1993. Omitting the missing values of the differenced data, leaves 819 days of observations. Excluding the one-month and 30-year series would leave us with a longer series.
+
+\newpage
+\section{Fit a statistical factor model}
+
+In statistical factor models, factor realizations are not directly observable (unlike times series factor models) and the factor loadings are not known (unlike fundamental factor models). Both factors and betas must be extracted from the returns data using statistical methods such as factor analysis and Principal Component Analysis (PCA). PCA uses the eigen decomposition of the covariance (or correlation) matrix of asset returns to find the first \code{K} principal components that explain the largest portion of the sample covariance matrix of returns. Factor loadings are then estimated using time series regression. Factor analysis involves maximum likelihood optimization to estimate the factor loadings and the residual covariance matrix, constructing the factor realizations and choosing a rotation of the coordinate system for a more meaningful interpretation of the factors. 
+
+In \code{fitSfm}, PCA is applied to extract the factor realizations when the number of time series observations, $T$, is greater than the number of assets, $N$. When $N > T$, the sample covariance matrix for asset returns is singular and Aymptotic principal Component Analysis (APCA) as in \citet{connor1988risk} is performed. 
+
+Let's take a look at the arguments for \code{fitSfm}.
+
+<<tidy=TRUE>>=
+args(fitSfm)
+@
+
+A time series of asset returns is input via argument \code{data}. If \code{data} is not of class "xts", rownames must provide an "xts" compatible time index. Specifying \code{check=TRUE}, issues a warning if any asset is found to have identical observations. Note that before model fitting, incomplete cases in \code{data} are removed. 
+
+For both PCA and APCA, any number of factors less than \code{min(N,T)} can be chosen explicitly via argument \code{k}. Alternately for APCA, a method to determine the number of factors can be specified: \code{k="bn"} corresponds to \citet{bai2002determining} and \code{k="ck"} corresponds to \citet{connor1993test}. User can specify the maximum number of factors, \code{max.k} to consider with these methods. If not, it is assumed to be either ten or $T-1$, whichever is smaller. 
+
+For the "ck" method, \code{sig} specifies the desired level of significance. Argument \code{refine} specifies whether a refinement of the APCA procedure from \citet{connor1988risk} that may improve efficiency is to be used.
+
+When \code{corr=TRUE}, the correlation matrix of returns are used for finding the principal components instead of the covariance matrix. This is typically decided by practioners on a case-by-case basis. The variable with the highest variance dominates the PCA when the covariance matrix is used. However, this may be justified if a volatile asset is more interesting for some reason and volatility information shouldn't be discarded. On the other hand, using the correlation matrix standardizes the variables and makes them comparable, avoiding penalizing variables with less dispersion. 
+
+Finally, if the median of the 1st principal component is negative, all it's
+factor realizations are automatically inverted to enable more meaningful interpretation. 
+
+\subsection{Principal Component Analysis}
+
+Refer to chapter 15 of \citet{zivot2006modeling} for a description of the procedure used. 
+
+The following example fits a statistical factor model with two principal components for \code{r.M}, the monthly returns on fifteen U.S. stocks described in section 1. Since the number of observations is larger than the number of assets in this case, \code{fitSfm} would choose to perform PCA. 
+<<>>=
+fit.pca <- fitSfm(r.M, k=2)
+@
+
+The resulting object, \code{fit.pca}, has the following attributes.
+<<>>=
+class(fit.pca)
+names(fit.pca)
+@
+
+The component \code{k} contains the number of factors, either as input or determined by "ck" or "bn" methods. The $N$ (or, $T$ for APCA) eigenvalues of the sample covariance matrix are in \code{eigen}. The $T \times K$ "xts" object of estimated factor realizations are in \code{factors}.
+
+The component \code{asset.fit} contains an object of class "mlm" or "lm" from the time-series OLS regression of asset returns on estimated factors. The estimated factor loadings\footnotemark[1] are in \code{loadings} and regression alphas are in \code{alpha}. The $T \times N$ "xts" object of residuals from the OLS regression are in \code{residuals}. R-squared and residual standard deviations are in \code{r2} and \code{resid.sd} respectively.
+
+\footnotetext[1]{Refer to the summary method in section 2.3 for standard errors, degrees of freedom, t-statistics etc.}
+
+The $N \times N$ return covariance matrix estimated by the factor model is in \code{Omega}\footnotemark[2]. The $N \times K$ matrix of factor mimicking portfolio weights are given in \code{mimic}\footnotemark[3]. The remaining components contain the input choices and the data. The fitted factor model is printed below.
+
+\footnotetext[2]{Section 4.1 on Factor model Covariance gives a detailed derivation.}
+\footnotetext[3]{The summary method in section 2.3 helps to make this more tangible by summarizing the largest and smallest weights for each factor mimicking portfolio.}
+
+<<>>=
+fit.pca # print the fitted "sfm" object
+@
+
+The screeplot of eigenvalues is illustrated in Figure 1, created by selecting option 1 on the plot menu (Refer to section 4 for a list of all the options). The first principal component explains about thirty five percent of the total variance, and the first two components explain about half of the total variance. Specifying \code{eig.max=0.9} displays the first set of components that explain at least ninety percent of the total variance.
+<<fig.cap="Screeplot of eigenvalues from PCA fit", fig.width=6, fig.height=4>>=
+plot(fit.pca, which.plot.group=1, factor.subset=1:2, loop=FALSE, eig.max=0.9,
+     cex.names=0.9, cex.axis=0.9, cex.main=0.8)
+@
+
+The estimated factor returns are displayed in Figure 2, created by selecting option 2 from the plot menu.
+<<fig.cap="Estimated factors from PCA fit", fig.width=7, fig.height=4>>=
+plot(fit.pca, which.plot.group=2, factor.subset=1:2, loop=FALSE)
+@
+
+The estimated factor loadings for all assets are shown in Figure 3, created by selecting option 3 from the plot menu. The first factor has all positive loadings. The second factor has both positive and negative loadings.
+<<fig.cap="Estimated loadings on PCA factors", fig.width=7, fig.height=5>>=
+plot(fit.pca, which.plot.group=3, asset.subset=1:15, factor.subset=1:2, 
+     loop=FALSE, cex.names=0.8, cex.axis=0.8, cex.main=0.8)
+@
+
+\newpage
+Figure 4 displays the top three (\code{n.top}) assets with the largest and smallest weights in each factor mimicking portfolio. For the first factor, assets DATGEN, TANDY and CONTIL have the highest weights and assets CONED, PSNH and TEXACO have the lowest weights. Since all the weights in the first portfolio are positive, this might be construed as a market-wide factor.
+<<fig.cap="Largest and smallest weights in factor mimicking portfolios from PCA fit", fig.width=7, fig.height=4.5, fig.show='asis'>>=
+# Factor mimicking portfolio weights from PCA fit
+t(fit.pca$mimic)
+plot(fit.pca, which.plot.group=11, factor.subset=1:2, n.top=3, loop=FALSE, 
+     cex.names=0.8, cex.axis=0.8, cex.main=0.8)
+@
+
+\newpage
+\subsection{Asymptotic Principal Component Analysis}
+
+The following example fits a statistical factor model with two principal components for \code{r.W}, the weekly returns on 1618 U.S. stocks described in section 1. Since the number of observations is smaller than the number of assets in this case, \code{fitSfm} would choose to perform APCA. The primary difference is that the $T \times T$ covariance matrix is used instead. Refer to chapter 15 of \citet{zivot2006modeling} for a description of the procedure used. 
+
+<<>>=
+fit.apca <- fitSfm(r.W, k=15)
+@
+
+Since the optional argument \code{refine=TRUE} by default, the APCA refinement will be used. This procedure involves recaling the returns using the residual variances obtained from one iteration of the APCA procedure, recomputing the $T \times T$ covariance matrix and performing a second iteration of the APCA procedure using this covariance matrix. This refinement may improve the efficiency of the procedure.
+
+Figures 5 and 6 give the screeplot of eigenvalues and the estimated time series of the first 4 factor realizations.
+<<fig.cap="Screeplot of eigenvalues from APCA fit",fig.width=7,fig.height=4.5>>=
+plot(fit.apca, which.plot.group=1, loop=FALSE, eig.max=0.4, cex.names=0.75, 
+     cex.axis=0.8, cex.main=0.8)
+@
+
+<<fig.cap="First four factor returns from APCA fit", fig.width=7,fig.height=4.5>>=
+plot(fit.apca, which.plot.group=2, loop=FALSE)
+@
+
+Since the number of assets is large, it's more convenient to look at the histograms of R-squared values and residual volatilities for all assets as shown in Figures 6 and 7.
+<<fig.cap="Histogram of R-squared values for APCA fit", fig.width=6, fig.height=4>>=
+plot(fit.apca, which.plot.group=4, loop=FALSE)
+@
+
+<<fig.cap="Histogram of Residual volatilities for APCA fit", fig.width=6, fig.height=4>>=
+plot(fit.apca, which.plot.group=5, loop=FALSE)
+@
+
+The correlations of the assets giving the top five largest and smallest weights for each factor mimicking portfolio can be illustrated with group plot option number 12. This is illustrated in Figure 8 for the first factor.
+<<fig.cap="Asset correlations: largest and smallest positions in the first factor portfolio of the APCA fit", fig.width=6, fig.height=6>>=
+plot(fit.apca, which.plot.group=12, factor.subset=1, loop=FALSE, n.top=5, 
+     method="ellipse")
+@
+
+Note that the number of factors was known or pre-specified in fit.pca above. In practice, the number of factors is unknown and must be determined from the data. Two such procedures are available via \code{fitSfm} via the argument \code{k}: \code{"bn"} corresponds to \citet{bai2002determining} and \code{"ck"} corresponds to \citet{connor1993test}. The maximum number of factors to be considered with these methods is specified via \code{max.k}. By default, it is assumed to be either ten or $T-1$, whichever is smaller. For the "ck" method, \code{sig} specifies the desired level of significance. 
+
+Here are some examples using the "ck" or "bn" method for performing APCA with the weekly return data for 1618 U.S. stocks. We find that both these methods select 2 factors and hence output the same factor model. 
+<<>>=
+# APCA with the Bai & Ng method
+fit.apca.bn <- fitSfm(r.W, k="bn")
+summary(fit.apca.bn$loadings)
+
+# APCA with the Connor-Korajczyk method
+fit.apca.ck <- fitSfm(r.W, k="ck", sig=0.05)
+fit.apca.ck$k
+@
+
+\newpage
+\subsection{S3 generic methods}
+
+<<>>=
+methods(class="sfm")
+@
+
+Many useful generic accessor functions are available for "sfm" fit objects. \code{coef()} returns a matrix of estimated model coefficients including the intercept. \code{fitted()} returns an xts data object of the component of asset returns explained by the factor model. \code{residuals()} returns an "xts" data object with the component of asset returns not explained by the factor model. 
+\code{predict()} uses the fitted factor model to estimate asset returns given a set of new or simulated factor return data.  
+
+<<eval=FALSE>>=
+## S3 method for class "sfm"
+summary.sfm (object, se.type="Default", n.top=3, ...)
+@
+
+\code{summary()} prints the call, coefficients (with standard errors and t-statistics), r-squared and residual volatility for all assets, and \code{n.top} long and short positions for each factor mimicking portfolio. Argument \code{se.type}, one of "Default", "HC" or "HAC", allows for heteroskedasticity and auto-correlation consistent estimates and standard errors. The returned object of class \code{"summary.sfm"} contains a list of summaries of the fitted "lm" objects, factor loadings, residual volatilities (under the homo-skedasticity assumption), R-squared values and factor mimicking portfolio weights.
+
+Factor model covariance and risk decomposition functions are explained in section 4 and the \code{plot} method is discussed separately in Section 5.
+
+Here are some examples using the statistical factor models fitted earlier.
+<<>>=
+# all estimated coefficients from PCA example
+coef(fit.pca)
+
+# compare returns data with fitted and residual values for CITCRP: fit.pca
+CITCRP.ts <- merge(fit.pca$data[,1], fitted(fit.pca)[,1], 
+                      residuals(fit.pca)[,1])
+colnames(CITCRP.ts) <- c("CITCRP.return","CITCRP.fitted","CITCRP.residual")
+tail(CITCRP.ts)
+
+# summary for fit.pca computing HAC standard erros
+sum.pca <- summary(fit.pca, se.type="HAC", n.top=3)
+names(sum.pca)
+
+# print the summary for the 1st asset
+sum.pca$sum.list[[1]]
+
+# print the summary for the factor mimicking portfolio weights
+sum.pca$mimic.sum
+@
+
+\newpage
+\section{Treasury yield curve example}
+
+The following example uses PCA to model yield curve variations similar to Example 17.2 in \citet{ruppert2010statistics}. The Treasury yields data used was described in section 1 earlier. Figure 10 plots the time series of the raw data and Figure 11 shows the treasury yield curve through time.
+<<fig.cap="Treasury yields data for 11 different maturities", fig.width=7, fig.height=6>>=
+plot.zoo(tr.yields, main="Treasury yields", col=4)
+@
+
+<<fig.cap="Treasury yield curve at 3 different dates", fig.width=7, fig.height=4 >>=
+# remove NAs
+dat <- na.omit(tr.yields)
+time = c(1/12,.25,.5,1, 2, 3, 5, 7, 10, 20, 30)
+plot(time, as.vector(dat[1,]), ylim=c(0,6), type="b", col=1, lwd=2, pch=19, 
+     ylab="Yield", xlab="T")
+lines(time, as.vector(dat[486,]), type="b", lwd=2, col=2, pch=19)
+lines(time, as.vector(dat[821,]), type="b", lwd=2, col=4, pch=19)
+legend("bottomright", c("07/31/01","07/02/07","10/31/08"), col=c(1,2,4), lwd=2)
+@
+
+Next, we fit a statistical factor model to the differenced data, with missing values removed. Since all 11 series have the same units and a comparable scale, PCA is performed on the sample correlation matrix. 
+<<>>=
+diff.yield <- na.omit(diff(tr.yields))
+dim(diff.yield)
+yield.pca <- fitSfm(diff.yield, k=3, corr=TRUE)
+@
+
+Figure 12 shows a screeplot of all the eigenvalues. Approximately 95 percent of the variation is explained by the first 3 principal components and 99 percent explained by the first five. So, the choice of $k=3$ when fitting the model is not inappropriate.
+<<fig.cap="Screeplot of eigenvalues from APCA fit",fig.width=7,fig.height=4.5>>=
+plot(yield.pca, which.plot.group=1, factor.subset=1:3, eig.max=1, loop=FALSE, 
+     cex.names=0.9, cex.axis=0.9, cex.main=0.9)
+@
+
+A summary of the distribution of the factor loadings and the top three assets with the largest and smallest weights in each factor mimicking portfolio are shown below. 
+
+<<>>=
+beta <- yield.pca$loadings
+summary(beta)
+summary(yield.pca)$mimic.sum
+@
+
+Figure 13 and 14 show the factor loadings as barplots and as line plots respectively.
+<<fig.cap="Factor loadings on the 1st three Principal components">>=
+plot(yield.pca, which.plot.group=3, factor.subset=1:3, asset.subset=1:11, 
+     loop=FALSE, cex.names=0.9, cex.axis=0.9, cex.main=0.9)
+@
+
+<<fig.cap="The loadings on the 1st three factors across maturities", fig.width=7, fig.height=4>>=
+plot(time, beta[,1], ylim=c(-.8,.8), type="b", col=1, lwd=2, pch=19, 
+     ylab="Factor loading", xlab="T")
+lines(time, beta[,2], type="b", lwd=2, col=2, pch=19)
+lines(time, beta[,3], type="b", lwd=2, col=4, pch=19)
+legend("bottomright", c("F.1","F.2","F.3"), col=c(1,2,4), lwd=2)
+@
+
+All the weights in the first portfolio are positive and roughly the same amounts and any change in the first factor affects all the variables by similar amounts, causing somewhat paralell shifts. So, this might be interpreted as a level factor. The factor loadings for the second principal component are decreasing and any change in this factor affects the slope of the yield curve. Finally, the factor loadings for the third principal component are decreasing and then increasing and any change in this factor affects the curvature of the yield curve. This is illustrated next in Figure 15.
+
+<<fig.cap="Effect of a unit change in the first 3 factors on the yield curve", fig.width=7, fig.height=10>>=
+mu <- colMeans(dat)
+par(mfrow=c(3,1))
+for (i in 1:3) {
+  plot(time, mu, ylim=c(2,5.3), type="b", col=1, lwd=4, pch=19, ylab="Yield", 
+     xlab="T")
+  lines(time, mu+beta[,i], type="b", lwd=2, col=3, pch=19)
+  lines(time, mu-beta[,i], type="b", lwd=2, col=2, pch=19)
+  legend("bottomright", 
+         c("mean", paste("mean+F.",i,sep=""), paste("mean-F.",i,sep="")), 
+         col=c(1,3,2), lwd=c(4,2,2))
+}
+@
+
+
+\newpage
+\section{Factor Model Covariance \& Risk Decomposition}
+
+\subsection{Factor model covariance}
+
+Following \citet{zivot2006modeling}, $R_{i, t}$, the return on asset $i$ ($i = 1, ..., N$) at time $t$ ($t = 1, ..., T$), is fitted with a factor model of the form,
+\begin{equation}
+R_{i,t} = \alpha_i + \bm\beta_i \: \mathbf{f_t} + \epsilon_{i,t}
+\end{equation}
+where, $\alpha_i$ is the intercept, $\mathbf{f_t}$ is a $K \times 1$ vector of factor returns at time $t$, $\bm\beta_i$ is a $1 \times K$ vector of factor exposures for asset $i$ and the error terms $\epsilon_{i,t}$ are serially uncorrelated across time and contemporaneously uncorrelated across assets so that $\epsilon_{i,t} \sim iid(0, \sigma_i^2)$. Thus, the variance of asset $i$'s return is given by 
+\begin{equation}
+var(R_{i,t}) = \bm\beta_i\: var(\mathbf{f_t})\: \bm\beta_i' + \sigma_i^2
+\end{equation}
+
+And, the $N \times N$ covariance matrix of asset returns is
+\begin{equation}
+var(\mathbf{R}) = \bm\Omega = \mathbf{B}\: var(\mathbf{F})\: \mathbf{B}' + \mathbf{D}
+\end{equation}
+where, $R$ is the $N \times T$ matrix of asset returns, $B$ is the $N \times K$ matrix of factor betas, $\mathbf{F}$ is a $K \times T$ matrix of factor returns and $D$ is a diagonal matrix with $\sigma_i^2$ along the diagonal.
+
+\code{fmCov()} computes the factor model covariance from a fitted factor model. Options for handling missing observations include "pairwise.complete.obs" (default), "everything", "all.obs", "complete.obs" and "na.or.complete".
+
+<<fig.cap="Factor model return correlation (pairwise complete obs)", warning=FALSE, fig.width=7, fig.height=7>>=
+Omega <- fmCov(fit.pca)
+# return correlation plot for all 15 assets; Angular Order of Eigenvectors
+plot(fit.pca, which.plot.group=7, factor.subset=1:2, asset.subset=1:15, 
+     loop=FALSE, order="AOE", method="ellipse")
+@
+
+\subsection{Standard deviation decomposition}
+
+Given the factor model in equation 1, the standard deviation of the asset $i$'s return can be decomposed as follows (based on \citet{meucci2007risk}):
+\begin{align}
+R_{i,t} &= \alpha_i + \bm\beta_i \: \mathbf{f_t} + \epsilon_{i,t} \\
+&=  \bm\beta_i^* \: \mathbf{f_t^*}
+\end{align}
+where, $\bm\beta_i^* = (\bm\beta_i \: \sigma_i)$ and $\mathbf{f_t^*} = [\mathbf{f_t'} \: z_t]'$, with $z_t \sim iid(0, 1)$.
+
+By Euler's theorem, the standard deviation of asset $i$'s return is:
+\begin{align}
+Sd.fm_i = \sum_{k=1}^{K+1} cSd_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mSd_{i,k}
+\end{align}
+where, summation is across the $K$ factors and the residual, $\mathbf{cSd_i}$ and $\mathbf{mSd_i}$ are the component and marginal contributions to $Sd.fm_i$ respectively. Computing $Sd.fm_i$ and $\mathbf{mSd_i}$ is very straight forward. The formulas are given below and details are in \citet{meucci2007risk}. The covariance term is approximated by the sample covariance.
+\begin{align}
+& Sd.fm_i = \sqrt{\bm\beta_i^*\: cov(\mathbf{F^*})\: \bm\beta_i^{*'}} \\
+& \mathbf{mSd_i} = \frac{cov(\mathbf{F^*})\: \bm\beta_i^*}{Sd.fm_i} \\
+& \mathbf{cSd_i} = \bm\beta_i^* \: \mathbf{mSd_i}
+\end{align}
+
+\code{fmSdDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total standard deviation and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to SD", fig.width=7, fig.height=6, warning=FALSE>>=
+decomp <- fmSdDecomp(fit.pca)
+names(decomp)
+# get the factor model standard deviation for all assets
+decomp$Sd.fm
+# get the component contributions to Sd; print first 6 assets
+head(decomp$cSd)
+# plot the percentage component contributions to Sd for all 15 assets
+plot(fit.pca, which.plot.group=8, factor.subset=1:2, asset.subset=1:15, 
+     loop=FALSE)
+@
+
+\subsection{Value-at-Risk decomposition}
+
+The VaR version of equation 6 is given below. By Euler's theorem, the value-at-risk of asset $i$'s return is:
+\begin{equation}
+VaR.fm_i = \sum_{k=1}^{K+1} cVaR_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mVaR_{i,k}
+\end{equation}
+
+The marginal contribution to $VaR.fm$ is defined as the expectation of $F.star$, conditional on the loss being equal to $VaR.fm$. This is approximated as described in \citet{epperlein2006portfolio} using a triangular smoothing kernel. $VaR.fm$ calculation is performed using the function \code{VaR} from the \verb"PerformanceAnalytics" package. Refer to their help file for details and more options.
+
+\code{fmVaRDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total VaR and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to VaR", fig.width=7, fig.height=5>>=
+decomp1 <- fmVaRDecomp(fit.apca, method="historical")
+names(decomp1)
+# factor model Value-at-Risk; print first 6 assets
+head(decomp1$VaR.fm)
+# marginal factor contributions to VaR from 1st 4 factors; print first 6 assets
+head(decomp1$mVaR[,1:4])
+# plot the 1st 4 factors % component contributions to VaR for the 1st 6 assets
+plot(fit.apca, which.plot.group=10, loop=FALSE, asset.subset=1:6)
+@
+
+\subsection{Expected Shortfall decomposition}
+
+The Expected Shortfall (ES) version of equation 6 is given below. By Euler's theorem, the expected shortfall of asset $i$'s return is:
+\begin{equation}
+ES.fm_i = \sum_{k=1}^{K+1} cES_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mES_{i,k}
+\end{equation}
+
+The marginal contribution to $ES.fm$ is defined as the expectation of $F.star$, conditional on the loss being less than or equal to $VaR.fm$. This is estimated as a sample average of the observations in that data window. Once again, $VaR.fm$ calculation is performed using the function \code{VaR} from the \verb"PerformanceAnalytics" package. Refer to their help file for details and more options.
+
+\code{fmEsDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. In this example, \code{method} to calculate VaR is "historical" instead of the default "modified". The total ES and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to ES", fig.width=7, fig.height=5>>=
+decomp2 <- fmEsDecomp(fit.apca, method="historical")
+names(decomp2)
+# factor model Expected Shortfall; print first 6 assets
+head(decomp2$ES.fm)
+# percentage component contributions to ES from 1st 4 factors; show 1st 6 assets
+head(decomp2$pcES[,1:4])
+# plot the 1st 4 factors % component contributions to ES for the 1st 6 assets
+plot(fit.apca, which.plot.group=9, loop=FALSE, asset.subset=1:6)
+@
+
+\newpage
+\section{Plot}
+
+Though many types of plots have already been demonstrated, let's look carefully at all available arguments for plotting a "sfm" object.
+<<eval=FALSE>>=
+## S3 method for class "sfm"
+plot(x, which.plot.group=NULL, factor.subset=1:4, asset.subset=1:5, n.top=3,
+     plot.single=FALSE, asset.name, which.plot.single=NULL, colorset=(1:12), 
+     legend.loc="topleft", las=1, VaR.method="historical", cum.var=TRUE, 
+     eig.max=0.9, loop=TRUE, ...)
+@
+
+\subsection{Menu and looping}
+
+If the plot type argument (\code{which.plot.single} or \code{which.plot.group}) is not specified, a menu prompts for user input and the corresponding plot is output. Then, the menu is repeated (default) for user convenience in plotting multiple characteristics. Selecting '0' from the menu exits the current \code{plot.sfm} call. Alternately, setting \code{loop=FALSE} will exit after plotting any one chosen characteristic without the need for menu selection.
+
+For group plots (which are the default), only a subset of factors and assets specified via the arguments \code{factor.subset} and \code{asset.subset} are displayed due to space constraints.
+
+For individual plots, \code{asset.name} is necessary if multiple assets were modeled in \code{x} and \code{plot.single=TRUE}. However, if the \code{fitSfm} object \code{x} only contains one asset's factor model fit, \code{plot.sfm} can infer this automatically, without user input. 
+
+Remarks:
+\begin{itemize}
+\item \code{cum.var} applies to group plot 1 (see menu in the next section), and specifies whether the cumulative fraction of the variance is printed above each bar in the screeplot of eigenvalues.
+\item \code{eig.max=0.9} also applies to group plot 1, and diplays the largest eigenvalues that cumulatively explain at least 90 percent of the total variance .
+\item \code{n.top} applies to group plots 11 and 12, which involve summarizing the factor mimicking portfolios, and specifies the number of top positions to display.
+\item \code{VaR.method} applies to group plots 9 and 10, which are factor model risk ES and VaR decompositions respectively.
+\end{itemize}
+
+\subsection{Group plots}
+
+This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is any "sfm" object, will bring up a menu (shown below) for group plots.
+<<eval=FALSE, results='hide'>>=
+plot(fit.pca)
+
+## Make a plot selection (or 0 to exit): 
+## 
+##  1: Screeplot of eigenvalues
+##  2: Time series plot of estimated factors
+##  3: Estimated factor loadings
+##  4: Histogram of R-squared
+##  5: Histogram of residual volatility
+##  6: Factor model residual correlation
+##  7: Factor model return correlation
+##  8: Factor contribution to SD
+##  9: Factor contribution to ES
+## 10: Factor contribution to VaR
+## 11: Factor mimicking portfolio weights - top long and short positions in each factor
+## 12: Asset correlations - top long and short positions in each factor
+## 
+## Selection: 
+@
+
+All the figures in the vignette plotted so far are group plots with the looping disabled.
+
+\newpage
+\subsection{Individual plots}
+
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. Here's the individual plot menu.
+<<eval=FALSE, results='hide'>>=
+plot(fit.pca, plot.single=TRUE, asset.name="CITCRP")
+
+## Make a plot selection (or 0 to exit): 
+## 
+##  1: Time series plot of actual and fitted asset returns
+##  2: Time series plot of residuals with standard error bands
+##  3: Time series plot of squared residuals
+##  4: Time series plot of absolute residuals
+##  5: SACF and PACF of residuals
+##  6: SACF and PACF of squared residuals
+##  7: SACF and PACF of absolute residuals
+##  8: Histogram of residuals with normal curve overlayed
+##  9: Normal qq-plot of residuals
+## 10: CUSUM test-Recursive residuals
+## 11: CUSUM test-OLS residuals
+## 12: Recursive estimates (RE) test of OLS regression coefficients
+## 13: Rolling estimates over a 24-period observation window
+## 
+## Selection: 
+@
+
+Here are some examples of individual plots for the CITCRP asset in the PCA fit illustrated earlier.
+<<fig.cap="Time series plot of residuals with standard error bands: CITCRP", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.pca, plot.single=TRUE, asset.name="CITCRP", which.plot.single=2, 
+     loop=FALSE)
+@
+
+<<fig.cap="SACF and PACF of absolute residuals: CITCRP", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.pca, plot.single=TRUE, asset.name="CITCRP", which.plot.single=7, 
+     loop=FALSE)
+@
+
+<<fig.cap="Histogram of residuals with normal curve overlayed for CITCRP", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.pca, plot.single=TRUE, asset.name="CITCRP", which.plot.single=8, 
+     loop=FALSE)
+@
+
+\newpage
+\bibliography{FA}
+
+\end{document}

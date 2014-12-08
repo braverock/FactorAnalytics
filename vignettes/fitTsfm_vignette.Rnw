@@ -274,11 +274,11 @@ methods(class="tsfm")
 Many useful generic accessor functions are available for "tsfm" fit objects. \code{coef()} returns a matrix of estimated model coefficients including the intercept. \code{fitted()} returns an xts data object of the component of asset returns explained by the factor model. \code{residuals()} returns an xts data object with the component of asset returns not explained by the factor model. 
 \code{predict()} uses the fitted factor model to estimate asset returns given a set of new or simulated factor return data.  
 
-\code{summary()} prints standard errors and t-statistics for all estimated coefficients in addition to R-squared values and residual volatilities. The \code{se.type} argument enables computing heteroskedasticity and auto-correlation consistent ("HC" and "HAC") estimates and standard errors whenever possible. A "summary.tsfm" object is returned which contains a list of summary objects returned by "lm", "lm.Rob" or "lars" for each asset fit. 
+\code{summary()} prints standard errors and t-statistics for all estimated coefficients in addition to R-squared values and residual volatilities. Argument \code{se.type}, one of "Default", "HC" or "HAC", allows for heteroskedasticity and auto-correlation consistent estimates and standard errors whenever possible. A "summary.tsfm" object is returned which contains a list of summary objects returned by "lm", "lm.Rob" or "lars" for each asset fit. 
 
 Note: Standard errors are currently not available for the "lars" variable selection method, as there seems to be no consensus on a statistically valid method of calculating standard errors for the lasso predictions.
 
-Factor model covariance and risk decomposition functions are explained in section 3 and \code{plot()} method is discussed separately in Section 4.
+Factor model covariance and risk decomposition functions are explained in section 3 and the \code{plot} method is discussed separately in Section 4.
 
 Here are some examples using the time series factor models fitted earlier.
 <<>>=
@@ -416,9 +416,9 @@ plot(fit.sub, which.plot.group=9, loop=FALSE)
 Many types of individual asset (Figure 1) and group plots (Figures 2-8) have already been demonstrated. Let's take a look at all available arguments for plotting a "tsfm" object.
 <<eval=FALSE>>=
 ## S3 method for class "tsfm"
-plot(x, which.plot.group=NULL, max.show=6, plot.single=FALSE, asset.name, 
-     which.plot.single=NULL, colorset=(1:12), legend.loc="topleft", las=1, 
-     VaR.method="historical", loop=TRUE, ...)
+plot (x, which.plot.group=NULL, max.show=6, plot.single=FALSE, asset.name, 
+      which.plot.single=NULL, colorset=(1:12), legend.loc="topleft", las=1, 
+      VaR.method="historical", loop=TRUE, ...)
 @
 
 \subsection{Menu and looping}
@@ -438,7 +438,7 @@ only for \code{fit.method="OLS"}.
 
 \subsection{Group plots}
 
-This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is a "tsfm" object, will bring up a menu (shown below) for group plots.
+This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is any "tsfm" object, will bring up a menu (shown below) for group plots.
 <<eval=FALSE, results='hide'>>=
 plot(fit.sub)
 
@@ -466,7 +466,7 @@ plot(fit.sub, which.plot.group=3, max.show=4, legend.loc=NULL, loop=FALSE)
 
 \subsection{Individual plots}
 
-Setting \code{plot.single=TRUE} enables individual asset plots. If there are more than one asset fit by the fit object, \code{asset.name} is also necessary. Here's the individual plot menu.
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. Here's the individual plot menu.
 <<eval=FALSE, results='hide'>>=
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1")
 

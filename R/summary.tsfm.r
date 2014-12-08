@@ -10,6 +10,7 @@
 #' heteroskedasticity-autocorrelation-consistent (HAC) standard errors and 
 #' t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful 
 #' only if \code{fit.method = "OLS" or "DLS"}.
+#' 
 #' Standard errors are currently not available for 
 #' \code{variable.selection="lars"} as there seems to be no consensus on a 
 #' statistically valid method of calculating standard errors for the lasso 
@@ -17,7 +18,7 @@
 #'  
 #' @param object an object of class \code{tsfm} returned by \code{fitTsfm}.
 #' @param se.type one of "Default", "HC" or "HAC"; option for computing 
-#' HC/HAC standard errors and t-statistics.
+#' HC/HAC standard errors and t-statistics. Default is "Default".
 #' @param x an object of class \code{summary.tsfm}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
@@ -56,11 +57,16 @@
 #' @method summary tsfm
 #' @export
 
-summary.tsfm <- function(object, se.type="Default", ...){
+summary.tsfm <- function(object, se.type=c("Default","HC","HAC"), ...){
+  
   # check input object validity
   if (!inherits(object, "tsfm")) {
     stop("Invalid 'tsfm' object")
   }
+  
+  #set default for se.type
+  se.type = se.type[1]
+  
   # note: fit.method=NULL for "lars" objects
   if (object$fit.method=="Robust" && se.type!="Default") {
     stop("Invalid argument: HC/HAC standard errors are applicable only if 

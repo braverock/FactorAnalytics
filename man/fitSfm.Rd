@@ -64,16 +64,14 @@ regressing the asset returns on estimated factors.}
 \item{resid.sd}{length-N vector of residual standard deviations.}
 \item{residuals}{T x N xts object of residuals from the OLS regression.}
 \item{Omega}{N x N return covariance matrix estimated by the factor model.}
-\item{eigen}{length-K vector of eigenvalues of the sample covariance matrix.}
+\item{eigen}{length-N (or length-T for APCA) vector of eigenvalues of the
+sample covariance matrix.}
 \item{mimic}{N x K matrix of factor mimicking portfolio weights.}
 \item{call}{the matched function call.}
 \item{data}{T x N xts data object containing the asset returns.}
 \item{asset.names}{length-N vector of column names from data.}
 Where N is the number of assets, K is the number of factors, and T is the
 number of observations.
-
-\item{residuals}{T x N matrix of residuals from the regression.}
-\item{asset.ret}{N x T matrix of fitted asset returns from the factor model.}
 }
 \description{
 Fits a statistical factor model using Principal Component
@@ -84,10 +82,10 @@ returned. This function is based on the S+FinMetric function \code{mfactor}.
 }
 \details{
 If \code{data} is not of class \code{"xts"}, rownames must provide an
-\code{xts} compatible time index. Before model fitting, incomplete cases in
-\code{data} are removed using \code{\link[stats]{na.omit}}. Also, if
-\code{check=TRUE}, a warning is issued if any asset is found to have
-identical observations.
+\code{"xts"} compatible time index. Before model fitting, incomplete cases in
+\code{data} are removed using \code{\link[stats]{na.omit}}. Specifying
+\code{check=TRUE}, issues a warning if any asset is found to have identical
+observations.
 
 Let \code{N} be the number of columns or assets and \code{T} be the number
 of rows or observations. When \code{N < T}, Principal Component Analysis
@@ -99,23 +97,24 @@ Zivot and Wang (2007) for more details and references.
 Alternately, for APCA, a method to determine the number of factors can be
 specified: \code{k="bn"} corresponds to Bai and Ng (2002) and \code{k="ck"}
 corresponds to Connor and Korajczyk (1993). User can specify the maximum
-number of factors, \code{max.k} to consider with these methods. If not, a
-default maximum is calculated from \code{min(10, T-1)}.
+number of factors, \code{max.k} to consider with these methods. If not, it
+is assumed to be either 10 or $T-1$, whichever is smaller.
 
-\code{refine} specifies whether a refinement of the APCA procedure (that may
-improve efficiency) from Connor and Korajczyk (1988) is to be used.
+\code{refine} specifies whether a refinement of the APCA procedure from
+Connor and Korajczyk (1988) that may improve efficiency is to be used.
 
-\code{corr} specifies if the correlation matrix of returns should be used
-for finding the principal components instead of the covariance matrix. This
-is decided on a case-by-case basis. The variable with the highest variance
-dominates the PCA when the covariance matrix is used (but, this may be
-justified if a volatile asset is more interesting for some reason and
-volatility information shouldn't be discarded). On the other hand, using the
-correlation matrix standardizes the variables and makes them comparable,
-avoiding penalizing variables with less dispersion.
+When \code{corr=TRUE}, the correlation matrix of returns are used for
+finding the principal components instead of the covariance matrix. This is
+typically decided by practioners on a case-by-case basis. The variable with
+the highest variance dominates the PCA when the covariance matrix is used.
+However, this may be justified if a volatile asset is more interesting for
+some reason and volatility information shouldn't be discarded. On the other
+hand, using the correlation matrix standardizes the variables and makes them
+comparable, avoiding penalizing variables with less dispersion.
 
-Note: If the median of the 1st principal component is negative, all it's
-factor realizations are inverted to enable more meaningful interpretation.
+Finally, if the median of the 1st principal component is negative, all it's
+factor realizations are automatically inverted to enable more meaningful
+interpretation.
 }
 \examples{
 # load return data
