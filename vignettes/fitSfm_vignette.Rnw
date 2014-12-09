@@ -109,7 +109,7 @@ range(index(tr.yields))
 @ 
 The "xts" data object, \code{tr.yields}, contains yields on Treasury bonds at 11 maturities, T = 1, 3, and 6 months and 1, 2, 3, 5, 7, 10, 20, and 30 years. Daily yields were taken from a U.S. Treasury website for the time period January 2, 1990, to October 31, 2008.
 
-Daily yields are missing from some values of T because, the 20-year constant maturity series were discontinued at the end of calendar year 1986 and reinstated on October 1, 1993. Omitting the missing values of the differenced data, leaves 819 days of observations. Excluding the one-month and 30-year series would leave us with a longer series.
+Daily yields are missing from some values of T. For example, the 20-year constant maturity series were discontinued at the end of calendar year 1986 and reinstated on October 1, 1993. Omitting the missing values of the differenced data, leaves 819 days of observations. Excluding the one-month and 20-year yields would leave us with a longer series.
 
 \newpage
 \section{Fit a statistical factor model}
@@ -165,7 +165,7 @@ The $N \times N$ return covariance matrix estimated by the factor model is in \c
 fit.pca # print the fitted "sfm" object
 @
 
-The screeplot of eigenvalues is illustrated in Figure 1, created by selecting option 1 on the plot menu (Refer to section 4 for a list of all the options). The first principal component explains about thirty five percent of the total variance, and the first two components explain about half of the total variance. Specifying \code{eig.max=0.9} displays the first set of components that explain at least ninety percent of the total variance.
+The screeplot of eigenvalues is illustrated in Figure 1, created by selecting option 1 on the plot menu (Refer to section 5 for a list of all the options). The first principal component explains about thirty five percent of the total variance, and the first two components explain about half of the total variance. Specifying \code{eig.max=0.9} displays the first set of components that explain at least ninety percent of the total variance.
 <<fig.cap="Screeplot of eigenvalues from PCA fit", fig.width=6, fig.height=4>>=
 plot(fit.pca, which.plot.group=1, factor.subset=1:2, loop=FALSE, eig.max=0.9,
      cex.names=0.9, cex.axis=0.9, cex.main=0.8)
@@ -200,7 +200,7 @@ The following example fits a statistical factor model with two principal compone
 fit.apca <- fitSfm(r.W, k=15)
 @
 
-Since the optional argument \code{refine=TRUE} by default, the APCA refinement will be used. This procedure involves recaling the returns using the residual variances obtained from one iteration of the APCA procedure, recomputing the $T \times T$ covariance matrix and performing a second iteration of the APCA procedure using this covariance matrix. This refinement may improve the efficiency of the procedure.
+Since the optional argument \code{refine=TRUE} by default, the APCA refinement will be used. This procedure involves recaling the returns using the residual variances obtained from one iteration of the APCA procedure, recomputing the $T \times T$ covariance matrix and performing a second iteration of the APCA procedure using this covariance matrix. This refinement may improve efficiency.
 
 Figures 5 and 6 give the screeplot of eigenvalues and the estimated time series of the first 4 factor realizations.
 <<fig.cap="Screeplot of eigenvalues from APCA fit",fig.width=7,fig.height=4.5>>=
@@ -222,14 +222,14 @@ plot(fit.apca, which.plot.group=5, loop=FALSE)
 @
 
 The correlations of the assets giving the top five largest and smallest weights for each factor mimicking portfolio can be illustrated with group plot option number 12. This is illustrated in Figure 8 for the first factor.
-<<fig.cap="Asset correlations: largest and smallest positions in the first factor portfolio of the APCA fit", fig.width=6, fig.height=6>>=
+<<fig.cap="Asset correlations: top 5 largest and smallest positions in the first factor mimicking portfolio of the APCA fit", fig.width=6, fig.height=6>>=
 plot(fit.apca, which.plot.group=12, factor.subset=1, loop=FALSE, n.top=5, 
      method="ellipse")
 @
 
-Note that the number of factors was known or pre-specified in fit.pca above. In practice, the number of factors is unknown and must be determined from the data. Two such procedures are available via \code{fitSfm} via the argument \code{k}: \code{"bn"} corresponds to \citet{bai2002determining} and \code{"ck"} corresponds to \citet{connor1993test}. The maximum number of factors to be considered with these methods is specified via \code{max.k}. By default, it is assumed to be either ten or $T-1$, whichever is smaller. For the "ck" method, \code{sig} specifies the desired level of significance. 
+Note that the number of factors was known or pre-specified in fit.apca above. In practice, the number of factors is unknown and must be determined from the data. Two such procedures are available via \code{fitSfm} via the argument \code{k}: \code{"bn"} corresponds to \citet{bai2002determining} and \code{"ck"} corresponds to \citet{connor1993test}. The maximum number of factors to be considered with these methods is specified via \code{max.k}. By default, it is assumed to be either ten or $T-1$, whichever is smaller. For the "ck" method, \code{sig} specifies the desired level of significance. 
 
-Here are some examples using the "ck" or "bn" method for performing APCA with the weekly return data for 1618 U.S. stocks. We find that both these methods select 2 factors and hence output the same factor model. 
+Here are some examples using the "ck" or "bn" method for performing APCA with the weekly return data for 1618 U.S. stocks. We find that both these methods select 2 factors and hence output the same factor model in this case. 
 <<>>=
 # APCA with the Bai & Ng method
 fit.apca.bn <- fitSfm(r.W, k="bn")
@@ -270,7 +270,7 @@ CITCRP.ts <- merge(fit.pca$data[,1], fitted(fit.pca)[,1],
 colnames(CITCRP.ts) <- c("CITCRP.return","CITCRP.fitted","CITCRP.residual")
 tail(CITCRP.ts)
 
-# summary for fit.pca computing HAC standard erros
+# summary for fit.pca with HAC standard erros
 sum.pca <- summary(fit.pca, se.type="HAC", n.top=3)
 names(sum.pca)
 
@@ -307,8 +307,8 @@ dim(diff.yield)
 yield.pca <- fitSfm(diff.yield, k=3, corr=TRUE)
 @
 
-Figure 12 shows a screeplot of all the eigenvalues. Approximately 95 percent of the variation is explained by the first 3 principal components and 99 percent explained by the first five. So, the choice of $k=3$ when fitting the model is not inappropriate.
-<<fig.cap="Screeplot of eigenvalues from APCA fit",fig.width=7,fig.height=4.5>>=
+Figure 12 shows a screeplot of all the eigenvalues. Approximately 94 percent of the variation is explained by the first 3 principal components and 99 percent explained by the first five. So, the choice of $k=3$ when fitting the model is not inappropriate.
+<<fig.cap="Screeplot of eigenvalues for the changes in Treasury yields",fig.width=7,fig.height=4.5>>=
 plot(yield.pca, which.plot.group=1, factor.subset=1:3, eig.max=1, loop=FALSE, 
      cex.names=0.9, cex.axis=0.9, cex.main=0.9)
 @
@@ -335,9 +335,9 @@ lines(time, beta[,3], type="b", lwd=2, col=4, pch=19)
 legend("bottomright", c("F.1","F.2","F.3"), col=c(1,2,4), lwd=2)
 @
 
-All the weights in the first portfolio are positive and roughly the same amounts and any change in the first factor affects all the variables by similar amounts, causing somewhat paralell shifts. So, this might be interpreted as a level factor. The factor loadings for the second principal component are decreasing and any change in this factor affects the slope of the yield curve. Finally, the factor loadings for the third principal component are decreasing and then increasing and any change in this factor affects the curvature of the yield curve. This is illustrated next in Figure 15.
+All the weights in the first portfolio are positive and roughly the same and any change in the first factor affects all the variables by similar amounts, causing somewhat paralell shifts. So, this might be interpreted as a level factor. The factor loadings for the second principal component are decreasing and any change in this factor affects the slope of the yield curve. Finally, the factor loadings for the third principal component are decreasing and then increasing and any change in this factor affects the curvature of the yield curve. This is illustrated next in Figure 15.
 
-<<fig.cap="Effect of a unit change in the first 3 factors on the yield curve", fig.width=7, fig.height=10>>=
+<<fig.cap="Effect of a unit change in the first 3 factors on the yield curve: level (shift), slope (tilt) and curvature (bend)", fig.width=7, fig.height=10>>=
 mu <- colMeans(dat)
 par(mfrow=c(3,1))
 for (i in 1:3) {
@@ -374,7 +374,7 @@ where, $R$ is the $N \times T$ matrix of asset returns, $B$ is the $N \times K$ 
 
 \code{fmCov()} computes the factor model covariance from a fitted factor model. Options for handling missing observations include "pairwise.complete.obs" (default), "everything", "all.obs", "complete.obs" and "na.or.complete".
 
-<<fig.cap="Factor model return correlation (pairwise complete obs)", warning=FALSE, fig.width=7, fig.height=7>>=
+<<fig.cap="Factor model return correlation (Angular order of eigenvectors)", warning=FALSE, fig.width=7, fig.height=7>>=
 Omega <- fmCov(fit.pca)
 # return correlation plot for all 15 assets; Angular Order of Eigenvectors
 plot(fit.pca, which.plot.group=7, factor.subset=1:2, asset.subset=1:15, 
@@ -471,22 +471,6 @@ plot(x, which.plot.group=NULL, factor.subset=1:4, asset.subset=1:5, n.top=3,
      eig.max=0.9, loop=TRUE, ...)
 @
 
-\subsection{Menu and looping}
-
-If the plot type argument (\code{which.plot.single} or \code{which.plot.group}) is not specified, a menu prompts for user input and the corresponding plot is output. Then, the menu is repeated (default) for user convenience in plotting multiple characteristics. Selecting '0' from the menu exits the current \code{plot.sfm} call. Alternately, setting \code{loop=FALSE} will exit after plotting any one chosen characteristic without the need for menu selection.
-
-For group plots (which are the default), only a subset of factors and assets specified via the arguments \code{factor.subset} and \code{asset.subset} are displayed due to space constraints.
-
-For individual plots, \code{asset.name} is necessary if multiple assets were modeled in \code{x} and \code{plot.single=TRUE}. However, if the \code{fitSfm} object \code{x} only contains one asset's factor model fit, \code{plot.sfm} can infer this automatically, without user input. 
-
-Remarks:
-\begin{itemize}
-\item \code{cum.var} applies to group plot 1 (see menu in the next section), and specifies whether the cumulative fraction of the variance is printed above each bar in the screeplot of eigenvalues.
-\item \code{eig.max=0.9} also applies to group plot 1, and diplays the largest eigenvalues that cumulatively explain at least 90 percent of the total variance .
-\item \code{n.top} applies to group plots 11 and 12, which involve summarizing the factor mimicking portfolios, and specifies the number of top positions to display.
-\item \code{VaR.method} applies to group plots 9 and 10, which are factor model risk ES and VaR decompositions respectively.
-\end{itemize}
-
 \subsection{Group plots}
 
 This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is any "sfm" object, will bring up a menu (shown below) for group plots.
@@ -511,12 +495,30 @@ plot(fit.pca)
 ## Selection: 
 @
 
+For group plots, only a subset of factors and assets specified via the arguments \code{factor.subset} and \code{asset.subset} are displayed due to space constraints.
+
+Remarks:
+\begin{itemize}
+\item \code{cum.var} applies to group plot 1, and specifies whether the cumulative fraction of the variance is printed above each bar in the screeplot of eigenvalues.
+\item \code{eig.max=0.9} also applies to group plot 1, and diplays the largest eigenvalues that cumulatively explain at least 90 percent of the total variance .
+\item \code{n.top} applies to group plots 11 and 12, which involve summarizing the factor mimicking portfolios, and specifies the number of top positions to display.
+\item \code{VaR.method} applies to group plots 9 and 10, which are factor model risk ES and VaR decompositions respectively.
+\end{itemize}
+
+
+\subsection{Menu and looping}
+
+If the plot type argument (\code{which.plot.group} or \code{which.plot.single}) is not specified, a menu prompts for user input and the corresponding plot is output. Then, the menu is repeated (default) for user convenience in plotting multiple characteristics. Selecting '0' from the menu exits the current \code{plot.sfm} call. Alternately, setting \code{loop=FALSE} will disable the looping and exit after plotting any one chosen characteristic.
+
 All the figures in the vignette plotted so far are group plots with the looping disabled.
+
 
 \newpage
 \subsection{Individual plots}
 
-Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. Here's the individual plot menu.
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. However, if the \code{fitSfm} object \code{x} only contains one asset's factor model fit, \code{plot.sfm} can infer this automatically, without user input. 
+
+Here's the individual plot menu.
 <<eval=FALSE, results='hide'>>=
 plot(fit.pca, plot.single=TRUE, asset.name="CITCRP")
 
@@ -539,7 +541,7 @@ plot(fit.pca, plot.single=TRUE, asset.name="CITCRP")
 ## Selection: 
 @
 
-Here are some examples of individual plots for the CITCRP asset in the PCA fit illustrated earlier.
+Here are some examples which don't need interactive user input. These are individual plots for the CITCRP asset in the PCA fit illustrated earlier.
 <<fig.cap="Time series plot of residuals with standard error bands: CITCRP", fig.show='asis', fig.width=7, fig.height=4.5>>=
 plot(fit.pca, plot.single=TRUE, asset.name="CITCRP", which.plot.single=2, 
      loop=FALSE)

@@ -421,21 +421,6 @@ plot (x, which.plot.group=NULL, max.show=6, plot.single=FALSE, asset.name,
       VaR.method="historical", loop=TRUE, ...)
 @
 
-\subsection{Menu and looping}
-
-If the plot type argument (\code{which.plot.single} or \code{which.plot.group}) is not specified, a menu prompts for user input and the corresponding plot is output. Then, the menu is repeated (default) for user convenience in plotting multiple characteristics. Selecting '0' from the menu exits the current \code{plot.tsfm} call. Alternately, setting \code{loop=FALSE} will exit after plotting any one chosen characteristic without the need for menu selection.
-
-For group plots (the default), the first \code{max.show} assets are plotted. For individual plots, \code{asset.name} is necessary if multiple assets were modeled in \code{x} and \code{plot.single=TRUE}. However, if the \code{fitTsfm} object \code{x} only contains one asset's factor model fit, \code{plot.tsfm} can infer this automatically, without user input. 
-
-Remarks:
-\begin{itemize}
-\item CUSUM plots (individual asset plot options 10, 11 and 12) are applicable 
-only for \code{fit.method="OLS"}.
-\item Rolling estimates (individual asset plot option 13) is not applicable for 
-\code{variable.slection="lars"}.
-\item \code{VaR.method} applies to group plots 9 and 10 (see menu in the next section), which are factor model risk ES and VaR decompositions respectively.
-\end{itemize}
-
 \subsection{Group plots}
 
 This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is any "tsfm" object, will bring up a menu (shown below) for group plots.
@@ -453,20 +438,32 @@ plot(fit.sub)
 ##  7: Factor Model Return Correlation
 ##  8: Factor Contribution to SD
 ##  9: Factor Contribution to ES
-## 10: Factor Contribution to VaR
+## 10: Factor Contribution to VaR 
 ## 
 ## Selection: 
 @
 
-Here's an example where the looping is disabled and the number of assets displayed is restricted to 4.
-<<fig.cap="Actual and fitted factor model returns for the 1st 4 assets">>=
+Remarks:
+\begin{itemize}
+\item For group plots, only the first \code{max.show} assets are plotted.
+\item \code{VaR.method} applies to group plots 9 and 10, which are factor model risk ES and VaR decompositions respectively.
+\end{itemize}
+
+<<fig.cap="Actual and fitted factor model returns for the 1st 4 assets", fig.show='asis', fig.width=7, fig.height=6>>=
+# Example of a group plot: looping disabled & no. of assets displayed = 4.
 plot(fit.sub, which.plot.group=3, max.show=4, legend.loc=NULL, loop=FALSE)
 @
-\newpage
 
+\subsection{Menu and looping}
+
+If the plot type argument (\code{which.plot.group} or \code{which.plot.single}) is not specified, a menu prompts for user input and the corresponding plot is output. Then, the menu is repeated (default) for user convenience in plotting multiple characteristics. Selecting '0' from the menu exits the current \code{plot.tsfm} call. Alternately, setting \code{loop=FALSE} will disable the looping and exit after plotting any one chosen characteristic.
+
+\newpage
 \subsection{Individual plots}
 
-Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. Here's the individual plot menu.
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. However, if the \code{fitSfm} object \code{x} only contains one asset's factor model fit, \code{plot.sfm} can infer this automatically, without user input. 
+
+Here's the individual plot menu.
 <<eval=FALSE, results='hide'>>=
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1")
 
@@ -489,18 +486,26 @@ plot(fit.sub, plot.single=TRUE, asset.name="HAM1")
 ## Selection: 
 @
 
-Here are a few more examples.
-<<fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='hold'>>=
+Remarks:
+\begin{itemize}
+\item CUSUM plots (individual asset plot options 10, 11 and 12) are applicable 
+only for \code{fit.method="OLS"}.
+\item Rolling estimates (individual asset plot option 13) is not applicable for 
+\code{variable.slection="lars"}.
+\end{itemize}
+
+Here are a few more examples which don't need interactive user input.
+<<fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=2, 
      loop=FALSE)
 @
 
-<<fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='hold'>>=
+<<fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=7, 
      loop=FALSE)
 @
 
-<<fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='hold'>>=
+<<fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=8, 
      loop=FALSE)
 @
