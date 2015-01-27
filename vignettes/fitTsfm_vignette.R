@@ -44,9 +44,12 @@ fit.singleIndex # print the fitted "tsfm" object
 
 ## ------------------------------------------------------------------------
 # Henriksson-Merton's market timing model
-fit.mktTiming <- fitTsfm(asset.names=asset.names, rf.name="US 3m TR", 
-                         mkt.name="SP500 TR", mkt.timing="HM", data=managers)
-fit.mktTiming
+fit.mktTiming <- fitTsfm(asset.names=asset.names, factor.names="SP500 TR", 
+                         rf.name="US 3m TR", mkt.name="SP500 TR", 
+                         mkt.timing="HM", data=managers)
+fit.mktTiming$beta
+fit.mktTiming$r2
+fit.mktTiming$resid.sd
 
 
 ## ------------------------------------------------------------------------
@@ -193,7 +196,8 @@ plot(fit.sub, which.plot.group=9, loop=FALSE)
 ## ## Selection:
 
 
-## ----fig.cap="Actual and fitted factor model returns for the 1st 4 assets"----
+## ----fig.cap="Actual and fitted factor model returns for the 1st 4 assets", fig.show='asis', fig.width=7, fig.height=6----
+# Example of a group plot: looping disabled & no. of assets displayed = 4.
 plot(fit.sub, which.plot.group=3, max.show=4, legend.loc=NULL, loop=FALSE)
 
 
@@ -219,17 +223,17 @@ plot(fit.sub, which.plot.group=3, max.show=4, legend.loc=NULL, loop=FALSE)
 ## ## Selection:
 
 
-## ----fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='hold'----
+## ----fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=2, 
      loop=FALSE)
 
 
-## ----fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='hold'----
+## ----fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=7, 
      loop=FALSE)
 
 
-## ----fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='hold'----
+## ----fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=8, 
      loop=FALSE)
 

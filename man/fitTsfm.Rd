@@ -40,7 +40,7 @@ See details. Default is "OLS".}
 \item{variable.selection}{the variable selection method, one of "none",
 "stepwise","subsets","lars". See details. Default is "none".}
 
-\item{mkt.timing}{one of "HM", "TM" or "both". See Details. Default is NULL.
+\item{mkt.timing}{one of "HM" or "TM". See Details. Default is NULL.
 \code{mkt.name} is required if any of these options are to be implemented.}
 
 \item{control}{list of control parameters. The default is constructed by
@@ -122,13 +122,14 @@ Arguments \code{mkt.name} and \code{mkt.timing} allow for market-timing
 factors to be added to any of the above methods. Market timing accounts for
 the price movement of the general stock market relative to fixed income
 securities. Specifying \code{mkt.timing="HM"}, includes
-$up.market = max(0, R_m-R_f)$ as a factor, followinhg Henriksson & Merton
-(1981). The coefficient of this up-market factor can be interpreted as the
-number of free put options. Similarly, to account for market timing with
-respect to volatility, one can specify \code{mkt.timing="TM"}. Following
-Treynor & Mazuy (1966), $market.sqd = (R_m-R_f)^2$ is added as a factor. To
-include both these market-timing factors in the model, one can specify
-\code{mkt.timing=c("HM","TM")}.
+$down.market = max(0, R_f-R_m)$ as a factor, following Henriksson & Merton
+(1981). The coefficient of this down-market factor can be interpreted as the
+number of "free" put options on the market provided by the manager's
+market-timings kills. Similarly, to account for market timing with respect
+to volatility, one can specify \code{mkt.timing="TM"}. Following
+Treynor & Mazuy (1966), $market.sqd = (R_m-R_f)^2$ is added as a factor.
+For example, as a test for market timing, either of these factors can be
+added to the single index regression model.
 
 \subsection{Data Processing}{
 

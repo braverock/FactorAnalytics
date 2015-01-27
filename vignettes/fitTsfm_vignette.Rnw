@@ -148,15 +148,18 @@ fit.singleIndex # print the fitted "tsfm" object
 
 \subsection{Market Timing Models}
 
-In the following example, we fit the \citet{henriksson1981market} market timing model, using the SP500 as the market. Market timing accounts for the price movement of the general stock market relative to fixed income securities. Specifying \code{mkt.timing="HM"}, includes $up.market = max(0, R_m-R_f)$ as a factor. 
+In the following example, we fit the \citet{henriksson1981market} market timing model, using the SP500 as the market. Market timing accounts for the price movement of the general stock market relative to fixed income securities. Specifying \code{mkt.timing="HM"}, includes $down.market = max(0, R_f-R_m)$ as a factor. To test market timing ability, this factor can be added to the single index model as shown below. The coefficient of this down-market factor can be interpreted as the number of "free" put options on the market provided by the manager's market-timings kills. That is, a negative value for the regression estimate would imply a negative value for market timing ability of the manager.
 <<>>=
 # Henriksson-Merton's market timing model
-fit.mktTiming <- fitTsfm(asset.names=asset.names, rf.name="US 3m TR", 
-                         mkt.name="SP500 TR", mkt.timing="HM", data=managers)
-fit.mktTiming
+fit.mktTiming <- fitTsfm(asset.names=asset.names, factor.names="SP500 TR", 
+                         rf.name="US 3m TR", mkt.name="SP500 TR", 
+                         mkt.timing="HM", data=managers)
+fit.mktTiming$beta
+fit.mktTiming$r2
+fit.mktTiming$resid.sd
 @
 
-Similarly, to account for market timing with respect to volatility, one can specify \code{mkt.timing="TM"}. Following \citet{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor. To include both these market-timing factors in the model, one can specify \code{mkt.timing=c("HM","TM")}. 
+Similarly, to account for market timing with respect to volatility, one can specify \code{mkt.timing="TM"}. Following \citet{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor. 
 
 Note that, the user needs to specify which of the columns in \code{data} corresponds to the market returns using argument \code{mkt.name}. In the above case, \code{factor.names} were left out from the argument list and a pure market-timing model was fit.
 
@@ -171,7 +174,7 @@ fit.ols$r2
 fit.ols$resid.sd
 @ 
 
-Other options include discounted least squares (\code{"DLS"}) and robust regression (\code{"Robust"}). DLS is least squares regression using exponentially discounted weights and accounts for time variation in coefficients. Robust regression is resistant to outliers and heteroskedasticity. 
+Other options include discounted least squares (\code{"DLS"}) and robust regression (\code{"Robust"}). DLS is least squares regression using exponentially discounted weights and accounts for time variation in coefficients. Robust regression is resistant to outliers. 
 <<>>=
 fit.robust <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
                        rf.name="US 3m TR", data=managers, fit.method="Robust")

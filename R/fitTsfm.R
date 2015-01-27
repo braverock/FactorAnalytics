@@ -39,13 +39,14 @@
 #' factors to be added to any of the above methods. Market timing accounts for 
 #' the price movement of the general stock market relative to fixed income 
 #' securities. Specifying \code{mkt.timing="HM"}, includes 
-#' $up.market = max(0, R_m-R_f)$ as a factor, followinhg Henriksson & Merton 
-#' (1981). The coefficient of this up-market factor can be interpreted as the 
-#' number of free put options. Similarly, to account for market timing with 
-#' respect to volatility, one can specify \code{mkt.timing="TM"}. Following 
-#' Treynor & Mazuy (1966), $market.sqd = (R_m-R_f)^2$ is added as a factor. To 
-#' include both these market-timing factors in the model, one can specify 
-#' \code{mkt.timing=c("HM","TM")}. 
+#' $down.market = max(0, R_f-R_m)$ as a factor, following Henriksson & Merton 
+#' (1981). The coefficient of this down-market factor can be interpreted as the 
+#' number of "free" put options on the market provided by the manager's 
+#' market-timings kills. Similarly, to account for market timing with respect 
+#' to volatility, one can specify \code{mkt.timing="TM"}. Following 
+#' Treynor & Mazuy (1966), $market.sqd = (R_m-R_f)^2$ is added as a factor. 
+#' For example, as a test for market timing, either of these factors can be 
+#' added to the single index regression model.
 #' 
 #' \subsection{Data Processing}{
 #' 
@@ -74,7 +75,7 @@
 #' See details. Default is "OLS". 
 #' @param variable.selection the variable selection method, one of "none", 
 #' "stepwise","subsets","lars". See details. Default is "none".
-#' @param mkt.timing one of "HM", "TM" or "both". See Details. Default is NULL.
+#' @param mkt.timing one of "HM" or "TM". See Details. Default is NULL.
 #' \code{mkt.name} is required if any of these options are to be implemented.
 #' @param control list of control parameters. The default is constructed by 
 #' the function \code{\link{fitTsfm.control}}. See the documentation for 
@@ -245,13 +246,13 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     warning("Excess returns were not computed.")
   }
   
-  # opt add mkt-timing factors: up.market=max(0,Rm-Rf), market.sqd=(Rm-Rf)^2
+  # opt add mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
   if("HM" %in% mkt.timing) {
-    up.market <- data.xts[,mkt.name]
-    up.market [up.market < 0] <- 0
-    dat.xts <- merge.xts(dat.xts,up.market)
-    colnames(dat.xts)[dim(dat.xts)[2]] <- "up.market"
-    factor.names <- c(factor.names, "up.market")
+    down.market <- data.xts[,mkt.name]
+    down.market [down.market > 0] <- 0
+    dat.xts <- merge.xts(dat.xts,down.market)
+    colnames(dat.xts)[dim(dat.xts)[2]] <- "down.market"
+    factor.names <- c(factor.names, "down.market")
   }
   if("TM" %in% mkt.timing) {
     market.sqd <- data.xts[,mkt.name]^2   
