@@ -249,10 +249,10 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   # opt add mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
   if("HM" %in% mkt.timing) {
     down.market <- data.xts[,mkt.name]
-    down.market [down.market > 0] <- 0
+    down.market[down.market < 0 ] <- 0
     dat.xts <- merge.xts(dat.xts,down.market)
     colnames(dat.xts)[dim(dat.xts)[2]] <- "down.market"
-    factor.names <- c(factor.names, "down.market")
+    factor.names <- c(factor.names,"down.market")
   }
   if("TM" %in% mkt.timing) {
     market.sqd <- data.xts[,mkt.name]^2   
