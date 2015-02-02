@@ -131,7 +131,7 @@ data(managers)
 
 # example: Market-timing factors with robust fit
 fit <- fitTsfmTiming(asset.names=colnames(managers[,(1:6)]), factor.names=NULL,
-               mkt.name="SP500 TR", data=managers)
+               mkt.name="SP500 TR",rf.name="US 3m TR",data=managers)
 summary(fit)
 fitted(fit)
 }
