@@ -133,8 +133,9 @@ with \code{xts} objects internally and colnames won't be left as they are.
 data(managers)
 
 # example: Market-timing factors with robust fit
-fit <- fitTsfmLagBeta(asset.names=colnames(managers[,(1:6)]), LagBeta=2,
-               mkt.name="SP500.TR",rf.name="US.3m.TR",data=managers)
+fit <- fitTsfmLagBeta(asset.names=colnames(managers[,(1:6)]),LagBeta=2,
+                      factor.names="SP500.TR",mkt.name="SP500.TR",
+                      rf.name="US.3m.TR",data=managers)
 summary(fit)
 fitted(fit)
 }

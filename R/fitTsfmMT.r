@@ -1,6 +1,6 @@
-#' @title Fit a lagged Betas factor model using time series regression
+#' @title Fit a time serie market timing factor model using time series regression
 #' 
-#' @description This is a wrapper function to fits a time series lagged Betas factor model for one 
+#' @description This is a wrapper function to fits a time series market timing factor model for one 
 #' or more asset returns or excess returns using time series regression. 
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
@@ -63,8 +63,6 @@
 #' @param rf.name name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and factors (in 
 #' \code{factor.names}). Default is NULL, and no action is taken.
-#' @param LagBeta A integer number to specify numbers of lags of Betas to 
-#' include in the model. The Default is 1.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{mkt.name} and \code{rf.name}.
@@ -143,9 +141,8 @@
 #' data(managers)
 #' 
 #' # example: Market-timing factors with robust fit
-#' fit <- fitTsfmLagBeta(asset.names=colnames(managers[,(1:6)]),LagBeta=2,
-#'                       factor.names="SP500.TR",mkt.name="SP500.TR",
-#'                       rf.name="US.3m.TR",data=managers)
+#' fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), factor.names=NULL, 
+#'                mkt.name="SP500.TR",rf.name="US.3m.TR",data=managers)
 #' summary(fit)
 #' fitted(fit)
 #'  
@@ -156,29 +153,17 @@
 #' 
 #' @export
 
-fitTsfmLagBeta <- function(asset.names, factor.names=NULL, mkt.name=NULL, rf.name=NULL, 
-                          data=data, fit.method=c("OLS","DLS","Robust"),LagBeta=1, 
-                          variable.selection=c("none","stepwise","subsets","lars"), control=fitTsfm.control(...),...) {
-  
-  if (is.null(mkt.name))  {
-    stop("Missing argument: mkt.name has to be specified for lag Beta model.")
-  }
- 
-  
-  if (as.integer(LagBeta) != LagBeta | LagBeta < 1 ) {
-    stop("Invalid argument: LagBeta must be an integer and no less than 1. The default is 1.")
+fitTsfmMT <- function(asset.names, factor.names=NULL, mkt.name=NULL, rf.name=NULL, 
+                    data=data, fit.method=c("OLS","DLS","Robust"), 
+                    variable.selection=c("none","stepwise","subsets","lars"), control=fitTsfm.control(...),...) {
+  if (is.null(mkt.name)){
+    stop("Missing argument: mkt.name has to be specified for market timing model.")
   }
   
-  # Create market lag terms
-  mktlag <- lag(data[,mkt.name],k=seq(1:LagBeta))
-  for (i in 1:LagBeta) {
-    colnames(mktlag)[i] <- paste("MktLag",i,sep="")
-    factor.names <- c(factor.names,paste("MktLag",i,sep=""))
-  }
-    data <- merge(data,mktlag)
+  factor.names <- union(factor.names,mkt.name)
   
-  fit <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
-                  data=data,fit.method=fit.method,variable.selection=variable.selection,control=control)
-  
-  return(fit)  
+  fit.Timing <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
+          data=data,fit.method=fit.method,variable.selection=variable.selection,control=control,mkt.timing="HM")
+
+return(fit.Timing)  
 }
