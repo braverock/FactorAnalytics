@@ -155,10 +155,6 @@
 #' # group plot; type selected from menu prompt; auto-looped for multiple plots
 #' # plot(fit)
 #' 
-#' # example: Market-timing factors with robust fit
-#' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]), factor.names=NULL, 
-#'                mkt.name="SP500 TR", mkt.timing="HM", data=managers, 
-#'                fit.method="Robust")
 #' 
 #' # example using "subsets" variable selection
 #' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
@@ -169,7 +165,7 @@
 #' # example using "lars" variable selection and subtracting risk-free rate
 #' fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                    factor.names=colnames(managers[,(7:9)]), 
-#'                    rf.name="US 3m TR", data=managers, 
+#'                    rf.name="US.3m.TR", data=managers, 
 #'                    variable.selection="lars", lars.criterion="cv") 
 #' 
 #' @importFrom PerformanceAnalytics checkData
@@ -201,10 +197,10 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     factor.names <- NULL
   }
   
-  if (xor(is.null(mkt.name), is.null(mkt.timing))) {
-    stop("Missing argument: Both mkt.name and mkt.timing are necessary to add 
-         market timing factors")
-  }
+#   if (xor(is.null(mkt.name), is.null(mkt.timing))) {
+#     stop("Missing argument: Both mkt.name and mkt.timing are necessary to add 
+#          market timing factors")
+#   }
   
   # extract arguments to pass to different fit and variable selection functions
   decay <- control$decay

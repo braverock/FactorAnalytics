@@ -105,7 +105,7 @@
 #' Where N is the number of assets, K is the number of factors and T is the 
 #' number of time periods.
 #' 
-#' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen.
+#' @author Yi-An Chen.
 #' 
 #' @references 
 #' Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 
@@ -142,7 +142,7 @@
 #' 
 #' # example: Market-timing factors with robust fit
 #' fit <- fitTsfmTiming(asset.names=colnames(managers[,(1:6)]), factor.names=NULL, 
-#'                mkt.name="SP500 TR",rf.name="US 3m TR",data=managers)
+#'                mkt.name="SP500.TR",rf.name="US.3m.TR",data=managers)
 #' summary(fit)
 #' fitted(fit)
 #'  
@@ -156,10 +156,13 @@
 fitTsfmTiming <- function(asset.names, factor.names=NULL, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"), 
                     variable.selection=c("none","stepwise","subsets","lars"), control=fitTsfm.control(...),...) {
+  if (is.null(mkt.name)){
+    stop("Missing argument: mkt.name has to be specified for market timing model.")
+  }
   
   factor.names <- union(factor.names,mkt.name)
   
-fit.Timing <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
+  fit.Timing <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
           data=data,fit.method=fit.method,variable.selection=variable.selection,control=control,mkt.timing="HM")
 
 return(fit.Timing)  

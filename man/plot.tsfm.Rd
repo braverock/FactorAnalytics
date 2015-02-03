@@ -101,7 +101,7 @@ Rolling estimates (individual asset plot option 13) is not applicable for
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]),
-                     rf.name="US 3m TR", data=managers)
+                     rf.name="US.3m.TR", data=managers)
 
 # group plot(default); select type from menu prompt
 # menu is auto-looped to get multiple types of plots based on the same fit

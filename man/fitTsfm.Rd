@@ -157,10 +157,6 @@ plot(fit, plot.single=TRUE, asset.name="HAM1", which.plot.single=1,
 # group plot; type selected from menu prompt; auto-looped for multiple plots
 # plot(fit)
 
-# example: Market-timing factors with robust fit
-fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]), factor.names=NULL,
-               mkt.name="SP500 TR", mkt.timing="HM", data=managers,
-               fit.method="Robust")
 
 # example using "subsets" variable selection
 fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
@@ -171,7 +167,7 @@ fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 # example using "lars" variable selection and subtracting risk-free rate
 fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                    factor.names=colnames(managers[,(7:9)]),
-                   rf.name="US 3m TR", data=managers,
+                   rf.name="US.3m.TR", data=managers,
                    variable.selection="lars", lars.criterion="cv")
 }
 \author{

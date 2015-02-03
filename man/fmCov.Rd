@@ -56,7 +56,7 @@ handling NAs restricts the method to "pearson".
 # Time Series Factor model
 data(managers)
 fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]),
-               factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
+               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)
 fmCov(fit)
 
 # Statistical Factor Model

@@ -29,10 +29,10 @@ calls the \code{predict} method for fitted objects of class \code{lm},
 data(managers)
 # fit the factor model with OLS
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-               factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
+               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)
 
 pred.fit <- predict(fit)
-newdata <- data.frame("EDHEC LS EQ"=rnorm(n=120), "SP500 TR"=rnorm(n=120))
+newdata <- data.frame("EDHEC.LS.EQ"=rnorm(n=120), "SP500.TR"=rnorm(n=120))
 rownames(newdata) <- rownames(fit$data)
 pred.fit2 <- predict(fit, newdata, interval="confidence")
 }

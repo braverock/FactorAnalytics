@@ -43,7 +43,7 @@
 #' data(managers)
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,7:9]), 
-#'                mkt.name="SP500 TR", mkt.timing="HM", data=managers)
+#'                data=managers)
 #' 
 #' # summary of factor model fit for all assets
 #' summary(fit, "HAC")

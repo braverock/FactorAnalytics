@@ -13,7 +13,7 @@
 #'  data(managers)
 #' # fit the factor model with OLS
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-#'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
+#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)
 #' fm.attr <- paFm(fit)
 #' print(fm.attr)
 #'
