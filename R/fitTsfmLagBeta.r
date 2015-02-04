@@ -142,7 +142,7 @@
 #' # load data from the database
 #' data(managers)
 #' 
-#' # example: Market-timing factors with robust fit
+#' # example: Market-timing factors with OLS fit
 #' fit <- fitTsfmLagBeta(asset.names=colnames(managers[,(1:6)]),LagBeta=2,
 #'                       factor.names="SP500.TR",mkt.name="SP500.TR",
 #'                       rf.name="US.3m.TR",data=managers)
@@ -161,7 +161,7 @@ fitTsfmLagBeta <- function(asset.names, factor.names=NULL, mkt.name=NULL, rf.nam
                           variable.selection=c("none","stepwise","subsets","lars"), control=fitTsfm.control(...),...) {
   
   if (is.null(mkt.name))  {
-    stop("Missing argument: mkt.name has to be specified for lag Beta model.")
+    stop("Missing argument: mkt.name has to be specified for lagged Betas model.")
   }
  
   

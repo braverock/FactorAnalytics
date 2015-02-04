@@ -132,7 +132,7 @@ with \code{xts} objects internally and colnames won't be left as they are.
 # load data from the database
 data(managers)
 
-# example: Market-timing factors with robust fit
+# example: Market-timing factors with OLS fit
 fit <- fitTsfmLagBeta(asset.names=colnames(managers[,(1:6)]),LagBeta=2,
                       factor.names="SP500.TR",mkt.name="SP500.TR",
                       rf.name="US.3m.TR",data=managers)

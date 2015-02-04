@@ -129,8 +129,8 @@ with \code{xts} objects internally and colnames won't be left as they are.
 # load data from the database
 data(managers)
 
-# example: Market-timing factors with robust fit
-fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), factor.names=NULL,
+# example: Market-timing factors with OLS fit
+fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]),
                mkt.name="SP500.TR",rf.name="US.3m.TR",data=managers)
 summary(fit)
 fitted(fit)

@@ -196,7 +196,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   if (missing(factor.names) && !is.null(mkt.name)) {
     factor.names <- NULL
   }
-  
+
 #   if (xor(is.null(mkt.name), is.null(mkt.timing))) {
 #     stop("Missing argument: Both mkt.name and mkt.timing are necessary to add 
 #          market timing factors")
@@ -244,7 +244,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   # opt add mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
   if("HM" %in% mkt.timing) {
-    down.market <- data.xts[,mkt.name]
+    down.market <- dat.xts[,mkt.name]
     down.market[down.market < 0 ] <- 0
     dat.xts <- merge.xts(dat.xts,down.market)
     colnames(dat.xts)[dim(dat.xts)[2]] <- "down.market"
