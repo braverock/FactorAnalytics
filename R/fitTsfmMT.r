@@ -58,8 +58,8 @@
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
-#' @param mkt.name name of the column for market excess returns (Rm-Rf); this 
-#' is necessary to add market timing factors. Default is NULL.
+#' @param mkt.name name of the column for market excess returns (Rm-Rf); It 
+#' is required for a market timing model.
 #' @param rf.name name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and factors (in 
 #' \code{factor.names}). Default is NULL, and no action is taken.

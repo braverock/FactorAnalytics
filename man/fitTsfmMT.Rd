@@ -15,8 +15,8 @@ excess returns are the dependent variable.}
 
 \item{factor.names}{vector containing names of the macroeconomic factors.}
 
-\item{mkt.name}{name of the column for market excess returns (Rm-Rf); this
-is necessary to add market timing factors. Default is NULL.}
+\item{mkt.name}{name of the column for market excess returns (Rm-Rf); It
+is required for a market timing model.}
 
 \item{rf.name}{name of the column of risk free rate variable to calculate
 excess returns for all assets (in \code{asset.names}) and factors (in

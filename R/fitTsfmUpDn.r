@@ -1,6 +1,6 @@
-#' @title Fit a lagged Betas factor model using time series regression
+#' @title Fit a up and down market factor model using time series regression
 #' 
-#' @description This is a wrapper function to fits a time series lagged Betas factor model for one 
+#' @description This is a wrapper function to fits a up/down market model for one 
 #' or more asset returns or excess returns using time series regression. 
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
@@ -35,13 +35,6 @@
 #' "stepwise" or "forward.stagewise". Note: If \code{variable.selection="lars"}, 
 #' \code{fit.method} will be ignored.
 #' 
-#' Market timing accounts for 
-#' the price movement of the general stock market relative to fixed income 
-#' securities. It includes 
-#' $down.market = max(0, R_f-R_m)$ as a factor, following Henriksson & Merton 
-#' (1981). The coefficient of this down-market factor can be interpreted as the 
-#' number of "free" put options on the market provided by the manager's 
-#' market-timings kills.
 #' 
 #' \subsection{Data Processing}{
 #' 
@@ -59,12 +52,10 @@
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
 #' @param mkt.name name of the column for market excess returns (Rm-Rf). It 
-#' is required for a lagged Betas factor model. 
+#' is required for a up/down market model. 
 #' @param rf.name name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and factors (in 
 #' \code{factor.names}). Default is NULL, and no action is taken.
-#' @param LagBeta A integer number to specify numbers of lags of Betas to 
-#' include in the model. The Default is 1.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{mkt.name} and \code{rf.name}.
@@ -78,7 +69,12 @@
 #' \code{\link{fitTsfm.control}} for details.
 #' @param ... arguments passed to \code{\link{fitTsfm.control}}
 #' 
-#' @return fitTsfm returns an object of class \code{"tsfm"} for which 
+#' @return 
+#' 
+#' fitTsfmUpDn returns a list object containing \code{Up} and \code{Dn}. 
+#' Both \code{Up} and \code{Dn} are class of \code{"tsfm"}. 
+#'  
+#' fitTsfm returns an object of class \code{"tsfm"} for which 
 #' \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist. 
 #' 
 #' The generic accessor functions \code{coef}, \code{fitted} and 
@@ -142,12 +138,14 @@
 #' # load data from the database
 #' data(managers)
 #' 
-#' # example: A lagged Beetas model with OLS fit
-#' fit <- fitTsfmLagBeta(asset.names=colnames(managers[,(1:6)]),LagBeta=2,
-#'                       factor.names="SP500.TR",mkt.name="SP500.TR",
-#'                       rf.name="US.3m.TR",data=managers)
-#' summary(fit)
-#' fitted(fit)
+#' # example: Up and down market factor model with OLS fit
+#' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
+#'                        data=managers, fit.method="OLS",control=NULL)
+#'  # List object
+#'  fitUpDn
+#'  
+#'  summary(fitUpDn$Up)
+#'  summary(fitUpDn$Dn)
 #'  
 #' @importFrom PerformanceAnalytics checkData
 #' @importFrom robust lmRob step.lmRob
@@ -156,29 +154,52 @@
 #' 
 #' @export
 
-fitTsfmLagBeta <- function(asset.names, factor.names=NULL, mkt.name=NULL, rf.name=NULL, 
-                          data=data, fit.method=c("OLS","DLS","Robust"),LagBeta=1, 
-                          variable.selection=c("none","stepwise","subsets","lars"), control=fitTsfm.control(...),...) {
+
+fitTsfmUpDn <- function(asset.names, factor.names=NULL, mkt.name=NULL, rf.name=NULL, 
+                                 data=data, fit.method=c("OLS","DLS","Robust"), 
+                                 variable.selection=c("none","stepwise","subsets","lars"),
+                                 control=fitTsfm.control(...),...) {
+
+  if (is.null(mkt.name)){
+    stop("Missing argument: mkt.name has to be specified for up and down market model.")
+  }  
   
-  if (is.null(mkt.name))  {
-    stop("Missing argument: mkt.name has to be specified for lagged Betas model.")
-  }
  
   
-  if (as.integer(LagBeta) != LagBeta | LagBeta < 1 ) {
-    stop("Invalid argument: LagBeta must be an integer and no less than 1. The default is 1.")
+  factor.names <- union(factor.names,mkt.name)
+  
+  # convert data into an xts object and hereafter work with xts objects
+  data.xts <- checkData(data)
+  # convert index to 'Date' format for uniformity 
+  time(data.xts) <- as.Date(time(data.xts))
+  
+  # extract columns to be used in the time series regression
+  dat.xts <- merge(data.xts[,asset.names], data.xts[,factor.names])
+  ### After merging xts objects, the spaces in names get converted to periods
+  
+  # convert all asset and factor returns to excess return form if specified
+  if (!is.null(rf.name)) {
+    dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
+                                     FUN.VALUE = numeric(nrow(dat.xts))))
+    warning("Up market is defined as the excess Market returns is no less than 0.")
+  } else {
+    warning("Up market is defined as the Market returns is no less than 0.")
   }
   
-  # Create market lag terms
-  mktlag <- lag(data[,mkt.name],k=seq(1:LagBeta))
-  for (i in 1:LagBeta) {
-    colnames(mktlag)[i] <- paste("MktLag",i,sep="")
-    factor.names <- c(factor.names,paste("MktLag",i,sep=""))
-  }
-    data <- merge(data,mktlag)
+  mkt <- dat.xts[,mkt.name]
+  # up market
+  dataUp.xts <- dat.xts[mkt >= 0]
   
-  fit <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
-                  data=data,fit.method=fit.method,variable.selection=variable.selection,control=control)
+  fitUp <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
+                     data=dataUp.xts,fit.method=fit.method,variable.selection=variable.selection,
+                     control=control)
+
   
-  return(fit)  
-}
+  # down market
+  dataDn.xts <- dat.xts[mkt < 0]
+  fitDn <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
+                     data=dataDn.xts,fit.method=fit.method,variable.selection=variable.selection,
+                     control=control)
+  
+return(list(Up = fitUp, Dn = fitDn))
+} 
