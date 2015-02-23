@@ -201,5 +201,7 @@ fitTsfmUpDn <- function(asset.names, factor.names=NULL, mkt.name=NULL, rf.name=N
                      data=dataDn.xts,fit.method=fit.method,variable.selection=variable.selection,
                      control=control)
   
-return(list(Up = fitUp, Dn = fitDn))
+  result <- list(Up = fitUp, Dn = fitDn)
+  class(result) <- "tsfmUpDn"
+return(result)
 } 
