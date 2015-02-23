@@ -27,7 +27,7 @@
 #' \item{Up}{A list of the up market fitted object. It is a class of \code{summary.tsfm}}
 #' \item{Dn}{A list of the down market fitted object. It is a class of \code{summary.tsfm}} 
 #' 
-#' @author Yi-An Chen.
+#' @author Yi-An Chen and Sangeetha Srinivasan.
 #' 
 #' @seealso \code{\link{fitTsfmUpDn}}, \code{\link[stats]{summary.tsfm}}
 #' 

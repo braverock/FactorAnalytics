@@ -35,12 +35,12 @@ Object of class \code{summary.tsfmUpDn} is a list of 2 containing:
 \description{
 \code{summary} method for object of class \code{tsfmUpDn}.
 Returned object is of class {summary.tsfmUpDn}. This function provides a \code{summary}
-method to a return object of a wrapper function \code{fitTsfmUpDn}.
+method to an object returned by a wrapper function \code{fitTsfmUpDn}.
 }
 \details{
 Since \code{fitTsfmUpDn} fits both up market and down market,
 \code{summary.tsfmUpDn} applies \code{summary.tsfm} for both markets fitted
-objects and combines the coefficients together.
+objects and combines the coefficients interested together.
 }
 \examples{
 # load data from the database
@@ -53,7 +53,7 @@ fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR
  summary(fitUpDn)
 }
 \author{
-Yi-An Chen.
+Yi-An Chen and Sangeetha Srinivasan.
 }
 \seealso{
 \code{\link{fitTsfmUpDn}}, \code{\link[stats]{summary.tsfm}}
