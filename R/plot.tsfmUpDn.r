@@ -6,8 +6,8 @@
 #' This method plots actual values against fitted value of up and down market time series
 #' factor model. The black dots are actual values and the red lines are fitted values.
 #' 
-#' For other types of plots, use the list objects (\code{Up} and \code{Dn}) of class \code{tsfmUpDn}. As a result, the
-#' \code{plot.tsfm} can be applied.
+#' For other types of plots, use the list objects \code{Up} and \code{Dn} of class \code{tsfmUpDn}. 
+#' The \code{plot.tsfm} can be applied.
 #' 
 #' @param object an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
 #' @param mkt.name The name of market returns used in \code{fitTsfmUpDn}. It is necessary

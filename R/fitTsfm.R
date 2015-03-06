@@ -36,17 +36,9 @@
 #' \code{fit.method} will be ignored.
 #' 
 #' Arguments \code{mkt.name} and \code{mkt.timing} allow for market-timing 
-#' factors to be added to any of the above methods. Market timing accounts for 
-#' the price movement of the general stock market relative to fixed income 
-#' securities. Specifying \code{mkt.timing="HM"}, includes 
-#' $down.market = max(0, R_f-R_m)$ as a factor, following Henriksson & Merton 
-#' (1981). The coefficient of this down-market factor can be interpreted as the 
-#' number of "free" put options on the market provided by the manager's 
-#' market-timings kills. Similarly, to account for market timing with respect 
-#' to volatility, one can specify \code{mkt.timing="TM"}. Following 
-#' Treynor & Mazuy (1966), $market.sqd = (R_m-R_f)^2$ is added as a factor. 
-#' For example, as a test for market timing, either of these factors can be 
-#' added to the single index regression model.
+#' factors to be added to any of the above methods. A wrapper function 
+#' \code{\link{fitTsfmMT}} is built based on this functionality. Please refer to 
+#' \code{fitTsfmMT} for detail.  
 #' 
 #' \subsection{Data Processing}{
 #' 

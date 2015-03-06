@@ -1,6 +1,6 @@
 #' @title Fit a up and down market factor model using time series regression
 #' 
-#' @description This is a wrapper function to fits a up/down market model for one 
+#' @description This is a wrapper function to fits a up and down market model for one 
 #' or more asset returns or excess returns using time series regression. 
 #' Users can choose between ordinary least squares-OLS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
@@ -8,45 +8,10 @@
 #' \code{"tsfm"} is returned.
 #' 
 #' @details 
-#' Typically, factor models are fit using excess returns. \code{rf.name} gives 
-#' the option to supply a risk free rate variable to subtract from each asset 
-#' return and factor to compute excess returns. 
+#' \code{fitTsfmUpDn} will use \code{fitTsfm} to fit a time series model for up and down market respectively. If 
+#' risk free rate is provided, the up market is the excess market returns which is no less than 0.
+#' The goal of up and down marke is to capture different market Betas in the up and down markets. 
 #' 
-#' Estimation method "OLS" corresponds to ordinary least squares using 
-#' \code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least 
-#' squares with exponentially declining weights that sum to unity), and, 
-#' "Robust" is robust regression (using \code{\link[robust]{lmRob}}). 
-#' 
-#' If \code{variable.selection="none"}, uses all the factors and performs no 
-#' variable selection. Whereas, "stepwise" performs traditional stepwise 
-#' LS or Robust regression (using \code{\link[stats]{step}} or 
-#' \code{\link[robust]{step.lmRob}}), that starts from the initial set of 
-#' factors and adds/subtracts factors only if the regression fit, as measured 
-#' by the Bayesian Information Criterion (BIC) or Akaike Information Criterion 
-#' (AIC), improves. And, "subsets" enables subsets selection using 
-#' \code{\link[leaps]{regsubsets}}; chooses the best performing subset of any 
-#' given size or within a range of subset sizes. Different methods such as 
-#' exhaustive search (default), forward or backward stepwise, or sequential 
-#' replacement can be employed.See \code{\link{fitTsfm.control}} for more 
-#' details on the control arguments.
-#'  
-#' \code{variable.selection="lars"} corresponds to least angle regression 
-#' using \code{\link[lars]{lars}} with variants "lasso" (default), "lar", 
-#' "stepwise" or "forward.stagewise". Note: If \code{variable.selection="lars"}, 
-#' \code{fit.method} will be ignored.
-#' 
-#' 
-#' \subsection{Data Processing}{
-#' 
-#' Note about NAs: Before model fitting, incomplete cases are removed for 
-#' every asset (return data combined with respective factors' return data) 
-#' using \code{\link[stats]{na.omit}}. Otherwise, all observations in 
-#' \code{data} are included.
-#' 
-#' Note about \code{asset.names} and \code{factor.names}: Spaces in column 
-#' names of \code{data} will be converted to periods as \code{fitTsfm} works 
-#' with \code{xts} objects internally and colnames won't be left as they are.
-#' }
 #' 
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
@@ -70,20 +35,19 @@
 #' @param ... arguments passed to \code{\link{fitTsfm.control}}
 #' 
 #' @return 
+#' \code{fitTsfmUpDn} returns an object \code{tsfmUpDn}. It supports generic function such as 
+#' \code{summary}, \code{predict}, \code{plot} and \code{print}.
 #' 
-#' fitTsfmUpDn returns a list object containing \code{Up} and \code{Dn}. 
-#' Both \code{Up} and \code{Dn} are class of \code{"tsfm"}. 
-#'  
-#' fitTsfm returns an object of class \code{"tsfm"} for which 
-#' \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist. 
+#' It is also a list object containing \code{Up} and \code{Dn}. Both \code{Up} and \code{Dn} are class of \code{"tsfm"}. As a result, for each list 
+#' object, The generic function such as \code{print}, \code{plot}, \code{predict} 
+#' and \code{summary} methods exist for both \code{Up} and \code{Dn}. Also, the generic accessor functions \code{coef}, 
+#' \code{fitted} \code{residuals} and  \code{fmCov} can be applied as well.
 #' 
-#' The generic accessor functions \code{coef}, \code{fitted} and 
-#' \code{residuals} extract various useful features of the fit object. 
-#' Additionally, \code{fmCov} computes the covariance matrix for asset returns 
-#' based on the fitted factor model
+#' An object of class \code{"tsfmUpDn"} is a list containing \code{Up} and \code{Dn}:
+#' \item{Up}{An object of \code{tsfm} fitted by \code{fitTsfm} for the up market.}
+#' \item{Dn}{An object of \code{tsfm} fitted by \code{fitTsfm} for the down market.}
 #' 
-#' An object of class \code{"tsfm"} is a list containing the following 
-#' components:
+#' Each object of \code{tsfm} contains : 
 #' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
 #' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
 #' the \code{fit.method="Robust"}, or class \code{lars} if 
@@ -109,31 +73,14 @@
 #' Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 
 #' performance measurement and benchmarking. McGraw Hill Professional.
 #' 
-#' Efron, B., Hastie, T., Johnstone, I., & Tibshirani, R. (2004). Least angle 
-#' regression. The Annals of statistics, 32(2), 407-499. 
+#' @seealso 
+#' The \code{tsfmUpDn} methods for generic functions: 
+#' \code{\link{plot.tsfmUpDn}}, \code{\link{predict.tsfmUpDn}}, 
+#' \code{\link{print.tsfmUpDn}} and \code{\link{summary.tsfmUpDn}}. 
 #' 
-#' Hastie, T., Tibshirani, R., Friedman, J., Hastie, T., Friedman, J., & 
-#' Tibshirani, R. (2009). The elements of statistical learning (Vol. 2, No. 1). 
-#' New York: Springer.
 #' 
-#' Henriksson, R. D., & Merton, R. C. (1981). On market timing and investment 
-#' performance. II. Statistical procedures for evaluating forecasting skills. 
-#' Journal of business, 513-533.
-#' 
-#' Treynor, J., & Mazuy, K. (1966). Can mutual funds outguess the market. 
-#' Harvard business review, 44(4), 131-136.
-#' 
-#' @seealso The \code{tsfm} methods for generic functions: 
-#' \code{\link{plot.tsfm}}, \code{\link{predict.tsfm}}, 
-#' \code{\link{print.tsfm}} and \code{\link{summary.tsfm}}. 
-#' 
-#' And, the following extractor functions: \code{\link[stats]{coef}}, 
-#' \code{\link[stats]{fitted}}, \code{\link[stats]{residuals}},
-#' \code{\link{fmCov}}, \code{\link{fmSdDecomp}}, \code{\link{fmVaRDecomp}} 
-#' and \code{\link{fmEsDecomp}}.
-#' 
-#' \code{\link{paFm}} for Performance Attribution. 
-#' 
+#' The original time series function \code{\link{fitTsfm}} and its generic functions
+#'  application.
 #' @examples
 #' # load data from the database
 #' data(managers)
@@ -141,9 +88,12 @@
 #' # example: Up and down market factor model with OLS fit
 #' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
 #'                        data=managers, fit.method="OLS",control=NULL)
-#'  # List object
-#'  fitUpDn
 #'  
+#'  print(fitUpDn)
+#'  summary(fitUpDn)
+#'  
+#'  # A list object
+#'  fitUpDn
 #'  summary(fitUpDn$Up)
 #'  summary(fitUpDn$Dn)
 #'  
