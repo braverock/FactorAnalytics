@@ -12,8 +12,8 @@
 #' @param object an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
 #' @param mkt.name The name of market returns used in \code{fitTsfmUpDn}. It is necessary
 #' to provide the name of market returns. 
-#' @param assets.name The name of the assets used in \code{fitTsfmUpDn}. It only supports 
-#' single asset so far.
+#' @param assets.name The name of the asset used in \code{fitTsfmUpDn}. It supports one
+#' asset name at once.   
 #' @param ... Other arguments can be used in \code{plot}. 
 #' @author Yi-An Chen
 #' 

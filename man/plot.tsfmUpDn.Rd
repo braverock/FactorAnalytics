@@ -12,8 +12,8 @@
 \item{mkt.name}{The name of market returns used in \code{fitTsfmUpDn}. It is necessary
 to provide the name of market returns.}
 
-\item{assets.name}{The name of the assets used in \code{fitTsfmUpDn}. It only supports
-single asset so far.}
+\item{assets.name}{The name of the asset used in \code{fitTsfmUpDn}. It supports one
+asset name at once.}
 
 \item{...}{Other arguments can be used in \code{plot}.}
 }
