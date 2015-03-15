@@ -464,7 +464,7 @@ If the plot type argument (\code{which.plot.group} or \code{which.plot.single}) 
 \newpage
 \subsection{Individual plots}
 
-Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. However, if the \code{fitSfm} object \code{x} only contains one asset's factor model fit, \code{plot.sfm} can infer this automatically, without user input. 
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fit object, \code{asset.name} is also necessary. However, if the \code{fitTsfm} object \code{x} only contains one asset's factor model fit, \code{plot.tsfm} can infer \code{asset.name} automatically, without user input. 
 
 Here's the individual plot menu.
 <<eval=FALSE, results='hide'>>=

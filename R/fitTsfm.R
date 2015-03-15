@@ -189,10 +189,10 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     factor.names <- NULL
   }
 
-  if (xor(is.null(mkt.name), is.null(mkt.timing))) {
-    stop("Missing argument: Both mkt.name and mkt.timing are necessary to add 
-         market timing factors")
-  }
+#   if (xor(is.null(mkt.name), is.null(mkt.timing))) {
+#     stop("Missing argument: Both mkt.name and mkt.timing are necessary to add 
+#          market timing factors")
+#   }
   
   # extract arguments to pass to different fit and variable selection functions
   decay <- control$decay
