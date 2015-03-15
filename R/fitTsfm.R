@@ -142,8 +142,7 @@
 #' summary(fit)
 #' fitted(fit)
 #' # plot actual returns vs. fitted factor model returns for HAM1
-#' plot(fit, plot.single=TRUE, asset.name="HAM1", which.plot.single=1, 
-#'      loop=FALSE)
+#' plot(fit, plot.single=TRUE, asset.name="HAM1", which=1)
 #' # group plot; type selected from menu prompt; auto-looped for multiple plots
 #' # plot(fit)
 #' 

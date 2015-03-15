@@ -13,8 +13,8 @@ range(index(managers))
 ## ------------------------------------------------------------------------
 asset.names <- colnames(managers[,1:6]) 
 factor.names <- colnames(managers[,7:9])
-mkt.name <- "SP500 TR"
-rf.name <- "US 3m TR"
+mkt.name <- "SP500.TR"
+rf.name <- "US.3m.TR"
 
 
 ## ------------------------------------------------------------------------
@@ -29,8 +29,8 @@ args(fitTsfm)
 
 ## ------------------------------------------------------------------------
 # Single Index Model using SP500
-fit.singleIndex <- fitTsfm(asset.names=asset.names, factor.names="SP500 TR", 
-                           rf.name="US 3m TR", data=managers)
+fit.singleIndex <- fitTsfm(asset.names=asset.names, factor.names="SP500.TR", 
+                           rf.name="US.3m.TR", data=managers)
 
 
 ## ------------------------------------------------------------------------
@@ -44,8 +44,8 @@ fit.singleIndex # print the fitted "tsfm" object
 
 ## ------------------------------------------------------------------------
 # Henriksson-Merton's market timing model
-fit.mktTiming <- fitTsfm(asset.names=asset.names, factor.names="SP500 TR", 
-                         rf.name="US 3m TR", mkt.name="SP500 TR", 
+fit.mktTiming <- fitTsfm(asset.names=asset.names, factor.names="SP500.TR", 
+                         rf.name="US.3m.TR", mkt.name="SP500.TR", 
                          mkt.timing="HM", data=managers)
 fit.mktTiming$beta
 fit.mktTiming$r2
@@ -54,7 +54,7 @@ fit.mktTiming$resid.sd
 
 ## ------------------------------------------------------------------------
 fit.ols <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                    rf.name="US 3m TR", data=managers)
+                    rf.name="US.3m.TR", data=managers)
 fit.ols$beta
 fit.ols$r2
 fit.ols$resid.sd
@@ -62,7 +62,7 @@ fit.ols$resid.sd
 
 ## ------------------------------------------------------------------------
 fit.robust <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                       rf.name="US 3m TR", data=managers, fit.method="Robust")
+                       rf.name="US.3m.TR", data=managers, fit.method="Robust")
 fit.robust$beta
 fit.robust$r2
 fit.robust$resid.sd
@@ -70,38 +70,38 @@ fit.robust$resid.sd
 
 ## ----fig.cap="HAM3 Returns: OLS (top) vs Robust (bottom)", fig.show='hold'----
 par(mfrow=c(2,1))
-plot(fit.ols, plot.single=TRUE, which.plot.single=1, asset.name="HAM3", loop=FALSE)
+plot(fit.ols, plot.single=TRUE, which=1, asset.name="HAM3")
 mtext("OLS", side=3)
-plot(fit.robust, plot.single=TRUE, which.plot.single=1, asset.name="HAM3", loop=FALSE)
+plot(fit.robust, plot.single=TRUE, which=1, asset.name="HAM3")
 mtext("Robust", side=3)
 
 
 ## ----fig.cap="Residual vol: OLS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'----
 par(mfrow=c(1,2))
-plot(fit.ols, which.plot.group=5, loop=FALSE, xlim=c(0,0.043), sub="OLS")
-plot(fit.robust, which.plot.group=5, loop=FALSE, xlim=c(0,0.043), sub="Robust")
+plot(fit.ols, which=5, xlim=c(0,0.043), sub="OLS")
+plot(fit.robust, which=5, xlim=c(0,0.043), sub="Robust")
 
 
 ## ----fig.show='hide'-----------------------------------------------------
 fit.lars <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                    data=managers, rf.name="US 3m TR", 
+                    data=managers, rf.name="US.3m.TR", 
                     variable.selection="lars")
 fit.lars
 
 
 ## ------------------------------------------------------------------------
 fit.sub <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                   data=managers, rf.name="US 3m TR", 
+                   data=managers, rf.name="US.3m.TR", 
                    variable.selection="subsets", nvmin=2, nvmax=2)
 fit.sub
 
 
 ## ----fig.cap="Factor betas: fit.sub", fig.show='hold'--------------------
-plot(fit.sub, which.plot.group=2, loop=FALSE)
+plot(fit.sub, which=2)
 
 
 ## ----fig.cap="Factor betas: fit.lars", fig.show='hold'-------------------
-plot(fit.lars, which.plot.group=2, loop=FALSE)
+plot(fit.lars, which=2)
 
 
 ## ------------------------------------------------------------------------
@@ -125,8 +125,7 @@ summary(fit.sub, se.type="HAC")
 ## ----fig.cap="Factor model return correlation (pairwise complete obs)"----
 fmCov(fit.sub)
 # return correlation plot; Angular Order of the Eigenvectors
-plot(fit.sub, which.plot.group=7, loop=FALSE, order="AOE", method="ellipse", 
-     tl.pos = "d")
+plot(fit.sub, which=7, order="AOE", method="ellipse", tl.pos = "d")
 
 
 ## ----fig.cap="Percentage factor contribution to SD"----------------------
@@ -141,7 +140,7 @@ decomp$mSd
 # get the percentage component contributions to Sd
 decomp$pcSd
 # plot the percentage component contributions to Sd
-plot(fit.sub, which.plot.group=8, loop=FALSE)
+plot(fit.sub, which=8)
 
 
 ## ----fig.cap="Percentage factor contribution to VaR"---------------------
@@ -152,7 +151,7 @@ decomp1$VaR.fm
 # get the percentage component contributions to VaR
 decomp1$pcVaR
 # plot the percentage component contributions to VaR
-plot(fit.sub, which.plot.group=10, loop=FALSE)
+plot(fit.sub, which=10)
 
 
 ## ----fig.cap="Percentage factor contribution to ES"----------------------
@@ -167,14 +166,13 @@ decomp2$mES
 # get the percentage component contributions to ES
 decomp2$pcES
 # plot the percentage component contributions to ES
-plot(fit.sub, which.plot.group=9, loop=FALSE)
+plot(fit.sub, which=9)
 
 
 ## ----eval=FALSE----------------------------------------------------------
 ## ## S3 method for class "tsfm"
-## plot (x, which.plot.group=NULL, max.show=6, plot.single=FALSE, asset.name,
-##       which.plot.single=NULL, colorset=(1:12), legend.loc="topleft", las=1,
-##       VaR.method="historical", loop=TRUE, ...)
+## plot (x, which=NULL, max.show=6, plot.single=FALSE, asset.name, colorset=(1:12),
+##       legend.loc="topleft", las=1, VaR.method="historical", ...)
 
 
 ## ----eval=FALSE, results='hide'------------------------------------------
@@ -198,43 +196,43 @@ plot(fit.sub, which.plot.group=9, loop=FALSE)
 
 ## ----fig.cap="Actual and fitted factor model returns for the 1st 4 assets", fig.show='asis', fig.width=7, fig.height=6----
 # Example of a group plot: looping disabled & no. of assets displayed = 4.
-plot(fit.sub, which.plot.group=3, max.show=4, legend.loc=NULL, loop=FALSE)
+plot(fit.sub, which=3, max.show=4, legend.loc=NULL)
 
 
 ## ----eval=FALSE, results='hide'------------------------------------------
 ## plot(fit.sub, plot.single=TRUE, asset.name="HAM1")
 ## 
-## ## Make a plot selection (or 0 to exit):
-## ##
-## ##  1: Time series plot of actual and fitted asset returns
-## ##  2: Time series plot of residuals with standard error bands
-## ##  3: Time series plot of squared residuals
-## ##  4: Time series plot of absolute residuals
-## ##  5: SACF and PACF of residuals
-## ##  6: SACF and PACF of squared residuals
-## ##  7: SACF and PACF of absolute residuals
-## ##  8: Histogram of residuals with normal curve overlayed
-## ##  9: Normal qq-plot of residuals
-## ## 10: CUSUM test-Recursive residuals
-## ## 11: CUSUM test-OLS residuals
-## ## 12: Recursive estimates (RE) test of OLS regression coefficients
-## ## 13: Rolling estimates over a 24-period observation window
-## ##
-## ## Selection:
+## # Make a plot selection (or 0 to exit):
+## #
+## #  1: Actual vs fitted asset returns
+## #  2: Residuals vs fitted asset returns
+## #  3: Scale-Location plot
+## #  4: Residuals with standard error bands
+## #  5: Time series of squared residuals
+## #  6: Time series of absolute residuals
+## #  7: SACF and PACF of residuals
+## #  8: SACF and PACF of squared residuals
+## #  9: SACF and PACF of absolute residuals
+## # 10: Density Estimate of Residuals
+## # 11: Histogram of residuals with normal curve overlayed
+## # 12: Normal qq-plot of residuals
+## # 13: CUSUM test-Recursive residuals
+## # 14: CUSUM test-OLS residuals
+## # 15: Recursive estimates (RE) test of OLS regression coefficients
+## # 16: Rolling estimates over a 24-period observation window
+## #
+## # Selection:
 
 
 ## ----fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=2, 
-     loop=FALSE)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=4)
 
 
 ## ----fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=7, 
-     loop=FALSE)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=9)
 
 
 ## ----fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which.plot.single=8, 
-     loop=FALSE)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=11)
 
 
