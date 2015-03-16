@@ -95,6 +95,7 @@
 #' \item{data}{xts data object containing the assets and factors.}
 #' \item{asset.names}{asset.names as input.}
 #' \item{factor.names}{factor.names as input.}
+#' \item{mkt.name}{mkt.name as input}
 #' \item{fit.method}{fit.method as input.}
 #' \item{variable.selection}{variable.selection as input.}
 #' Where N is the number of assets, K is the number of factors and T is the 
@@ -226,6 +227,8 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   # spaces get converted to periods in colnames of xts object after merge
   asset.names <- gsub(" ",".", asset.names, fixed=TRUE)
   factor.names <- gsub(" ",".", factor.names, fixed=TRUE)
+  mkt.name <- gsub(" ",".", mkt.name, fixed=TRUE)
+  rf.name <- gsub(" ",".", rf.name, fixed=TRUE)
   
   # Selects regression procedure based on specified variable.selection method.
   # Each method returns a list of fitted factor models for each asset.
@@ -243,7 +246,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, lars.args, 
                               cv.lars.args, lars.criterion)
     input <- list(call=call, data=dat.xts, asset.names=asset.names, 
-                  factor.names=factor.names, fit.method=NULL, 
+                  factor.names=factor.names, mkt.name=mkt.name, fit.method=NULL, 
                   variable.selection=variable.selection)
     result <- c(result.lars, input)
     class(result) <- "tsfm"
@@ -268,7 +271,8 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   result <- list(asset.fit=reg.list, alpha=alpha, beta=beta, r2=r2, 
                  resid.sd=resid.sd, call=call, data=dat.xts, 
                  asset.names=asset.names, factor.names=factor.names, 
-                 fit.method=fit.method, variable.selection=variable.selection)
+                 mkt.name=mkt.name, fit.method=fit.method, 
+                 variable.selection=variable.selection)
   class(result) <- "tsfm"
   return(result)
 }

@@ -22,6 +22,9 @@
 #' @param x an object of class \code{summary.tsfm}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
+#' @param trim option to supress labels and legend in the summary. When 
+#' \code{TRUE}, only the coefficient matrx with standard eroors is printed. 
+#' Default is \code{FALSE}.
 #' @param ... futher arguments passed to or from other methods.
 #' 
 #' @return Returns an object of class \code{summary.tsfm}. 
@@ -110,25 +113,35 @@ summary.tsfm <- function(object, se.type=c("Default","HC","HAC"), ...){
 #' @method print summary.tsfm
 #' @export
 
-print.summary.tsfm <- function(x, digits=3, ...) {
-  if(!is.null(cl <- x$call)) {
-    cat("\nCall:\n")
-    dput(cl)
-  }
-  cat("\nFactor Model Coefficients:\n", sep="")
+print.summary.tsfm <- function(x, digits=3, trim=FALSE, ...) {
   n <- length(x$sum.list)
-  for (i in 1:n) {
-    options(digits = digits)  
-    table.coef <- (x$sum.list)[[i]]$coefficients
-    if (dim(table.coef)[2] > 1) {
-      cat("\nAsset", i, ": ", names(x$sum.list[i]), "\n(", x$se.type, 
-          " Standard Errors & T-stats)\n\n", sep="")  
-    } else {
-      cat("\nAsset", i, ": ", names(x$sum.list[i]), "\n\n", sep="")  
+  if (trim==FALSE) {
+    if(!is.null(cl <- x$call)) {
+      cat("\nCall:\n")
+      dput(cl)
     }
-    r2 <- x$sum.list[[i]]$r.squared
-    sigma <- x$sum.list[[i]]$sigma
-    printCoefmat(table.coef, digits=digits, ...)
-    cat("\nR-squared: ", r2,", Residual Volatility: ", sigma,"\n", sep="")
+    cat("\nFactor Model Coefficients:\n", sep="")
+    for (i in 1:n) {
+      options(digits = digits)  
+      table.coef <- (x$sum.list)[[i]]$coefficients
+      if (dim(table.coef)[2] > 1) {
+        cat("\nAsset", i, ": ", names(x$sum.list[i]), "\n(", x$se.type, 
+            " Standard Errors & T-stats)\n\n", sep="")  
+      } else {
+        cat("\nAsset", i, ": ", names(x$sum.list[i]), "\n\n", sep="")  
+      }
+      r2 <- x$sum.list[[i]]$r.squared
+      sigma <- x$sum.list[[i]]$sigma
+      printCoefmat(table.coef, digits=digits, ...)
+      cat("\nR-squared: ", r2,", Residual Volatility: ", sigma,"\n", sep="")
+    }
+  } else {
+    for (i in 1:n) {
+      options(digits = digits) 
+      table.coef <- (x$sum.list)[[i]]$coefficients
+      cat(names(x$sum.list[i]), "\n")
+      printCoefmat(table.coef, digits=digits, signif.legend=FALSE, ...)
+      cat("\n")
+    }
   }
 }

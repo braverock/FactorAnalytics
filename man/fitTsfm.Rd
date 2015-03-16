@@ -74,6 +74,7 @@ the \code{fit.method="Robust"}, or class \code{lars} if
 \item{data}{xts data object containing the assets and factors.}
 \item{asset.names}{asset.names as input.}
 \item{factor.names}{factor.names as input.}
+\item{mkt.name}{mkt.name as input}
 \item{fit.method}{fit.method as input.}
 \item{variable.selection}{variable.selection as input.}
 Where N is the number of assets, K is the number of factors and T is the
