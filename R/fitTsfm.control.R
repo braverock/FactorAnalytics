@@ -43,6 +43,8 @@
 #' @param nrep the number of random subsamples to be drawn for 
 #' \code{fit.method="Robust"}. If the data set is small and "Exhaustive" 
 #' resampling is being used, the value of \code{nrep} is ignored.
+#' @param efficiency the asymptotic efficiency of the final estimate for 
+#' \code{fit.method="Robust"}. Default is 0.9.
 #' @param scope defines the range of models examined in the \code{"stepwise"} 
 #' search. This should be either a single formula, or a list containing 
 #' components \code{upper} and \code{lower}, both formulae. See 
@@ -129,9 +131,9 @@
 #'
 
 fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE, 
-                            qr=TRUE, nrep=NULL, scope, scale, direction, 
-                            trace=FALSE, steps=1000, k=2, nvmin=1, nvmax=8, 
-                            force.in=NULL, force.out=NULL, method, 
+                            qr=TRUE, nrep=NULL, efficiency=0.9, scope, scale, 
+                            direction, trace=FALSE, steps=1000, k=2, nvmin=1, 
+                            nvmax=8, force.in=NULL, force.out=NULL, method, 
                             really.big=FALSE, type, normalize=TRUE, 
                             eps=.Machine$double.eps, max.steps, 
                             lars.criterion="Cp", K=10) {
@@ -184,9 +186,10 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   
   # return list of arguments with defaults if they are unspecified
   result <- c(args, list(decay=decay, model=model, x=x, y=y, qr=qr, nrep=nrep, 
-                         trace=trace, steps=steps, k=k, nvmin=nvmin, 
-                         nvmax=nvmax, force.in=force.in, force.out=force.out, 
-                         really.big=really.big, normalize=normalize, eps=eps, 
+                         efficiency=efficiency, trace=trace, steps=steps, k=k, 
+                         nvmin=nvmin, nvmax=nvmax, force.in=force.in, 
+                         force.out=force.out, really.big=really.big, 
+                         normalize=normalize, eps=eps, 
                          lars.criterion=lars.criterion, K=K))
   return(result)
 }

@@ -35,10 +35,9 @@
 #' "stepwise" or "forward.stagewise". Note: If \code{variable.selection="lars"}, 
 #' \code{fit.method} will be ignored.
 #' 
-#' Arguments \code{mkt.name} and \code{mkt.timing} allow for market-timing 
-#' factors to be added to any of the above methods. A wrapper function 
-#' \code{\link{fitTsfmMT}} is built based on this functionality. Please refer to 
-#' \code{fitTsfmMT} for detail.  
+#' Argument \code{mkt.name} can be used to add market-timing factors to any of 
+#' the above methods. Please refer to \code{\link{fitTsfmMT}}, a wrapper to 
+#' \code{fitTsfm} for details.  
 #' 
 #' \subsection{Data Processing}{
 #' 
@@ -55,7 +54,7 @@
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
-#' @param mkt.name name of the column for market eturns. 
+#' @param mkt.name name of the column for market returns. Default is NULL.
 #' @param rf.name name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and factors (in 
 #' \code{factor.names}). Default is NULL, and no action is taken.
@@ -166,8 +165,8 @@
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"), 
-                    variable.selection=c("none","stepwise","subsets","lars")
-                    , control=fitTsfm.control(...), ...) {
+                    variable.selection=c("none","stepwise","subsets","lars"), 
+                    control=fitTsfm.control(...), ...) {
   
   # record the call as an element to be returned
   call <- match.call()
@@ -193,7 +192,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   m1 <- match(c("weights","model","x","y","qr"), 
               names(control), 0L)
   lm.args <- control[m1, drop=TRUE]
-  m2 <-  match(c("weights","model","x","y","nrep"), 
+  m2 <-  match(c("weights","model","x","y","nrep", "efficiency"), 
                names(control), 0L)
   lmRob.args <- control[m2, drop=TRUE]
   m3 <-  match(c("scope","scale","direction","trace","steps","k"), 
@@ -223,8 +222,6 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
                                      FUN.VALUE = numeric(nrow(dat.xts))))
   }
-  
- 
   
   # spaces get converted to periods in colnames of xts object after merge
   asset.names <- gsub(" ",".", asset.names, fixed=TRUE)
