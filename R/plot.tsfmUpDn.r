@@ -14,6 +14,10 @@
 #' to provide the name of market returns. 
 #' @param assets.name The name of the asset used in \code{fitTsfmUpDn}. It supports one
 #' asset name at once.   
+#' @param line.color The color of fitted line. The default is \code{"blue"}.
+#' @param line.type The type of fitted line. The default is \code{"dotted"}.
+#' @param add.legend Alogic flag to add legend. The default is \code{TRUE}
+#' @param legend.loc The default is \code{"topleft"}.
 #' @param ... Other arguments can be used in \code{plot}. 
 #' @author Yi-An Chen
 #' 
@@ -34,7 +38,8 @@
 #' @export
 
 
-plot.tsfmUpDn <- function(object,mkt.name,assets.name,...) {
+plot.tsfmUpDn <- function(object,mkt.name,assets.name,line.color="blue",line.type="dotted",
+                          add.legend=TRUE,legend.loc="topleft",...) {
   
   if (is.null(mkt.name)){
     stop("Missing argument: mkt.name has to be specified for plot method.")
@@ -59,9 +64,13 @@ plot.tsfmUpDn <- function(object,mkt.name,assets.name,...) {
        main = paste("Actual vs Fitted values of the Asset ",assets.name,sep=""),
        xlab=mkt.name,ylab=assets.name,...)
   abline(v=0)
-  lines(coredata(plotDataUp$MktUp),coredata(plotDataUp$FittedUp),col="blue")
-  lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col="blue")
+  lines(coredata(plotDataUp$MktUp),coredata(plotDataUp$FittedUp),col=line.color,lty=line.type)
+  lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col=line.color,lty=line.type)
   abline(h=0)
+  if (add.legend){
+    legend(legend.loc,legend=c("Actual","Fitted"),pch=c(1,NA),lty=c(NA,line.type),
+           col=c("black",line.color),...)
+  }
  
   
 }

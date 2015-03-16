@@ -4,7 +4,8 @@
 \alias{plot.tsfmUpDn}
 \title{Plot actual against fitted values of up and down market time series factor model}
 \usage{
-\method{plot}{tsfmUpDn}(object, mkt.name, assets.name, ...)
+\method{plot}{tsfmUpDn}(object, mkt.name, assets.name, line.color = "blue",
+  line.type = "dotted", add.legend = TRUE, legend.loc = "topleft", ...)
 }
 \arguments{
 \item{object}{an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.}
@@ -14,6 +15,14 @@ to provide the name of market returns.}
 
 \item{assets.name}{The name of the asset used in \code{fitTsfmUpDn}. It supports one
 asset name at once.}
+
+\item{line.color}{The color of fitted line. The default is \code{"blue"}.}
+
+\item{line.type}{The type of fitted line. The default is \code{"dotted"}.}
+
+\item{add.legend}{Alogic flag to add legend. The default is \code{TRUE}}
+
+\item{legend.loc}{The default is \code{"topleft"}.}
 
 \item{...}{Other arguments can be used in \code{plot}.}
 }
