@@ -118,10 +118,7 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
   if (!is.null(rf.name)) {
     dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
                                      FUN.VALUE = numeric(nrow(dat.xts))))
-    warning("The up market is defined as the excess Market returns is no less than 0.")
-  } else {
-    warning("The up market is defined as the Market returns is no less than 0.")
-  }
+  } 
   
   mkt <- dat.xts[,mkt.name]
   # up market

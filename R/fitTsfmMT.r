@@ -74,7 +74,6 @@
 #' fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]),  
 #'                mkt.name="SP500.TR",rf.name="US.3m.TR",data=managers)
 #' summary(fit)
-#' fitted(fit)
 #'  
 #' @importFrom PerformanceAnalytics checkData
 #' @importFrom robust lmRob step.lmRob
@@ -90,8 +89,38 @@ fitTsfmMT <- function(asset.names,mkt.name, rf.name=NULL,
     stop("Missing argument: mkt.name has to be specified for market timing model.")
   }
   
-  fit.Timing <-  fitTsfm(asset.names=asset.names,factor.names=mkt.name,mkt.name=mkt.name,rf.name=rf.name,
-          data=data,fit.method=fit.method,variable.selection="none",control=control,mkt.timing="HM")
+  # convert data into an xts object and hereafter work with xts objects
+  data.xts <- checkData(data)
+  # convert index to 'Date' format for uniformity 
+  time(data.xts) <- as.Date(time(data.xts))
+  
+  # extract columns to be used in the time series regression
+  dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
+  ### After merging xts objects, the spaces in names get converted to periods
+  
+  # convert all asset and factor returns to excess return form if specified
+  if (!is.null(rf.name)) {
+    dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
+                                     FUN.VALUE = numeric(nrow(dat.xts))))
+  } 
+  
+ # mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
+
+    down.market <- dat.xts[,mkt.name]
+    down.market[down.market < 0 ] <- 0
+    dat.xts <- merge.xts(dat.xts,down.market)
+    colnames(dat.xts)[dim(dat.xts)[2]] <- "down.market"
+    factor.names <- c(mkt.name,"down.market")
+  
+#   if("TM" %in% mkt.timing) {
+#     market.sqd <- data.xts[,mkt.name]^2   
+#     dat.xts <- merge(dat.xts, market.sqd)
+#     colnames(dat.xts)[dim(dat.xts)[2]] <- "market.sqd"
+#     factor.names <- c(factor.names, "market.sqd")
+#   }
+  
+  fit.Timing <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,rf.name=NULL,
+          data=dat.xts,fit.method=fit.method,variable.selection="none",control=control)
 
 return(fit.Timing)  
 }

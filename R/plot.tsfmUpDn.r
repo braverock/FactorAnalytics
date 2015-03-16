@@ -59,8 +59,8 @@ plot.tsfmUpDn <- function(object,mkt.name,assets.name,...) {
        main = paste("Actual vs Fitted values of the Asset ",assets.name,sep=""),
        xlab=mkt.name,ylab=assets.name,...)
   abline(v=0)
-  lines(coredata(plotDataUp$MktUp),coredata(plotDataUp$FittedUp),col="red")
-  lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col="red")
+  lines(coredata(plotDataUp$MktUp),coredata(plotDataUp$FittedUp),col="blue")
+  lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col="blue")
   abline(h=0)
  
   

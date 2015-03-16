@@ -55,8 +55,7 @@
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
-#' @param mkt.name name of the column for market excess returns (Rm-Rf); this 
-#' is necessary to add market timing factors. Default is NULL.
+#' @param mkt.name name of the column for market eturns. 
 #' @param rf.name name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and factors (in 
 #' \code{factor.names}). Default is NULL, and no action is taken.
@@ -67,7 +66,6 @@
 #' See details. Default is "OLS". 
 #' @param variable.selection the variable selection method, one of "none", 
 #' "stepwise","subsets","lars". See details. Default is "none".
-#' @param mkt.timing one of "HM" or "TM". See Details. Default is NULL.
 #' \code{mkt.name} is required if any of these options are to be implemented.
 #' @param control list of control parameters. The default is constructed by 
 #' the function \code{\link{fitTsfm.control}}. See the documentation for 
@@ -168,8 +166,8 @@
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("OLS","DLS","Robust"), 
-                    variable.selection=c("none","stepwise","subsets","lars"), 
-                    mkt.timing=NULL, control=fitTsfm.control(...), ...) {
+                    variable.selection=c("none","stepwise","subsets","lars")
+                    , control=fitTsfm.control(...), ...) {
   
   # record the call as an element to be returned
   call <- match.call()
@@ -188,11 +186,6 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
     factor.names <- NULL
   }
 
-#   if (xor(is.null(mkt.name), is.null(mkt.timing))) {
-#     stop("Missing argument: Both mkt.name and mkt.timing are necessary to add 
-#          market timing factors")
-#   }
-  
   # extract arguments to pass to different fit and variable selection functions
   decay <- control$decay
   nvmin <- control$nvmin
@@ -231,20 +224,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
                                      FUN.VALUE = numeric(nrow(dat.xts))))
   }
   
-  # opt add mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
-  if("HM" %in% mkt.timing) {
-    down.market <- dat.xts[,mkt.name]
-    down.market[down.market < 0 ] <- 0
-    dat.xts <- merge.xts(dat.xts,down.market)
-    colnames(dat.xts)[dim(dat.xts)[2]] <- "down.market"
-    factor.names <- c(factor.names,"down.market")
-  }
-  if("TM" %in% mkt.timing) {
-    market.sqd <- data.xts[,mkt.name]^2   
-    dat.xts <- merge(dat.xts, market.sqd)
-    colnames(dat.xts)[dim(dat.xts)[2]] <- "market.sqd"
-    factor.names <- c(factor.names, "market.sqd")
-  }
+ 
   
   # spaces get converted to periods in colnames of xts object after merge
   asset.names <- gsub(" ",".", asset.names, fixed=TRUE)
