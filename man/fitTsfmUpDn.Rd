@@ -42,8 +42,12 @@ and \code{summary} methods exist for both \code{Up} and \code{Dn}. Also, the gen
 \code{fitted}, \code{residuals} and  \code{fmCov} can be applied as well.
 
 An object of class \code{"tsfmUpDn"} is a list containing \code{Up} and \code{Dn}:
-\item{Up}{An object of \code{tsfm} fitted by \code{fitTsfm} for the up market.}
-\item{Dn}{An object of \code{tsfm} fitted by \code{fitTsfm} for the down market.}
+\item{Up}{An object of \code{tsfm} fitted by \code{fitTsfm} for the up market;}
+\item{Dn}{An object of \code{tsfm} fitted by \code{fitTsfm} for the down market;}
+
+and others useful items:
+\item{call}{Function call.}
+\item{data}{Original data used but converted to \code{xts} class.}
 
 Each object of \code{tsfm} contains :
 \item{asset.fit}{list of fitted objects for each asset. Each object is of

@@ -39,8 +39,12 @@
 #' \code{fitted}, \code{residuals} and  \code{fmCov} can be applied as well.
 #' 
 #' An object of class \code{"tsfmUpDn"} is a list containing \code{Up} and \code{Dn}:
-#' \item{Up}{An object of \code{tsfm} fitted by \code{fitTsfm} for the up market.}
-#' \item{Dn}{An object of \code{tsfm} fitted by \code{fitTsfm} for the down market.}
+#' \item{Up}{An object of \code{tsfm} fitted by \code{fitTsfm} for the up market;}
+#' \item{Dn}{An object of \code{tsfm} fitted by \code{fitTsfm} for the down market;}
+#' 
+#' and others useful items: 
+#' \item{call}{Function call.}
+#' \item{data}{Original data used but converted to \code{xts} class.}
 #' 
 #' Each object of \code{tsfm} contains : 
 #' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
@@ -100,10 +104,11 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
                         data=data, fit.method=c("OLS","DLS","Robust"), 
                         control=fitTsfm.control(...),...) {
 
+  call <- match.call()
+  
   if (is.null(mkt.name)){
     stop("Missing argument: mkt.name has to be specified for up and down market model.")
   }  
-  
    
   # convert data into an xts object and hereafter work with xts objects
   data.xts <- checkData(data)
@@ -114,7 +119,7 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
   dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
   ### After merging xts objects, the spaces in names get converted to periods
   
-  # convert all asset and factor returns to excess return form if specified
+  # convert all asset and factor returns to excess returns if specified
   if (!is.null(rf.name)) {
     dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
                                      FUN.VALUE = numeric(nrow(dat.xts))))
@@ -124,18 +129,16 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
   # up market
   dataUp.xts <- dat.xts[mkt >= 0]
   
-  fitUp <-  fitTsfm(asset.names=asset.names,factor.names=mkt.name,mkt.name=mkt.name,rf.name=rf.name,
-                     data=dataUp.xts,fit.method=fit.method,variable.selection="none",
-                     control=control)
+  fitUp <-  fitTsfm(asset.names=asset.names,factor.names=mkt.name,mkt.name=mkt.name,rf.name=NULL,
+                     data=dataUp.xts,fit.method=fit.method,control=control)
 
   
   # down market
   dataDn.xts <- dat.xts[mkt < 0]
-  fitDn <-  fitTsfm(asset.names=asset.names,factor.names=mkt.name,mkt.name=mkt.name,rf.name=rf.name,
-                     data=dataDn.xts,fit.method=fit.method,variable.selection="none",
-                     control=control)
+  fitDn <-  fitTsfm(asset.names=asset.names,factor.names=mkt.name,mkt.name=mkt.name,rf.name=NULL,
+                     data=dataDn.xts,fit.method=fit.method,control=control)
   
-  result <- list(Up = fitUp, Dn = fitDn)
+  result <- list(Up = fitUp, Dn = fitDn, call= call, data=dat.xts)
   class(result) <- "tsfmUpDn"
 return(result)
 } 

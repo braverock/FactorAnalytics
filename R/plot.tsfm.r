@@ -459,4 +459,6 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
       } else {which=NULL} 
     }
   } # end of group plots
+  # turn par(ask=T) back
+  par(ask=FALSE)
 }

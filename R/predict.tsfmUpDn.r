@@ -22,7 +22,7 @@
 #' # fit the factor model with OLS
 #  example: Up and down market factor model with OLS fit
 #' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="OLS",control=NULL)
+#'                        data=managers, fit.method="OLS")
 #'  
 #' predict(fitUpDn)
 #' 
@@ -33,6 +33,6 @@
 #' 
 
 predict.tsfmUpDn <- function(object,...) {
-  uD.list <- lapply(object,predict,...)
+  uD.list <- lapply(object[1:2],predict,...)
   return(uD.list)
 }
