@@ -89,7 +89,7 @@ For group plots (the default), the first \code{max.show} assets are plotted.
 
 Setting \code{plot.single=TRUE} enables individual plots. If there is more
 than one asset fit by \code{x}, \code{asset.name} should be specified.
-However, if the \code{tsfm} object \code{x} only contains one asset’s factor
+However, if the \code{tsfm} object \code{x} only contains a single asset factor
 model fit, plot.tsfm can infer \code{asset.name} without user input.
 
 CUSUM plots (individual asset plot options 10, 11 and 12) are applicable
