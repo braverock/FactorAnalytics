@@ -17,13 +17,13 @@
 #' 
 #' Setting \code{plot.single=TRUE} enables individual plots. If there is more 
 #' than one asset fit by \code{x}, \code{asset.name} should be specified. 
-#' However, if the \code{tsfm} object \code{x} only contains a single asset factor 
-#' model fit, plot.tsfm can infer \code{asset.name} without user input. 
+#' In case the \code{tsfm} object \code{x} contains only a single asset fit, 
+#' plot.tsfm can infer \code{asset.name} without user input. 
 #' 
-#' CUSUM plots (individual asset plot options 10, 11 and 12) are applicable 
+#' CUSUM plots (individual asset plot options 14, 15 and 16) are applicable 
 #' only for \code{fit.method="OLS"}.
 #' 
-#' Rolling estimates (individual asset plot option 13) is not applicable for 
+#' Rolling estimates (individual asset plot option 17) is not applicable for 
 #' \code{variable.slection="lars"}.
 #' 
 #' @param x an object of class \code{tsfm} produced by \code{fitTsfm}.
@@ -44,21 +44,22 @@
 #' 10 = Factor Contribution to VaR \cr \cr
 #' For individual asset plots:\cr
 #' 1 = Actual and fitted returns,\cr
-#' 2 = Residuals and fitted returns, \cr
-#' 3 = Scale-Location plot, \cr
-#' 4 = Residuals with standard error bands, \cr
-#' 5 = Time series of squared residuals, \cr
-#' 6 = Time series of absolute residuals,\cr
-#' 7 = SACF and PACF of residuals,\cr
-#' 8 = SACF and PACF of squared residuals,\cr
-#' 9 = SACF and PACF of absolute residuals,\cr
-#' 10 = Density estimate of residuals, \cr
-#' 11 = Histogram of residuals with normal curve overlayed,\cr
-#' 12 = Normal QQ-plot of residuals,\cr
-#' 13 = CUSUM test-Recursive residuals,\cr
-#' 14 = CUSUM test-OLS residuals,\cr
-#' 15 = Recursive estimates (RE) test of OLS regression coefficients,\cr
-#' 16 = Rolling estimates over a 24-period observation window
+#' 2 = Actual vs fitted asset returns,\cr
+#' 3 = Residuals and fitted returns, \cr
+#' 4 = Sqrt. of Std. Residuals vs Fitted, \cr
+#' 5 = Residuals with standard error bands, \cr
+#' 6 = Time series of squared residuals, \cr
+#' 7 = Time series of absolute residuals,\cr
+#' 8 = SACF and PACF of residuals,\cr
+#' 9 = SACF and PACF of squared residuals,\cr
+#' 10 = SACF and PACF of absolute residuals,\cr
+#' 11 = Density estimate of residuals, \cr
+#' 12 = Histogram of residuals with normal curve overlayed,\cr
+#' 13 = Normal QQ-plot of residuals,\cr
+#' 14 = CUSUM test-Recursive residuals,\cr
+#' 15 = CUSUM test-OLS residuals,\cr
+#' 16 = Recursive estimates (RE) test of OLS regression coefficients,\cr
+#' 17 = Rolling estimates over a 24-period observation window
 #' @param max.show maximum number of assets in a given plot. Default is 6.
 #' @param plot.single logical; If \code{TRUE} plots the characteristics of an 
 #' individual asset's factor model. The type of plot is given by 
@@ -135,7 +136,7 @@
 plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE, 
                       asset.name, colorset=(1:12), legend.loc="topleft", las=1, 
                       VaR.method="historical", ...) {
-
+  
   which.vec <- which
   which <- which[1]
   
@@ -161,9 +162,10 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
     repeat {
       if (is.null(which)) {
         which <- 
-          menu(c("Actual vs fitted asset returns",
-                 "Residuals vs fitted asset returns",
-                 "Scale-Location plot",
+          menu(c("Actual and fitted asset returns",
+                 "Actual vs fitted asset returns",
+                 "Residuals and fitted asset returns",
+                 "Sqrt. of Std. Residuals vs Fitted",
                  "Residuals with standard error bands",
                  "Time series of squared residuals",
                  "Time series of absolute residuals",
@@ -189,14 +191,18 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                                 colorset=colorset, xlab="", ylab="Asset returns", 
                                 legend.loc=legend.loc, pch=NULL, las=las, ...)
              }, "2L" = {
+               ## fitted vs actual asset returns
+               plot(coredata(plotData[,1]), coredata(plotData[,2]), 
+                    main=paste("Fitted vs Actual Returns:",i), las=las, ...)
+             }, "3L" = {
                ## residuals vs fitted asset returns
                plot(fit, which=1, main=paste("Residuals vs Fitted Returns:",i), 
                     caption=NA, sub.caption="", las=las, ...)
-             }, "3L" = {
-               ##  square root of absolute residuals vs fitted asset returns
-               plot(fit, which=3, main=paste("Scale-Location plot:",i), 
-                    caption=NA, sub.caption="", las=las, ...)
              }, "4L" = {
+               ##  square root of absolute residuals vs fitted asset returns
+               plot(fit, which=3, main=paste("Sqrt. of Std. Residuals vs Fitted:",i), 
+                    caption=NA, sub.caption="", las=las, ...)
+             }, "5L" = {
                ## time series plot of residuals with standard error bands
                chart.TimeSeries(Residuals, main=paste("Residuals:",i), 
                                 colorset=colorset, xlab="", ylab="Residuals", 
@@ -206,48 +212,48 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                legend(x=legend.loc, lty=c("solid","dotted"), 
                       col=c(colorset[1],"red"), lwd=2, 
                       legend=c("Residuals",expression("\u00b1 1.96"*sigma)))
-             }, "5L" = {
+             }, "6L" = {
                ## time series plot of squared residuals
                chart.TimeSeries(Residuals^2, colorset=colorset, xlab="", 
                                 ylab=" Squared Residuals",
                                 main=paste("Squared Residuals:",i), 
                                 legend.loc=legend.loc, pch=NULL, las=las, ...)
-             }, "6L" = {
+             }, "7L" = {
                ## time series plot of absolute residuals
                chart.TimeSeries(abs(Residuals), colorset=colorset, xlab="", 
                                 ylab="Absolute Residuals",
                                 main=paste("Absolute Residuals:",i), 
                                 legend.loc=legend.loc, pch=NULL, las=las, ...)
-             }, "7L" = {
+             }, "8L" = {
                ## SACF and PACF of residuals
                chart.ACFplus(Residuals, col=colorset[1],
                              main=paste("SACF & PACF - Residuals:",i), ...)
-             }, "8L" = {
+             }, "9L" = {
                ## SACF and PACF of squared residuals
                chart.ACFplus(Residuals^2, col=colorset[1], ...,
                              main=paste("SACF & PACF - Squared residuals:",i))
-             }, "9L" = {
+             }, "10L" = {
                ## SACF and PACF of absolute residuals
                chart.ACFplus(abs(Residuals), col=colorset[1], ...,
                              main=paste("SACF & PACF - Absolute Residuals:",i))
-             }, "10L" = {
+             }, "11L" = {
                ## density estimate of residuals
                plot(density(Residuals), xlab="Return residuals", 
-                    colorset=colorset, main=paste("Density estimate of Residuals:",i), ...)
+                    col=colorset, main=paste("Density estimate of Residuals:",i), ...)
                rug(Residuals)
-             }, "11L" = {
+             }, "12L" = {
                ## histogram of residuals with normal curve overlayed
                methods <- c("add.density","add.normal","add.rug")
                chart.Histogram(Residuals, xlab="Return residuals",
                                methods=methods, colorset=colorset, 
                                main=paste("Histogram of Residuals:",i), ...)
-             }, "12L" = {
+             }, "13L" = {
                ##  normal qq-plot of residuals
                chart.QQPlot(Residuals, envelope=0.95, col=colorset,
                             main=paste("QQ-plot of Residuals:",i), ...)
                legend(x=legend.loc, col="red", lty="dotted", lwd=1,
                       legend=c("0.95 confidence envelope"))
-             }, "13L" = {
+             }, "14L" = {
                ##  Recursive CUSUM test
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
@@ -255,7 +261,7 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                cusum.rec <- efp(formula(fit), type="Rec-CUSUM", data=fit$model)
                plot(cusum.rec, main=paste("Recursive CUSUM test:",i), las=las, 
                     col=colorset, ...)
-             }, "14L" = {
+             }, "15L" = {
                ##  OLS-based CUSUM test
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
@@ -263,7 +269,7 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                cusum.ols <- efp(formula(fit), type="OLS-CUSUM", data=fit$model)
                plot(cusum.ols, main=paste("OLS-based CUSUM test:",i), las=las, 
                     col=colorset, ...)
-             }, "15L" = {
+             }, "16L" = {
                ##  Recursive estimates (RE) test of OLS regression coefficients
                if (!x$fit.method=="OLS") {
                  stop("CUSUM analysis applicable only for 'OLS' fit.method.")
@@ -271,7 +277,7 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                cusum.est <- efp(formula(fit), type="RE", data=fit$model)
                plot(cusum.est, functional=NULL, col=colorset, las=0,
                     main=paste("RE test (Recursive estimates test):",i), ...)
-             }, "16L" = {
+             }, "17L" = {
                ##  Rolling estimates over 24-period observation window 
                if (x$fit.method=="OLS") {
                  rollReg <- function(data.z, formula) {
@@ -379,7 +385,7 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                for (i in 1:n) {
                  plotData <- merge.xts(x$data[,i], fitted(x)[,i])
                  colnames(plotData) <- c("Actual","Fitted")
-                 main <- paste("Actual vs Fitted:", x$asset.names[i])
+                 main <- paste("Actual and Fitted:", x$asset.names[i])
                  chart.TimeSeries(plotData, colorset=colorset, main=main, 
                                   xlab="", ylab="Asset returns", 
                                   legend.loc=legend.loc, pch=NULL, las=las,...)
@@ -459,6 +465,7 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
       } else {which=NULL} 
     }
   } # end of group plots
-  # turn par(ask=T) back
+  # revert to default par values
   par(ask=FALSE)
+  par(las=0)
 }
