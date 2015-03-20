@@ -21,7 +21,7 @@
 #' plot.tsfm can infer \code{asset.name} without user input. 
 #' 
 #' CUSUM plots (individual asset plot options 14, 15 and 16) are applicable 
-#' only for \code{fit.method="OLS"}.
+#' only for \code{fit.method="LS"}.
 #' 
 #' Rolling estimates (individual asset plot option 17) is not applicable for 
 #' \code{variable.slection="lars"}.
@@ -57,8 +57,8 @@
 #' 12 = Histogram of residuals with normal curve overlayed,\cr
 #' 13 = Normal QQ-plot of residuals,\cr
 #' 14 = CUSUM test-Recursive residuals,\cr
-#' 15 = CUSUM test-OLS residuals,\cr
-#' 16 = Recursive estimates (RE) test of OLS regression coefficients,\cr
+#' 15 = CUSUM test-LS residuals,\cr
+#' 16 = Recursive estimates (RE) test of LS regression coefficients,\cr
 #' 17 = Rolling estimates over a 24-period observation window
 #' @param max.show maximum number of assets in a given plot. Default is 6.
 #' @param plot.single logical; If \code{TRUE} plots the characteristics of an 
@@ -121,7 +121,7 @@
 #' 
 #' # for individual plots: set plot.single=TRUE; specify asset.name
 #' # histogram of residuals from an individual asset's factor model fit 
-#' plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=8)
+#' plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=12)
 #' 
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus
 #' chart.Histogram chart.QQPlot
@@ -176,8 +176,8 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                  "Histogram of residuals with normal curve overlayed",
                  "Normal qq-plot of residuals",
                  "CUSUM test-Recursive residuals",
-                 "CUSUM test-OLS residuals",
-                 "Recursive estimates (RE) test of OLS regression coefficients",
+                 "CUSUM test-LS residuals",
+                 "Recursive estimates (RE) test of LS regression coefficients",
                  "Rolling estimates over a 24-period observation window"),
                title="\nMake a plot selection (or 0 to exit):")
       }
@@ -193,6 +193,7 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
              }, "2L" = {
                ## fitted vs actual asset returns
                plot(coredata(plotData[,1]), coredata(plotData[,2]), 
+                    xlab="Actual", ylab="Fitted",
                     main=paste("Fitted vs Actual Returns:",i), las=las, ...)
              }, "3L" = {
                ## residuals vs fitted asset returns
@@ -255,31 +256,31 @@ plot.tsfm <- function(x, which=NULL, max.show=6, plot.single=FALSE,
                       legend=c("0.95 confidence envelope"))
              }, "14L" = {
                ##  Recursive CUSUM test
-               if (!x$fit.method=="OLS") {
-                 stop("CUSUM analysis applicable only for 'OLS' fit.method.")
+               if (!x$fit.method=="LS") {
+                 stop("CUSUM analysis applicable only for 'LS' fit.method.")
                }
                cusum.rec <- efp(formula(fit), type="Rec-CUSUM", data=fit$model)
                plot(cusum.rec, main=paste("Recursive CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "15L" = {
-               ##  OLS-based CUSUM test
-               if (!x$fit.method=="OLS") {
-                 stop("CUSUM analysis applicable only for 'OLS' fit.method.")
+               ##  LS-based CUSUM test
+               if (!x$fit.method=="LS") {
+                 stop("CUSUM analysis applicable only for 'LS' fit.method.")
                }
-               cusum.ols <- efp(formula(fit), type="OLS-CUSUM", data=fit$model)
-               plot(cusum.ols, main=paste("OLS-based CUSUM test:",i), las=las, 
+               cusum.ols <- efp(formula(fit), type="LS-CUSUM", data=fit$model)
+               plot(cusum.ols, main=paste("LS-based CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "16L" = {
-               ##  Recursive estimates (RE) test of OLS regression coefficients
-               if (!x$fit.method=="OLS") {
-                 stop("CUSUM analysis applicable only for 'OLS' fit.method.")
+               ##  Recursive estimates (RE) test of LS regression coefficients
+               if (!x$fit.method=="LS") {
+                 stop("CUSUM analysis applicable only for 'LS' fit.method.")
                }        
                cusum.est <- efp(formula(fit), type="RE", data=fit$model)
                plot(cusum.est, functional=NULL, col=colorset, las=0,
                     main=paste("RE test (Recursive estimates test):",i), ...)
              }, "17L" = {
                ##  Rolling estimates over 24-period observation window 
-               if (x$fit.method=="OLS") {
+               if (x$fit.method=="LS") {
                  rollReg <- function(data.z, formula) {
                    coef(lm(formula, data=as.data.frame(data.z)))  
                  }

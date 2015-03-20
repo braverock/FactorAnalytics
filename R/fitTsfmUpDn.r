@@ -2,7 +2,7 @@
 #' 
 #' @description This is a wrapper function to fits a up and down market model for one 
 #' or more asset returns or excess returns using time series regression. 
-#' Users can choose between ordinary least squares-OLS, discounted least 
+#' Users can choose between ordinary least squares-LS, discounted least 
 #' squares-DLS (or) robust regression. An object of class 
 #' \code{"tsfmUpDn"} is returned.
 #' 
@@ -22,8 +22,8 @@
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{mkt.name} and \code{rf.name}.
-#' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
-#' See details. Default is "OLS". 
+#' @param fit.method the estimation method, one of "LS", "DLS" or "Robust". 
+#' See details. Default is "LS". 
 #' @param control list of control parameters. The default is constructed by 
 #' the function \code{\link{fitTsfm.control}}. See the documentation for 
 #' \code{\link{fitTsfm.control}} for details.
@@ -48,7 +48,7 @@
 #' 
 #' Each object of \code{tsfm} contains : 
 #' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
-#' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
+#' class \code{lm} if \code{fit.method="LS" or "DLS"}, class \code{lmRob} if 
 #' the \code{fit.method="Robust"}}
 #' \item{alpha}{length-N vector of estimated alphas.}
 #' \item{beta}{N x 1 matrix of estimated betas.}
@@ -80,9 +80,9 @@
 #' # load data from the database
 #' data(managers)
 #' 
-#' # example: Up and down market factor model with OLS fit
+#' # example: Up and down market factor model with LS fit
 #' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="OLS",control=NULL)
+#'                        data=managers, fit.method="LS",control=NULL)
 #'  
 #'  print(fitUpDn)
 #'  summary(fitUpDn)
@@ -101,7 +101,7 @@
 
 
 fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL, 
-                        data=data, fit.method=c("OLS","DLS","Robust"), 
+                        data=data, fit.method=c("LS","DLS","Robust"), 
                         control=fitTsfm.control(...),...) {
 
   call <- match.call()

@@ -69,7 +69,7 @@
 #' An object of class \code{"sfm"} is a list containing the following 
 #' components:
 #' \item{asset.fit}{fitted object of class \code{"mlm"} or \code{"lm"} from the 
-#' time-series OLS regression of asset returns on estimated factors.}
+#' time-series LS regression of asset returns on estimated factors.}
 #' \item{k}{number of factors; as input or determined by "ck" or "bn" methods.}
 #' \item{factors}{T x K xts object of estimated factor realizations.}
 #' \item{loadings}{N x K matrix of factor loadings estimated by 
@@ -77,7 +77,7 @@
 #' \item{alpha}{length-N vector of estimated alphas.}
 #' \item{r2}{length-N vector of R-squared values.}
 #' \item{resid.sd}{length-N vector of residual standard deviations.}
-#' \item{residuals}{T x N xts object of residuals from the OLS regression.}
+#' \item{residuals}{T x N xts object of residuals from the LS regression.}
 #' \item{Omega}{N x N return covariance matrix estimated by the factor model.}
 #' \item{eigen}{length-N (or length-T for APCA) vector of eigenvalues of the 
 #' sample covariance matrix.}
@@ -255,7 +255,7 @@ UsePCA <- function(R.xts=R.xts, k=k, corr=corr, ...) {
   # invert 1st principal component if most values are negative
   if (median(f[,1]) < 0) {f[,1] <- -f[,1]}
   
-  # OLS time series regression to get B: NxK matrix of factor loadings
+  # LS time series regression to get B: NxK matrix of factor loadings
   f <- xts(f, index(R.xts))
   asset.fit <- lm(R.xts ~ f, ...)
   B <- t(coef(asset.fit)[-1, , drop=FALSE])
@@ -308,7 +308,7 @@ UseAPCA <- function(R.xts=R.xts, k=k, refine=refine, corr=corr, ...) {
   # invert 1st principal component if most values are negative
   if (median(f[,1]) < 0) {f[,1] <- -f[,1]}
   
-  # OLS time series regression to get B: NxK matrix of factor loadings
+  # LS time series regression to get B: NxK matrix of factor loadings
   asset.fit <- lm(R.xts ~ f, ...)
   B <- t(coef(asset.fit)[-1, , drop=FALSE])
   alpha <- coef(asset.fit)[1,]

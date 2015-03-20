@@ -40,8 +40,8 @@ For individual asset plots:\cr
 12 = Histogram of residuals with normal curve overlayed,\cr
 13 = Normal QQ-plot of residuals,\cr
 14 = CUSUM test-Recursive residuals,\cr
-15 = CUSUM test-OLS residuals,\cr
-16 = Recursive estimates (RE) test of OLS regression coefficients,\cr
+15 = CUSUM test-LS residuals,\cr
+16 = Recursive estimates (RE) test of LS regression coefficients,\cr
 17 = Rolling estimates over a 24-period observation window}
 
 \item{max.show}{maximum number of assets in a given plot. Default is 6.}
@@ -93,7 +93,7 @@ In case the \code{tsfm} object \code{x} contains only a single asset fit,
 plot.tsfm can infer \code{asset.name} without user input.
 
 CUSUM plots (individual asset plot options 14, 15 and 16) are applicable
-only for \code{fit.method="OLS"}.
+only for \code{fit.method="LS"}.
 
 Rolling estimates (individual asset plot option 17) is not applicable for
 \code{variable.slection="lars"}.
@@ -118,7 +118,7 @@ plot(fit.macro, which=7, order="AOE", method="ellipse", tl.pos = "d")
 
 # for individual plots: set plot.single=TRUE; specify asset.name
 # histogram of residuals from an individual asset's factor model fit
-plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=8)
+plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=12)
 }
 \author{
 Eric Zivot, Sangeetha Srinivasan and Yi-An Chen

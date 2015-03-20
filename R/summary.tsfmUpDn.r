@@ -11,7 +11,7 @@
 #'   
 #' @param object an object of class \code{tsfmUpDn} returned by \code{fitTsfmUpDn}.
 #' @param ... futher arguments passed to or from \code{summary.tsfm} methods.
-#' @param uD.list an object of class \code{summary.tsfmUpDn}.
+#' @param x an object of class \code{summary.tsfmUpDn}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
 #' 
@@ -29,15 +29,15 @@
 #' 
 #' @author Yi-An Chen and Sangeetha Srinivasan.
 #' 
-#' @seealso \code{\link{fitTsfmUpDn}}, \code{\link[stats]{summary.tsfm}}
+#' @seealso \code{\link{fitTsfmUpDn}}, \code{\link{summary.tsfm}}
 #' 
 #' @examples
 #' # load data from the database
 #' data(managers)
 #' 
-#' # example: Up and down market factor model with OLS fit
+#' # example: Up and down market factor model with LS fit
 #' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="OLS",control=NULL)
+#'                        data=managers, fit.method="LS",control=NULL)
 #'  
 #'  summary(fitUpDn)
 #' 
@@ -61,30 +61,30 @@ summary.tsfmUpDn <- function(object,...) {
  #' @export
  
  
- print.summary.tsfmUpDn <- function(uD.list, digits=3, ...) {
-   if(!is.null(cl <- uD.list$Up$call)) {
+ print.summary.tsfmUpDn <- function(x, digits=3, ...) {
+   if(!is.null(cl <- x$Up$call)) {
      cat("\nCall:\n")
      dput(cl)
    }
    cat("\nFactor Model Coefficients:\n", sep="")
-   n <- length(uD.list$Up$sum.list)
+   n <- length(x$Up$sum.list)
    for (i in 1:n) {
      options(digits = digits)  
-     table.coef.Up <- (uD.list$Up$sum.list)[[i]]$coefficients
+     table.coef.Up <- (x$Up$sum.list)[[i]]$coefficients
      rownames(table.coef.Up) <- sapply(rownames(table.coef.Up),function(x) paste(x,"_Up",sep="") )
-     table.coef.Dn <- (uD.list$Dn$sum.list)[[i]]$coefficients
+     table.coef.Dn <- (x$Dn$sum.list)[[i]]$coefficients
      rownames(table.coef.Dn) <- sapply(rownames(table.coef.Dn),function(x) paste(x,"_Dn",sep="") )
      table.coef <- rbind(table.coef.Up,table.coef.Dn)
      if (dim(table.coef)[2] > 1) {
-       cat("\nAsset", i, ": ", names(uD.list$Up$sum.list[i]), "\n(", uD.list$Up$se.type, 
+       cat("\nAsset", i, ": ", names(x$Up$sum.list[i]), "\n(", x$Up$se.type, 
            " Standard Errors & T-stats)\n\n", sep="")  
      } else {
-       cat("\nAsset", i, ": ", names(uD.list$Up$sum.list[i]), "\n\n", sep="")  
+       cat("\nAsset", i, ": ", names(x$Up$sum.list[i]), "\n\n", sep="")  
      }
-     r2Up <- uD.list$Up$sum.list[[i]]$r.squared
-     sigmaUp <- uD.list$Up$sum.list[[i]]$sigma
-     r2Dn <- uD.list$Dn$sum.list[[i]]$r.squared
-     sigmaDn <- uD.list$Dn$sum.list[[i]]$sigma
+     r2Up <- x$Up$sum.list[[i]]$r.squared
+     sigmaUp <- x$Up$sum.list[[i]]$sigma
+     r2Dn <- x$Dn$sum.list[[i]]$r.squared
+     sigmaDn <- x$Dn$sum.list[[i]]$sigma
      printCoefmat(table.coef, digits=digits,...)
      cat("\n R-squared_Up: ", r2Up,", Residual Volatility_Up: ", sigmaUp,"\n",
          "R-squared_Dn: ", r2Dn,", Residual Volatility_Dn: ", sigmaDn)

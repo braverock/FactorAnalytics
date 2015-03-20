@@ -59,8 +59,8 @@
 #'  8 = Histogram of residuals with normal curve overlayed,\cr
 #'  9 = Normal qq-plot of residuals,\cr
 #'  10 = CUSUM test-Recursive residuals,\cr
-#'  11 = CUSUM test-OLS residuals,\cr
-#'  12 = Recursive estimates (RE) test of OLS regression coefficients,\cr
+#'  11 = CUSUM test-LS residuals,\cr
+#'  12 = Recursive estimates (RE) test of LS regression coefficients,\cr
 #'  13 = Rolling estimates over a 24-period observation window
 #' @param colorset color palette to use for all the plots. Default is 
 #' \code{c(1:12)}. The 1st element will be used for individual time series 
@@ -172,8 +172,8 @@ plot.sfm <- function(x, which.plot.group=NULL, factor.subset=1:4,
                  "Histogram of residuals with normal curve overlayed",
                  "Normal qq-plot of residuals",
                  "CUSUM test-Recursive residuals",
-                 "CUSUM test-OLS residuals",
-                 "Recursive estimates (RE) test of OLS regression coefficients",
+                 "CUSUM test-LS residuals",
+                 "Recursive estimates (RE) test of LS regression coefficients",
                  "Rolling estimates over a 24-period observation window"),
                title="\nMake a plot selection (or 0 to exit):")
       }
@@ -239,12 +239,12 @@ plot.sfm <- function(x, which.plot.group=NULL, factor.subset=1:4,
                plot(cusum.rec, main=paste("Recursive CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "11L" = {
-               ##  OLS-based CUSUM test
-               cusum.ols <- efp(formula(fit), type="OLS-CUSUM", data=fit$model)
-               plot(cusum.ols, main=paste("OLS-based CUSUM test:",i), las=las, 
+               ##  LS-based CUSUM test
+               cusum.ols <- efp(formula(fit), type="LS-CUSUM", data=fit$model)
+               plot(cusum.ols, main=paste("LS-based CUSUM test:",i), las=las, 
                     col=colorset, ...)
              }, "12L" = {
-               ##  Recursive estimates (RE) test of OLS regression coefficients      
+               ##  Recursive estimates (RE) test of LS regression coefficients      
                cusum.est <- efp(formula(fit), type="RE", data=fit$model)
                plot(cusum.est, functional=NULL, col=colorset, las=0,
                     main=paste("RE test (Recursive estimates test):",i), ...)

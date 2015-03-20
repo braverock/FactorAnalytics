@@ -68,17 +68,17 @@ fit.robust$r2
 fit.robust$resid.sd
 
 
-## ----fig.cap="HAM3 Returns: OLS (top) vs Robust (bottom)", fig.show='hold'----
+## ----fig.cap="HAM3 Returns: LS (top) vs Robust (bottom)", fig.show='hold'----
 par(mfrow=c(2,1))
 plot(fit.ols, plot.single=TRUE, which=1, asset.name="HAM3")
-mtext("OLS", side=3)
+mtext("LS", side=3)
 plot(fit.robust, plot.single=TRUE, which=1, asset.name="HAM3")
 mtext("Robust", side=3)
 
 
-## ----fig.cap="Residual vol: OLS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'----
+## ----fig.cap="Residual vol: LS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'----
 par(mfrow=c(1,2))
-plot(fit.ols, which=5, xlim=c(0,0.043), sub="OLS")
+plot(fit.ols, which=5, xlim=c(0,0.043), sub="LS")
 plot(fit.robust, which=5, xlim=c(0,0.043), sub="Robust")
 
 
@@ -109,7 +109,7 @@ methods(class="tsfm")
 
 
 ## ------------------------------------------------------------------------
-# all estimated coefficients from the OLS fit using all 3 factors
+# all estimated coefficients from the LS fit using all 3 factors
 coef(fit.ols)
 
 # compare returns data with fitted and residual values for HAM1 from fit.lars
@@ -204,35 +204,36 @@ plot(fit.sub, which=3, max.show=4, legend.loc=NULL)
 ## 
 ## # Make a plot selection (or 0 to exit):
 ## #
-## #  1: Actual vs fitted asset returns
-## #  2: Residuals vs fitted asset returns
-## #  3: Scale-Location plot
-## #  4: Residuals with standard error bands
-## #  5: Time series of squared residuals
-## #  6: Time series of absolute residuals
-## #  7: SACF and PACF of residuals
-## #  8: SACF and PACF of squared residuals
-## #  9: SACF and PACF of absolute residuals
-## # 10: Density Estimate of Residuals
-## # 11: Histogram of residuals with normal curve overlayed
-## # 12: Normal qq-plot of residuals
-## # 13: CUSUM test-Recursive residuals
-## # 14: CUSUM test-OLS residuals
-## # 15: Recursive estimates (RE) test of OLS regression coefficients
-## # 16: Rolling estimates over a 24-period observation window
+## #  1: Actual and fitted asset returns
+## #  2: Actual vs fitted asset returns
+## #  3: Residuals and fitted asset returns
+## #  4: Sqrt. of Std. Residuals vs Fitted
+## #  5: Residuals with standard error bands
+## #  6: Time series of squared residuals
+## #  7: Time series of absolute residuals
+## #  8: SACF and PACF of residuals
+## #  9: SACF and PACF of squared residuals
+## # 10: SACF and PACF of absolute residuals
+## # 11: Density Estimate of Residuals
+## # 12: Histogram of residuals with normal curve overlayed
+## # 13: Normal qq-plot of residuals
+## # 14: CUSUM test-Recursive residuals
+## # 15: CUSUM test-LS residuals
+## # 16: Recursive estimates (RE) test of LS regression coefficients
+## # 17: Rolling estimates over a 24-period observation window
 ## #
 ## # Selection:
 
 
 ## ----fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=4)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=5)
 
 
 ## ----fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=9)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=10)
 
 
 ## ----fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='asis', fig.width=7, fig.height=4.5----
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=11)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=12)
 
 

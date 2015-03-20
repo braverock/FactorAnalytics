@@ -17,7 +17,7 @@
 #' The scalar \code{decay} is used by \code{\link{fitTsfm}} to compute 
 #' exponentially decaying weights for \code{fit.method="DLS"}. Alternately, one 
 #' can directly specify \code{weights}, a weights vector, to be used with 
-#' "OLS" or "Robust". Especially when fitting multiple assets, care should be 
+#' "LS" or "Robust". Especially when fitting multiple assets, care should be 
 #' taken to ensure that the length of the weights vector matches the number of
 #' observations (excluding cases ignored due to NAs).
 #' 
@@ -31,13 +31,13 @@
 #' @param decay a scalar in (0, 1] to specify the decay factor for "DLS". 
 #' Default is 0.95.
 #' @param weights an optional vector of weights to be used in the fitting 
-#' process for \code{fit.method="OLS","Robust"}, or 
+#' process for \code{fit.method="LS","Robust"}, or 
 #' \code{variable.selection="subsets"}. Should be \code{NULL} or a numeric 
 #' vector. The length of \code{weights} must be the same as the number of 
 #' observations. The weights must be nonnegative and it is strongly 
 #' recommended that they be strictly positive.
 #' @param model,x,y,qr logicals passed to \code{lm} for 
-#' \code{fit.method="OLS"}. If \code{TRUE} the corresponding components of the 
+#' \code{fit.method="LS"}. If \code{TRUE} the corresponding components of the 
 #' fit (the model frame, the model matrix, the response, the QR decomposition) 
 #' are returned.
 #' @param nrep the number of random subsamples to be drawn for 

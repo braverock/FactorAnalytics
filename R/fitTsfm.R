@@ -2,7 +2,7 @@
 #' 
 #' @description Fits a time series (a.k.a. macroeconomic) factor model for one 
 #' or more asset returns or excess returns using time series regression. 
-#' Users can choose between ordinary least squares-OLS, discounted least 
+#' Users can choose between ordinary least squares-LS, discounted least 
 #' squares-DLS (or) robust regression. Several variable selection options  
 #' including Stepwise, Subsets, Lars are available as well. An object of class 
 #' \code{"tsfm"} is returned.
@@ -12,7 +12,7 @@
 #' the option to supply a risk free rate variable to subtract from each asset 
 #' return and factor to compute excess returns. 
 #' 
-#' Estimation method "OLS" corresponds to ordinary least squares using 
+#' Estimation method "LS" corresponds to ordinary least squares using 
 #' \code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least 
 #' squares with exponentially declining weights that sum to unity), and, 
 #' "Robust" is robust regression (using \code{\link[robust]{lmRob}}). 
@@ -61,8 +61,8 @@
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{mkt.name} and \code{rf.name}.
-#' @param fit.method the estimation method, one of "OLS", "DLS" or "Robust". 
-#' See details. Default is "OLS". 
+#' @param fit.method the estimation method, one of "LS", "DLS" or "Robust". 
+#' See details. Default is "LS". 
 #' @param variable.selection the variable selection method, one of "none", 
 #' "stepwise","subsets","lars". See details. Default is "none".
 #' \code{mkt.name} is required if any of these options are to be implemented.
@@ -82,7 +82,7 @@
 #' An object of class \code{"tsfm"} is a list containing the following 
 #' components:
 #' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
-#' class \code{lm} if \code{fit.method="OLS" or "DLS"}, class \code{lmRob} if 
+#' class \code{lm} if \code{fit.method="LS" or "DLS"}, class \code{lmRob} if 
 #' the \code{fit.method="Robust"}, or class \code{lars} if 
 #' \code{variable.selection="lars"}.}
 #' \item{alpha}{length-N vector of estimated alphas.}
@@ -165,7 +165,7 @@
 #' @export
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
-                    data=data, fit.method=c("OLS","DLS","Robust"), 
+                    data=data, fit.method=c("LS","DLS","Robust"), 
                     variable.selection=c("none","stepwise","subsets","lars"), 
                     control=fitTsfm.control(...), ...) {
   
@@ -174,8 +174,8 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   # set defaults and check input vailidity
   fit.method = fit.method[1]
-  if (!(fit.method %in% c("OLS","DLS","Robust"))) {
-    stop("Invalid argument: fit.method must be 'OLS', 'DLS' or 'Robust'")
+  if (!(fit.method %in% c("LS","DLS","Robust"))) {
+    stop("Invalid argument: fit.method must be 'LS', 'DLS' or 'Robust'")
   }
   variable.selection = variable.selection[1]
   if (!(variable.selection %in% c("none","stepwise","subsets","lars"))) {
@@ -294,7 +294,7 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
     fm.formula <- as.formula(paste(i," ~ ."))
     
     # fit based on time series regression method chosen
-    if (fit.method == "OLS") {
+    if (fit.method == "LS") {
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "DLS") {
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
@@ -324,7 +324,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
     fm.formula <- as.formula(paste(i," ~ ."))
     
     # fit based on time series regression method chosen
-    if (fit.method == "OLS") {
+    if (fit.method == "LS") {
       lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
       reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
     } else if (fit.method == "DLS") {
@@ -377,7 +377,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     reg.xts <- na.omit(dat.xts[,c(i,names.sub)])
     
     # fit based on time series regression method chosen
-    if (fit.method == "OLS") {
+    if (fit.method == "LS") {
       reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
     } else if (fit.method == "DLS") {
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)

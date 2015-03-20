@@ -10,7 +10,7 @@
 #' For other types of plots, use the list objects \code{Up} and \code{Dn} of class \code{tsfmUpDn}. 
 #' The \code{plot.tsfm} can be applied.
 #' 
-#' @param object an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
+#' @param x an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
 #' @param which.assets A vector of character to show single or multiple assets names. The defualt if 
 #' \code{NULL}.  
 #' @param line.color A vector of color codes of up/dn fitted line. The first color is for the object fitted
@@ -19,7 +19,7 @@
 #' @param add.legend A logic flag to add a legend. The default is \code{TRUE}.
 #' @param add.SFM.line A logic flag to add a fitted single factor model. The default is \code{FALSE}.
 #' @param add.comparison A logic flag to add a comparison Up/Down factor model. If the original model
-#' is \code{"OLS"}, the comparison model is \code{"Robust"} and vice versa. The default is \code{FALSE}.
+#' is \code{""}, the comparison model is \code{"Robust"} and vice versa. The default is \code{FALSE}.
 #' @param show.comparison.legend A logic flag to opt for showing the legend of the comparison model. 
 #' The default is \code{FALSE}.  
 #' @param legend.loc The default is \code{"topleft"}.
@@ -34,9 +34,9 @@
 #' 
 #' # load data from the database
 #'  data(managers)
-#' # example: Up and down market factor model with OLS fit
+#' # example: Up and down market factor model with  fit
 #'  fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="OLS")
+#'                        data=managers, fit.method="LS")
 #' # plot the fitted model of every assets, press enter to show the next plot.
 #'  plot(fitUpDn)
 #'  
@@ -54,20 +54,20 @@
 #' @export
 
 
-plot.tsfmUpDn <- function(object,which.assets=NULL,add.SFM.line=FALSE,add.comparison=FALSE,
+plot.tsfmUpDn <- function(x,which.assets=NULL,add.SFM.line=FALSE,add.comparison=FALSE,
                           line.color=c("blue","purple"),line.type="dotted",
                           add.legend=TRUE,legend.loc="topleft",legend.cex=0.9,
                           show.comparison.legend=FALSE,...) {
   
   # specify the name of market returns and the assets returns
-  mkt.name = object$Up$factor.names
+  mkt.name = x$Up$factor.names
   
   # add SFM estimation 
   
   if (add.SFM.line) {
-    data = object$data
-    asset.names = object$Up$asset.names
-    fit.method = object$Up$fit.method
+    data = x$data
+    asset.names = x$Up$asset.names
+    fit.method = x$Up$fit.method
     fitSf <-  fitTsfm(asset.names=asset.names,factor.names=mkt.name,mkt.name=mkt.name,rf.name=NULL,
                       data=data,fit.method=fit.method)
     plotDataSf <- merge.xts(fitted(fitSf),fitSf$data[,mkt.name])
@@ -76,23 +76,22 @@ plot.tsfmUpDn <- function(object,which.assets=NULL,add.SFM.line=FALSE,add.compar
   # add LS/Robust Up/Dn comparison
   
   if (add.comparison) {
-    fit.methods <- c("OLS","Robust")
-    object$call$fit.method <- fit.methods[!fit.methods%in%object$call$fit.method]
-    object.alt <- eval(object$call)  
+    fit.methods <- c("LS","Robust")
+    x$call$fit.method <- fit.methods[!fit.methods%in%x$call$fit.method]
+    x.alt <- eval(x$call)  
   }
   
-  
   if (is.null(which.assets)) { 
-    assets.name.all = object$Up$asset.names    
+    assets.name.all = x$Up$asset.names    
   } else {
     assets.name.all = which.assets  
   }
     while(length(assets.name.all)>0){
       assets.name = assets.name.all[1]
-      # extract info from the fitTsfm object
-      plotDataUp <- merge.xts(object$Up$data[,c(assets.name,mkt.name)], fitted(object$Up)[,assets.name])
+      # extract info from the fitTsfm x
+      plotDataUp <- merge.xts(x$Up$data[,c(assets.name,mkt.name)], fitted(x$Up)[,assets.name])
       colnames(plotDataUp) <- c("ActualUp","MktUp","FittedUp")
-      plotDataDn <-merge.xts(object$Dn$data[,c(assets.name,mkt.name)], fitted(object$Dn)[,assets.name])
+      plotDataDn <-merge.xts(x$Dn$data[,c(assets.name,mkt.name)], fitted(x$Dn)[,assets.name])
       colnames(plotDataDn) <- c("ActualDn","MktDn","FittedDn")
     
       plot(rbind(coredata(plotDataUp$MktUp),coredata(plotDataDn$MktDn)),
@@ -103,8 +102,8 @@ plot.tsfmUpDn <- function(object,which.assets=NULL,add.SFM.line=FALSE,add.compar
       lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col=line.color[1],lty=line.type)
       abline(h=0)
       
-      up.beta <- round(summary(object$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
-      dn.beta <- round(summary(object$Dn)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
+      up.beta <- round(summary(x$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
+      dn.beta <- round(summary(x$Dn)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
       up.beta <- c(as.character(up.beta)[1],paste("(",as.character(up.beta)[2],")",sep=""))
       dn.beta <- c(as.character(dn.beta)[1],paste("(",as.character(dn.beta)[2],")",sep=""))
       line.col = line.color[1]
@@ -117,24 +116,22 @@ plot.tsfmUpDn <- function(object,which.assets=NULL,add.SFM.line=FALSE,add.compar
       
       # add alternative Up/Dn model for comparison
       if (add.comparison){
-        plotDataUp.alt <- merge.xts(object.alt$Up$data[,c(assets.name,mkt.name)], fitted(object.alt$Up)[,assets.name])
+        plotDataUp.alt <- merge.xts(x.alt$Up$data[,c(assets.name,mkt.name)], fitted(x.alt$Up)[,assets.name])
         colnames(plotDataUp.alt) <- c("ActualUp","MktUp","FittedUp")
-        plotDataDn.alt <-merge.xts(object.alt$Dn$data[,c(assets.name,mkt.name)], fitted(object.alt$Dn)[,assets.name])
+        plotDataDn.alt <-merge.xts(x.alt$Dn$data[,c(assets.name,mkt.name)], fitted(x.alt$Dn)[,assets.name])
         colnames(plotDataDn.alt) <- c("ActualDn","MktDn","FittedDn")
         lines(coredata(plotDataUp.alt$MktUp),coredata(plotDataUp.alt$FittedUp),col=line.color[2],lty=line.type)
         lines(coredata(plotDataDn.alt$MktDn),coredata(plotDataDn.alt$FittedDn),col=line.color[2],lty=line.type)
         
         # add comparison legend 
         if (show.comparison.legend) {
-        up.beta <- round(summary(object.alt$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
-        dn.beta <- round(summary(object.alt$Dn)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
+        up.beta <- round(summary(x.alt$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
+        dn.beta <- round(summary(x.alt$Dn)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
         up.beta <- c(as.character(up.beta)[1],paste("(",as.character(up.beta)[2],")",sep=""))
         dn.beta <- c(as.character(dn.beta)[1],paste("(",as.character(dn.beta)[2],")",sep=""))
         line.col = line.color[2]
         } 
       }
-      
-      
       
       if (add.legend){
           legend.txt = c("Up Beta",up.beta,"Dn Beta",dn.beta)                          

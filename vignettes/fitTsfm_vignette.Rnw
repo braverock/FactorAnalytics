@@ -53,7 +53,7 @@ Here's a list of the functions and methods demonstrated in this vignette:
 
 \begin{itemize}
 
-\item \verb"fitTsfm(asset.names, factor.names, data, fit.method, variable.selection, ...)": Fits a time series (a.k.a. macroeconomic) factor model for one or more asset returns or excess returns using time series regression. Ordinary least squares (OLS), discounted least squares (DLS) and robust regression fitting are possible. Variable selection methods include "stepwise", "subsets" and "lars". An object of class "tsfm" containing the fitted objects, model coefficients, R-squared and residual volatility is returned.
+\item \verb"fitTsfm(asset.names, factor.names, data, fit.method, variable.selection, ...)": Fits a time series (a.k.a. macroeconomic) factor model for one or more asset returns or excess returns using time series regression. Least squares (LS), discounted least squares (DLS) and robust regression fitting are possible. Variable selection methods include "stepwise", "subsets" and "lars". An object of class "tsfm" containing the fitted objects, model coefficients, R-squared and residual volatility is returned.
 
 \item \verb"coef(object, ...)": Extracts the coefficient matrix (intercept and factor betas) for all assets fit by the "tsfm" object.
 
@@ -115,7 +115,7 @@ Let's take a look at the arguments for \code{fitTsfm}.
 args(fitTsfm)
 @
 
-The default model fitting method is OLS regression and the default variable selection method is "none" (that is, all factors are included in the model). The different model fitting and variable selection options are described in sections 2.3 and 2.4.
+The default model fitting method is LS regression and the default variable selection method is "none" (that is, all factors are included in the model). The different model fitting and variable selection options are described in sections 2.3 and 2.4.
 
 The default for \code{rf.name} and \code{mkt.name} are NULL. If \code{rf.name} is not specified by the user, perhaps because the data is already in excess return form, then no risk-free rate adjustment is made. Similarly, if \code{mkt.name} is not specified, market-timing factors are not added to the model.
 
@@ -165,7 +165,7 @@ Note that, the user needs to specify which of the columns in \code{data} corresp
 
 \subsection{Fit methods}
 
-The default fit method is OLS regression. The next example performs OLS regression using all 3 available factors in the dataset. Notice that the R-squared values have improved considerably when compared to the single index model as well as the market-timing model.
+The default fit method is LS regression. The next example performs LS regression using all 3 available factors in the dataset. Notice that the R-squared values have improved considerably when compared to the single index model as well as the market-timing model.
 <<>>=
 fit.ols <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
                     rf.name="US.3m.TR", data=managers)
@@ -184,17 +184,17 @@ fit.robust$resid.sd
 @
 
 Notice the lower R-squared values and smaller residual volatilities with robust regression. Figures 1 and 2 give a graphical comparison of the fitted returns for asset "HAM3" and residual volatilities from the factor model fits. Figure 1 depicts the smaller influence that the volatility of Jan 2000 has on the robust regression. (Plot options are explained later in section 4.)
-<<fig.cap="HAM3 Returns: OLS (top) vs Robust (bottom)", fig.show='hold'>>=
+<<fig.cap="HAM3 Returns: LS (top) vs Robust (bottom)", fig.show='hold'>>=
 par(mfrow=c(2,1))
 plot(fit.ols, plot.single=TRUE, which=1, asset.name="HAM3")
-mtext("OLS", side=3)
+mtext("LS", side=3)
 plot(fit.robust, plot.single=TRUE, which=1, asset.name="HAM3")
 mtext("Robust", side=3)
 @
 
-<<fig.cap="Residual vol: OLS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'>>=
+<<fig.cap="Residual vol: LS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'>>=
 par(mfrow=c(1,2))
-plot(fit.ols, which=5, xlim=c(0,0.043), sub="OLS")
+plot(fit.ols, which=5, xlim=c(0,0.043), sub="LS")
 plot(fit.robust, which=5, xlim=c(0,0.043), sub="Robust")
 @
 
@@ -242,7 +242,7 @@ plot(fit.lars, which=2)
 
 Remarks:
 \begin{itemize}
-\item Variable selection methods \code{"stepwise"} and \code{"subsets"} can be combined with any of the fit methods, "OLS", "DLS" or "Robust". If variable selection method selected is \code{"lars"}, \code{fit.method} will be ignored. 
+\item Variable selection methods \code{"stepwise"} and \code{"subsets"} can be combined with any of the fit methods, "LS", "DLS" or "Robust". If variable selection method selected is \code{"lars"}, \code{fit.method} will be ignored. 
 \item Refer to the next section on \code{fitTsfm control} for more details on the control arguments that can be passed to the different variable selection methods. 
 \end{itemize}
 
@@ -285,7 +285,7 @@ Factor model covariance and risk decomposition functions are explained in sectio
 
 Here are some examples using the time series factor models fitted earlier.
 <<>>=
-# all estimated coefficients from the OLS fit using all 3 factors
+# all estimated coefficients from the LS fit using all 3 factors
 coef(fit.ols)
 
 # compare returns data with fitted and residual values for HAM1 from fit.lars
@@ -462,7 +462,7 @@ If the plot type argument \code{which} is not specified, a menu prompts for user
 \newpage
 \subsection{Individual plots}
 
-Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fitted object \code{x}, \code{asset.name} is also necessary. However, if \code{x} contains only one asset's factor model fit, \code{plot.tsfm} can infer \code{asset.name} without user input. 
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fitted object \code{x}, \code{asset.name} is also necessary. In case the \code{tsfm} object \code{x} contains only a single asset's fit, plot.tsfm can infer \code{asset.name} without user input. 
 
 Here's the individual plot menu.
 <<eval=FALSE, results='hide'>>=
@@ -470,45 +470,46 @@ plot(fit.sub, plot.single=TRUE, asset.name="HAM1")
 
 # Make a plot selection (or 0 to exit): 
 # 
-#  1: Actual vs fitted asset returns
-#  2: Residuals vs fitted asset returns
-#  3: Scale-Location plot
-#  4: Residuals with standard error bands
-#  5: Time series of squared residuals
-#  6: Time series of absolute residuals
-#  7: SACF and PACF of residuals
-#  8: SACF and PACF of squared residuals
-#  9: SACF and PACF of absolute residuals
-# 10: Density Estimate of Residuals
-# 11: Histogram of residuals with normal curve overlayed
-# 12: Normal qq-plot of residuals
-# 13: CUSUM test-Recursive residuals
-# 14: CUSUM test-OLS residuals
-# 15: Recursive estimates (RE) test of OLS regression coefficients
-# 16: Rolling estimates over a 24-period observation window
+#  1: Actual and fitted asset returns
+#  2: Actual vs fitted asset returns
+#  3: Residuals and fitted asset returns
+#  4: Sqrt. of Std. Residuals vs Fitted
+#  5: Residuals with standard error bands
+#  6: Time series of squared residuals
+#  7: Time series of absolute residuals
+#  8: SACF and PACF of residuals
+#  9: SACF and PACF of squared residuals
+# 10: SACF and PACF of absolute residuals
+# 11: Density Estimate of Residuals
+# 12: Histogram of residuals with normal curve overlayed
+# 13: Normal qq-plot of residuals
+# 14: CUSUM test-Recursive residuals
+# 15: CUSUM test-LS residuals
+# 16: Recursive estimates (RE) test of LS regression coefficients
+# 17: Rolling estimates over a 24-period observation window
 # 
 # Selection: 
 @
 
 Remarks:
 \begin{itemize}
-\item CUSUM plots (individual asset plot options 13, 14 and 15) are applicable 
-only for \code{fit.method="OLS"}.
-\item Rolling estimates (individual asset plot option 16) is not applicable for 
+\item CUSUM plots (individual asset plot options 14, 15 and 16) are applicable 
+only for \code{fit.method="LS"}.
+\item Rolling estimates (individual asset plot option 17) is not applicable for 
 \code{variable.slection="lars"}.
 \end{itemize}
 
 Here are a few more examples which don't need interactive user input.
 <<fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=4)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=5)
 @
 
 <<fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=9)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=10)
 @
 
 <<fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=11)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=12)
 @
 \newpage
 
