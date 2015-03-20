@@ -11,16 +11,15 @@
 #' The \code{plot.tsfm} can be applied.
 #' 
 #' @param x an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
-#' @param which.assets A vector of character to show single or multiple assets names. The defualt if 
+#' @param asset.name A vector of character to show single or multiple assets names. The defualt if 
 #' \code{NULL}.  
 #' @param line.color A vector of color codes of up/dn fitted line. The first color is for the object fitted
 #' line and the second color for the comparison fitted line. The default is \code{c("blue","purple")}.
 #' @param line.type The line type of up/dn fitted values. The default is \code{"dotted"}.
 #' @param add.legend A logic flag to add a legend. The default is \code{TRUE}.
-#' @param add.SFM.line A logic flag to add a fitted single factor model. The default is \code{FALSE}.
-#' @param add.comparison A logic flag to add a comparison Up/Down factor model. If the original model
-#' is \code{""}, the comparison model is \code{"Robust"} and vice versa. The default is \code{FALSE}.
-#' @param show.comparison.legend A logic flag to opt for showing the legend of the comparison model. 
+#' @param SFM.line A logic flag to add a fitted single factor model. The default is \code{FALSE}.
+#' @param LSnRob A logic flag to add a comparison Up/Down factor model. If the original model
+#' is \code{"LS"}, the comparison model is \code{"Robust"} and vice versa. The default is \code{FALSE}.
 #' The default is \code{FALSE}.  
 #' @param legend.loc The default is \code{"topleft"}.
 #' @param legend.cex \code{cex} of \code{legend}.
@@ -41,30 +40,30 @@
 #'  plot(fitUpDn)
 #'  
 #' # or choose to plot one specific asset
-#'  plot(fitUpDn,which.assets="HAM1")
+#'  plot(fitUpDn,asset.name="HAM1")
 #'  
 #' # add a single market factor model fitted line
-#'  plot(fitUpDn,add.SFM.line=TRUE,which.assets="HAM1")
+#'  plot(fitUpDn,SFM.line=TRUE,asset.name="HAM1")
 #'              
 #' # add Robust Up/Dn model fitted line and change legend to show the robust up/dn Beta                               
-#'  plot(fitUpDn,add.comparison=TRUE,show.comparison.legend=TRUE,add.SFM.line=TRUE,which.assets="HAM1")
+#'  plot(fitUpDn,LSnRob=TRUE,asset.name="HAM1")
 #'  
 #'                                                                                                                                      
 #' @method plot tsfmUpDn
 #' @export
 
 
-plot.tsfmUpDn <- function(x,which.assets=NULL,add.SFM.line=FALSE,add.comparison=FALSE,
+plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSnRob=FALSE,
                           line.color=c("blue","purple"),line.type="dotted",
                           add.legend=TRUE,legend.loc="topleft",legend.cex=0.9,
-                          show.comparison.legend=FALSE,...) {
+                          ...) {
   
   # specify the name of market returns and the assets returns
   mkt.name = x$Up$factor.names
   
   # add SFM estimation 
   
-  if (add.SFM.line) {
+  if (SFM.line) {
     data = x$data
     asset.names = x$Up$asset.names
     fit.method = x$Up$fit.method
@@ -75,16 +74,16 @@ plot.tsfmUpDn <- function(x,which.assets=NULL,add.SFM.line=FALSE,add.comparison=
   
   # add LS/Robust Up/Dn comparison
   
-  if (add.comparison) {
+  if (LSnRob) {
     fit.methods <- c("LS","Robust")
-    x$call$fit.method <- fit.methods[!fit.methods%in%x$call$fit.method]
+    x$call$fit.method <- fit.methods[!fit.methods%in%x$Up$fit.method]
     x.alt <- eval(x$call)  
   }
   
-  if (is.null(which.assets)) { 
+  if (is.null(asset.name)) { 
     assets.name.all = x$Up$asset.names    
   } else {
-    assets.name.all = which.assets  
+    assets.name.all = asset.name  
   }
     while(length(assets.name.all)>0){
       assets.name = assets.name.all[1]
@@ -104,18 +103,18 @@ plot.tsfmUpDn <- function(x,which.assets=NULL,add.SFM.line=FALSE,add.comparison=
       
       up.beta <- round(summary(x$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
       dn.beta <- round(summary(x$Dn)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
-      up.beta <- c(as.character(up.beta)[1],paste("(",as.character(up.beta)[2],")",sep=""))
-      dn.beta <- c(as.character(dn.beta)[1],paste("(",as.character(dn.beta)[2],")",sep=""))
-      line.col = line.color[1]
+      up.beta <- paste(as.character(up.beta)[1]," (",as.character(up.beta)[2],")",sep="")
+      dn.beta <- paste(as.character(dn.beta)[1]," (",as.character(dn.beta)[2],")",sep="")
+    
       # add LS line 
-      if (add.SFM.line){
-        lines(coredata(plotDataSf[,assets.name]),coredata(plotDataSf[,mkt.name]),lty="dotted")
-        legend.name = paste(fit.method,"fitted line",seq="")
+      if (SFM.line){
+        lines(coredata(plotDataSf[,mkt.name]),coredata(plotDataSf[,assets.name]),lty="dotted")
+       # legend.name = paste(fit.method,"fitted line",seq="")
         
       }
       
       # add alternative Up/Dn model for comparison
-      if (add.comparison){
+      if (LSnRob){
         plotDataUp.alt <- merge.xts(x.alt$Up$data[,c(assets.name,mkt.name)], fitted(x.alt$Up)[,assets.name])
         colnames(plotDataUp.alt) <- c("ActualUp","MktUp","FittedUp")
         plotDataDn.alt <-merge.xts(x.alt$Dn$data[,c(assets.name,mkt.name)], fitted(x.alt$Dn)[,assets.name])
@@ -123,21 +122,36 @@ plot.tsfmUpDn <- function(x,which.assets=NULL,add.SFM.line=FALSE,add.comparison=
         lines(coredata(plotDataUp.alt$MktUp),coredata(plotDataUp.alt$FittedUp),col=line.color[2],lty=line.type)
         lines(coredata(plotDataDn.alt$MktDn),coredata(plotDataDn.alt$FittedDn),col=line.color[2],lty=line.type)
         
-        # add comparison legend 
-        if (show.comparison.legend) {
-        up.beta <- round(summary(x.alt$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
-        dn.beta <- round(summary(x.alt$Dn)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
-        up.beta <- c(as.character(up.beta)[1],paste("(",as.character(up.beta)[2],")",sep=""))
-        dn.beta <- c(as.character(dn.beta)[1],paste("(",as.character(dn.beta)[2],")",sep=""))
-        line.col = line.color[2]
-        } 
+       
+        up.beta.alt <- round(summary(x.alt$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
+        dn.beta.alt <- round(summary(x.alt$Dn)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
+        up.beta.alt <- paste(as.character(up.beta.alt)[1]," (",as.character(up.beta.alt)[2],")",sep="")
+        dn.beta.alt <- paste(as.character(dn.beta.alt)[1]," (",as.character(dn.beta.alt)[2],")",sep="")
+                
       }
       
       if (add.legend){
-          legend.txt = c("Up Beta",up.beta,"Dn Beta",dn.beta)                          
-          legend.lty = c(line.type,NA,NA,line.type,NA,NA) 
-          legend.col = c(line.col,NA,NA,line.col,NA,NA)
-          legend(legend.loc,legend=legend.txt,ncol=2,lty=legend.lty,col=legend.col,cex=legend.cex)            
+        
+        if (LSnRob){
+            if (x$call$fit.method=="Robust") {
+                beta.legend = c("Up Beta","Dn Beta","Up BetaRob","Dn BetaRob")
+            } else {
+                beta.legend = c("Up BetaRob","Dn BetaRob","Up Beta","Dn Beta")
+            }
+          legend.txt = c(beta.legend,up.beta,dn.beta,up.beta.alt,dn.beta.alt)                          
+          legend(legend.loc,legend=legend.txt,ncol=2,cex=legend.cex,bty="n")
+        } else {
+            if (x$Up$fit.method=="Robust") {
+            beta.legend = c("Up BetaRob","Dn BetaRob")
+          } else {
+            beta.legend = c("Up Beta","Dn Beta")
+          }
+          legend.txt = c(beta.legend,up.beta,dn.beta)                          
+          legend(legend.loc,legend=legend.txt,ncol=2,cex=legend.cex,bty="n")
+        }
+        # legend.lty = c(line.type,NA,NA,line.type,NA,NA) 
+        #  legend.col = c(line.col,NA,NA,line.col,NA,NA)
+         # legend(legend.loc,legend=legend.txt,ncol=2,lty=legend.lty,col=legend.col,cex=legend.cex)            
                 
       }
       assets.name.all <- assets.name.all[-1]
