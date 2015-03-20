@@ -5,8 +5,10 @@
 \title{Plot actual against fitted values of up and down market time series factor model}
 \usage{
 \method{plot}{tsfmUpDn}(x, asset.name = NULL, SFM.line = FALSE,
-  LSnRob = FALSE, line.color = c("blue", "purple"), line.type = "dotted",
-  add.legend = TRUE, legend.loc = "topleft", legend.cex = 0.9, ...)
+  LSandRob = FALSE, line.color = c("blue", "purple"),
+  line.type = c("dashed", "solid"), line.width = c(1, 2),
+  sfm.line.type = "dashed", add.legend = TRUE, legend.loc = "topleft",
+  legend.cex = 0.9, ...)
 }
 \arguments{
 \item{x}{an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.}
@@ -16,14 +18,20 @@
 
 \item{SFM.line}{A logic flag to add a fitted single factor model. The default is \code{FALSE}.}
 
-\item{LSnRob}{A logic flag to add a comparison Up/Down factor model. If the original model
+\item{LSandRob}{A logic flag to add a comparison Up/Down factor model. If the original model
 is \code{"LS"}, the comparison model is \code{"Robust"} and vice versa. The default is \code{FALSE}.
 The default is \code{FALSE}.}
 
-\item{line.color}{A vector of color codes of up/dn fitted line. The first color is for the object fitted
-line and the second color for the comparison fitted line. The default is \code{c("blue","purple")}.}
+\item{line.color}{A vector of color codes of up/dn fitted line. The first element is for the object fitted
+line and the second for the comparison fitted line. The default is \code{c("blue","purple")}.}
 
-\item{line.type}{The line type of up/dn fitted values. The default is \code{"dotted"}.}
+\item{line.type}{A vector of line types of up/dn fitted line. The first is for the object fitted
+line and the second for the comparison fitted line. The default is \code{c("dashed","solid"}.}
+
+\item{line.width}{A vector of line width of up/dn fitted line. The first element is for the object fitted
+line and the second element for the comparison fitted line. The default is \code{c(1,2}.}
+
+\item{sfm.line.type}{SFM line type. The default is \code{"dashed"}}
 
 \item{add.legend}{A logic flag to add a legend. The default is \code{TRUE}.}
 
@@ -31,7 +39,7 @@ line and the second color for the comparison fitted line. The default is \code{c
 
 \item{legend.cex}{\code{cex} of \code{legend}.}
 
-\item{...}{Other arguments can be used in \code{plot}.}
+\item{...}{Other arguments can be used in \code{plot}. Please refer to \code{plot}.}
 }
 \description{
 Generic \code{plot} method for object of class \code{tsfmUpDn}.
@@ -60,7 +68,7 @@ The \code{plot.tsfm} can be applied.
  plot(fitUpDn,SFM.line=TRUE,asset.name="HAM1")
 
 # add Robust Up/Dn model fitted line and change legend to show the robust up/dn Beta
- plot(fitUpDn,LSnRob=TRUE,asset.name="HAM1")
+ plot(fitUpDn,LSandRob=TRUE,asset.name="HAM1")
 }
 \author{
 Yi-An Chen

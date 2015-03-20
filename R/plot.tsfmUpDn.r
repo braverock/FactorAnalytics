@@ -13,18 +13,21 @@
 #' @param x an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
 #' @param asset.name A vector of character to show single or multiple assets names. The defualt if 
 #' \code{NULL}.  
-#' @param line.color A vector of color codes of up/dn fitted line. The first color is for the object fitted
-#' line and the second color for the comparison fitted line. The default is \code{c("blue","purple")}.
-#' @param line.type The line type of up/dn fitted values. The default is \code{"dotted"}.
+#' @param line.color A vector of color codes of up/dn fitted line. The first element is for the object fitted
+#' line and the second for the comparison fitted line. The default is \code{c("blue","purple")}.
+#' @param line.type A vector of line types of up/dn fitted line. The first is for the object fitted
+#' line and the second for the comparison fitted line. The default is \code{c("dashed","solid"}.
+#' @param line.width A vector of line width of up/dn fitted line. The first element is for the object fitted
+#' line and the second element for the comparison fitted line. The default is \code{c(1,2}.
 #' @param add.legend A logic flag to add a legend. The default is \code{TRUE}.
 #' @param SFM.line A logic flag to add a fitted single factor model. The default is \code{FALSE}.
-#' @param LSnRob A logic flag to add a comparison Up/Down factor model. If the original model
+#' @param sfm.line.type SFM line type. The default is \code{"dashed"}
+#' @param LSandRob A logic flag to add a comparison Up/Down factor model. If the original model
 #' is \code{"LS"}, the comparison model is \code{"Robust"} and vice versa. The default is \code{FALSE}.
 #' The default is \code{FALSE}.  
 #' @param legend.loc The default is \code{"topleft"}.
 #' @param legend.cex \code{cex} of \code{legend}.
-#' 
-#' @param ... Other arguments can be used in \code{plot}. 
+#' @param ... Other arguments can be used in \code{plot}. Please refer to \code{plot}.
 #' @author Yi-An Chen
 #' 
 #' @seealso \code{\link{fitTsfmUpDn}} 
@@ -46,17 +49,17 @@
 #'  plot(fitUpDn,SFM.line=TRUE,asset.name="HAM1")
 #'              
 #' # add Robust Up/Dn model fitted line and change legend to show the robust up/dn Beta                               
-#'  plot(fitUpDn,LSnRob=TRUE,asset.name="HAM1")
+#'  plot(fitUpDn,LSandRob=TRUE,asset.name="HAM1")
 #'  
 #'                                                                                                                                      
 #' @method plot tsfmUpDn
 #' @export
 
 
-plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSnRob=FALSE,
-                          line.color=c("blue","purple"),line.type="dotted",
-                          add.legend=TRUE,legend.loc="topleft",legend.cex=0.9,
-                          ...) {
+plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSandRob=FALSE,
+                          line.color=c("blue","purple"),line.type=c("dashed","solid"),
+                          line.width=c(1,2),sfm.line.type = "dashed",
+                          add.legend=TRUE,legend.loc="topleft",legend.cex=0.9,...) {
   
   # specify the name of market returns and the assets returns
   mkt.name = x$Up$factor.names
@@ -74,7 +77,7 @@ plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSnRob=FALSE,
   
   # add LS/Robust Up/Dn comparison
   
-  if (LSnRob) {
+  if (LSandRob) {
     fit.methods <- c("LS","Robust")
     x$call$fit.method <- fit.methods[!fit.methods%in%x$Up$fit.method]
     x.alt <- eval(x$call)  
@@ -97,8 +100,8 @@ plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSnRob=FALSE,
            rbind(coredata(plotDataUp$ActualUp),coredata(plotDataDn$ActualDn)),
            xlab=mkt.name,ylab=assets.name,...)
       abline(v=0)
-      lines(coredata(plotDataUp$MktUp),coredata(plotDataUp$FittedUp),col=line.color[1],lty=line.type)
-      lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col=line.color[1],lty=line.type)
+      lines(coredata(plotDataUp$MktUp),coredata(plotDataUp$FittedUp),col=line.color[1],lty=line.type[1],lwd=line.width[1])
+      lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col=line.color[1],lty=line.type[1],lwd=line.width[1])
       abline(h=0)
       
       up.beta <- round(summary(x$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
@@ -108,19 +111,19 @@ plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSnRob=FALSE,
     
       # add LS line 
       if (SFM.line){
-        lines(coredata(plotDataSf[,mkt.name]),coredata(plotDataSf[,assets.name]),lty="dotted")
+        lines(coredata(plotDataSf[,mkt.name]),coredata(plotDataSf[,assets.name]),lty=sfm.line.type)
        # legend.name = paste(fit.method,"fitted line",seq="")
         
       }
       
       # add alternative Up/Dn model for comparison
-      if (LSnRob){
+      if (LSandRob){
         plotDataUp.alt <- merge.xts(x.alt$Up$data[,c(assets.name,mkt.name)], fitted(x.alt$Up)[,assets.name])
         colnames(plotDataUp.alt) <- c("ActualUp","MktUp","FittedUp")
         plotDataDn.alt <-merge.xts(x.alt$Dn$data[,c(assets.name,mkt.name)], fitted(x.alt$Dn)[,assets.name])
         colnames(plotDataDn.alt) <- c("ActualDn","MktDn","FittedDn")
-        lines(coredata(plotDataUp.alt$MktUp),coredata(plotDataUp.alt$FittedUp),col=line.color[2],lty=line.type)
-        lines(coredata(plotDataDn.alt$MktDn),coredata(plotDataDn.alt$FittedDn),col=line.color[2],lty=line.type)
+        lines(coredata(plotDataUp.alt$MktUp),coredata(plotDataUp.alt$FittedUp),col=line.color[2],lty=line.type[2],lwd=line.width[2])
+        lines(coredata(plotDataDn.alt$MktDn),coredata(plotDataDn.alt$FittedDn),col=line.color[2],lty=line.type[2],lwd=line.width[2])
         
        
         up.beta.alt <- round(summary(x.alt$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
@@ -132,22 +135,32 @@ plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSnRob=FALSE,
       
       if (add.legend){
         
-        if (LSnRob){
+        if (LSandRob){
             if (x$call$fit.method=="Robust") {
-                beta.legend = c("Up Beta","Dn Beta","Up BetaRob","Dn BetaRob")
+                beta.legend = c(paste("Up Beta","      =",up.beta,seq=""),
+                                paste("Up BetaRob =",up.beta.alt,seq=""),
+                                paste("Dn Beta","      =",dn.beta,seq=""),
+                                paste("Dn BetaRob =",dn.beta.alt,seq=""))
             } else {
-                beta.legend = c("Up BetaRob","Dn BetaRob","Up Beta","Dn Beta")
+                beta.legend = c("Up BetaRob","Up Beta","Dn BetaRob","Dn Beta")
+                beta.legend = c(paste("Up BetaRob =",up.beta.alt,seq=""),
+                                paste("Up Beta","      =",up.beta,seq=""),
+                                paste("Dn BetaRob =",dn.beta.alt,seq=""),
+                                paste("Dn Beta","      =",dn.beta,seq=""))
+                                
             }
-          legend.txt = c(beta.legend,up.beta,dn.beta,up.beta.alt,dn.beta.alt)                          
-          legend(legend.loc,legend=legend.txt,ncol=2,cex=legend.cex,bty="n")
+          legend(legend.loc,legend=beta.legend,ncol=1,cex=legend.cex,bty="n",lty=rep(line.type,2),col=rep(line.color,2))
         } else {
             if (x$Up$fit.method=="Robust") {
-            beta.legend = c("Up BetaRob","Dn BetaRob")
+            beta.legend = c(paste("Up BetaRob =",up.beta.alt,seq=""),
+                            paste("Dn BetaRob =",dn.beta.alt,seq=""))
           } else {
             beta.legend = c("Up Beta","Dn Beta")
+            beta.legend = c(paste("Up Beta =",up.beta,seq=""),
+                            paste("Dn Beta =",dn.beta,seq=""))
           }
-          legend.txt = c(beta.legend,up.beta,dn.beta)                          
-          legend(legend.loc,legend=legend.txt,ncol=2,cex=legend.cex,bty="n")
+                                   
+          legend(legend.loc,legend=beta.legend,ncol=1,cex=legend.cex,bty="n")
         }
         # legend.lty = c(line.type,NA,NA,line.type,NA,NA) 
         #  legend.col = c(line.col,NA,NA,line.col,NA,NA)
