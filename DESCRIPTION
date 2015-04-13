@@ -17,7 +17,8 @@ Description: An R package for the estimation and risk analysis of linear factor
 License: GPL-2
 Depends:
     R (>= 3.0.0),
-    xts (>= 0.9)
+    xts (>= 0.9),
+    foreach (>= 1.4)
 Imports: 
     PerformanceAnalytics(>= 1.1.0),
     corrplot,  
@@ -28,7 +29,12 @@ Imports:
     lmtest,
     sandwich,
     lattice,
-    MASS
+    MASS,
+    boot,
+    parallel,
+    doSNOW,
+    RCurl,
+    bestglm
 Suggests:
     testthat, quantmod, knitr
 LazyLoad: yes
