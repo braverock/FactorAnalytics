@@ -1,8 +1,8 @@
 Package: factorAnalytics
 Type: Package
 Title: Factor Analytics
-Version:2.0.16
-Date:2015-03-21
+Version:2.0.17
+Date:2015-04-14
 Author: Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
 Description: An R package for the estimation and risk analysis of linear factor
@@ -20,7 +20,7 @@ Depends:
     xts (>= 0.9),
     foreach (>= 1.4)
 Imports: 
-    PerformanceAnalytics(>= 1.1.0),
+    PerformanceAnalytics(>= 1.4),
     corrplot,  
     robust, 
     leaps, 
@@ -30,6 +30,7 @@ Imports:
     sandwich,
     lattice,
     MASS,
+    sn,
     boot,
     parallel,
     doSNOW,

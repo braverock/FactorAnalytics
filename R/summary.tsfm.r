@@ -22,9 +22,9 @@
 #' @param x an object of class \code{summary.tsfm}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
-#' @param trim option to supress labels and legend in the summary. When 
-#' \code{TRUE}, only the coefficient matrx with standard eroors is printed. 
-#' Default is \code{FALSE}.
+#' @param labels option to print labels and legend in the summary. Default is 
+#' \code{TRUE}. When \code{FALSE}, only the coefficient matrx with standard 
+#' errors is printed. 
 #' @param ... futher arguments passed to or from other methods.
 #' 
 #' @return Returns an object of class \code{summary.tsfm}. 
@@ -113,9 +113,9 @@ summary.tsfm <- function(object, se.type=c("Default","HC","HAC"), ...){
 #' @method print summary.tsfm
 #' @export
 
-print.summary.tsfm <- function(x, digits=3, trim=FALSE, ...) {
+print.summary.tsfm <- function(x, digits=3, labels=TRUE, ...) {
   n <- length(x$sum.list)
-  if (trim==FALSE) {
+  if (labels==TRUE) {
     if(!is.null(cl <- x$call)) {
       cat("\nCall:\n")
       dput(cl)

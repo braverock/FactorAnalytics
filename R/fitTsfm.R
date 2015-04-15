@@ -92,7 +92,7 @@
 #' \item{fitted}{xts data object of fitted values; iff 
 #' \code{variable.selection="lars"}}
 #' \item{call}{the matched function call.}
-#' \item{data}{xts data object containing the assets and factors.}
+#' \item{data}{xts data object containing the asset(s) and factor(s) returns.}
 #' \item{asset.names}{asset.names as input.}
 #' \item{factor.names}{factor.names as input.}
 #' \item{mkt.name}{mkt.name as input}
@@ -185,7 +185,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   if (missing(factor.names) && !is.null(mkt.name)) {
     factor.names <- NULL
   }
-
+  
   # extract arguments to pass to different fit and variable selection functions
   decay <- control$decay
   nvmin <- control$nvmin
@@ -193,7 +193,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   m1 <- match(c("weights","model","x","y","qr"), 
               names(control), 0L)
   lm.args <- control[m1, drop=TRUE]
-  m2 <-  match(c("weights","model","x","y","nrep", "efficiency"), 
+  m2 <-  match(c("weights","model","x","y","nrep","efficiency"), 
                names(control), 0L)
   lmRob.args <- control[m2, drop=TRUE]
   m3 <-  match(c("scope","scale","direction","trace","steps","k"), 
@@ -410,14 +410,13 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
   for (i in asset.names) {
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
-    # convert to matrix
-    reg.mat <- as.matrix(reg.xts)
+    # convert data to mat/vec
+    xmat <- as.matrix(reg.xts[,factor.names])
+    yvec <- as.matrix(reg.xts)[,i]
     # fit lars regression model
-    lars.fit <- do.call(lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i]),
-                                lars.args))
+    lars.fit <- do.call(lars, c(list(x=xmat, y=yvec),lars.args))
     lars.sum <- summary(lars.fit)
-    lars.cv <- do.call(cv.lars, c(list(x=reg.mat[,factor.names],y=reg.mat[,i], 
-                                       mode="step"),cv.lars.args))
+    lars.cv <- do.call(cv.lars, c(list(x=xmat,y=yvec,mode="step"),cv.lars.args))
     # including plot.it=FALSE to cv.lars strangely gives an error: "Argument s 
     # out of range". And, specifying index=seq(nrow(lars.fit$beta)-1) resolves 
     # the issue, but care needs to be taken for small N
@@ -431,8 +430,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     }
     # get factor model coefficients & fitted values at the step obtained above
     coef.lars <- predict(lars.fit, s=s, type="coef", mode="step")
-    fitted.lars <- predict(lars.fit, reg.mat[,factor.names], s=s, type="fit", 
-                           mode="step")
+    fitted.lars <- predict(lars.fit, xmat, s=s, type="fit", mode="step")
     fitted.list[[i]] <- xts(fitted.lars$fit, index(reg.xts))
     # extract and assign the results
     asset.fit[[i]] = lars.fit
@@ -507,13 +505,13 @@ fitted.tsfm <- function(object, ...) {
     if (length(object$asset.names)>1) {
       # get fitted values from each linear factor model fit 
       # and convert them into xts/zoo objects
-      fitted.list = sapply(object$asset.fit, 
-                           function(x) checkData(fitted(x,...)))
+      fitted.list = lapply(object$asset.fit, 
+                           function(x) checkData(fitted(x)))
       # this is a list of xts objects, indexed by the asset name
       # merge the objects in the list into one xts object
       fitted.xts <- do.call(merge, fitted.list) 
     } else {
-      fitted.xts <- checkData(fitted(object$asset.fit[[1]],...))
+      fitted.xts <- checkData(fitted(object$asset.fit[[1]]))
       colnames(fitted.xts) <- object$asset.names
     }
   }
@@ -535,13 +533,13 @@ residuals.tsfm <- function(object, ...) {
     if (length(object$asset.names)>1) {
       # get residuals from each linear factor model fit 
       # and convert them into xts/zoo objects
-      residuals.list = sapply(object$asset.fit, 
-                              function(x) checkData(residuals(x,...)))
+      residuals.list = lapply(object$asset.fit, 
+                              function(x) checkData(residuals(x)))
       # this is a list of xts objects, indexed by the asset name
       # merge the objects in the list into one xts object
       residuals.xts <- do.call(merge, residuals.list) 
     } else {
-      residuals.xts <- checkData(residuals(object$asset.fit[[1]],...))
+      residuals.xts <- checkData(residuals(object$asset.fit[[1]]))
       colnames(residuals.xts) <- object$asset.names
     }
   }

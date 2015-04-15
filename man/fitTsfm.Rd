@@ -72,7 +72,7 @@ the \code{fit.method="Robust"}, or class \code{lars} if
 \item{fitted}{xts data object of fitted values; iff
 \code{variable.selection="lars"}}
 \item{call}{the matched function call.}
-\item{data}{xts data object containing the assets and factors.}
+\item{data}{xts data object containing the asset(s) and factor(s) returns.}
 \item{asset.names}{asset.names as input.}
 \item{factor.names}{factor.names as input.}
 \item{mkt.name}{mkt.name as input}

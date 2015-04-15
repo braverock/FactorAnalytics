@@ -5,7 +5,9 @@
 \title{Plots from a fitted time series factor model}
 \usage{
 \method{plot}{tsfm}(x, which = NULL, max.show = 6, plot.single = FALSE,
-  asset.name, colorset = (1:12), legend.loc = "topleft", las = 1,
+  asset.name, legend.loc = "topleft", las = 1, lwd = 2,
+  colorset = c("royalblue", "dimgray", "olivedrab", "firebrick", "goldenrod",
+  "mediumorchid", "deepskyblue", "chocolate", "darkslategray"), maxlag = 15,
   VaR.method = "historical", ...)
 }
 \arguments{
@@ -18,32 +20,36 @@ appears: \cr \cr
 For plots of a group of assets: \cr
 1 = Factor model coefficients: Alpha, \cr
 2 = Factor model coefficients: Betas, \cr
-3 = Actual and Fitted asset returns, \cr
+3 = Actual and fitted, \cr
 4 = R-squared, \cr
-5 = Residual Volatility,\cr
-6 = Factor Model Residual Correlation \cr
-7 = Factor Model Correlation,\cr
-8 = Factor Contribution to SD,\cr
-9 = Factor Contribution to ES,\cr
-10 = Factor Contribution to VaR \cr \cr
+5 = Residual volatility,\cr
+6 = Factor model residuals scatterplot matrix, with histograms, density overlays, correlations and significance stars, \cr
+7 = Factor model residual correlation \cr
+8 = Factor model return correlation,\cr
+9 = Factor contribution to SD,\cr
+10 = Factor contribution to ES,\cr
+11 = Factor contribution to VaR, \cr
+12 = Asset returns vs factor returns (single factor model) \cr \cr
 For individual asset plots:\cr
-1 = Actual and fitted returns,\cr
-2 = Actual vs fitted asset returns,\cr
-3 = Residuals and fitted returns, \cr
-4 = Sqrt. of Std. Residuals vs Fitted, \cr
+1 = Actual and fitted,\cr
+2 = Actual vs fitted,\cr
+3 = Residuals vs fitted, \cr
+4 = Sqrt. of modified residuals vs fitted, \cr
 5 = Residuals with standard error bands, \cr
 6 = Time series of squared residuals, \cr
 7 = Time series of absolute residuals,\cr
 8 = SACF and PACF of residuals,\cr
 9 = SACF and PACF of squared residuals,\cr
 10 = SACF and PACF of absolute residuals,\cr
-11 = Density estimate of residuals, \cr
-12 = Histogram of residuals with normal curve overlayed,\cr
-13 = Normal QQ-plot of residuals,\cr
-14 = CUSUM test-Recursive residuals,\cr
-15 = CUSUM test-LS residuals,\cr
-16 = Recursive estimates (RE) test of LS regression coefficients,\cr
-17 = Rolling estimates over a 24-period observation window}
+11 = Non-parametric density of residuals with normal overlaid, \cr
+12 = Non-parametric density of residuals with skew-t overlaid, \cr
+13 = Histogram of residuals with non-parametric density and normal overlaid,\cr
+14 = QQ-plot of residuals,\cr
+15 = CUSUM test-Recursive residuals,\cr
+16 = CUSUM test-LS residuals,\cr
+17 = Recursive estimates (RE) test of LS regression coefficients,\cr
+18 = Rolling regression over a 24-period observation window, \cr
+19 = Asset returns vs factor returns (single factor model)}
 
 \item{max.show}{maximum number of assets in a given plot. Default is 6.}
 
@@ -54,18 +60,21 @@ individual asset's factor model. The type of plot is given by
 \item{asset.name}{name of the individual asset to be plotted. Is necessary
 if \code{x} contains multiple asset fits and \code{plot.single=TRUE}.}
 
-\item{colorset}{color palette to use for all the plots. Default is
-\code{c(1:12)}. The 1st element will be used for individual time series
-plots or the 1st series plotted, the 2nd element for the 2nd object in the
-plot and so on.}
-
 \item{legend.loc}{places a legend into one of nine locations on the chart:
 "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright",
 "right", or "center". Default is "bottomright". Use \code{legend.loc=NULL}
 to suppress the legend.}
 
 \item{las}{one of {0, 1, 2, 3} to set the direction of axis labels, same as
-in \code{plot}. Default here is 1.}
+in \code{plot}. Default is 1.}
+
+\item{lwd}{set the line width, same as in \code{\link{plot}}. Default is 2.}
+
+\item{colorset}{color palette to use for all the plots. The 1st element will
+be used for individual time series plots or the 1st series plotted, the 2nd
+element for the 2nd object in the plot and so on.}
+
+\item{maxlag}{optional number of lags to be calculated for ACF}
 
 \item{VaR.method}{a method for computing VaR; one of "modified", "gaussian",
 "historical" or "kernel". VaR is computed using
@@ -93,53 +102,63 @@ than one asset fit by \code{x}, \code{asset.name} should be specified.
 In case the \code{tsfm} object \code{x} contains only a single asset fit,
 plot.tsfm can infer \code{asset.name} without user input.
 
-CUSUM plots (individual asset plot options 14, 15 and 16) are applicable
+CUSUM plots (individual asset plot options 15, 16 and 17) are applicable
 only for \code{fit.method="LS"}.
 
-Rolling estimates (individual asset plot option 17) is not applicable for
-\code{variable.slection="lars"}.
+Modified residuals, rolling regression and single factor model plots
+(individual asset plot options 4, 18 and 19) are not applicable for
+\code{variable.selection="lars"}.
+
+The last option for plotting asset returns vs. factor returns (individual
+asset plot option 19 and group plot 12) are only applicable for single factor
+models.
 }
 \examples{
 # load data from the database
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-                     factor.names=colnames(managers[,(7:8)]),
+                     factor.names=colnames(managers[,(7:9)]),
                      rf.name="US.3m.TR", data=managers)
 
-# for group plots (default), user can select type from menu prompt
+# for group plots (default), user can select plot option from menu prompt
 # menu is repeated to get multiple types of plots based on the same fit
 # plot(fit.macro)
 
-# plot specific option(s) though which
+# choose specific plot option(s) using which
 # plot the factor betas of 1st 4 assets fitted above
 plot(fit.macro, max.show=4, which=2)
 
-# plot factor model return correlation; angular order of the eigenvectors
-plot(fit.macro, which=7, order="AOE", method="ellipse", tl.pos = "d")
+# plot factor model residuals scatterplot matrix, with histograms, density
+# overlays, correlations and significance stars
+plot(fit.macro, which=6)
 
-# for individual plots: set plot.single=TRUE; specify asset.name
+# for individual plots: set plot.single=TRUE and specify asset.name
 # histogram of residuals from an individual asset's factor model fit
-plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=12)
+plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=13)
 }
 \author{
 Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 }
 \seealso{
-\code{\link{fitTsfm}} and \code{\link{summary.tsfm}} for details
-about the time series factor model fit, extractor functions and summary
-statistics.
-
-\code{\link[strucchange]{efp}} for CUSUM tests.
-
-\code{\link[xts]{plot.xts}},
-\code{\link[PerformanceAnalytics]{chart.TimeSeries}},
-\code{\link[PerformanceAnalytics]{chart.ACFplus}},
-\code{\link[PerformanceAnalytics]{chart.Histogram}},
-\code{\link[PerformanceAnalytics]{chart.QQPlot}},
-\code{\link[graphics]{barplot}}, \code{\link[lattice]{barchart}} and
-\code{\link[corrplot]{corrplot}} for plotting methods used.
-
-\code{\link{fmSdDecomp}}, \code{\link{fmEsDecomp}},
+\code{\link{fitTsfm}}, \code{\link{resduals.tsfm}},
+\code{\link{fitted.tsfm}}, \code{\link{fmCov.tsfm}} and
+\code{\link{summary.tsfm}} for time series factor model fitting and related
+S3 methods. Refer to \code{\link{fmSdDecomp}}, \code{\link{fmEsDecomp}},
 \code{\link{fmVaRDecomp}} for factor model risk measures.
+
+Here is a list of plotting functions used. (I=individual, G=Group)
+I(1,5,6,7), G(3) - \code{\link[PerformanceAnalytics]{chart.TimeSeries}},
+I(2,3,4,19), G(12) - \code{\link[graphics]{plot.default}},
+I(3,4) - \code{\link[graphics]{panel.smooth}},
+I(8,9,10) - \code{\link[PerformanceAnalytics]{chart.ACFplus}},
+I(11,12) - \code{\link[stats]{plot.density}},
+I(13) - \code{\link[PerformanceAnalytics]{chart.Histogram}},
+I(14) - \code{\link[PerformanceAnalytics]{chart.QQPlot}},
+I(15,16,17) - \code{\link[strucchange]{plot.efp}},
+I(18) - \code{\link[xts]{plot.zoo}},
+G(1,2) - \code{\link[graphics]{barplot}},
+G(4,5,9,10,11) - \code{\link[lattice]{barchart}},
+G(6) - \code{\link[PerformanceAnalytics]{chart.Correlation}} and
+G(7,8) - \code{\link[corrplot]{corrplot.mixed}}.
 }
 

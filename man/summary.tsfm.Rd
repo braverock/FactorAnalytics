@@ -7,7 +7,7 @@
 \usage{
 \method{summary}{tsfm}(object, se.type = c("Default", "HC", "HAC"), ...)
 
-\method{print}{summary.tsfm}(x, digits = 3, trim = FALSE, ...)
+\method{print}{summary.tsfm}(x, digits = 3, labels = TRUE, ...)
 }
 \arguments{
 \item{object}{an object of class \code{tsfm} returned by \code{fitTsfm}.}
@@ -22,9 +22,9 @@ HC/HAC standard errors and t-statistics. Default is "Default".}
 \item{digits}{number of significants digits to use when printing.
 Default is 3.}
 
-\item{trim}{option to supress labels and legend in the summary. When
-\code{TRUE}, only the coefficient matrx with standard eroors is printed.
-Default is \code{FALSE}.}
+\item{labels}{option to print labels and legend in the summary. Default is
+\code{TRUE}. When \code{FALSE}, only the coefficient matrx with standard
+errors is printed.}
 }
 \value{
 Returns an object of class \code{summary.tsfm}.

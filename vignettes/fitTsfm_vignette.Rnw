@@ -146,29 +146,35 @@ The component \code{asset.fit} contains a list of "lm" objects\footnotemark[1], 
 fit.singleIndex # print the fitted "tsfm" object
 @
 
+Figure 1 shows the single factor linear fits for the assets. (Plot options are explained later in section 4.)
+
+<<fig.cap="Single Index model: Asset returns vs Factor Returns">>=
+# plot asset returns vs factor returns for the single factor models
+plot(fit.singleIndex, which=12)
+@
+
 \subsection{Market Timing Models}
 
-In the following example, we fit the \citet{henriksson1981market} market timing model, using the SP500 as the market. Market timing accounts for the price movement of the general stock market relative to fixed income securities. Specifying \code{mkt.timing="HM"}, includes $down.market = max(0, R_f-R_m)$ as a factor. To test market timing ability, this factor can be added to the single index model as shown below. The coefficient of this down-market factor can be interpreted as the number of "free" put options on the market provided by the manager's market-timings kills. That is, a negative value for the regression estimate would imply a negative value for market timing ability of the manager.
+In the following example, we fit the \citet{henriksson1981market} market timing model, using the SP500 as the market. Market timing accounts for the price movement of the general stock market relative to fixed income securities. The function \code{fitTsfmMT}, a wrapper to \code{fitTsfm}, includes $down.market = max(0, R_f-R_m)$ as a factor. To test market timing ability, this factor can be added to the single index model as shown below. The coefficient of this down-market factor can be interpreted as the number of "free" put options on the market provided by the manager's market-timings kills. That is, a negative value for the regression estimate would imply a negative value for market timing ability of the manager.
 <<>>=
 # Henriksson-Merton's market timing model
-fit.mktTiming <- fitTsfm(asset.names=asset.names, factor.names="SP500.TR", 
-                         rf.name="US.3m.TR", mkt.name="SP500.TR", 
-                         mkt.timing="HM", data=managers)
-fit.mktTiming$beta
+fit.mktTiming <-  fitTsfmMT(asset.names=asset.names, mkt.name="SP500.TR", 
+                            rf.name="US.3m.TR", data=managers)
+t(fit.mktTiming$beta)
 fit.mktTiming$r2
 fit.mktTiming$resid.sd
 @
 
-Similarly, to account for market timing with respect to volatility, one can specify \code{mkt.timing="TM"}. Following \citet{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor. 
+% Similarly, to account for market timing with respect to volatility, one can specify \code{mkt.timing="TM"}. Following \citet{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor. 
 
-Note that, the user needs to specify which of the columns in \code{data} corresponds to the market returns using argument \code{mkt.name}. In the above case, \code{factor.names} were left out from the argument list and a pure market-timing model was fit.
+Note that, the user needs to specify which of the columns in \code{data} corresponds to the market returns using argument \code{mkt.name}.
 
 \subsection{Fit methods}
 
 The default fit method is LS regression. The next example performs LS regression using all 3 available factors in the dataset. Notice that the R-squared values have improved considerably when compared to the single index model as well as the market-timing model.
 <<>>=
 fit.ols <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                    rf.name="US.3m.TR", data=managers)
+                   rf.name="US.3m.TR", data=managers)
 fit.ols$beta
 fit.ols$r2
 fit.ols$resid.sd
@@ -177,13 +183,13 @@ fit.ols$resid.sd
 Other options include discounted least squares (\code{"DLS"}) and robust regression (\code{"Robust"}). DLS is least squares regression using exponentially discounted weights and accounts for time variation in coefficients. Robust regression is resistant to outliers. 
 <<>>=
 fit.robust <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                       rf.name="US.3m.TR", data=managers, fit.method="Robust")
+                      rf.name="US.3m.TR", data=managers, fit.method="Robust")
 fit.robust$beta
 fit.robust$r2
 fit.robust$resid.sd
 @
 
-Notice the lower R-squared values and smaller residual volatilities with robust regression. Figures 1 and 2 give a graphical comparison of the fitted returns for asset "HAM3" and residual volatilities from the factor model fits. Figure 1 depicts the smaller influence that the volatility of Jan 2000 has on the robust regression. (Plot options are explained later in section 4.)
+Notice the lower R-squared values and smaller residual volatilities with robust regression. Figures 2 and 3 give a graphical comparison of the fitted returns for asset "HAM3" and residual volatilities from the factor model fits. Figure 1 depicts the smaller influence that the volatility of Jan 2000 has on the robust regression.
 <<fig.cap="HAM3 Returns: LS (top) vs Robust (bottom)", fig.show='hold'>>=
 par(mfrow=c(2,1))
 plot(fit.ols, plot.single=TRUE, which=1, asset.name="HAM3")
@@ -192,10 +198,10 @@ plot(fit.robust, plot.single=TRUE, which=1, asset.name="HAM3")
 mtext("Robust", side=3)
 @
 
-<<fig.cap="Residual vol: LS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'>>=
+<<fig.cap="Residual Vol: LS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'>>=
 par(mfrow=c(1,2))
-plot(fit.ols, which=5, xlim=c(0,0.043), sub="LS")
-plot(fit.robust, which=5, xlim=c(0,0.043), sub="Robust")
+plot(fit.ols, which=5, xlim=c(0,0.045), sub="LS")
+plot(fit.robust, which=5, xlim=c(0,0.045), sub="Robust")
 @
 
 \subsection{Variable Selection}
@@ -221,17 +227,16 @@ fit.lars
 @
 
 \newpage
-Using the same set of factors for comparison, let's fit another model using the \code{"subsets"} variable selection method. Here, the best subset of size 2 for each asset is chosen. 
+Using the same set of factors for comparison, let's fit another model using the \code{"subsets"} variable selection method. Here, the best subset of size 2 for each asset is chosen by specifying $nvmin = nvmax = 2$. Note that when $nvmin < nvmax$, the best subset is chosen from a range of subset sizes $[nvmin, nvmax]$. Default is $nvmin = 1$.
 <<>>=
-fit.sub <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                   data=managers, rf.name="US.3m.TR", 
-                   variable.selection="subsets", nvmin=2, nvmax=2)
-fit.sub
+(fit.sub <- fitTsfm(asset.names=asset.names, factor.names=factor.names, 
+                    data=managers, rf.name="US.3m.TR", 
+                    variable.selection="subsets", nvmin=2, nvmax=2))
 @
 
 Comparing the coefficients and R-squared values from the two models, we find that the method that uses more factors for an asset have higher R-squared values as expected. However, when both "lars" and "subsets" chose the same number of factors, "lars" fits have a slightly higher R-squared values.  
 
-The Figures 3 and 4 display the factor betas from the two fits.
+The Figures 4 and 5 display the factor betas from the two fits.
 <<fig.cap="Factor betas: fit.sub", fig.show='hold'>>=
 plot(fit.sub, which=2)
 @
@@ -253,7 +258,7 @@ Since \code{fitTsfm} calls many different regression fitting and variable select
 For easy reference, here's a classified list of control parameters accepted and passed by \code{fitTsfm} to their respective model fitting (or) model selection functions in other packages. See the corresponding help files for more details on each parameter.
 \begin{itemize}
 \item \verb"lm": "weights","model","x","y","qr"
-\item \verb"lmRob": "weights","model","x","y","nrep"
+\item \verb"lmRob": "weights","model","x","y","nrep","efficiency"
 \item \verb"step": "scope","scale","direction","trace","steps","k"
 \item \verb"regsubsets": "weights","nvmax","force.in","force.out","method","really.big"
 \item \verb"lars": "type","normalize","eps","max.steps","trace"
@@ -289,8 +294,7 @@ Here are some examples using the time series factor models fitted earlier.
 coef(fit.ols)
 
 # compare returns data with fitted and residual values for HAM1 from fit.lars
-HAM1.ts <- merge(fit.lars$data[,1], fitted(fit.lars)[,1], 
-                      residuals(fit.lars)[,1])
+HAM1.ts <- merge(fit.lars$data[,1], fitted(fit.lars)[,1], residuals(fit.lars)[,1])
 colnames(HAM1.ts) <- c("HAM1.return","HAM1.fitted","HAM1.residual")
 tail(HAM1.ts)
 
@@ -322,8 +326,8 @@ where, $R$ is the $N \times T$ matrix of asset returns, $B$ is the $N \times K$ 
 
 <<fig.cap="Factor model return correlation (pairwise complete obs)">>=
 fmCov(fit.sub)
-# return correlation plot; Angular Order of the Eigenvectors
-plot(fit.sub, which=7, order="AOE", method="ellipse", tl.pos = "d")
+# factor model return correlation plot
+plot(fit.sub, which=8)
 @
 
 \subsection{Standard deviation decomposition}
@@ -360,7 +364,7 @@ decomp$mSd
 # get the percentage component contributions to Sd
 decomp$pcSd
 # plot the percentage component contributions to Sd
-plot(fit.sub, which=8)
+plot(fit.sub, which=9)
 @
 \newpage
 
@@ -383,7 +387,7 @@ decomp1$VaR.fm
 # get the percentage component contributions to VaR
 decomp1$pcVaR
 # plot the percentage component contributions to VaR
-plot(fit.sub, which=10)
+plot(fit.sub, which=11)
 @
 
 \subsection{Expected Shortfall decomposition}
@@ -408,18 +412,21 @@ decomp2$mES
 # get the percentage component contributions to ES
 decomp2$pcES
 # plot the percentage component contributions to ES
-plot(fit.sub, which=9)
+plot(fit.sub, which=10)
 @
 
 \newpage
 
 \section{Plot}
 
-Many types of individual asset (Figure 1) and group plots (Figures 2-8) have already been demonstrated. Let's take a look at all available arguments for plotting a "tsfm" object.
+Some types of individual asset (Figure 2) and group plots (Figures 1, 3-9) have already been demonstrated. Let's take a look at all available arguments for plotting a "tsfm" object.
 <<eval=FALSE>>=
 ## S3 method for class "tsfm"
-plot (x, which=NULL, max.show=6, plot.single=FALSE, asset.name, colorset=(1:12),
-      legend.loc="topleft", las=1, VaR.method="historical", ...)
+plot (x, which=NULL, max.show=6, plot.single=FALSE, asset.name, 
+      legend.loc="topleft", las=1, lwd=2, 
+      colorset=c("royalblue","dimgray","olivedrab","firebrick","goldenrod",
+                 "mediumorchid","deepskyblue","chocolate","darkslategray"),
+      maxlag=15, VaR.method="historical", ...)
 @
 
 \subsection{Group plots}
@@ -428,31 +435,39 @@ This is the default option for plotting. Simply running \code{plot(fit)}, where 
 <<eval=FALSE, results='hide'>>=
 plot(fit.sub)
 
-## Make a plot selection (or 0 to exit): 
-## 
-##  1: Factor model coefficients: Alpha
-##  2: Factor model coefficients: Betas
-##  3: Actual and Fitted asset returns
-##  4: R-squared
-##  5: Residual Volatility
-##  6: Factor Model Residual Correlation
-##  7: Factor Model Return Correlation
-##  8: Factor Contribution to SD
-##  9: Factor Contribution to ES
-## 10: Factor Contribution to VaR 
-## 
-## Selection: 
+# Make a plot selection (or 0 to exit): 
+# 
+#  1: Factor model coefficients: Alpha
+#  2: Factor model coefficients: Betas
+#  3: Actual and Fitted asset returns
+#  4: R-squared
+#  5: Residual Volatility
+#  6: Residuals scatterplot matrix, with histograms, density overlays, 
+#     correlations and significance stars
+#  7: Factor Model Residual Correlation
+#  8: Factor Model Return Correlation
+#  9: Factor Contribution to SD
+# 10: Factor Contribution to ES
+# 11: Factor Contribution to VaR
+# 12: Asset returns vs factor returns (single factor model)
+# 
+# Selection: 
 @
 
 Remarks:
 \begin{itemize}
 \item For group plots, only the first \code{max.show} assets are plotted.
-\item \code{VaR.method} applies to group plots 9 and 10, which are factor model risk ES and VaR decompositions respectively.
+\item \code{VaR.method} applies to group plots 10 and 11, which are factor model risk ES and VaR decompositions respectively.
+\item The last option for plotting asset returns vs. factor returns (group plot option 12 and individual asset plot option 19) are only applicable for single factor models.
 \end{itemize}
 
 <<fig.cap="Actual and fitted factor model returns for the 1st 4 assets", fig.show='asis', fig.width=7, fig.height=6>>=
-# Example of a group plot: looping disabled & no. of assets displayed = 4.
-plot(fit.sub, which=3, max.show=4, legend.loc=NULL)
+# Examples of a group plot: looping disabled & no. of assets displayed = 4.
+plot(fit.sub, which=3, max.show=4, legend.loc=NULL, lwd=1)
+@
+
+<<fig.cap="Residual scatterplot matrix with histograms, density overlays, correlations and significance stars", warning=FALSE>>=
+plot(fit.sub, which=6)
 @
 
 \subsection{Menu and looping}
@@ -469,46 +484,54 @@ Here's the individual plot menu.
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1")
 
 # Make a plot selection (or 0 to exit): 
-# 
 #  1: Actual and fitted asset returns
 #  2: Actual vs fitted asset returns
-#  3: Residuals and fitted asset returns
-#  4: Sqrt. of Std. Residuals vs Fitted
+#  3: Residuals vs fitted asset returns
+#  4: Sqrt. of modified residuals vs fitted
 #  5: Residuals with standard error bands
 #  6: Time series of squared residuals
 #  7: Time series of absolute residuals
 #  8: SACF and PACF of residuals
 #  9: SACF and PACF of squared residuals
 # 10: SACF and PACF of absolute residuals
-# 11: Density Estimate of Residuals
-# 12: Histogram of residuals with normal curve overlayed
-# 13: Normal qq-plot of residuals
-# 14: CUSUM test-Recursive residuals
-# 15: CUSUM test-LS residuals
-# 16: Recursive estimates (RE) test of LS regression coefficients
-# 17: Rolling estimates over a 24-period observation window
+# 11: Non-parametric density of residuals with normal overlaid
+# 12: Non-parametric density of residuals with skew-t overlaid
+# 13: Histogram of residuals with non-parametric density and normal overlaid
+# 14: QQ-plot of residuals
+# 15: CUSUM test-Recursive residuals
+# 16: CUSUM test-LS residuals
+# 17: Recursive estimates (RE) test of LS regression coefficients
+# 18: Rolling regression over a 24-period observation window
+# 19: Asset returns vs factor returns (single factor model)
 # 
 # Selection: 
 @
 
 Remarks:
 \begin{itemize}
-\item CUSUM plots (individual asset plot options 14, 15 and 16) are applicable 
-only for \code{fit.method="LS"}.
-\item Rolling estimates (individual asset plot option 17) is not applicable for 
-\code{variable.slection="lars"}.
+\item CUSUM plots (individual asset plot options 15, 16 and 17) are applicable only for \code{fit.method="LS"}.
+\item Modified residuals, rolling regression and single factor model plots (individual asset plot options 4, 18 and 19) are not applicable for \code{variable.selection="lars"}.
 \end{itemize}
 
 Here are a few more examples which don't need interactive user input.
 <<fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
-plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=5)
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=5, ylim=c(-0.06,0.06))
 @
 
 <<fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=10)
 @
 
-<<fig.cap="Histogram of residuals with normal curve overlayed for HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
+<<fig.cap="QQ-plot of residuals", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=14)
+grid()
+@
+
+<<fig.cap="Non-parametric density of residuals with normal overlaid for HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=11)
+@
+
+<<fig.cap="Non-parametric density of residuals with skew-t overlaid for HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
 plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=12)
 @
 \newpage
