@@ -8,9 +8,9 @@ standard errors}
 fmmc(R, factors, parallel = FALSE, ...)
 }
 \arguments{
-\item{R}{matrix of returns}
+\item{R}{matrix of returns in xts format}
 
-\item{factors}{matrix of factor returns}
+\item{factors}{matrix of factor returns in xts format}
 
 \item{parallel}{flag to utilize multiplecores on the cpu. All cores are used.}
 
@@ -30,5 +30,9 @@ computes FMMC objects as described in Jiang and Martin (2013)
 }
 \author{
 Rohit Arora
+}
+\references{
+Yindeng Jiang and Richard Doug Martin. Better Risk and Performance
+Estimates with Factor Model Monte Carlo. SSRN Electronic Journal, July 2013.
 }
 

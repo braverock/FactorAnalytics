@@ -303,8 +303,8 @@
 #' time series with different starting dates are merged together. It then
 #' computes FMMC objects as described in Jiang and Martin (2013)
 #' 
-#' @param  R matrix of returns
-#' @param  factors matrix of factor returns
+#' @param  R matrix of returns in xts format
+#' @param  factors matrix of factor returns in xts format
 #' @param  parallel flag to utilize multiplecores on the cpu. All cores are used.
 #' @param  ... Arguments that must be passed to fitTsfm
 #' 
@@ -317,6 +317,10 @@
 #' @importFrom bestglm bestglm
 #' 
 #' @return returns an list of fmmc objects
+#' 
+#' @references
+#' Yindeng Jiang and Richard Doug Martin. Better Risk and Performance 
+#' Estimates with Factor Model Monte Carlo. SSRN Electronic Journal, July 2013.
 #' 
 #' @author Rohit Arora
 #' @export
@@ -364,8 +368,7 @@ fmmc <- function(R, factors, parallel=FALSE, ...) {
 fmmc.estimate.se <- function(fmmcObjs, fun=NULL, se=FALSE, nboot=100, 
                              parallel = FALSE) {
     
-    est <- se.est <- rep(NA, length(fmmcObjs))
-    result <- cbind(est, se.est); colnames(result) <- c("estimate","se")
+    result <- as.matrix(rep(NA, length(fmmcObjs))); colnames(result) <- "estimate"    
     rownames(result) <- unlist(lapply(fmmcObjs, function(obj) colnames(obj$data$R)))
     
     if(is.null(fun)) return(result)
@@ -377,8 +380,12 @@ fmmc.estimate.se <- function(fmmcObjs, fun=NULL, se=FALSE, nboot=100,
     }
     
     result[,1] <- unlist(lapply(fmmcObjs, function(obj) fun(obj$bootdist$returns)))
-    result[,2] <- if(se) unlist(
-        lapply(fmmcObjs, function(obj) .fmmc.se(obj, nboot, fun, cl)))
+    if(se) {
+        serr <- unlist(
+            lapply(fmmcObjs, function(obj) .fmmc.se(obj, nboot, fun, cl)))
+        result <- cbind(result, serr)
+        colnames(result) <- c("estimate", "se")
+    }
                          
     if(parallel) stopCluster(cl)
     
