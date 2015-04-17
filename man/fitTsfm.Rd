@@ -41,8 +41,7 @@ See details. Default is "LS".}
 "stepwise","subsets","lars". See details. Default is "none".
 \code{mkt.name} is required if any of these options are to be implemented.}
 
-\item{control}{list of control parameters. The default is constructed by
-the function \code{\link{fitTsfm.control}}. See the documentation for
+\item{control}{list of control parameters. Refer to
 \code{\link{fitTsfm.control}} for details.}
 
 \item{...}{arguments passed to \code{\link{fitTsfm.control}}}
@@ -51,7 +50,7 @@ the function \code{\link{fitTsfm.control}}. See the documentation for
 \code{fitTsfm}}
 }
 \value{
-fitTsfm returns an object of class \code{"tsfm"} for which
+\code{fitTsfm} returns an object of class \code{"tsfm"} for which
 \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist.
 
 The generic accessor functions \code{coef}, \code{fitted} and
@@ -171,13 +170,6 @@ regression. The Annals of statistics, 32(2), 407-499.
 Hastie, T., Tibshirani, R., Friedman, J., Hastie, T., Friedman, J., &
 Tibshirani, R. (2009). The elements of statistical learning (Vol. 2, No. 1).
 New York: Springer.
-
-Henriksson, R. D., & Merton, R. C. (1981). On market timing and investment
-performance. II. Statistical procedures for evaluating forecasting skills.
-Journal of business, 513-533.
-
-Treynor, J., & Mazuy, K. (1966). Can mutual funds outguess the market.
-Harvard business review, 44(4), 131-136.
 }
 \seealso{
 The \code{tsfm} methods for generic functions:

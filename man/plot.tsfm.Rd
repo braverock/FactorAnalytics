@@ -140,7 +140,7 @@ plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=13)
 Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 }
 \seealso{
-\code{\link{fitTsfm}}, \code{\link{resduals.tsfm}},
+\code{\link{fitTsfm}}, \code{\link{residuals.tsfm}},
 \code{\link{fitted.tsfm}}, \code{\link{fmCov.tsfm}} and
 \code{\link{summary.tsfm}} for time series factor model fitting and related
 S3 methods. Refer to \code{\link{fmSdDecomp}}, \code{\link{fmEsDecomp}},
@@ -155,7 +155,7 @@ I(11,12) - \code{\link[stats]{plot.density}},
 I(13) - \code{\link[PerformanceAnalytics]{chart.Histogram}},
 I(14) - \code{\link[PerformanceAnalytics]{chart.QQPlot}},
 I(15,16,17) - \code{\link[strucchange]{plot.efp}},
-I(18) - \code{\link[xts]{plot.zoo}},
+I(18) - \code{\link[zoo]{plot.zoo}},
 G(1,2) - \code{\link[graphics]{barplot}},
 G(4,5,9,10,11) - \code{\link[lattice]{barchart}},
 G(6) - \code{\link[PerformanceAnalytics]{chart.Correlation}} and
