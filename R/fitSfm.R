@@ -15,19 +15,20 @@
 #' 
 #' Let \code{N} be the number of columns or assets and \code{T} be the number 
 #' of rows or observations. When \code{N < T}, Principal Component Analysis 
-#' (PCA) is performed. Otherwise, Asymptotic Principal Component Analysis 
-#' (APCA) is performed. In either case, any number of factors less than 
-#' \code{min(N,T)} can be chosen via argument \code{k}. Default is 1. Refer to 
-#' Zivot and Wang (2007) for more details and references.
+#' (PCA) is performed. Any number of factors less than \code{min(N,T)} can be 
+#' chosen via argument \code{k}. Default is 1. Refer to Zivot and Wang (2007) 
+#' for more details and references.
 #' 
-#' Alternately, for APCA, a method to determine the number of factors can be 
-#' specified: \code{k="bn"} corresponds to Bai and Ng (2002) and \code{k="ck"} 
-#' corresponds to Connor and Korajczyk (1993). User can specify the maximum 
-#' number of factors, \code{max.k} to consider with these methods. If not, it 
-#' is assumed to be either 10 or $T-1$, whichever is smaller. 
+#' When \code{N >= T}, Asymptotic Principal Component Analysis (APCA) is 
+#' performed. The user can directly specify \code{k} similar to PCA above, or a 
+#' method to automatically determine the number of factors can be specified: 
+#' \code{k="bn"} corresponds to Bai and Ng (2002) and \code{k="ck"} corresponds 
+#' to Connor and Korajczyk (1993). Users can choose the maximum number of 
+#' factors, \code{max.k}, to consider with these methods. The default for 
+#' \code{max.k} is set to be 10 or $T-1$, whichever is smaller. 
 #' 
 #' \code{refine} specifies whether a refinement of the APCA procedure from 
-#' Connor and Korajczyk (1988) that may improve efficiency is to be used. 
+#' Connor and Korajczyk (1988), that may improve efficiency, is to be used. 
 #' 
 #' When \code{corr=TRUE}, the correlation matrix of returns are used for 
 #' finding the principal components instead of the covariance matrix. This is 
@@ -44,8 +45,8 @@
 #' 
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object with 
 #' asset returns. See details.
-#' @param k number of factors; a number (or) a method for determining the 
-#' optimal number of factors, one of "bn" or "ck". See details. Default is 1.
+#' @param k number of factors (or) a method for determining the optimal number 
+#' of factors, one of "bn" or "ck". See details. Default is 1.
 #' @param max.k scalar; the maximum number of factors to be considered for 
 #' methods "bn" or "ck". Default is \code{NULL}. See details.
 #' @param refine logical; whether to use the Connor-Korajczyk refinement for 

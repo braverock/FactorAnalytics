@@ -35,7 +35,7 @@ fit.singleIndex # print the fitted "tsfm" object
 
 ## ----fig.cap="Single Index model: Asset returns vs Factor Returns"-------
 # plot asset returns vs factor returns for the single factor models
-plot(fit.singleIndex, which=12)
+plot(fit.singleIndex, which=12, f.sub=1)
 
 ## ------------------------------------------------------------------------
 # Henriksson-Merton's market timing model
@@ -83,10 +83,10 @@ fit.lars
                     variable.selection="subsets", nvmin=2, nvmax=2))
 
 ## ----fig.cap="Factor betas: fit.sub", fig.show='hold'--------------------
-plot(fit.sub, which=2)
+plot(fit.sub, which=2, f.sub=1:3)
 
 ## ----fig.cap="Factor betas: fit.lars", fig.show='hold'-------------------
-plot(fit.lars, which=2)
+plot(fit.lars, which=2, f.sub=1:3)
 
 ## ------------------------------------------------------------------------
 methods(class="tsfm")
@@ -120,7 +120,7 @@ decomp$mSd
 # get the percentage component contributions to Sd
 decomp$pcSd
 # plot the percentage component contributions to Sd
-plot(fit.sub, which=9)
+plot(fit.sub, which=9, f.sub=1:3)
 
 ## ----fig.cap="Percentage factor contribution to VaR"---------------------
 decomp1 <- fmVaRDecomp(fit.sub)
@@ -130,7 +130,7 @@ decomp1$VaR.fm
 # get the percentage component contributions to VaR
 decomp1$pcVaR
 # plot the percentage component contributions to VaR
-plot(fit.sub, which=11)
+plot(fit.sub, which=11, f.sub=1:3)
 
 ## ----fig.cap="Percentage factor contribution to ES"----------------------
 decomp2 <- fmEsDecomp(fit.sub, method="historical")
@@ -144,27 +144,27 @@ decomp2$mES
 # get the percentage component contributions to ES
 decomp2$pcES
 # plot the percentage component contributions to ES
-plot(fit.sub, which=10)
+plot(fit.sub, which=10, f.sub=1:3)
 
 ## ----eval=FALSE----------------------------------------------------------
 ## ## S3 method for class "tsfm"
-## plot (x, which=NULL, max.show=6, plot.single=FALSE, asset.name,
-##       legend.loc="topleft", las=1, lwd=2,
-##       colorset=c("royalblue","dimgray","olivedrab","firebrick","goldenrod",
-##                  "mediumorchid","deepskyblue","chocolate","darkslategray"),
+## plot (x, which=NULL, f.sub=1:2, a.sub=1:6, plot.single=FALSE, asset.name,
+##       colorset=c("royalblue","dimgray","olivedrab","firebrick",
+##                  "goldenrod","mediumorchid","deepskyblue","chocolate",
+##                  "darkslategray"), legend.loc="topleft", las=1, lwd=2,
 ##       maxlag=15, VaR.method="historical", ...)
 
 ## ----eval=FALSE, results='hide'------------------------------------------
 ## plot(fit.sub)
 ## 
 ## # Make a plot selection (or 0 to exit):
-## #
+## 
 ## #  1: Factor model coefficients: Alpha
 ## #  2: Factor model coefficients: Betas
 ## #  3: Actual and Fitted asset returns
 ## #  4: R-squared
 ## #  5: Residual Volatility
-## #  6: Residuals scatterplot matrix, with histograms, density overlays,
+## #  6: Scatterplot matrix of residuals, with histograms, density overlays,
 ## #     correlations and significance stars
 ## #  7: Factor Model Residual Correlation
 ## #  8: Factor Model Return Correlation
@@ -176,11 +176,11 @@ plot(fit.sub, which=10)
 ## # Selection:
 
 ## ----fig.cap="Actual and fitted factor model returns for the 1st 4 assets", fig.show='asis', fig.width=7, fig.height=6----
-# Examples of a group plot: looping disabled & no. of assets displayed = 4.
-plot(fit.sub, which=3, max.show=4, legend.loc=NULL, lwd=1)
+# Examples of group plots: looping disabled & no. of assets displayed = 4.
+plot(fit.sub, which=3, a.sub=1:4, legend.loc=NULL, lwd=1)
 
 ## ----fig.cap="Residual scatterplot matrix with histograms, density overlays, correlations and significance stars", warning=FALSE----
-plot(fit.sub, which=6)
+plot(fit.sub, which=6) # residual scatter plot matrix with correlations
 
 ## ----eval=FALSE, results='hide'------------------------------------------
 ## plot(fit.sub, plot.single=TRUE, asset.name="HAM1")

@@ -84,8 +84,8 @@
 #' class \code{lm} if \code{fit.method="LS" or "DLS"}, class \code{lmRob} if 
 #' the \code{fit.method="Robust"}, or class \code{lars} if 
 #' \code{variable.selection="lars"}.}
-#' \item{alpha}{length-N vector of estimated alphas.}
-#' \item{beta}{N x K matrix of estimated betas.}
+#' \item{alpha}{N x 1 data.frame of estimated alphas.}
+#' \item{beta}{N x K data.frame of estimated betas.}
 #' \item{r2}{length-N vector of R-squared values.}
 #' \item{resid.sd}{length-N vector of residual standard deviations.}
 #' \item{fitted}{xts data object of fitted values; iff 
@@ -246,10 +246,10 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   } 
   
   # extract coefficients from fitted factor models returned above
-  coef.mat <- makePaddedDataFrame(lapply(reg.list, coef))
-  alpha <- coef.mat[, 1, drop=FALSE]
-  # to get alpha of class numeric, do: aplha <- coef.mat[,1]
-  beta <- coef.mat[, -1, drop=FALSE]
+  coef.df <- makePaddedDataFrame(lapply(reg.list, coef))
+  alpha <- coef.df[, 1, drop=FALSE]
+  # to get alpha of class numeric, do: aplha <- coef.df[,1]
+  beta <- coef.df[, -1, drop=FALSE]
   # reorder and expand columns of beta to match factor.names
   tmp <- matrix(NA, length(asset.names), length(factor.names))
   colnames(tmp) <- factor.names
@@ -478,10 +478,10 @@ makePaddedDataFrame <- function(l) {
 
 coef.tsfm <- function(object, ...) {
   # cbind alpha and beta; works for all fit and var selection methods
-  coef.mat <- cbind(object$alpha, object$beta)
+  coef.df <- cbind(object$alpha, object$beta)
   # name for alpha/intercept column
-  colnames(coef.mat)[1] <- "(Intercept)"
-  return(coef.mat)
+  colnames(coef.df)[1] <- "(Intercept)"
+  return(coef.df)
 }
 
 #' @rdname fitTsfm

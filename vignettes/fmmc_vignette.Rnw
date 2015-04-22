@@ -21,7 +21,6 @@
 %\VignetteEngine{knitr::knitr}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
 \title{Estimating Risk and Performance measures using FMMC: factorAnalytics vignette}
 \author{Rohit Arora}
 \maketitle
