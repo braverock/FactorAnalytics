@@ -51,11 +51,11 @@ For individual asset plots:\cr
 18 = Rolling regression over a 24-period observation window, \cr
 19 = Asset returns vs factor returns (single factor model)}
 
-\item{f.sub}{subset of indexes of factors to show for group plots.
-Default is 1:2.}
+\item{f.sub}{numeric/character vector; subset of indexes/names of factors to
+include for group plots. Default is 1:2.}
 
-\item{a.sub}{vector of indexes of assets to show for group plots.
-Default is 1:6.}
+\item{a.sub}{numeric/character vector; subset of indexes/names of assets to
+include for group plots. At least 2 assets must be selected. Default is 1:6.}
 
 \item{plot.single}{logical; If \code{TRUE} plots the characteristics of an
 individual asset's factor model. The type of plot is given by

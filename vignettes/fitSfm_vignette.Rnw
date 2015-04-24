@@ -186,7 +186,7 @@ Figure 4 displays the top three (\code{n.top}) assets with the largest and small
 <<fig.cap="Top 3 largest and smallest weights in the factor mimicking portfolios", fig.width=7, fig.height=4.5, fig.show='asis'>>=
 # Factor mimicking portfolio weights from PCA fit
 t(fit.pca$mimic)
-plot(fit.pca, which=12, n.top=3, cex.main=0.9)
+plot(fit.pca, which=12, n.top=3)
 @
 
 \newpage

@@ -72,10 +72,10 @@
 #' 17 = Recursive estimates (RE) test of LS regression coefficients,\cr
 #' 18 = Rolling regression over a 24-period observation window, \cr
 #' 19 = Asset returns vs factor returns (single factor model)
-#' @param f.sub subset of indexes of factors to show for group plots. 
-#' Default is 1:2.
-#' @param a.sub vector of indexes of assets to show for group plots. 
-#' Default is 1:6.
+#' @param f.sub numeric/character vector; subset of indexes/names of factors to 
+#' include for group plots. Default is 1:2.
+#' @param a.sub numeric/character vector; subset of indexes/names of assets to 
+#' include for group plots. At least 2 assets must be selected. Default is 1:6.
 #' @param plot.single logical; If \code{TRUE} plots the characteristics of an 
 #' individual asset's factor model. The type of plot is given by 
 #' \code{which}. Default is \code{FALSE}.
@@ -397,16 +397,17 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
   } else { # start of group asset plots
     
     n <- length(x$asset.names)
-    if (n<=1) {
+    if (n<=1 || length(a.sub) < 2) {
       stop("Error: Two or more assets required for group plots.")
     }
-    if (!(all(a.sub %in% 1:n)) || length(a.sub) < 2) {
-      stop("Invalid argument: a.sub is not a valid subset.") 
+    if (!(all(a.sub %in% x$asset.names)) && !(all(a.sub %in% 1:n))) {
+      stop("Invalid argument: a.sub is not a valid subset of asset names.") 
     }
-    k <- ncol(coef(x))-1
-    if (!(all(f.sub %in% 1:k))) {
-      stop("Invalid argument: f.sub is not a valid subset.") 
+    k <- ncol(x$beta)
+    if (!(all(f.sub %in% x$factor.names)) && !(all(f.sub %in% 1:k))) {
+      stop("Invalid argument: f.sub is not a valid subset of factor names.") 
     }
+    
     # plot selection
     repeat {
       if (is.null(which)) {
@@ -434,32 +435,36 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                plot(
                  barchart(as.matrix(x$alpha)[a.sub,], main="Factor model Alpha (Intercept)", xlab="", col=colorset[1], ...)
                )
-#                barplot(coef(x)[a.sub,1], main="Factor model Alpha (Intercept)", 
-#                        names.arg=rownames(coef(x))[a.sub], col=colorset[1], las=2, ...)
-#                abline(h=0, lwd=1, lty=1, col=1)
+               #                barplot(coef(x)[a.sub,1], main="Factor model Alpha (Intercept)", 
+               #                        names.arg=rownames(coef(x))[a.sub], col=colorset[1], las=2, ...)
+               #                abline(h=0, lwd=1, lty=1, col=1)
              }, 
              "2L" = {
                ## Factor model coefficients: Betas
-               C <- coef(x)[a.sub,]
+               C <- x$beta[a.sub,f.sub,drop=FALSE]
                Y <- row(C, as.factor=T)
-               X <- as.vector(as.matrix(C[,(f.sub+1)]))
-               Z <- col(C[,(f.sub+1)], as.factor=T)
+               X <- as.vector(as.matrix(C[,,drop=FALSE]))
+               Z <- col(C, as.factor=T)
                plot(
-               barchart(Y~X|Z, main="Factor model Betas \n", xlab="", as.table=TRUE,
-                        origin=0, col=colorset[1], scales=list(relation="free"), ...)
+                 barchart(Y~X|Z, main="Factor model Betas \n", xlab="", as.table=TRUE,
+                          origin=0, col=colorset[1], scales=list(relation="free"), ...)
                )
-#                par(mfrow=c(ceiling(length(f.sub)/2),2))
-#                for (i in f.sub) {
-#                  main=paste(colnames(coef(x))[i+1], "factor Betas")
-#                  barplot(coef(x)[,i+1], main=main, names.arg=rownames(coef(x)), 
-#                          col=colorset[1], las=2, ...)
-#                  abline(h=0, lwd=1, lty=1, col=1)
-#                }
-#                par(mfrow=c(1,1))
+               #                par(mfrow=c(ceiling(length(f.sub)/2),2))
+               #                for (i in f.sub) {
+               #                  main=paste(colnames(coef(x))[i+1], "factor Betas")
+               #                  barplot(coef(x)[,i+1], main=main, names.arg=rownames(coef(x)), 
+               #                          col=colorset[1], las=2, ...)
+               #                  abline(h=0, lwd=1, lty=1, col=1)
+               #                }
+               #                par(mfrow=c(1,1))
              }, 
              "3L" = {    
                ## Actual and fitted asset returns
-               par(mfrow=c(ceiling(length(a.sub)/2),2))
+               if (length(a.sub) < 5) {
+                 par(mfrow=c(length(a.sub),1))
+               } else {
+                 par(mfrow=c(ceiling(length(a.sub)/2),2))
+               }
                for (i in a.sub) {
                  asset <- x$asset.names[i]
                  plotData <- merge.xts(x$data[,asset], fitted(x)[,asset])
@@ -537,7 +542,11 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                if (length(x$factor.names)>1) {
                  stop("Error: This option is only for single factor models.")
                }
-               par(mfrow=c(ceiling(length(a.sub)/2),2))
+               if (length(a.sub) < 5) {
+                 par(mfrow=c(length(a.sub),1))
+               } else {
+                 par(mfrow=c(ceiling(length(a.sub)/2),2))
+               }
                for (i in a.sub) {
                  fit <- x$asset.fit[[i]]
                  asset <- x$asset.names[i]

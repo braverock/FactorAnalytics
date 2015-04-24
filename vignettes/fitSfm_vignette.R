@@ -48,7 +48,7 @@ plot(fit.pca, which=3, a.sub=1:15)
 ## ----fig.cap="Top 3 largest and smallest weights in the factor mimicking portfolios", fig.width=7, fig.height=4.5, fig.show='asis'----
 # Factor mimicking portfolio weights from PCA fit
 t(fit.pca$mimic)
-plot(fit.pca, which=12, n.top=3, cex.main=0.9)
+plot(fit.pca, which=12, n.top=3)
 
 ## ----fig.cap="Correlations between assets with the top 3 largest and smallest positions in the F.1's factor mimicking portfolio", fig.width=5, fig.height=5, fig.show='asis'----
 plot(fit.pca, which=13, f.sub=1, n.top=3)

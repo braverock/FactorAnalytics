@@ -60,8 +60,10 @@
 #' 16 = CUSUM test-LS residuals,\cr
 #' 17 = Recursive estimates (RE) test of LS regression coefficients,\cr
 #' 18 = Rolling regression over a 24-period observation window
-#' @param f.sub vector of indexes of factors to show for group plots. Default is 1:2.
-#' @param a.sub vector of indexes of assets to show for group plots. Default is 1:6. 
+#' @param f.sub numeric/character vector; subset of indexes/names of factors to 
+#' include for group plots. Default is 1:2.
+#' @param a.sub numeric/character vector; subset of indexes/names of assets to 
+#' include for group plots. At least 2 assets must be selected. Default is 1:6.
 #' @param n.top scalar; number of largest and smallest weights to display for 
 #' each factor mimicking portfolio. Default is 3.
 #' @param plot.single logical; If \code{TRUE} plots the characteristics of an 
@@ -342,17 +344,16 @@ plot.sfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6, n.top=3,
   } else { # start of group asset plots
     
     n <- length(x$asset.names)
-    if (n<=1) {
+    if (n<=1 || length(a.sub) < 2) {
       stop("Error: Two or more assets required for group plots.")
+    }
+    if (!(all(a.sub %in% x$asset.names)) && !(all(a.sub %in% 1:n))) {
+      stop("Invalid argument: a.sub is not a valid subset of asset names.") 
     }
     k <- x$k
     f.names <- paste("F", 1:k, sep = ".")
-    
-    if (!(all(f.sub %in% f.names) || all(f.sub %in% 1:k))) {
+    if (!(all(f.sub %in% f.names)) && !(all(f.sub %in% 1:k))) {
       stop("Invalid argument: f.sub is not a valid subset of factor names.") 
-    }
-    if (!(all(a.sub %in% x$asset.names) || all(a.sub %in% 1:n))) {
-      stop("Invalid argument: a.sub is not a valid subset of asset names.") 
     }
     
     # plot selection
@@ -400,10 +401,10 @@ plot.sfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6, n.top=3,
              }, 
              "3L" = {    
                ## Estimated factor loadings
-               C <- coef(x)[a.sub,]
+               C <- x$loadings[a.sub,f.sub,drop=FALSE]
                Y <- row(C, as.factor=T)
-               X <- as.vector(C[,(f.sub+1)])
-               Z <- col(C[,(f.sub+1)], as.factor=T)
+               X <- as.vector(as.matrix(C[,,drop=FALSE]))
+               Z <- col(C, as.factor=T)
                plot(
                  barchart(Y~X|Z, main="Factor Loadings \n", xlab="", as.table=TRUE,
                           origin=0, col=colorset[1], scales=list(relation="free"), ...)
@@ -485,13 +486,17 @@ plot.sfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6, n.top=3,
              },
              "12L" = {
                ## Factor mimicking portfolio weights - top long and short positions in each factor
-               par(mfrow=c(ceiling(length(f.sub)/2),2))
+               if (length(f.sub) < 2) {
+                 par(mfrow=c(1,1))
+               } else {
+                 par(mfrow=c(ceiling(length(f.sub)/2),2))
+               }
                for (i in f.sub) {
                  main=paste("Largest & smallest weights (%): ", colnames(x$loadings)[i])
                  s <- summary(x, n.top=n.top)$mimic.sum[[i]]
                  top <- 100*stack(s[,c(2,4)])$values
                  names.arg <- stack(s[,c(1,3)])$values
-                 barplot(top, main=main, names.arg=names.arg, col=colorset[1], las=2, ...)
+                 barplot(top, main=main, names.arg=names.arg, col=colorset[1], las=2, cex.main=0.9, ...)
                  abline(h=0, lwd=1, lty=1, col=1)
                }
                par(mfrow=c(1,1))

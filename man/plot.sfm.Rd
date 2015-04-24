@@ -52,9 +52,11 @@ For individual asset plots:\cr
 17 = Recursive estimates (RE) test of LS regression coefficients,\cr
 18 = Rolling regression over a 24-period observation window}
 
-\item{f.sub}{vector of indexes of factors to show for group plots. Default is 1:2.}
+\item{f.sub}{numeric/character vector; subset of indexes/names of factors to
+include for group plots. Default is 1:2.}
 
-\item{a.sub}{vector of indexes of assets to show for group plots. Default is 1:6.}
+\item{a.sub}{numeric/character vector; subset of indexes/names of assets to
+include for group plots. At least 2 assets must be selected. Default is 1:6.}
 
 \item{n.top}{scalar; number of largest and smallest weights to display for
 each factor mimicking portfolio. Default is 3.}
