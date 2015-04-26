@@ -185,8 +185,8 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   m1 <- match(c("weights","model","x","y","qr"), 
               names(control), 0L)
   lm.args <- control[m1, drop=TRUE]
-  m2 <-  match(c("weights","model","x","y","nrep","efficiency"), 
-               names(control), 0L)
+  m2 <-  match(c("weights","model","x","y","nrep","efficiency","mxr","mxf",
+                 "mxs","trace"), names(control), 0L)
   lmRob.args <- control[m2, drop=TRUE]
   m3 <-  match(c("scope","scale","direction","trace","steps","k"), 
                names(control), 0L)

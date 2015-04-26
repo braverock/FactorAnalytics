@@ -375,7 +375,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                }
                rawdata <- coredata(merge.xts(x$data[,i], x$data[,x$factor.names]))
                plot(x=rawdata[,2], y=rawdata[,1], pch=20, main="",
-                    xlab=paste(x$factor.names, "Returns"), ylab=paste(i,"Returns"))
+                    xlab=paste(x$factor.names, "Returns"), ylab=paste(i,"Returns"), ...)
                coef <- summary(fit)$coefficients
                a=coef[1,1]; b=coef[2,1]
                se.a=round(coef[1,2],2); se.b=round(coef[2,2],2)
@@ -552,14 +552,14 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  asset <- x$asset.names[i]
                  rawdata <- coredata(merge.xts(x$data[,asset], x$data[,x$factor.names]))
                  plot(x=rawdata[,2], y=rawdata[,1], pch=20, main="",
-                      xlab=paste(x$factor.names, "Returns"), ylab=paste(asset,"Returns"))
+                      xlab=paste(x$factor.names, "Returns"), ylab=paste(asset,"Returns"), ...)
                  coef <- summary(fit)$coefficients
                  a=coef[1,1]; b=coef[2,1]
                  se.a=round(coef[1,2],2); se.b=round(coef[2,2],2)
                  abline(a=a, b=b, col="red", lty=2, lwd=2)
                  lgnd <- c(bquote(.(meth) ~~ hat(alpha) == .(round(a,2))~(.(se.a))), 
                            bquote(.(meth) ~~  hat(beta) == .(round(b,2))~(.(se.b))))
-                 legend(x=legend.loc, bty="n", legend=as.expression(lgnd))
+                 legend(x=legend.loc, bty="n", legend=as.expression(lgnd), cex=0.9)
                }
                par(mfrow=c(1,1))
              },

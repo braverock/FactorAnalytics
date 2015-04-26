@@ -5,11 +5,11 @@
 \title{List of control parameters for \code{fitTsfm}}
 \usage{
 fitTsfm.control(decay = 0.95, weights, model = TRUE, x = FALSE,
-  y = FALSE, qr = TRUE, nrep = NULL, efficiency = 0.9, scope, scale,
-  direction, trace = FALSE, steps = 1000, k = 2, nvmin = 1, nvmax = 8,
-  force.in = NULL, force.out = NULL, method, really.big = FALSE, type,
-  normalize = TRUE, eps = .Machine$double.eps, max.steps,
-  lars.criterion = "Cp", K = 10)
+  y = FALSE, qr = TRUE, nrep = NULL, efficiency = 0.9, mxr = 50,
+  mxf = 50, mxs = 50, scope, scale, direction, trace = FALSE,
+  steps = 1000, k = 2, nvmin = 1, nvmax = 8, force.in = NULL,
+  force.out = NULL, method, really.big = FALSE, type, normalize = TRUE,
+  eps = .Machine$double.eps, max.steps, lars.criterion = "Cp", K = 10)
 }
 \arguments{
 \item{decay}{a scalar in (0, 1] to specify the decay factor for "DLS".
@@ -34,6 +34,15 @@ resampling is being used, the value of \code{nrep} is ignored.}
 \item{efficiency}{the asymptotic efficiency of the final estimate for
 \code{fit.method="Robust"}. Default is 0.9.}
 
+\item{mxr}{the maximum number of iterations in the refinement step. Default
+is 50.}
+
+\item{mxf}{the maximum number of iterations for computing final coefficient
+estimates. Default is 50.}
+
+\item{mxs}{the maximum number of iterations for computing scale estimate.
+Default is 50.}
+
 \item{scope}{defines the range of models examined in the \code{"stepwise"}
 search. This should be either a single formula, or a list containing
 components \code{upper} and \code{lower}, both formulae. See
@@ -48,9 +57,10 @@ The argument is passed to \code{\link[stats]{step}} or
 argument is missing the default for \code{direction} is "backward".}
 
 \item{trace}{If positive (or, not \code{FALSE}), info is printed during the
-running of \code{\link[stats]{step}}, \code{\link[robust]{step.lmRob}},
-\code{\link[lars]{lars}} or \code{\link[lars]{cv.lars}} as relevant. Larger
-values may give more detailed information. Default is \code{FALSE}.}
+running of \code{\link[robust]{lmRob}}, \code{\link[stats]{step}},
+\code{\link[robust]{step.lmRob}}, \code{\link[lars]{lars}} or
+\code{\link[lars]{cv.lars}} as relevant. Larger values may give more
+detailed information. Default is \code{FALSE}.}
 
 \item{steps}{the maximum number of steps to be considered for
 \code{"stepwise"}. Default is 1000 (essentially as many as required). It is

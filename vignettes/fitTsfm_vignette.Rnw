@@ -258,7 +258,7 @@ Since \code{fitTsfm} calls many different regression fitting and variable select
 For easy reference, here's a classified list of control parameters accepted and passed by \code{fitTsfm} to their respective model fitting (or) model selection functions in other packages. See the corresponding help files for more details on each parameter.
 \begin{itemize}
 \item \verb"lm": "weights","model","x","y","qr"
-\item \verb"lmRob": "weights","model","x","y","nrep","efficiency"
+\item \verb"lmRob": "weights","model","x","y","nrep","efficiency","mxr","mxf","mxs","trace"
 \item \verb"step": "scope","scale","direction","trace","steps","k"
 \item \verb"regsubsets": "weights","nvmax","force.in","force.out","method","really.big"
 \item \verb"lars": "type","normalize","eps","max.steps","trace"
