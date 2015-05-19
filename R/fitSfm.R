@@ -149,9 +149,6 @@
 #' # APCA with the Connor-Korajczyk method
 #' fit.apca.ck <- fitSfm(r.W, k="ck")
 #' 
-#' @importFrom PerformanceAnalytics checkData
-#' @importFrom MASS ginv
-#' 
 #' @export
 
 fitSfm <- function(data, k=1, max.k=NULL, refine=TRUE, sig=0.05, check=FALSE, 

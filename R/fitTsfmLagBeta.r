@@ -73,11 +73,6 @@
 #'                       mkt.name="SP500.TR",rf.name="US.3m.TR",data=managers)
 #' summary(fit)
 #' fitted(fit)
-#'  
-#' @importFrom PerformanceAnalytics checkData
-#' @importFrom robust lmRob step.lmRob
-#' @importFrom leaps regsubsets
-#' @importFrom lars lars cv.lars
 #' 
 #' @export
 

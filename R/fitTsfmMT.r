@@ -78,8 +78,6 @@
 #' fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), mkt.name="SP500.TR",
 #'                  rf.name="US.3m.TR", data=managers)
 #' summary(fit)
-#'  
-#' @importFrom PerformanceAnalytics checkData
 #' 
 #' @export
 

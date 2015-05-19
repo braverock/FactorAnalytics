@@ -91,11 +91,6 @@
 #'  fitUpDn
 #'  summary(fitUpDn$Up)
 #'  summary(fitUpDn$Dn)
-#'  
-#' @importFrom PerformanceAnalytics checkData
-#' @importFrom robust lmRob step.lmRob
-#' @importFrom leaps regsubsets
-#' @importFrom lars lars cv.lars
 #' 
 #' @export
 

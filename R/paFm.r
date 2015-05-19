@@ -40,8 +40,6 @@
 #' # without benchmark
 #' fm.attr <- paFm(fit)
 #' 
-#' @importFrom PerformanceAnalytics Return.cumulative
-#' 
 #' @export
 #' 
 

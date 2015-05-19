@@ -26,8 +26,6 @@
 #' rownames(newdata) <- rownames(fit$data)
 #' pred.fit2 <- predict(fit, newdata, interval="confidence")
 #' 
-#' @importFrom PerformanceAnalytics checkData
-#' 
 #' @method predict sfm
 #' @export
 #' 

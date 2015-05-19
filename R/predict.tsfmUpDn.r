@@ -26,8 +26,6 @@
 #'  
 #' predict(fitUpDn)
 #' 
-#' @importFrom PerformanceAnalytics checkData
-#' 
 #' @method predict tsfmUpDn
 #' @export
 #' 

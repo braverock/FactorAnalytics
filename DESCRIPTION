@@ -1,8 +1,8 @@
 Package: factorAnalytics
 Type: Package
 Title: Factor Analytics
-Version:2.0.19
-Date:2015-04-25
+Version:2.0.20
+Date:2015-05-19
 Author: Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
 Description: An R package for the estimation and risk analysis of linear factor
@@ -21,6 +21,7 @@ Depends:
     foreach (>= 1.4)
 Imports: 
     PerformanceAnalytics(>= 1.4),
+    zoo,
     corrplot,  
     robust, 
     leaps, 
@@ -37,7 +38,7 @@ Imports:
     RCurl,
     bestglm
 Suggests:
-    testthat, quantmod, knitr
+    testthat
 LazyLoad: yes
 LazyDataCompression: xz
-URL: http://r-forge.r-project.org/R/?group_id=579
+URL: http://r-forge.r-project.org/projects/returnanalytics/

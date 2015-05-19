@@ -308,14 +308,6 @@
 #' @param  parallel flag to utilize multiplecores on the cpu. All cores are used.
 #' @param  ... Arguments that must be passed to fitTsfm
 #' 
-#' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport 
-#'              stopCluster
-#' @importFrom boot boot
-#' @importFrom foreach foreach
-#' @importFrom doSNOW registerDoSNOW 
-#' @importFrom RCurl merge.list
-#' @importFrom bestglm bestglm
-#' 
 #' @return returns an list of fmmc objects
 #' 
 #' @references

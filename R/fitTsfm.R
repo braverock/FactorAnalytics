@@ -149,11 +149,6 @@
 #'                    rf.name="US.3m.TR", data=managers, 
 #'                    variable.selection="lars", lars.criterion="cv") 
 #' 
-#' @importFrom PerformanceAnalytics checkData
-#' @importFrom robust lmRob step.lmRob
-#' @importFrom leaps regsubsets
-#' @importFrom lars lars cv.lars
-#' 
 #' @export
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 

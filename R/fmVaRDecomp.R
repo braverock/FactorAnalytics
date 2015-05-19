@@ -79,8 +79,6 @@
 #' VaR.decomp <- fmVaRDecomp(sfm.pca.fit)
 #' VaR.decomp$cVaR
 #' 
-#' @importFrom PerformanceAnalytics VaR
-#' 
 #' @export
 
 fmVaRDecomp <- function(object, ...){

@@ -46,9 +46,6 @@
 #' # summary of factor model fit for all assets
 #' summary(fit, "HAC")
 #' 
-#' @importFrom lmtest coeftest.default
-#' @importFrom sandwich vcovHC.default vcovHAC.default
-#' 
 #' @method summary sfm
 #' @export
 

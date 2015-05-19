@@ -82,8 +82,6 @@
 #' ES.decomp <- fmEsDecomp(sfm.pca.fit)
 #' ES.decomp$cES
 #' 
-#' @importFrom PerformanceAnalytics VaR
-#' 
 #' @export
 
 fmEsDecomp <- function(object, ...){

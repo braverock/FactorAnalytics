@@ -41,9 +41,6 @@
 #'  
 #'  summary(fitUpDn)
 #' 
-#' @importFrom lmtest coeftest.default
-#' @importFrom sandwich vcovHC.default vcovHAC.default
-#' 
 #' @method summary tsfmUpDn
 #' @export
 

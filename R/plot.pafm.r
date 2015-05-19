@@ -38,8 +38,6 @@
 #' plot(fm.attr, plot.single=TRUE, fundName="HAM1")
 #' }
 #' 
-#' @importFrom PerformanceAnalytics chart.TimeSeries 
-#' 
 #' @method plot pafm  
 #' @export
 #' 

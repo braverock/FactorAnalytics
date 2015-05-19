@@ -54,9 +54,6 @@
 #' # summary of lm fit for a single asset
 #' summary(fit$asset.fit[[1]])
 #' 
-#' @importFrom lmtest coeftest.default
-#' @importFrom sandwich vcovHC.default vcovHAC.default
-#' 
 #' @method summary tsfm
 #' @export
 
