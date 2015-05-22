@@ -32,46 +32,6 @@
     add.args
 }
 
-#' Select factors based on BIC criteria
-#' 
-#' @details
-#' This method selects the best factors and based on the BIC criteria. It uses 
-#' the user supplied max count for max factors or defaults to half the total 
-#' number of factors
-#' 
-#' @param  data Data to use for selecting relevant factors. First column is the
-#'          response. The remaining columns is an exhaustive list of factors.
-#' @param  maxfactors An upper limit on the number of factors.  
-#' 
-#' 
-.fmmc.select.factors <- function(data, maxfactors) {
-    # default the max number of factors to half the number of factors
-    
-    maxfactors <- ifelse(is.na(maxfactors), floor((ncol(data) - 1)/2), 
-        maxfactors)
-    if(maxfactors > 18)  
-        warning("Max model size greater than 18. Consider reducing the size.")
-
-    .data <- na.omit(cbind(data[,-1],data[,1]))
-    
-    fit <- c()
-    val <- tryCatch({
-        fit <- bestglm(data.frame(na.omit(coredata(.data))), 
-            IC="BIC",method="exhaustive", nvmax=maxfactors)
-    },
-    error = function(e) NA,
-    warning = function(w) NA)
-    
-    if(inherits(val, "error")) {
-        warning(paste(colnames(data[1])," will be skipped. Model fitting failed"))
-        return(NA)
-    }
-    
-    fact.cols <- colnames(fit$BestModel$model)[-1]
-    fact.cols    
-}
-
-
 #' This is the main implementation of the Factor Model Monte Carlo method. It returns
 #' a fmmc object that contains the joint empirical density of factors and returns. This
 #' fmmc object can be reused to for calucluting risk and performance estimates along
@@ -119,21 +79,8 @@
     fit.method <- add.args[["fit.method"]]
     variable.selection <- add.args[["variable.selection"]]
     
-    #short term hack till factorAnalytics fixes handling of "all subsets"
-    if(variable.selection == "subsets") {
-    
-        fact.cols <- .fmmc.select.factors(.data, add.args[["nvmax"]])
-        if (0 == length(fact.cols)) {
-            warning(paste(colnames(R)," will be skipped. No suitable factor 
-                    exposures found"))
-            return(NA)
-        }
-          
-        factors.data <- factors.data[,fact.cols]
-        .data <- as.matrix(merge(R,factors.data))
-        variable.selection <- add.args[["variable.selection"]] <- "none" 
-        add.args[["nvmax"]] <- NULL
-    }
+    if(variable.selection == "subsets"  && is.na(add.args[["nvmax"]])) 
+         add.args[["nvmax"]] <-  floor((ncol(factors.data) - 1)/2)
     
     # Lets fit the time-series model
     args <- list(asset.names=colnames(R), 
@@ -159,7 +106,7 @@
         warning("some of the betas where NA in .fmmc.proc. Dropping those")
         beta <- beta[!is.na(c(beta)), 1, drop=FALSE]
         names.factors <- colnames(factors.data)
-        names.beta    <- colnames(fit$beta)
+        names.beta    <- rownames(beta)
         factors.data <- as.matrix(factors.data[,names.factors %in% names.beta])         
     }
     
