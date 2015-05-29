@@ -179,7 +179,8 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     den <- density(Residuals)
     xval <- den$x
     den.norm <- dnorm(xval, mean=mean(Residuals), sd=resid.sd)
-    den.st <- dst(xval, dp=st.mple(x=matrix(1,nrow(Residuals)), y=as.vector(Residuals))$dp)
+    den.st <- dst(xval, dp=st.mple(x=matrix(1,nrow(Residuals)), 
+                                   y=as.vector(Residuals), opt.method="BFGS")$dp)
     
     # plot selection
     repeat {

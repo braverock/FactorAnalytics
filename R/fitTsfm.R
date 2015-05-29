@@ -192,7 +192,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   m5 <-  match(c("type","normalize","eps","max.steps","trace"), 
                names(control), 0L)
   lars.args <- control[m5, drop=TRUE]
-  m6 <-  match(c("K","type","normalize","eps","max.steps","trace"), 
+  m6 <-  match(c("K","type","normalize","eps","max.steps","trace","plot.it"), 
                names(control), 0L)
   cv.lars.args <- control[m6, drop=TRUE]
   
@@ -404,30 +404,30 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     lars.fit <- do.call(lars, c(list(x=xmat, y=yvec),lars.args))
     lars.sum <- summary(lars.fit)
     lars.cv <- do.call(cv.lars, c(list(x=xmat,y=yvec,mode="step"),cv.lars.args))
-    # including plot.it=FALSE to cv.lars strangely gives an error: "Argument s 
-    # out of range". And, specifying index=seq(nrow(lars.fit$beta)-1) resolves 
-    # the issue, but care needs to be taken for small N
     
     # get the step that minimizes the "Cp" statistic or 
     # the K-fold "cv" mean-squared prediction error
     if (lars.criterion=="Cp") {
-      s <- which.min(lars.sum$Cp)-1 # 2nd row is "step 1"
+      s <- which.min(lars.sum$Cp)
     } else {
-      s <- which.min(lars.cv$cv)-1
+      s <- which.min(lars.cv$cv)
     }
     # get factor model coefficients & fitted values at the step obtained above
     coef.lars <- predict(lars.fit, s=s, type="coef", mode="step")
+    # alternately: coef.lars <- lars.fit[s, ]
     fitted.lars <- predict(lars.fit, xmat, s=s, type="fit", mode="step")
     fitted.list[[i]] <- xts(fitted.lars$fit, index(reg.xts))
     # extract and assign the results
     asset.fit[[i]] = lars.fit
-    alpha[i] <- (fitted.lars$fit - 
-                   reg.xts[,factor.names]%*%coef.lars$coefficients)[1]
     beta.names <- names(coef.lars$coefficients)
     beta[i, beta.names] <- coef.lars$coefficients
-    r2[i] <-  lars.fit$R2[s+1]
-    resid.sd[i] <- sqrt(lars.sum$Rss[s+1]/(nrow(reg.xts)-lars.sum$Df[s+1]))
-    
+    alpha[i] <- predict(lars.fit, matrix(0,1,length(beta.names)), s=s, 
+                        type="fit", mode="step")$fit
+    # alternately: alpha[i] <- 
+    #     (fitted.lars$fit - reg.xts[,factor.names]%*%coef.lars$coefficients)[1]
+    r2[i] <-  lars.fit$R2[s]
+    resid.sd[i] <- sqrt(lars.sum$Rss[s]/(nrow(reg.xts)-sum(!beta[i,]==0)))
+    # according to summary.lars help files, $df is tricky for some models
   }
   if (length(asset.names)>1) {
     fitted.xts <- do.call(merge, fitted.list) 

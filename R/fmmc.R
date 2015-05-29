@@ -269,6 +269,7 @@ fmmc <- function(R, factors, parallel=FALSE, ...) {
   
   ret <- NA
   assets.count <- ncol(R)
+  i <- NA
   
   if (parallel) {
     cl <- makeCluster(detectCores())

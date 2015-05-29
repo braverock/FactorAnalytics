@@ -103,6 +103,8 @@
 #' during any step, variables are frequently droppped and added as the 
 #' algorithm proceeds. Although the default usually guarantees that the 
 #' algorithm has proceeded to the saturated fit, users should check.
+#' @param plot.it option to plot the output for \code{\link[lars]{cv.lars}}. 
+#' Default is \code{FALSE}.
 #' @param lars.criterion an option to assess model selection for the 
 #' \code{"lars"} method; one of "Cp" or "cv". See details. Default is "Cp".
 #' @param K number of folds for computing the K-fold cross-validated mean 
@@ -143,7 +145,7 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
                             steps=1000, k=2, nvmin=1, nvmax=8, force.in=NULL, 
                             force.out=NULL, method, really.big=FALSE, type, 
                             normalize=TRUE, eps=.Machine$double.eps, max.steps, 
-                            lars.criterion="Cp", K=10) {
+                            plot.it=FALSE, lars.criterion="Cp", K=10) {
   
   # get the user-specified arguments (that have no defaults)
   # this part of the code was adapted from stats::lm
@@ -177,6 +179,12 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   if (!is.logical(really.big) || length(really.big) != 1) {
     stop("Invalid argument: control parameter 'really.big' must be logical")
   }
+  if (!is.logical(normalize) || length(normalize) != 1) {
+    stop("Invalid argument: control parameter 'normalize' must be logical")
+  }
+  if (!is.logical(plot.it) || length(plot.it) != 1) {
+    stop("Invalid argument: control parameter 'plot.it' must be logical")
+  }
   if (nvmin <= 0 || round(nvmin) != nvmin) {
     stop("Control parameter 'nvmin' must be a positive integer")
   }
@@ -197,6 +205,6 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
                          trace=trace, steps=steps, k=k, nvmin=nvmin, 
                          nvmax=nvmax, force.in=force.in, force.out=force.out, 
                          really.big=really.big, normalize=normalize, eps=eps, 
-                         lars.criterion=lars.criterion, K=K))
+                         plot.it=plot.it, lars.criterion=lars.criterion, K=K))
   return(result)
 }

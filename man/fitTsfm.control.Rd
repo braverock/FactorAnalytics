@@ -9,7 +9,8 @@ fitTsfm.control(decay = 0.95, weights, model = TRUE, x = FALSE,
   mxf = 50, mxs = 50, scope, scale, direction, trace = FALSE,
   steps = 1000, k = 2, nvmin = 1, nvmax = 8, force.in = NULL,
   force.out = NULL, method, really.big = FALSE, type, normalize = TRUE,
-  eps = .Machine$double.eps, max.steps, lars.criterion = "Cp", K = 10)
+  eps = .Machine$double.eps, max.steps, plot.it = FALSE,
+  lars.criterion = "Cp", K = 10)
 }
 \arguments{
 \item{decay}{a scalar in (0, 1] to specify the decay factor for "DLS".
@@ -110,6 +111,9 @@ although no more than \code{min(m,n-intercept)} variables can be active
 during any step, variables are frequently droppped and added as the
 algorithm proceeds. Although the default usually guarantees that the
 algorithm has proceeded to the saturated fit, users should check.}
+
+\item{plot.it}{option to plot the output for \code{\link[lars]{cv.lars}}.
+Default is \code{FALSE}.}
 
 \item{lars.criterion}{an option to assess model selection for the
 \code{"lars"} method; one of "Cp" or "cv". See details. Default is "Cp".}
