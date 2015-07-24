@@ -54,10 +54,10 @@
 #' @param asset.names vector containing names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param factor.names vector containing names of the macroeconomic factors.
-#' @param mkt.name name of the column for market returns. Default is NULL.
+#' @param mkt.name name of the column for market returns. Default is \code{NULL}.
 #' @param rf.name name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and factors (in 
-#' \code{factor.names}). Default is NULL, and no action is taken.
+#' \code{factor.names}). Default is \code{NULL}, and no action is taken.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{mkt.name} and \code{rf.name}.
@@ -125,17 +125,17 @@
 #' \code{\link{paFm}} for Performance Attribution. 
 #' 
 #' @examples
-#' # load data from the database
 #' data(managers)
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), data=managers)
 #' summary(fit)
 #' fitted(fit)
+#' 
 #' # plot actual returns vs. fitted factor model returns for HAM1
 #' plot(fit, plot.single=TRUE, asset.name="HAM1", which=1)
-#' # group plot; type selected from menu prompt; auto-looped for multiple plots
-#' # plot(fit)
 #' 
+#' # plot(fit) # this presents a menu for group plots
+#' # select desired plot from the menu (auto-looped for multiple plots)
 #' 
 #' # example using "subsets" variable selection
 #' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),

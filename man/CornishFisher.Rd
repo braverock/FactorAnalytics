@@ -14,7 +14,7 @@ pCornishFisher(q, n, skew, ekurt)
 
 qCornishFisher(p, n, skew, ekurt)
 
-rCornishFisher(n, sigma, skew, ekurt, seed = NULL)
+rCornishFisher(n, sigma, skew, ekurt, dp = NULL, seed = NULL)
 }
 \arguments{
 \item{x,q}{vector of standardized quantiles.}
@@ -29,6 +29,10 @@ length in density, distribution and quantile functions.}
 \item{p}{vector of probabilities.}
 
 \item{sigma}{scalar standard deviation.}
+
+\item{dp}{a vector of length 3, whose elements represent sigma, skew and
+ekurt, respectively. If dp is specified, the individual parameters cannot be
+set. Default is \code{NULL}.}
 
 \item{seed}{scalar; set seed. Default is \code{NULL}.}
 }

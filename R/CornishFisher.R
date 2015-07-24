@@ -22,6 +22,9 @@
 #' @param sigma scalar standard deviation.
 #' @param skew scalar; skewness.
 #' @param ekurt scalar; excess kurtosis.
+#' @param dp a vector of length 3, whose elements represent sigma, skew and 
+#' ekurt, respectively. If dp is specified, the individual parameters cannot be 
+#' set. Default is \code{NULL}.
 #' @param seed scalar; set seed. Default is \code{NULL}.
 #' @param x,q vector of standardized quantiles.
 #' @param p vector of probabilities.
@@ -95,15 +98,25 @@ qCornishFisher <- function(p,n,skew, ekurt) {
 #' @rdname CornishFisher
 #' @export
 
-rCornishFisher <- function(n, sigma, skew, ekurt, seed=NULL) {
+rCornishFisher <- function(n, sigma, skew, ekurt, dp=NULL, seed=NULL) {
   
   ## inputs:
   ## n          scalar, number of simulated values
   ## sigma      scalar, standard deviation
   ## skew       scalar, skewness
   ## ekurt      scalar, excess kurtosis
+  ## dp         vector of values for sigma, skew and ekurt respectively
   ## outputs:
   ## n simulated values from Cornish-Fisher distribution
+  
+  if (!is.null(dp)) {
+    if (!missing(sigma)) {
+      stop("Invalid argument: Cannot set both component parameters and dp")
+    } 
+    sigma <- dp[1]
+    skew <- dp[2]
+    ekurt <- dp[3]
+  }
   
   if (!is.null(seed)) set.seed(seed)
   zc <- rnorm(n)

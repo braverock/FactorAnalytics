@@ -9,13 +9,14 @@
 #' @importFrom lmtest coeftest.default
 #' @importFrom sandwich vcovHC.default vcovHAC.default
 #' @importFrom MASS ginv
+#' @importFrom tseries tsbootstrap
 
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus 
 #' chart.Histogram chart.QQPlot chart.Correlation
 #' @importFrom lattice barchart xyplot panel.barchart panel.grid
 #' @importFrom corrplot corrplot.mixed
 #' @importFrom strucchange efp
-#' @importFrom sn dst st.mple
+#' @importFrom sn dst rst st.mple
 
 #' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport 
 #' stopCluster
