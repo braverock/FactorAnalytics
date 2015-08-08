@@ -24,11 +24,11 @@
 #' handling NAs restricts the method to "pearson".
 #' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
-#' @param use an optional character string giving a method for computing 
-#' covariances in the presence of missing values. This must be (an 
-#' abbreviation of) one of the strings "everything", "all.obs", 
-#' "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
-#' "pairwise.complete.obs".
+#' @param factor.cov factor covariance matrix (optional); defaults to the 
+#' sample covariance matrix.
+#' @param use method for computing covariances in the presence of missing 
+#' values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or 
+#' "pairwise.complete.obs". Default is "pairwise.complete.obs".
 #' @param ... optional arguments passed to \code{\link[stats]{cov}}.
 #' 
 #' @return The computed \code{N x N} covariance matrix for asset returns based 
@@ -88,7 +88,7 @@ fmCov <- function(object, ...){
 #' @method fmCov tsfm
 #' @export
 
-fmCov.tsfm <- function(object, use="pairwise.complete.obs", ...) {
+fmCov.tsfm <- function(object, factor.cov, use="pairwise.complete.obs", ...) {
   
   # get parameters and factors from factor model
   beta <- as.matrix(object$beta)
@@ -98,7 +98,11 @@ fmCov.tsfm <- function(object, use="pairwise.complete.obs", ...) {
   factor <- as.matrix(object$data[, object$factor.names])
   
   # factor covariance matrix 
-  factor.cov = cov(factor, use=use, ...)
+  if (missing(factor.cov)) {
+    factor.cov = cov(factor, use=use, ...) 
+  } else {
+    identical(dim(factor.cov), as.integer(c(ncol(factor), ncol(factor))))
+  }
   
   # residual covariance matrix D
   if (length(sig2.e) > 1) {

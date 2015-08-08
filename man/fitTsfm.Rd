@@ -19,27 +19,25 @@ fitTsfm(asset.names, factor.names, mkt.name = NULL, rf.name = NULL,
 \method{residuals}{tsfm}(object, ...)
 }
 \arguments{
-\item{asset.names}{vector containing names of assets, whose returns or
-excess returns are the dependent variable.}
+\item{asset.names}{vector of asset names, whose returns are the dependent
+variable in the factor model.}
 
-\item{factor.names}{vector containing names of the macroeconomic factors.}
+\item{factor.names}{vector containing names of the factors.}
 
 \item{mkt.name}{name of the column for market returns. Default is \code{NULL}.}
 
-\item{rf.name}{name of the column of risk free rate variable to calculate
-excess returns for all assets (in \code{asset.names}) and factors (in
-\code{factor.names}). Default is \code{NULL}, and no action is taken.}
+\item{rf.name}{name of the column for the risk free rate; if excess returns
+should be calculated for all assets and factors. Default is \code{NULL}.}
 
 \item{data}{vector, matrix, data.frame, xts, timeSeries or zoo object
-containing column(s) named in \code{asset.names}, \code{factor.names} and
+containing the columns \code{asset.names}, \code{factor.names}, and
 optionally, \code{mkt.name} and \code{rf.name}.}
 
 \item{fit.method}{the estimation method, one of "LS", "DLS" or "Robust".
 See details. Default is "LS".}
 
 \item{variable.selection}{the variable selection method, one of "none",
-"stepwise","subsets","lars". See details. Default is "none".
-\code{mkt.name} is required if any of these options are to be implemented.}
+"stepwise","subsets","lars". See details. Default is "none".}
 
 \item{control}{list of control parameters. Refer to
 \code{\link{fitTsfm.control}} for details.}
@@ -56,7 +54,7 @@ See details. Default is "LS".}
 The generic accessor functions \code{coef}, \code{fitted} and
 \code{residuals} extract various useful features of the fit object.
 Additionally, \code{fmCov} computes the covariance matrix for asset returns
-based on the fitted factor model
+based on the fitted factor model.
 
 An object of class \code{"tsfm"} is a list containing the following
 components:
@@ -108,7 +106,7 @@ by the Bayesian Information Criterion (BIC) or Akaike Information Criterion
 \code{\link[leaps]{regsubsets}}; chooses the best performing subset of any
 given size or within a range of subset sizes. Different methods such as
 exhaustive search (default), forward or backward stepwise, or sequential
-replacement can be employed.See \code{\link{fitTsfm.control}} for more
+replacement can be employed. See \code{\link{fitTsfm.control}} for more
 details on the control arguments.
 
 \code{variable.selection="lars"} corresponds to least angle regression

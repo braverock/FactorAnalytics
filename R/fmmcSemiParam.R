@@ -102,16 +102,18 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
   } else {
     fund.names <- rownames(beta)
     N = nrow(beta)
-    if (colnames(beta) != factor.names) {
+    if (all(colnames(beta)!=factor.names) || ncol(beta)!=length(factor.names)) {
       stop("Invalid argument: beta and factor.ret should correspond to the same 
            set of factors")
     }
   }
   resid.dist = resid.dist[1]
-  if (!(resid.dist %in% c("normal","Cornish-Fisher","skew-t"))) {
-    stop("Invalid argument: resid.dist must be 'normal','Cornish-Fisher' or 
-         'skew-t'")
-  }
+  switch(resid.dist,
+         "normal" = {if (ncol(resid.par)!=1) {stop("Invalid argument: resid.par")}}, 
+         "Cornish-Fisher" = {if (ncol(resid.par)!=3) {stop("Invalid argument: resid.par")}}, 
+         "skew-t" = {if (ncol(resid.par)!=4) {stop("Invalid argument: resid.par")}},
+         stop("Invalid argument: resid.dist must be 'normal', 'Cornish-Fisher' or 'skew-t'")
+  )
   boot.method = boot.method[1]
   if (!(boot.method %in% c("random","block"))) {
     stop("Invalid argument: boot.method must be either 'random' or 'block'")
@@ -155,7 +157,7 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
            "normal" = {sim.resid[,i] <- rnorm(n=B, mean=0, sd=resid.par[i,]) }, # Bx1
            "Cornish-Fisher" = {sim.resid[,i] <- rCornishFisher(n=B, dp=resid.par[i,])}, 
            "skew-t" = {sim.resid[,i] <- rst(n=B, dp=resid.par[i,])}
-           )
+    )
     sim.fund.ret[,i] = 
       alpha[i,1] + boot.factor.ret %*% t(beta[i,,drop=FALSE]) + sim.resid[,i] # Bx1
   }

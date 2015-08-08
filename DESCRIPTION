@@ -1,19 +1,16 @@
 Package: factorAnalytics
 Type: Package
 Title: Factor Analytics
-Version:2.0.23
-Date:2015-07-24
+Version: 2.0.24
+Date: 2015-08-08
 Author: Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
-Description: An R package for the estimation and risk analysis of linear factor
-    models for asset returns and portfolios. It contains model fitting methods
-    for the three major types of factor models: time series (or, macroeconomic)
-    factor model, fundamental factor model and statistical factor model. They
-    allow for different types of distributions to be specified for modeling the
-    fat-tailed behavior of financial returns, including Edgeworth expansions.
-    Risk analysis measures such as VaR and ES, as well as performance 
-    attribution for factor models (factor-contributed vs idiosyncratic returns) 
-    are included. 
+Description: Linear factor model fitting for asset returns (three major types- 
+    time series, fundamental and statistical factor models); related risk 
+    (volatility, VaR and ES) and performance attribution (factor-contributed vs 
+    idiosyncratic returns); tabular displays of risk and performance reports; 
+    factor model Monte Carlo, single and multiple imputation methods for 
+    simulating returns and backfilling unequal histories.
 License: GPL-2
 Depends:
     R (>= 3.0.0),

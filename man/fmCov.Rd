@@ -8,7 +8,7 @@
 \usage{
 fmCov(object, ...)
 
-\method{fmCov}{tsfm}(object, use = "pairwise.complete.obs", ...)
+\method{fmCov}{tsfm}(object, factor.cov, use = "pairwise.complete.obs", ...)
 
 \method{fmCov}{sfm}(object, use = "pairwise.complete.obs", ...)
 }
@@ -17,11 +17,12 @@ fmCov(object, ...)
 
 \item{...}{optional arguments passed to \code{\link[stats]{cov}}.}
 
-\item{use}{an optional character string giving a method for computing
-covariances in the presence of missing values. This must be (an
-abbreviation of) one of the strings "everything", "all.obs",
-"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is
-"pairwise.complete.obs".}
+\item{factor.cov}{factor covariance matrix (optional); defaults to the
+sample covariance matrix.}
+
+\item{use}{method for computing covariances in the presence of missing
+values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or
+"pairwise.complete.obs". Default is "pairwise.complete.obs".}
 }
 \value{
 The computed \code{N x N} covariance matrix for asset returns based
