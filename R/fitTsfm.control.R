@@ -162,41 +162,41 @@ fitTsfm.control <- function(decay=0.95, weights, model=TRUE, x=FALSE, y=FALSE,
   
   # check input validity for some of the arguments
   if (decay<=0 || decay>1) {
-    stop("Invalid argument: Decay factor should be in (0,1]")
+    stop("Invalid args: Decay factor should be in (0,1]")
   }
   if (!is.logical(model) || length(model) != 1) {
-    stop("Invalid argument: control parameter 'model' must be logical")
+    stop("Invalid args: control parameter 'model' must be logical")
   }
   if (!is.logical(x) || length(x) != 1) {
-    stop("Invalid argument: control parameter 'x' must be logical")
+    stop("Invalid args: control parameter 'x' must be logical")
   }
   if (!is.logical(y) || length(y) != 1) {
-    stop("Invalid argument: control parameter 'y' must be logical")
+    stop("Invalid args: control parameter 'y' must be logical")
   }
   if (!is.logical(qr) || length(qr) != 1) {
-    stop("Invalid argument: control parameter 'qr' must be logical")
+    stop("Invalid args: control parameter 'qr' must be logical")
   }
   if (!is.logical(really.big) || length(really.big) != 1) {
-    stop("Invalid argument: control parameter 'really.big' must be logical")
+    stop("Invalid args: control parameter 'really.big' must be logical")
   }
   if (!is.logical(normalize) || length(normalize) != 1) {
-    stop("Invalid argument: control parameter 'normalize' must be logical")
+    stop("Invalid args: control parameter 'normalize' must be logical")
   }
   if (!is.logical(plot.it) || length(plot.it) != 1) {
-    stop("Invalid argument: control parameter 'plot.it' must be logical")
+    stop("Invalid args: control parameter 'plot.it' must be logical")
   }
   if (nvmin <= 0 || round(nvmin) != nvmin) {
     stop("Control parameter 'nvmin' must be a positive integer")
   }
   if (nvmax < nvmin || nvmin < length(force.in)) {
-    stop("Invaid Argument: nvmax should be >= nvmin and nvmin 
+    stop("Invaid args: nvmax should be >= nvmin and nvmin 
            should be >= length(force.in)")
   }
   if (!is.logical(normalize) || length(normalize) != 1) {
-    stop("Invalid argument: control parameter 'normalize' must be logical")
+    stop("Invalid args: control parameter 'normalize' must be logical")
   }
   if (!(lars.criterion %in% c("Cp","cv"))) {
-    stop("Invalid argument: lars.criterion must be 'Cp' or 'cv'.")
+    stop("Invalid args: lars.criterion must be 'Cp' or 'cv'.")
   }
   
   # return list of arguments with defaults if they are unspecified

@@ -160,11 +160,11 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   # set defaults and check input vailidity
   fit.method = fit.method[1]
   if (!(fit.method %in% c("LS","DLS","Robust"))) {
-    stop("Invalid argument: fit.method must be 'LS', 'DLS' or 'Robust'")
+    stop("Invalid args: fit.method must be 'LS', 'DLS' or 'Robust'")
   }
   variable.selection = variable.selection[1]
   if (!(variable.selection %in% c("none","stepwise","subsets","lars"))) {
-    stop("Invalid argument: variable.selection must be either 'none',
+    stop("Invalid args: variable.selection must be either 'none',
          'stepwise','subsets' or 'lars'")
   }
   if (missing(factor.names) && !is.null(mkt.name)) {
@@ -215,8 +215,8 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   mkt.name <- gsub(" ",".", mkt.name, fixed=TRUE)
   rf.name <- gsub(" ",".", rf.name, fixed=TRUE)
   
-  # Selects regression procedure based on specified variable.selection method.
-  # Each method returns a list of fitted factor models for each asset.
+  # select procedure based on the variable.selection method
+  # returns a list of the fitted factor model for all assets
   if (variable.selection == "none") {
     reg.list <- NoVariableSelection(dat.xts, asset.names, factor.names, 
                                     fit.method, lm.args, lmRob.args, decay)
@@ -280,13 +280,12 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # fit based on time series regression method chosen
     if (fit.method == "LS") {
-      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
+      reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "DLS") {
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
+      reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts), 
-                                        lmRob.args))
+      reg.list[[i]] <- do.call("lmRob", c(list(fm.formula,data=quote(reg.xts)),lmRob.args))
     } 
   } 
   reg.list  
@@ -310,15 +309,15 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # fit based on time series regression method chosen
     if (fit.method == "LS") {
-      lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
-      reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
+      lm.fit <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
+      reg.list[[i]] <- do.call("step", c(list(lm.fit),step.args))
     } else if (fit.method == "DLS") {
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      lm.fit <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
-      reg.list[[i]] <- do.call(step, c(list(lm.fit),step.args))
+      lm.fit <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
+      reg.list[[i]] <- do.call("step", c(list(lm.fit),step.args))
     } else if (fit.method == "Robust") {
-      lmRob.fit <- do.call(lmRob, c(list(fm.formula,data=reg.xts), lmRob.args))
-      reg.list[[i]] <- do.call(step.lmRob, c(list(lmRob.fit), step.args))
+      lmRob.fit <- do.call("lmRob", c(list(fm.formula,data=quote(reg.xts)),lmRob.args))
+      reg.list[[i]] <- do.call("step.lmRob", c(list(lmRob.fit),step.args))
     } 
   }
   reg.list
@@ -347,7 +346,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     }
     
     # choose best subset of factors depending on specified subset size
-    fm.subsets <- do.call(regsubsets, c(list(fm.formula,data=reg.xts), 
+    fm.subsets <- do.call("regsubsets", c(list(fm.formula,data=quote(reg.xts)), 
                                         regsubsets.args))
     sum.sub <- summary(fm.subsets)
     
@@ -363,13 +362,12 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # fit based on time series regression method chosen
     if (fit.method == "LS") {
-      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
+      reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "DLS") {
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      reg.list[[i]] <- do.call(lm, c(list(fm.formula,data=reg.xts),lm.args))
+      reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- do.call(lmRob, c(list(fm.formula,data=reg.xts), 
-                                        lmRob.args))
+      reg.list[[i]] <- do.call("lmRob", c(list(fm.formula,data=quote(reg.xts)),lmRob.args))
     } 
   }
   reg.list
@@ -399,9 +397,9 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     xmat <- as.matrix(reg.xts[,factor.names])
     yvec <- as.matrix(reg.xts)[,i]
     # fit lars regression model
-    lars.fit <- do.call(lars, c(list(x=xmat, y=yvec),lars.args))
+    lars.fit <- do.call("lars", c(list(x=quote(xmat),y=quote(yvec)),lars.args))
     lars.sum <- summary(lars.fit)
-    lars.cv <- do.call(cv.lars, c(list(x=xmat,y=yvec,mode="step"),cv.lars.args))
+    lars.cv <- do.call("cv.lars", c(list(x=quote(xmat),y=quote(yvec),mode="step"),cv.lars.args))
     
     # get the step that minimizes the "Cp" statistic or 
     # the K-fold "cv" mean-squared prediction error
@@ -428,7 +426,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     # according to summary.lars help files, $df is tricky for some models
   }
   if (length(asset.names)>1) {
-    fitted.xts <- do.call(merge, fitted.list) 
+    fitted.xts <- do.call("merge", fitted.list) 
   } else {
     fitted.xts <- fitted.list[[1]]
   }
@@ -454,7 +452,7 @@ WeightsDLS <- function(t,d) {
 ## l = list of unequal vectors
 #
 makePaddedDataFrame <- function(l) {
-  DF <- do.call(rbind, lapply(lapply(l, unlist), "[", 
+  DF <- do.call("rbind", lapply(lapply(l, unlist), "[", 
                               unique(unlist(c(sapply(l,names))))))
   DF <- as.data.frame(DF)
   names(DF) <- unique(unlist(c(sapply(l,names))))
@@ -494,7 +492,7 @@ fitted.tsfm <- function(object, ...) {
                            function(x) checkData(fitted(x)))
       # this is a list of xts objects, indexed by the asset name
       # merge the objects in the list into one xts object
-      fitted.xts <- do.call(merge, fitted.list) 
+      fitted.xts <- do.call("merge", fitted.list) 
     } else {
       fitted.xts <- checkData(fitted(object$asset.fit[[1]]))
       colnames(fitted.xts) <- object$asset.names
@@ -522,7 +520,7 @@ residuals.tsfm <- function(object, ...) {
                               function(x) checkData(residuals(x)))
       # this is a list of xts objects, indexed by the asset name
       # merge the objects in the list into one xts object
-      residuals.xts <- do.call(merge, residuals.list) 
+      residuals.xts <- do.call("merge", residuals.list) 
     } else {
       residuals.xts <- checkData(residuals(object$asset.fit[[1]]))
       colnames(residuals.xts) <- object$asset.names
