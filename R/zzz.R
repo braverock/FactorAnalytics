@@ -2,7 +2,7 @@
 #' @import zoo
 #' @import foreach
 
-#' @importFrom PerformanceAnalytics checkData VaR Return.cumulative 
+#' @importFrom PerformanceAnalytics checkData Return.cumulative 
 #' @importFrom robust lmRob step.lmRob
 #' @importFrom leaps regsubsets
 #' @importFrom lars lars cv.lars

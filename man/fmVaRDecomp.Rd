@@ -8,25 +8,16 @@
 \usage{
 fmVaRDecomp(object, ...)
 
-\method{fmVaRDecomp}{tsfm}(object, p = 0.95, method = c("modified",
-  "gaussian", "historical", "kernel"), invert = FALSE, ...)
+\method{fmVaRDecomp}{tsfm}(object, p = 0.95, ...)
 
-\method{fmVaRDecomp}{sfm}(object, p = 0.95, method = c("modified",
-  "gaussian", "historical", "kernel"), invert = FALSE, ...)
+\method{fmVaRDecomp}{sfm}(object, p = 0.95, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
 
-\item{...}{other optional arguments passed to
-\code{\link[PerformanceAnalytics]{VaR}}.}
+\item{...}{other optional arguments passed to \code{\link[stats]{quantile}}.}
 
 \item{p}{confidence level for calculation. Default is 0.95.}
-
-\item{method}{method for computing VaR, one of "modified","gaussian",
-"historical", "kernel". Default is "modified". See details.}
-
-\item{invert}{logical; whether to invert the VaR measure. Default is
-\code{FALSE}.}
 }
 \value{
 A list containing
@@ -44,8 +35,7 @@ Compute the factor contributions to Value-at-Risk (VaR) of
 assets' returns based on Euler's theorem, given the fitted factor model.
 The partial derivative of VaR wrt factor beta is computed as the expected
 factor return given fund return is equal to its VaR and approximated by a
-kernel estimator. VaR is computed either as the sample quantile or as an
-estimated quantile using the Cornish-Fisher expansion.
+kernel estimator. VaR is computed as the sample quantile.
 }
 \details{
 The factor model for an asset's return at time \code{t} has the
@@ -59,11 +49,6 @@ contributions to \code{VaR} respectively. The marginal contribution to VaR
 is defined as the expectation of \code{F.star}, conditional on the loss
 being equal to \code{VaR.fm}. This is approximated as described in
 Epperlein & Smillie (2006); a triangular smoothing kernel is used here.
-
-Computation of the risk measure is done using
-\code{\link[PerformanceAnalytics]{VaR}}. Arguments \code{p}, \code{method}
-and \code{invert} are passed to this function. Refer to their help file for
-details and other options.
 }
 \examples{
 # Time Series Factor Model
@@ -99,7 +84,6 @@ Monetary and economic studies, 20(1), 87-121.
 \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
 
-\code{\link[PerformanceAnalytics]{VaR}} for VaR computation.
 \code{\link{fmSdDecomp}} for factor model SD decomposition.
 \code{\link{fmEsDecomp}} for factor model ES decomposition.
 }

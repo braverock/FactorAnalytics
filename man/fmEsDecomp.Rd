@@ -8,25 +8,16 @@
 \usage{
 fmEsDecomp(object, ...)
 
-\method{fmEsDecomp}{tsfm}(object, p = 0.95, method = c("modified",
-  "gaussian", "historical", "kernel"), invert = FALSE, ...)
+\method{fmEsDecomp}{tsfm}(object, p = 0.95, ...)
 
-\method{fmEsDecomp}{sfm}(object, p = 0.95, method = c("modified",
-  "gaussian", "historical", "kernel"), invert = FALSE, ...)
+\method{fmEsDecomp}{sfm}(object, p = 0.95, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
 
-\item{...}{other optional arguments passed to
-\code{\link[PerformanceAnalytics]{VaR}}.}
+\item{...}{other optional arguments passed to \code{\link[stats]{quantile}}.}
 
 \item{p}{confidence level for calculation. Default is 0.95.}
-
-\item{method}{method for computing VaR, one of "modified","gaussian",
-"historical", "kernel". Default is "modified". See details.}
-
-\item{invert}{logical; whether to invert the VaR measure. Default is
-\code{FALSE}.}
 }
 \value{
 A list containing
@@ -44,8 +35,8 @@ Compute the factor contributions to Expected Tail Loss or
 Expected Shortfall (ES) of assets' returns  based on Euler's theorem, given
 the fitted factor model. The partial derivative of ES with respect to factor
 beta is computed as the expected factor return given fund return is less
-than or equal to its value-at-risk (VaR). VaR is computed as the sample quantile of the historic or
-simulated data.
+than or equal to its value-at-risk (VaR). VaR is computed as the sample
+quantile.
 }
 \details{
 The factor model for an asset's return at time \code{t} has the
@@ -59,12 +50,6 @@ contributions to \code{ES} respectively. The marginal contribution to ES is
 defined as the expected value of \code{F.star}, conditional on the loss
 being less than or equal to \code{VaR.fm}. This is estimated as a sample
 average of the observations in that data window.
-
-Computation of the VaR measure is done using
-\code{\link[PerformanceAnalytics]{VaR}}. Arguments \code{p}, \code{method}
-and \code{invert} are passed to this function. Refer to their help file for
-details and other options. \code{invert} consistently affects the sign for
-all VaR and ES measures.
 }
 \examples{
 # Time Series Factor Model
@@ -102,7 +87,6 @@ Monetary and economic studies, 20(1), 87-121.
 \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
 
-\code{\link[PerformanceAnalytics]{VaR}} for VaR computation.
 \code{\link{fmSdDecomp}} for factor model SD decomposition.
 \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 }

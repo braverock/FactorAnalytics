@@ -82,9 +82,6 @@
 #' in \code{plot}. Default is 1.
 #' @param lwd set the line width, same as in \code{\link{plot}}. Default is 2.
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.
-#' @param VaR.method a method for computing VaR; one of "modified", "gaussian",
-#' "historical" or "kernel". VaR is computed using 
-#' \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".
 #' @param eig.max scalar in (0,1] for limiting the screeplot to factors that 
 #' explain a given percent of the variance. Default is 0.9.
 #' @param cum.var logical; If \code{TRUE}, the cumulative fraction of the
@@ -149,7 +146,7 @@ plot.sfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6, n.top=3,
                                 "goldenrod","mediumorchid","deepskyblue",
                                 "chocolate","darkslategray"), 
                      legend.loc="topleft", las=1, lwd=2, maxlag=15, 
-                     VaR.method="historical", eig.max=0.9, cum.var=TRUE, ...) {
+                     eig.max=0.9, cum.var=TRUE, ...) {
   
   which.vec <- which
   which <- which[1]
@@ -458,7 +455,7 @@ plot.sfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6, n.top=3,
              },
              "10L" = {
                ## Factor Percentage Contribution to ES
-               pcES.fm <- fmEsDecomp(x, method=VaR.method)$pcES[a.sub,c(f.sub,k+1)]
+               pcES.fm <- fmEsDecomp(x)$pcES[a.sub,c(f.sub,k+1)]
                plot(
                  barchart(pcES.fm, main="Factor % Contribution to ES", xlab="",
                           auto.key=list(space="bottom",columns=3, points=FALSE,rectangles=TRUE), 
@@ -469,7 +466,7 @@ plot.sfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6, n.top=3,
              },
              "11L" = {
                ## Factor Percentage Contribution to VaR
-               pcVaR.fm <- fmVaRDecomp(x, method=VaR.method)$pcVaR[a.sub,c(f.sub,k+1)]
+               pcVaR.fm <- fmVaRDecomp(x)$pcVaR[a.sub,c(f.sub,k+1)]
                plot(
                  barchart(pcVaR.fm, main="Factor % Contribution to VaR", xlab="", 
                           auto.key=list(space="bottom",columns=3, points=FALSE,rectangles=TRUE), 

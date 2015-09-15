@@ -65,9 +65,9 @@ Here's a list of the functions and methods demonstrated in this vignette:
 
 \item \verb"fmSdDecomp(object, use, ...)": Returns a list containing the standard deviation of asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"use"} specifies how missing values are to be handled.
 
-\item \verb"fmVaRDecomp(object, p, method, invert, ...)": Returns a list containing the value-at-risk for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"p"} and \code{"method"} specify the confidence level and method (one of "modified","gaussian", "historical" or "kernel") to calculate  VaR. VaR is by default a positive quantity and specifying \code{"invert=TRUE"} allows the VaR value to be expressed as a negative quantity. These 3 arguments, \code{"p"}, \code{"method"} and \code{"invert"} are passed on to the \code{VaR} function in the \code{PerformanceAnalytics} package to calculate VaR.
+\item \verb"fmVaRDecomp(object, p, ...)": Returns a list containing the value-at-risk for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. VaR is computed as the sample quantile and \code{"p"} specifies the confidence level.
 
-\item \verb"fmEsDecomp(object, p, method, invert, ...)": Returns a list containing the expected shortfall for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. Arguments \code{"p"}, \code{"method"} and \code{invert} are the same as above.
+\item \verb"fmEsDecomp(object, p, ...)": Returns a list containing the expected shortfall for asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample.
 
 \item \verb"plot(x)": The \code{plot} method for class "sfm" can be used for plotting factor model characteristics of a group of assets (default) or an individual asset. The user can select the type of plot either from the menu prompt or directly via argument \code{which}. In case multiple plots are needed, the menu is repeated after each plot (enter 0 to exit). User can also input a numeric vector of plot options via \code{which}.
 
@@ -415,12 +415,12 @@ The VaR version of equation 6 is given below. By Euler's theorem, the value-at-r
 VaR.fm_i = \sum_{k=1}^{K+1} cVaR_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mVaR_{i,k}
 \end{equation}
 
-The marginal contribution to $VaR.fm$ is defined as the expectation of $F.star$, conditional on the loss being equal to $VaR.fm$. This is approximated as described in \citet{epperlein2006portfolio} using a triangular smoothing kernel. $VaR.fm$ calculation is performed using the function \code{VaR} from the \verb"PerformanceAnalytics" package. Refer to their help file for details and more options.
+The marginal contribution to $VaR.fm$ is defined as the expectation of $F.star$, conditional on the loss being equal to $VaR.fm$. This is approximated as described in \citet{epperlein2006portfolio} using a triangular smoothing kernel. $VaR.fm$ is calculated as the sample quantile.
 
 \code{fmVaRDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total VaR and component, marginal and percentage component contributions for each asset are returned.
 
 <<fig.cap="Percentage factor contribution to VaR", fig.width=7, fig.height=5>>=
-decomp1 <- fmVaRDecomp(fit.apca, method="historical")
+decomp1 <- fmVaRDecomp(fit.apca)
 names(decomp1)
 # factor model Value-at-Risk; print first 6 assets
 head(decomp1$VaR.fm)
@@ -437,12 +437,12 @@ The Expected Shortfall (ES) version of equation 6 is given below. By Euler's the
 ES.fm_i = \sum_{k=1}^{K+1} cES_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mES_{i,k}
 \end{equation}
 
-The marginal contribution to $ES.fm$ is defined as the expectation of $F.star$, conditional on the loss being less than or equal to $VaR.fm$. This is estimated as a sample average of the observations in that data window. Once again, $VaR.fm$ calculation is performed using the function \code{VaR} from the \verb"PerformanceAnalytics" package. Refer to their help file for details and more options.
+The marginal contribution to $ES.fm$ is defined as the expectation of $F.star$, conditional on the loss being less than or equal to $VaR.fm$. This is estimated as a sample average of the observations in that data window. Once again, $VaR.fm$ is the sample quantile.
 
-\code{fmEsDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. In this example, \code{method} to calculate VaR is "historical" instead of the default "modified". The total ES and component, marginal and percentage component contributions for each asset are returned.
+\code{fmEsDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total ES and component, marginal and percentage component contributions for each asset are returned.
 
 <<fig.cap="Percentage factor contribution to ES", fig.width=7, fig.height=5>>=
-decomp2 <- fmEsDecomp(fit.apca, method="historical")
+decomp2 <- fmEsDecomp(fit.apca)
 names(decomp2)
 # factor model Expected Shortfall; print first 6 assets
 head(decomp2$ES.fm)
@@ -462,8 +462,8 @@ plot (x, which=NULL, f.sub=1:2, a.sub=1:6, n.top=3,
       plot.single=FALSE, asset.name, 
       colorset=c("royalblue","firebrick","olivedrab","firebrick","goldenrod", 
                  "mediumorchid","deepskyblue","chocolate","darkslategray"), 
-      legend.loc="topleft", las=1, lwd=2, maxlag=15, 
-      VaR.method="historical", eig.max=0.9, cum.var=TRUE, ...)
+      legend.loc="topleft", las=1, lwd=2, maxlag=15, eig.max=0.9, 
+      cum.var=TRUE, ...)
 @
 
 \subsection{Group plots}
@@ -499,7 +499,6 @@ Remarks:
 \item \code{cum.var} applies to group plot 1, and specifies whether the cumulative fraction of the variance is printed above each bar in the screeplot of eigenvalues.
 \item \code{eig.max} also applies to group plot 1, and diplays the largest eigenvalues that cumulatively explain at least a given percent of the total variance.
 \item \code{n.top} applies to group plots 12 and 13, which involve summarizing the factor mimicking portfolios, and specifies the number of top positions to display.
-\item \code{VaR.method} applies to group plots 10 and 11, which are factor model risk ES and VaR decompositions respectively.
 \end{itemize}
 
 

@@ -170,7 +170,7 @@ head(decomp$cSd)
 plot(fit.pca, which=9, f.sub=1:2, a.sub=1:15)
 
 ## ----fig.cap="Percentage factor contribution to VaR", fig.width=7, fig.height=5----
-decomp1 <- fmVaRDecomp(fit.apca, method="historical")
+decomp1 <- fmVaRDecomp(fit.apca)
 names(decomp1)
 # factor model Value-at-Risk; print first 6 assets
 head(decomp1$VaR.fm)
@@ -180,7 +180,7 @@ head(decomp1$mVaR[,1:4])
 plot(fit.apca, which=11, f.sub=1:4, a.sub=1:6)
 
 ## ----fig.cap="Percentage factor contribution to ES", fig.width=7, fig.height=5----
-decomp2 <- fmEsDecomp(fit.apca, method="historical")
+decomp2 <- fmEsDecomp(fit.apca)
 names(decomp2)
 # factor model Expected Shortfall; print first 6 assets
 head(decomp2$ES.fm)
@@ -195,8 +195,8 @@ plot(fit.apca, which=10, f.sub=1:4, a.sub=1:6)
 ##       plot.single=FALSE, asset.name,
 ##       colorset=c("royalblue","firebrick","olivedrab","firebrick","goldenrod",
 ##                  "mediumorchid","deepskyblue","chocolate","darkslategray"),
-##       legend.loc="topleft", las=1, lwd=2, maxlag=15,
-##       VaR.method="historical", eig.max=0.9, cum.var=TRUE, ...)
+##       legend.loc="topleft", las=1, lwd=2, maxlag=15, eig.max=0.9,
+##       cum.var=TRUE, ...)
 
 ## ----eval=FALSE, results='hide'------------------------------------------
 ## plot(fit.pca)

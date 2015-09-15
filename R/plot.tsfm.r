@@ -92,9 +92,6 @@
 #' in \code{plot}. Default is 1.
 #' @param lwd set the line width, same as in \code{\link{plot}}. Default is 2.
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.
-#' @param VaR.method a method for computing VaR; one of "modified", "gaussian",
-#' "historical" or "kernel". VaR is computed using 
-#' \code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".
 #' @param ... further arguments to be passed to other plotting functions.
 #' 
 #' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
@@ -151,8 +148,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                       colorset=c("royalblue","dimgray","olivedrab","firebrick",
                                  "goldenrod","mediumorchid","deepskyblue",
                                  "chocolate","darkslategray"), 
-                      legend.loc="topleft", las=1, lwd=2, maxlag=15,
-                      VaR.method="historical", ...) {
+                      legend.loc="topleft", las=1, lwd=2, maxlag=15, ...) {
   
   which.vec <- which
   which <- which[1]
@@ -508,7 +504,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              },
              "10L"={
                ## Factor percentage contribution to ES
-               pcES.fm <- fmEsDecomp(x, method=VaR.method)$pcES[a.sub,c(f.sub,k+1)]
+               pcES.fm <- fmEsDecomp(x)$pcES[a.sub,c(f.sub,k+1)]
                plot(
                  barchart(pcES.fm, main="Factor % Contribution to ES", xlab="",
                           auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE), 
@@ -518,7 +514,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              },
              "11L" ={
                ## Factor percentage contribution to VaR
-               pcVaR.fm <- fmVaRDecomp(x, method=VaR.method)$pcVaR[a.sub,c(f.sub,k+1)]
+               pcVaR.fm <- fmVaRDecomp(x)$pcVaR[a.sub,c(f.sub,k+1)]
                plot(
                  barchart(pcVaR.fm, main="Factor % Contribution to VaR", xlab="", 
                           auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE), 

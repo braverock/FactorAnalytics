@@ -4,8 +4,8 @@
 #' Expected Shortfall (ES) of assets' returns  based on Euler's theorem, given 
 #' the fitted factor model. The partial derivative of ES with respect to factor 
 #' beta is computed as the expected factor return given fund return is less 
-#' than or equal to its value-at-risk (VaR). VaR is computed as the sample quantile of the historic or 
-#' simulated data.
+#' than or equal to its value-at-risk (VaR). VaR is computed as the sample 
+#' quantile.
 #' 
 #' @details The factor model for an asset's return at time \code{t} has the 
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
@@ -19,20 +19,9 @@
 #' being less than or equal to \code{VaR.fm}. This is estimated as a sample 
 #' average of the observations in that data window. 
 #' 
-#' Computation of the VaR measure is done using 
-#' \code{\link[PerformanceAnalytics]{VaR}}. Arguments \code{p}, \code{method} 
-#' and \code{invert} are passed to this function. Refer to their help file for 
-#' details and other options. \code{invert} consistently affects the sign for 
-#' all VaR and ES measures.
-#' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param p confidence level for calculation. Default is 0.95.
-#' @param method method for computing VaR, one of "modified","gaussian",
-#' "historical", "kernel". Default is "modified". See details.
-#' @param invert logical; whether to invert the VaR measure. Default is 
-#' \code{FALSE}.
-#' @param ... other optional arguments passed to 
-#' \code{\link[PerformanceAnalytics]{VaR}}.
+#' @param ... other optional arguments passed to \code{\link[stats]{quantile}}.
 #' 
 #' @return A list containing 
 #' \item{ES.fm}{length-N vector of factor model ES of N-asset returns.}
@@ -63,7 +52,6 @@
 #' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
 #' for the different factor model fitting functions.
 #' 
-#' \code{\link[PerformanceAnalytics]{VaR}} for VaR computation.
 #' \code{\link{fmSdDecomp}} for factor model SD decomposition.
 #' \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 #' 
@@ -96,17 +84,7 @@ fmEsDecomp <- function(object, ...){
 #' @method fmEsDecomp tsfm
 #' @export
 
-fmEsDecomp.tsfm <- function(object, p=0.95, 
-                            method=c("modified","gaussian","historical",
-                                     "kernel"), invert=FALSE, ...) {
-  
-  # set defaults and check input vailidity
-  method = method[1]
-  
-  if (!(method %in% c("modified", "gaussian", "historical", "kernel"))) {
-    stop("Invalid argument: method must be 'modified', 'gaussian',
-         'historical' or 'kernel'")
-  }
+fmEsDecomp.tsfm <- function(object, p=0.95, ...) {
   
   # get beta.star
   beta <- object$beta
@@ -137,7 +115,7 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
     # return data for asset i
     R.xts <- object$data[,i]
     # get VaR for asset i
-    VaR.fm[i] <- VaR(R.xts, p=p, method=method, invert=invert, ...)
+    VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
     # index of VaR exceedances
     idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
     # number of VaR exceedances
@@ -147,18 +125,16 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
     factor.star <- merge(factors.xts, resid.xts[,i])
     colnames(factor.star)[dim(factor.star)[2]] <- "residual"
     
-    if (!invert) {inv=-1} else {inv=1}
-    
     # compute ES as expected value of asset return, such that the given asset 
     # return is less than or equal to its value-at-risk (VaR) and approximated
     # by a kernel estimator.
-    idx <- which(R.xts <= inv*VaR.fm[i])
-    ES.fm[i] <- inv * mean(R.xts[idx], na.rm =TRUE)
+    idx <- which(R.xts <= VaR.fm[i])
+    ES.fm[i] <- mean(R.xts[idx], na.rm =TRUE)
     
     # compute marginal ES as expected value of factor returns, such that the
     # given asset return is less than or equal to its value-at-risk (VaR) and 
     # approximated by a kernel estimator.
-    mES[i,] <- inv * colMeans(factor.star[idx,], na.rm =TRUE)
+    mES[i,] <- colMeans(factor.star[idx,], na.rm =TRUE)
     
     # correction factor to ensure that sum(cES) = portfolio ES
     cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
@@ -180,17 +156,7 @@ fmEsDecomp.tsfm <- function(object, p=0.95,
 #' @method fmEsDecomp sfm
 #' @export
 
-fmEsDecomp.sfm <- function(object, p=0.95, 
-                            method=c("modified","gaussian","historical",
-                                     "kernel"), invert=FALSE, ...) {
-  
-  # set defaults and check input vailidity
-  method = method[1]
-  
-  if (!(method %in% c("modified", "gaussian", "historical", "kernel"))) {
-    stop("Invalid argument: method must be 'modified', 'gaussian',
-         'historical' or 'kernel'")
-  }
+fmEsDecomp.sfm <- function(object, p=0.95, ...) {
   
   # get beta.star
   beta <- object$loadings
@@ -222,7 +188,7 @@ fmEsDecomp.sfm <- function(object, p=0.95,
     # return data for asset i
     R.xts <- object$data[,i]
     # get VaR for asset i
-    VaR.fm[i] <- VaR(R.xts, p=p, method=method, invert=invert, ...)
+    VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
     # index of VaR exceedances
     idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
     # number of VaR exceedances
@@ -232,18 +198,16 @@ fmEsDecomp.sfm <- function(object, p=0.95,
     factor.star <- merge(factors.xts, resid.xts[,i])
     colnames(factor.star)[dim(factor.star)[2]] <- "residual"
     
-    if (!invert) {inv=-1} else {inv=1}
-    
     # compute ES as expected value of asset return, such that the given asset 
     # return is less than or equal to its value-at-risk (VaR) and approximated
     # by a kernel estimator.
-    idx <- which(R.xts <= inv*VaR.fm[i])
-    ES.fm[i] <- inv * mean(R.xts[idx], na.rm =TRUE)
+    idx <- which(R.xts <= VaR.fm[i])
+    ES.fm[i] <- mean(R.xts[idx], na.rm =TRUE)
     
     # compute marginal ES as expected value of factor returns, such that the
     # given asset return is less than or equal to its value-at-risk (VaR) and 
     # approximated by a kernel estimator.
-    mES[i,] <- inv * colMeans(factor.star[idx,], na.rm =TRUE)
+    mES[i,] <- colMeans(factor.star[idx,], na.rm =TRUE)
     
     # correction factor to ensure that sum(cES) = portfolio ES
     cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )

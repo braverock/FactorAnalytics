@@ -151,8 +151,8 @@ plot(fit.sub, which=10, f.sub=1:3)
 ## plot (x, which=NULL, f.sub=1:2, a.sub=1:6, plot.single=FALSE, asset.name,
 ##       colorset=c("royalblue","dimgray","olivedrab","firebrick",
 ##                  "goldenrod","mediumorchid","deepskyblue","chocolate",
-##                  "darkslategray"), legend.loc="topleft", las=1, lwd=2,
-##       maxlag=15, VaR.method="historical", ...)
+##                  "darkslategray"),
+##       legend.loc="topleft", las=1, lwd=2, maxlag=15, ...)
 
 ## ----eval=FALSE, results='hide'------------------------------------------
 ## plot(fit.sub)

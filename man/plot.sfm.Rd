@@ -8,8 +8,7 @@
   plot.single = FALSE, asset.name, colorset = c("royalblue", "dimgray",
   "olivedrab", "firebrick", "goldenrod", "mediumorchid", "deepskyblue",
   "chocolate", "darkslategray"), legend.loc = "topleft", las = 1, lwd = 2,
-  maxlag = 15, VaR.method = "historical", eig.max = 0.9, cum.var = TRUE,
-  ...)
+  maxlag = 15, eig.max = 0.9, cum.var = TRUE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{sfm} produced by \code{fitSfm}.}
@@ -83,10 +82,6 @@ in \code{plot}. Default is 1.}
 \item{lwd}{set the line width, same as in \code{\link{plot}}. Default is 2.}
 
 \item{maxlag}{optional number of lags to be calculated for ACF. Default is 15.}
-
-\item{VaR.method}{a method for computing VaR; one of "modified", "gaussian",
-"historical" or "kernel". VaR is computed using
-\code{\link[PerformanceAnalytics]{VaR}}. Default is "historical".}
 
 \item{eig.max}{scalar in (0,1] for limiting the screeplot to factors that
 explain a given percent of the variance. Default is 0.9.}

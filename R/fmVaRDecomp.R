@@ -4,8 +4,7 @@
 #' assets' returns based on Euler's theorem, given the fitted factor model. 
 #' The partial derivative of VaR wrt factor beta is computed as the expected 
 #' factor return given fund return is equal to its VaR and approximated by a
-#' kernel estimator. VaR is computed either as the sample quantile or as an 
-#' estimated quantile using the Cornish-Fisher expansion.
+#' kernel estimator. VaR is computed as the sample quantile.
 #' 
 #' @details The factor model for an asset's return at time \code{t} has the 
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
@@ -19,19 +18,9 @@
 #' being equal to \code{VaR.fm}. This is approximated as described in 
 #' Epperlein & Smillie (2006); a triangular smoothing kernel is used here. 
 #' 
-#' Computation of the risk measure is done using 
-#' \code{\link[PerformanceAnalytics]{VaR}}. Arguments \code{p}, \code{method} 
-#' and \code{invert} are passed to this function. Refer to their help file for 
-#' details and other options.
-#' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param p confidence level for calculation. Default is 0.95.
-#' @param method method for computing VaR, one of "modified","gaussian",
-#' "historical", "kernel". Default is "modified". See details.
-#' @param invert logical; whether to invert the VaR measure. Default is 
-#' \code{FALSE}.
-#' @param ... other optional arguments passed to 
-#' \code{\link[PerformanceAnalytics]{VaR}}.
+#' @param ... other optional arguments passed to \code{\link[stats]{quantile}}.
 #' 
 #' @return A list containing 
 #' \item{VaR.fm}{length-N vector of factor model VaRs of N-asset returns.}
@@ -59,7 +48,6 @@
 #' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
 #' for the different factor model fitting functions.
 #' 
-#' \code{\link[PerformanceAnalytics]{VaR}} for VaR computation.
 #' \code{\link{fmSdDecomp}} for factor model SD decomposition.
 #' \code{\link{fmEsDecomp}} for factor model ES decomposition.
 #' 
@@ -93,17 +81,7 @@ fmVaRDecomp <- function(object, ...){
 #' @method fmVaRDecomp tsfm
 #' @export
 
-fmVaRDecomp.tsfm <- function(object, p=0.95, 
-                             method=c("modified","gaussian","historical",
-                                      "kernel"), invert=FALSE, ...) {
-  
-  # set defaults and check input vailidity
-  method = method[1]
-  
-  if (!(method %in% c("modified", "gaussian", "historical", "kernel"))) {
-    stop("Invalid argument: method must be 'modified', 'gaussian',
-         'historical' or 'kernel'")
-  }
+fmVaRDecomp.tsfm <- function(object, p=0.95, ...) {
   
   # get beta.star
   beta <- object$beta
@@ -134,7 +112,7 @@ fmVaRDecomp.tsfm <- function(object, p=0.95,
     # return data for asset i
     R.xts <- object$data[,i]
     # get VaR for asset i
-    VaR.fm[i] <- VaR(R.xts, p=p, method=method, invert=invert, ...)
+    VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
     # index of VaR exceedances
     idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
     # number of VaR exceedances
@@ -151,8 +129,6 @@ fmVaRDecomp.tsfm <- function(object, p=0.95,
     factor.star <- merge(factors.xts, resid.xts[,i])
     colnames(factor.star)[dim(factor.star)[2]] <- "residual"
     
-    if (!invert) {inv=-1} else {inv=1}
-    
     # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
     # the constant 2.575 corresponds to a triangular kernel 
     eps <- 2.575*sd(R.xts, na.rm =TRUE) * (nrow(R.xts)^(-1/5))
@@ -161,7 +137,7 @@ fmVaRDecomp.tsfm <- function(object, p=0.95,
     # VaR value and bandwidth = epsilon.
     k.weight <- as.vector(1 - abs(R.xts - VaR.fm[i]) / eps)
     k.weight[k.weight<0] <- 0
-    mVaR[i,] <- inv * colMeans(factor.star*k.weight, na.rm =TRUE)
+    mVaR[i,] <- colMeans(factor.star*k.weight, na.rm =TRUE)
     
     # correction factor to ensure that sum(cVaR) = portfolio VaR
     cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,], na.rm=TRUE) )
@@ -183,17 +159,7 @@ fmVaRDecomp.tsfm <- function(object, p=0.95,
 #' @method fmVaRDecomp sfm
 #' @export
 
-fmVaRDecomp.sfm <- function(object, p=0.95, 
-                             method=c("modified","gaussian","historical",
-                                      "kernel"), invert=FALSE, ...) {
-  
-  # set defaults and check input vailidity
-  method = method[1]
-  
-  if (!(method %in% c("modified", "gaussian", "historical", "kernel"))) {
-    stop("Invalid argument: method must be 'modified', 'gaussian',
-         'historical' or 'kernel'")
-  }
+fmVaRDecomp.sfm <- function(object, p=0.95, ...) {
   
   # get beta.star
   beta <- object$loadings
@@ -224,7 +190,7 @@ fmVaRDecomp.sfm <- function(object, p=0.95,
     # return data for asset i
     R.xts <- object$data[,i]
     # get VaR for asset i
-    VaR.fm[i] <- VaR(R.xts, p=p, method=method, invert=invert, ...)
+    VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
     # index of VaR exceedances
     idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
     # number of VaR exceedances
@@ -241,8 +207,6 @@ fmVaRDecomp.sfm <- function(object, p=0.95,
     factor.star <- merge(factors.xts, resid.xts[,i])
     colnames(factor.star)[dim(factor.star)[2]] <- "residual"
     
-    if (!invert) {inv=-1} else {inv=1}
-    
     # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
     # the constant 2.575 corresponds to a triangular kernel 
     eps <- 2.575*sd(R.xts, na.rm =TRUE) * (nrow(R.xts)^(-1/5))
@@ -251,7 +215,7 @@ fmVaRDecomp.sfm <- function(object, p=0.95,
     # VaR value and bandwidth = epsilon.
     k.weight <- as.vector(1 - abs(R.xts - VaR.fm[i]) / eps)
     k.weight[k.weight<0] <- 0
-    mVaR[i,] <- inv * colMeans(factor.star*k.weight, na.rm =TRUE)
+    mVaR[i,] <- colMeans(factor.star*k.weight, na.rm =TRUE)
     
     # correction factor to ensure that sum(cVaR) = portfolio VaR
     cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,], na.rm=TRUE) )
