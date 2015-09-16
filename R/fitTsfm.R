@@ -155,7 +155,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
                     control=fitTsfm.control(...), ...) {
   
   # record the call as an element to be returned
-  call <- match.call()
+  this.call <- match.call()
   
   # set defaults and check input vailidity
   fit.method = fit.method[1]
@@ -230,7 +230,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   } else if (variable.selection == "lars") {
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, lars.args, 
                               cv.lars.args, lars.criterion)
-    input <- list(call=call, data=dat.xts, asset.names=asset.names, 
+    input <- list(call=this.call, data=dat.xts, asset.names=asset.names, 
                   factor.names=factor.names, mkt.name=mkt.name, fit.method=NULL, 
                   variable.selection=variable.selection)
     result <- c(result.lars, input)
@@ -251,10 +251,14 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   rownames(beta) <- asset.names
   # extract r2 and residual sd
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
-  resid.sd <- sapply(reg.list, function(x) summary(x)$sigma)
+  if (fit.method=="DLS") {
+    resid.sd <- sapply(reg.list, function(x) sd(residuals(x)))
+  } else {
+    resid.sd <- sapply(reg.list, function(x) summary(x)$sigma)
+  }
   # create list of return values.
   result <- list(asset.fit=reg.list, alpha=alpha, beta=beta, r2=r2, 
-                 resid.sd=resid.sd, call=call, data=dat.xts, 
+                 resid.sd=resid.sd, call=this.call, data=dat.xts, 
                  asset.names=asset.names, factor.names=factor.names, 
                  mkt.name=mkt.name, fit.method=fit.method, 
                  variable.selection=variable.selection)

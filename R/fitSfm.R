@@ -155,7 +155,7 @@ fitSfm <- function(data, k=1, max.k=NULL, refine=TRUE, sig=0.05, check=FALSE,
                    corr=FALSE, ...) {
   
   # record the call as an element to be returned
-  call <- match.call()  
+  this.call <- match.call()  
   
   # check input data type and coerce to xts; remove NAs
   R.xts <- na.omit(checkData(data, method="xts"))
@@ -221,7 +221,7 @@ fitSfm <- function(data, k=1, max.k=NULL, refine=TRUE, sig=0.05, check=FALSE,
   }
   
   # create list of return values.
-  input <- list(call=call, data=R.xts, asset.names=colnames(R.xts))
+  input <- list(call=this.call, data=R.xts, asset.names=colnames(R.xts))
   result <- c(result, input)
   class(result) <- "sfm"
   return(result)

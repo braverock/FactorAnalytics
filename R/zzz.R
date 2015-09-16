@@ -1,15 +1,17 @@
 #' @import xts
 #' @import zoo
 #' @import foreach
+#' @import rrcov
 
 #' @importFrom PerformanceAnalytics checkData Return.cumulative 
-#' @importFrom robust lmRob step.lmRob
+#' @importFrom robust lmRob step.lmRob covRob covClassic
 #' @importFrom leaps regsubsets
 #' @importFrom lars lars cv.lars
 #' @importFrom lmtest coeftest.default
 #' @importFrom sandwich vcovHC.default vcovHAC.default
 #' @importFrom MASS ginv
 #' @importFrom tseries tsbootstrap
+#' @importFrom robustbase scaleTau2 covOGK
 
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus 
 #' chart.Histogram chart.QQPlot chart.Correlation

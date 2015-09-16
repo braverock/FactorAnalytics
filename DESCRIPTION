@@ -1,8 +1,8 @@
 Package: factorAnalytics
 Type: Package
 Title: Factor Analytics
-Version: 2.0.26
-Date: 2015-09-14
+Version: 2.0.27
+Date: 2015-09-16
 Author: Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
 Description: Linear factor model fitting for asset returns (three major types- 
@@ -15,11 +15,13 @@ License: GPL-2
 Depends:
     R (>= 3.0.0),
     xts (>= 0.9),
-    foreach (>= 1.4)
+    foreach (>= 1.4),
+    rrcov
 Imports: 
     PerformanceAnalytics(>= 1.4),
     zoo,
-    corrplot,  
+    corrplot,
+    robustbase,
     robust, 
     leaps, 
     lars,

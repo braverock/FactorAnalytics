@@ -10,11 +10,17 @@
   Date range: 1996-02-29 through 2003-12-31
 }
 \details{
-  ID variables: DATE, TICKER
+  Date variable: DATE
   
-  Continuous variables: RETURN, PRICE, VOLUME, SHARES.OUT, MARKET.EQUITY, 
+  Stock ID: TICKER
+  
+  Stock return and price variables: RETURN, PRICE
+  
+  Numeric exposures: VOLUME, SHARES.OUT, MARKET.EQUITY, 
   LTDEBT, NET.SALES, COMMON.EQUITY, NET.INCOME, STOCKHOLDERS.EQUITY, 
-  LOG.MARKETCAP, LOG.PRICE, BOOK2MARKET 
+  LOG.MARKETCAP, LOG.PRICE, BOOK2MARKET
+  
+  Note: Numeric exposures are standardized as z-scores.
   
   Categorical variables: GICS, GICS.INDUSTRY, GICS.SECTOR
 }
