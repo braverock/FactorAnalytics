@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.sfm.r
 \name{print.sfm}
 \alias{print.sfm}
-\title{Prints out a fitted statictical factor model object}
+\title{Prints a fitted statistical factor model}
 \usage{
 \method{print}{sfm}(x, digits = max(3, .Options$digits - 3), ...)
 }
@@ -16,8 +16,9 @@ significant digits. Default is 3.}
 }
 \description{
 S3 \code{print} method for object of class \code{sfm}. Prints
-the call, factor model dimension, factor loadings, r-squared and residual
-volatilities from the fitted object.
+the call, factor model dimensions and summary statistics for the estimated
+factor loadings, r-squared values and residual volatilities from the fitted
+object.
 }
 \examples{
 data(StockReturns)

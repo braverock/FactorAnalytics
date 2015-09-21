@@ -1,8 +1,9 @@
-#' @title Prints out a fitted statictical factor model object
+#' @title Prints a fitted statistical factor model
 #' 
 #' @description S3 \code{print} method for object of class \code{sfm}. Prints 
-#' the call, factor model dimension, factor loadings, r-squared and residual 
-#' volatilities from the fitted object. 
+#' the call, factor model dimensions and summary statistics for the estimated 
+#' factor loadings, r-squared values and residual volatilities from the fitted 
+#' object. 
 #' 
 #' @param x an object of class \code{sfm} produced by \code{fitSfm}.
 #' @param digits an integer value, to indicate the required number of 

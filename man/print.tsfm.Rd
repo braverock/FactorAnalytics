@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.tsfm.r
 \name{print.tsfm}
 \alias{print.tsfm}
-\title{Prints out a fitted time series factor model object}
+\title{Prints a fitted time series factor model}
 \usage{
 \method{print}{tsfm}(x, digits = max(3, .Options$digits - 3), ...)
 }

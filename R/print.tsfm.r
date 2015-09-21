@@ -1,4 +1,4 @@
-#' @title Prints out a fitted time series factor model object
+#' @title Prints a fitted time series factor model
 #' 
 #' @description S3 \code{print} method for object of class \code{tsfm}. Prints 
 #' the call, factor model dimension, regression coefficients, r-squared and 

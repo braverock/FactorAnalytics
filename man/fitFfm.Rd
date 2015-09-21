@@ -8,7 +8,7 @@
 \title{Fit a fundamental factor model using cross-sectional regression}
 \usage{
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
-  fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.scale = FALSE,
+  fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
   full.resid.cov = FALSE, z.score = FALSE, ...)
 
 \method{coef}{ffm}(object, ...)
@@ -33,24 +33,24 @@ coercible to class \code{Date}.}
 fundamental factor exposures.}
 
 \item{weight.var}{character; name of the variable containing the weights
-used when standarizing factor exposures (converting exposures to z-scores).
-Default is \code{NULL}. See Details.}
+used when standarizing style factor exposures. Default is \code{NULL}. See
+Details.}
 
 \item{fit.method}{method for estimating factor returns; one of "LS", "WLS"
 "Rob" or "W-Rob". See details. Default is "LS".}
 
-\item{rob.scale}{logical; If \code{TRUE}, robust estimates of covariance,
-correlation and univariate scale are computed as appropriate (see Details).
-Default is \code{FALSE}.}
+\item{rob.stats}{logical; If \code{TRUE}, robust estimates of covariance,
+correlation, location and univariate scale are computed as appropriate (see
+Details). Default is \code{FALSE}.}
 
 \item{full.resid.cov}{logical; If \code{TRUE}, a full residual covariance
 matrix is estimated. Otherwise, a diagonal residual covariance matrix is
 estimated. Default is \code{FALSE}.}
 
-\item{z.score}{logical; If \code{TRUE}, exposures will be converted to
+\item{z.score}{logical; If \code{TRUE}, style exposures will be converted to
 z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.}
 
-\item{...}{other arguments passed}
+\item{...}{potentially further arguments passed.}
 
 \item{object}{a fit object of class \code{ffm} which is returned by
 \code{fitFfm}}
@@ -91,8 +91,9 @@ using the factor exposures from the last time period.}
 \item{fit.method}{fit.method as input.}
 \item{asset.names}{length-N vector of asset names.}
 \item{factor.names}{length-K vector of factor.names.}
+\item{time.periods}{length-T vector of dates.}
 Where N is the number of assets, K is the number of factors (including the
-intercept or dummy variables) and T is the number of time periods.
+intercept or dummy variables) and T is the number of unique time periods.
 }
 \description{
 Fit a fundamental (cross-sectional) factor model using ordinary
@@ -109,20 +110,27 @@ Estimation method "LS" corresponds to ordinary least squares using
 of the residual variances from LS regression as weights (feasible GLS).
 Similarly, "W-Rob" is weighted robust regression.
 
-\code{weight.var} specifies the variable (e.g. market-cap) used to weight
-the exposures before converting them to z-scores in each time period. Default
-option equally weights exposures of different assets each period.
+Standardizing style factor exposures: The exposures can be standardized into
+z-scores using regular or robust (see \code{rob.stats}) measures of location
+and scale. Further, \code{weight.var}, a variable such as market-cap, can be
+used to compute the weighted mean exposure, and an equal-weighted standard
+deviation of the exposures about the weighted mean. This may help avoid an
+ill-conditioned covariance matrix. Default option equally weights exposures
+of different assets each period.
 
-If \code{rob.scale=TRUE}, \code{\link[robust]{covRob}} is used to compute a
+If \code{rob.stats=TRUE}, \code{\link[robust]{covRob}} is used to compute a
 robust estimate of the factor covariance/correlation matrix, and,
-\code{\link[robustbase]{scaleTau2}} is used to compute robust tau-estimates of
-univariate scale for residuals during "WLS" or "W-Rob" regressions and for
-standardizing numeric factor exposures into z-scores.
+\code{\link[robustbase]{scaleTau2}} is used to compute robust tau-estimates
+of univariate scale for residuals during "WLS" or "W-Rob" regressions. When
+standardizing style exposures, the \code{\link[stats]{median}} and
+\code{\link[stats]{mad}} are used for location and scale respectively.
 
-At this time, the regression can contain only one character exposure
-(industry, sector, country etc.), otherwise the exposure matrix will become
-singular. Same is true of an intercept term. We hope to expand the function
-to allow more than one dummy variable in the future.
+At this time, the regression can contain only one dummy exposure (one of
+industry, sector, country etc.) or intercept term, otherwise the exposure
+matrix will become singular. We plan to expand the function to allow
+specifying more than one dummy variable, and, dummy variable(s) in
+combination with an intercept term in the future. (Ex: Country + Sector +
+Intercept)
 
 The original function was designed by Doug Martin and initially implemented
 in S-PLUS by a number of University of Washington Ph.D. students:
@@ -144,10 +152,10 @@ names(fit)
 exposure.vars <- c("GICS.SECTOR")
 fit1 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
                date.var="DATE", exposure.vars=exposure.vars,
-               fit.method="Rob", rob.scale=TRUE)
+               fit.method="Rob", rob.stats=TRUE)
 
-# example with industry dummy included
-exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.INDUSTRY")
+# example with sector dummy included
+exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
 fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
               date.var="DATE", exposure.vars=exposure.vars)
 }
