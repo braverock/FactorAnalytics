@@ -396,6 +396,12 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     if (!(all(f.sub %in% x$factor.names)) && !(all(f.sub %in% 1:k))) {
       stop("Invalid argument: f.sub is not a valid subset of factor names.") 
     }
+    if (is.character(f.sub)) {
+      f.sub <- which(f.sub %in% x$factor.names)
+    }
+    if (is.character(a.sub)) {
+      f.sub <- which(x$asset.names==a.sub)
+    }
     
     # plot selection
     repeat {

@@ -1,15 +1,15 @@
 Package: factorAnalytics
 Type: Package
 Title: Factor Analytics
-Version: 2.0.28
-Date: 2015-09-21
+Version: 2.0.29
+Date: 2016-01-16
 Author: Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
-Description: Linear factor model fitting for asset returns (three major types- 
-    time series, fundamental and statistical factor models); related risk 
-    (volatility, VaR and ES) and performance attribution (factor-contributed vs 
-    idiosyncratic returns); tabular displays of risk and performance reports; 
-    factor model Monte Carlo, single and multiple imputation methods for 
+Description: Linear factor model fitting for asset returns (three major types-
+    time series, fundamental and statistical factor models); related risk
+    (volatility, VaR and ES) and performance attribution (factor-contributed vs
+    idiosyncratic returns); tabular displays of risk and performance reports;
+    factor model Monte Carlo, single and multiple imputation methods for
     simulating returns and backfilling unequal histories.
 License: GPL-2
 Depends:
@@ -17,13 +17,13 @@ Depends:
     xts (>= 0.9),
     foreach (>= 1.4),
     rrcov (>= 1.3)
-Imports: 
+Imports:
     PerformanceAnalytics(>= 1.4),
     zoo,
     corrplot,
     robustbase,
-    robust, 
-    leaps, 
+    robust,
+    leaps,
     lars,
     strucchange,
     lmtest,
@@ -42,3 +42,4 @@ Suggests:
 LazyLoad: yes
 LazyDataCompression: xz
 URL: http://r-forge.r-project.org/projects/returnanalytics/
+RoxygenNote: 5.0.1

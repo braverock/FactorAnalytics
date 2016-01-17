@@ -40,7 +40,8 @@
 #' in S-PLUS by a number of University of Washington Ph.D. students:
 #' Christopher Green, Eric Aldrich, and Yindeng Jiang. Guy Yollin ported the
 #' function to R and Yi-An Chen modified that code. Sangeetha Srinivasan
-#' re-factored, updated and expanded the functionalities and S3 methods.
+#' re-factored, tested, corrected and expanded the functionalities and S3 
+#' methods.
 #'
 #' @param data data.frame of the balanced panel data containing the variables 
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and 
@@ -76,9 +77,9 @@
 #' 
 #' An object of class \code{"ffm"} is a list containing the following 
 #' components:
-#' \item{asset.fit}{list of fitted objects for each asset. Each object is of 
-#' class \code{lm} if \code{fit.method="LS" or "WLS"}, or, class \code{lmRob} 
-#' if \code{fit.method="Rob" or "W-Rob"}.}
+#' \item{factor.fit}{list of fitted objects for each time period. Each object 
+#' is of class \code{lm} if \code{fit.method="LS" or "WLS"}, or, class 
+#' \code{lmRob} if \code{fit.method="Rob" or "W-Rob"}.}
 #' \item{beta}{N x K matrix of factor exposures for the last time period.}
 #' \item{factor.returns}{xts object of K-factor returns (including intercept).}
 #' \item{residuals}{xts object of residuals for N-assets.}
@@ -87,9 +88,6 @@
 #' \item{resid.cov}{N x N covariance matrix of residuals.}
 #' \item{return.cov}{N x N return covariance estimated by the factor model, 
 #' using the factor exposures from the last time period.}
-#' \item{factor.corr}{N x N correlation matrix of the factor returns.}
-#' \item{resid.corr}{N x N correlation matrix of residuals.}
-#' \item{return.corr}{N x N correlation matrix of asset returns.}
 #' \item{resid.var}{length-N vector of residual variances.}
 #' \item{call}{the matched function call.}
 #' \item{data}{data frame object as input.}
@@ -105,7 +103,7 @@
 #' Where N is the number of assets, K is the number of factors (including the 
 #' intercept or dummy variables) and T is the number of unique time periods.
 #'
-#' @author Guy Yollin, Yi-An Chen and Sangeetha Srinivasan
+#' @author Sangeetha Srinivasan, Guy Yollin and Yi-An Chen
 #'
 #' @references
 #' Menchero, J. (2010). The Characteristics of Factor Portfolios. Journal of
@@ -192,6 +190,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     stop("Invalid args: control parameter 'z.score' must be logical")
   }
   
+  # initialize to avoid R CMD check's NOTE: no visible binding for global var
+  DATE=NULL 
+  W=NULL
+  
   # ensure dates are in required format
   data[[date.var]] <- as.Date(data[[date.var]])
   # extract unique time periods from data
@@ -268,7 +270,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       resid.var <- apply(sapply(reg.list, residuals), 1, var)
     }
     # add column of weights to data replicating resid.var for each period
-    data <- cbind(data, W=resid.var)
+    data <- cbind(data, W=1/resid.var)
   }
   
   # estimate factor returns using WLS or weighted-Robust regression
@@ -277,13 +279,13 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     reg.list <- by(data=data, INDICES=data[[date.var]], 
                    FUN=function(x) {
                      lm(data=x, formula=fm.formula, contrasts=contrasts.list, 
-                        na.action=na.fail, weights=~W)
+                        na.action=na.fail, weights=W)
                    })
   } else if (fit.method=="W-Rob") {
     reg.list <- by(data=data, INDICES=data[[date.var]], 
                    FUN=function(x) {
                      lmRob(data=x, formula=fm.formula, contrasts=contrasts.list, 
-                           na.action=na.fail, weights=~W, 
+                           na.action=na.fail, weights=W, 
                            mxr=200, mxf=200, mxs=200)
                    })
   }
@@ -300,7 +302,6 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   K <- length(factor.names)
   
   # exposure matrix B or beta for the last time period - N x K
-  DATE=NULL # to avoid R CMD check's NOTE: no visible binding for global var
   beta <- model.matrix(fm.formula, data=subset(data, DATE==time.periods[TP]))
   rownames(beta) <- asset.names
   
@@ -353,17 +354,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   # return covariance estimated by the factor model
   return.cov <-  beta %*% factor.cov %*% t(beta) + resid.cov
   
-  # factor, residual and return correlations
-  factor.corr <- cov2cor(factor.cov)
-  resid.corr <- cov2cor(resid.cov)
-  return.corr <- cov2cor(return.cov)
-  
   # create list of return values.
-  result <- list(asset.fit=reg.list, beta=beta, factor.returns=factor.returns, 
+  result <- list(factor.fit=reg.list, beta=beta, factor.returns=factor.returns, 
                  residuals=residuals, r2=r2, factor.cov=factor.cov, 
                  resid.cov=resid.cov, return.cov=return.cov, 
-                 factor.corr=factor.corr, resid.corr=resid.corr, 
-                 return.corr=return.corr, resid.var=resid.var, call=this.call, 
+                 resid.var=resid.var, call=this.call, 
                  data=data, date.var=date.var, ret.var=ret.var, 
                  asset.var=asset.var, exposure.vars=exposure.vars, 
                  weight.var=weight.var, fit.method=fit.method, 
