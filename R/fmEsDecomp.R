@@ -4,8 +4,8 @@
 #' Expected Shortfall (ES) of assets' returns  based on Euler's theorem, given 
 #' the fitted factor model. The partial derivative of ES with respect to factor 
 #' beta is computed as the expected factor return given fund return is less 
-#' than or equal to its value-at-risk (VaR). VaR is computed as the sample 
-#' quantile.
+#' than or equal to its value-at-risk (VaR). Option to choose between 
+#' non-parametric and Normal.
 #' 
 #' @details The factor model for an asset's return at time \code{t} has the 
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
@@ -21,6 +21,13 @@
 #' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param p confidence level for calculation. Default is 0.95.
+#' @param type one of "np" (non-parametric) or "normal" for calculating VaR. 
+#' Default is "np".
+#' @param use an optional character string giving a method for computing factor
+#' covariances in the presence of missing values. This must be (an 
+#' abbreviation of) one of the strings "everything", "all.obs", 
+#' "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
+#' "pairwise.complete.obs".
 #' @param ... other optional arguments passed to \code{\link[stats]{quantile}}.
 #' 
 #' @return A list containing 
@@ -84,7 +91,15 @@ fmEsDecomp <- function(object, ...){
 #' @method fmEsDecomp tsfm
 #' @export
 
-fmEsDecomp.tsfm <- function(object, p=0.95, ...) {
+fmEsDecomp.tsfm <- function(object, p=0.95, type=c("np","normal"),  
+                            use="pairwise.complete.obs", ...) {
+  
+  # set default for type
+  type = type[1]
+  
+  if (!(type %in% c("np","normal"))) {
+    stop("Invalid args: type must be 'np' or 'normal' ")
+  }
   
   # get beta.star
   beta <- object$beta
@@ -115,28 +130,29 @@ fmEsDecomp.tsfm <- function(object, p=0.95, ...) {
     # return data for asset i
     R.xts <- object$data[,i]
     # get VaR for asset i
-    VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    if (type=="np") {
+      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    } else {
+      VaR.fm[i] <- mean(R.xts, na.rm=TRUE) + sd(R.xts, na.rm=TRUE)*qnorm(1-p)
+    }
     # index of VaR exceedances
     idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
     # number of VaR exceedances
     n.exceed[i] <- length(idx.exceed[[i]])
     
+    # compute ES as expected value of asset return, such that the given asset 
+    # return is less than or equal to its value-at-risk (VaR)
+    ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
+    
     # get F.star data object
     factor.star <- merge(factors.xts, resid.xts[,i])
     colnames(factor.star)[dim(factor.star)[2]] <- "residual"
     
-    # compute ES as expected value of asset return, such that the given asset 
-    # return is less than or equal to its value-at-risk (VaR) and approximated
-    # by a kernel estimator.
-    idx <- which(R.xts <= VaR.fm[i])
-    ES.fm[i] <- mean(R.xts[idx], na.rm =TRUE)
+    # compute marginal ES as expected value of factor returns, when the asset's 
+    # return is less than or equal to its value-at-risk (VaR)
+    mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
     
-    # compute marginal ES as expected value of factor returns, such that the
-    # given asset return is less than or equal to its value-at-risk (VaR) and 
-    # approximated by a kernel estimator.
-    mES[i,] <- colMeans(factor.star[idx,], na.rm =TRUE)
-    
-    # correction factor to ensure that sum(cES) = portfolio ES
+    # correction factor to ensure that sum(cES) = asset ES
     cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
     
     # compute marginal, component and percentage contributions to ES
@@ -156,7 +172,15 @@ fmEsDecomp.tsfm <- function(object, p=0.95, ...) {
 #' @method fmEsDecomp sfm
 #' @export
 
-fmEsDecomp.sfm <- function(object, p=0.95, ...) {
+fmEsDecomp.sfm <- function(object, p=0.95, type=c("np","normal"),  
+                           use="pairwise.complete.obs", ...) {
+  
+  # set default for type
+  type = type[1]
+  
+  if (!(type %in% c("np","normal"))) {
+    stop("Invalid args: type must be 'np' or 'normal' ")
+  }
   
   # get beta.star
   beta <- object$loadings
@@ -188,28 +212,29 @@ fmEsDecomp.sfm <- function(object, p=0.95, ...) {
     # return data for asset i
     R.xts <- object$data[,i]
     # get VaR for asset i
-    VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    if (type=="np") {
+      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    } else {
+      VaR.fm[i] <- mean(R.xts, na.rm=TRUE) + sd(R.xts, na.rm=TRUE)*qnorm(1-p)
+    }
     # index of VaR exceedances
     idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
     # number of VaR exceedances
     n.exceed[i] <- length(idx.exceed[[i]])
     
+    # compute ES as expected value of asset return, such that the given asset 
+    # return is less than or equal to its value-at-risk (VaR)
+    ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
+    
     # get F.star data object
     factor.star <- merge(factors.xts, resid.xts[,i])
     colnames(factor.star)[dim(factor.star)[2]] <- "residual"
     
-    # compute ES as expected value of asset return, such that the given asset 
-    # return is less than or equal to its value-at-risk (VaR) and approximated
-    # by a kernel estimator.
-    idx <- which(R.xts <= VaR.fm[i])
-    ES.fm[i] <- mean(R.xts[idx], na.rm =TRUE)
+    # compute marginal ES as expected value of factor returns, when the asset's 
+    # return is less than or equal to its value-at-risk (VaR)
+    mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
     
-    # compute marginal ES as expected value of factor returns, such that the
-    # given asset return is less than or equal to its value-at-risk (VaR) and 
-    # approximated by a kernel estimator.
-    mES[i,] <- colMeans(factor.star[idx,], na.rm =TRUE)
-    
-    # correction factor to ensure that sum(cES) = portfolio ES
+    # correction factor to ensure that sum(cES) = asset ES
     cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
     
     # compute marginal, component and percentage contributions to ES
@@ -224,4 +249,3 @@ fmEsDecomp.sfm <- function(object, p=0.95, ...) {
   
   return(fm.ES.decomp)
 }
-
