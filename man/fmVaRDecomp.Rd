@@ -8,9 +8,11 @@
 \usage{
 fmVaRDecomp(object, ...)
 
-\method{fmVaRDecomp}{tsfm}(object, p = 0.95, ...)
+\method{fmVaRDecomp}{tsfm}(object, p = 0.95, type = c("np", "normal"),
+  use = "pairwise.complete.obs", ...)
 
-\method{fmVaRDecomp}{sfm}(object, p = 0.95, ...)
+\method{fmVaRDecomp}{sfm}(object, p = 0.95, type = c("np", "normal"),
+  use = "pairwise.complete.obs", ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
@@ -18,6 +20,15 @@ fmVaRDecomp(object, ...)
 \item{...}{other optional arguments passed to \code{\link[stats]{quantile}}.}
 
 \item{p}{confidence level for calculation. Default is 0.95.}
+
+\item{type}{one of "np" (non-parametric) or "normal" for calculating VaR. 
+Default is "np".}
+
+\item{use}{an optional character string giving a method for computing factor
+covariances in the presence of missing values. This must be (an 
+abbreviation of) one of the strings "everything", "all.obs", 
+"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
+"pairwise.complete.obs".}
 }
 \value{
 A list containing 
@@ -33,9 +44,9 @@ Where, \code{K} is the number of factors and N is the number of assets.
 \description{
 Compute the factor contributions to Value-at-Risk (VaR) of 
 assets' returns based on Euler's theorem, given the fitted factor model. 
-The partial derivative of VaR wrt factor beta is computed as the expected 
+The partial derivative of VaR w.r.t. factor beta is computed as the expected 
 factor return given fund return is equal to its VaR and approximated by a
-kernel estimator. VaR is computed as the sample quantile.
+kernel estimator. Option to choose between non-parametric and Normal.
 }
 \details{
 The factor model for an asset's return at time \code{t} has the 
