@@ -175,8 +175,9 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     den <- density(Residuals)
     xval <- den$x
     den.norm <- dnorm(xval, mean=mean(Residuals), sd=resid.sd)
-    den.st <- dst(xval, dp=st.mple(x=matrix(1,nrow(Residuals)), 
-                                   y=as.vector(Residuals), opt.method="BFGS")$dp)
+    dp.st <- st.mple(x=matrix(1,nrow(Residuals)), y=as.vector(Residuals), opt.method="BFGS")$dp
+    den.st <- dst(xval, dp=dp.st)
+    dp.st <- signif(dp.st, 2)
     
     # plot selection
     repeat {
@@ -278,6 +279,8 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                lines(xval, den.norm, col=colorset[2], lwd=lwd, lty="dashed")
                legend(x=legend.loc, lty=c("solid","dashed"), col=c(colorset[1:2]), 
                       lwd=lwd, bty="n", legend=c("KDE","Normal"))
+               mtext(text=paste("Normal (mu=",round(mean(Residuals),4),", sd=",
+                                round(resid.sd,4),")",sep=""), side=3, line=0.25, cex=0.8)
              }, "12L" = {
                ## Non-parametric density of residuals with skew-t overlaid
                ymax <- ceiling(max(0,den$y,den.st))
@@ -287,6 +290,8 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                lines(xval, den.st, col=colorset[2], lty="dashed", lwd=lwd)
                legend(x=legend.loc, lty=c("solid","dashed"), col=c(colorset[1:2]), 
                       lwd=lwd, bty="n", legend=c("KDE","Skew-t"))
+               mtext(text=paste("Skew-t (xi=",dp.st[1],", omega=",dp.st[2],", alpha=",dp.st[3],
+                                ", nu=",dp.st[4],")",sep=""), side=3, line=0.25, cex=0.8)
              }, "13L" = {
                ## Histogram of residuals with non-parametric density and normal overlaid
                methods <- c("add.density","add.normal","add.rug")
@@ -295,6 +300,8 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                                lwd=lwd, main=paste("Histogram of residuals:",i), ...)
                legend(x=legend.loc, col=colorset[c(2,3)], lwd=lwd, bty="n", 
                       legend=c("KDE","Normal"))
+               mtext(text=paste("Normal (mu=",round(mean(Residuals),4),", sd=",
+                                round(resid.sd,4),")",sep=""), side=3, line=0.25, cex=0.8)
              }, "14L" = {
                ##  QQ-plot of residuals
                chart.QQPlot(Residuals, envelope=0.95, col=colorset[1:2], lwd=lwd,
@@ -430,9 +437,6 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                plot(
                  barchart(as.matrix(x$alpha)[a.sub,], main="Factor model Alpha (Intercept)", xlab="", col=colorset[1], ...)
                )
-               #                barplot(coef(x)[a.sub,1], main="Factor model Alpha (Intercept)", 
-               #                        names.arg=rownames(coef(x))[a.sub], col=colorset[1], las=2, ...)
-               #                abline(h=0, lwd=1, lty=1, col=1)
              }, 
              "2L" = {
                ## Factor model coefficients: Betas
@@ -444,14 +448,6 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  barchart(Y~X|Z, main="Factor model Betas \n", xlab="", as.table=TRUE,
                           origin=0, col=colorset[1], scales=list(relation="free"), ...)
                )
-               #                par(mfrow=c(ceiling(length(f.sub)/2),2))
-               #                for (i in f.sub) {
-               #                  main=paste(colnames(coef(x))[i+1], "factor Betas")
-               #                  barplot(coef(x)[,i+1], main=main, names.arg=rownames(coef(x)), 
-               #                          col=colorset[1], las=2, ...)
-               #                  abline(h=0, lwd=1, lty=1, col=1)
-               #                }
-               #                par(mfrow=c(1,1))
              }, 
              "3L" = {    
                ## Actual and fitted asset returns
