@@ -2,6 +2,7 @@
 % Please edit documentation in R/fmSdDecomp.R
 \name{fmSdDecomp}
 \alias{fmSdDecomp}
+\alias{fmSdDecomp.ffm}
 \alias{fmSdDecomp.sfm}
 \alias{fmSdDecomp.tsfm}
 \title{Decompose standard deviation into individual factor contributions}
@@ -11,6 +12,8 @@ fmSdDecomp(object, ...)
 \method{fmSdDecomp}{tsfm}(object, use = "pairwise.complete.obs", ...)
 
 \method{fmSdDecomp}{sfm}(object, use = "pairwise.complete.obs", ...)
+
+\method{fmSdDecomp}{ffm}(object, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
