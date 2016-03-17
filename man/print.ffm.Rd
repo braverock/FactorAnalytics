@@ -18,7 +18,10 @@ significant digits. Default is 3.}
 S3 \code{print} method for object of class \code{ffm}. Prints 
 the call, factor model dimension and summary statistics for the estimated
 factor returns, cross-sectional r-squared values and residual variances 
-from the fitted object.
+from the fitted object. 
+
+Refer to \code{\link{summary.ffm}} for a more detailed summary of the fit at 
+each time period.
 }
 \examples{
 data(Stock.df)

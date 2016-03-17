@@ -56,22 +56,13 @@
 #' data(StockReturns)
 #' sfm.pca.fit <- fitSfm(r.M, k=2)
 #' fmCov(sfm.pca.fit)
-#'                       
-#' \dontrun{
-#' # Fundamental Factor Model
-#' data(stock)
-#' # there are 447 assets  
-#' exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
-#' beta.mat <- subset(stock, DATE=="2003-12-31")[, exposure.names]
-#' beta.mat1 <- cbind(rep(1, 447), beta.mat1)
-#' # FM return covariance 
-#' fit.fund <- fitFfm(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP"), 
-#'                    data=stock, returnsvar="RETURN", datevar="DATE", 
-#'                    assetvar="TICKER", wls=TRUE, regression="classic", 
-#'                    covariance="classic", full.resid.cov=FALSE)
-#' ret.cov.fundm <- fmCov(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.sd)
-#' fit.fund$returns.cov$cov == ret.cov.fundm
-#' }
+#' 
+#' # Fundamental factor Model
+#' data(Stock.df)
+#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
+#' fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+#'               date.var="DATE", exposure.vars=exposure.vars)
+#' fmCov(fit2)
 #' 
 #' @rdname fmCov
 #' @export
@@ -130,3 +121,12 @@ fmCov.sfm <- function(object, use="pairwise.complete.obs", ...) {
   return(object$Omega)
 }
 
+#' @rdname fmCov
+#' @method fmCov ffm
+#' @export
+
+fmCov.ffm <- function(object, use="pairwise.complete.obs", ...) {
+  
+  # already computed via fitFfm function
+  return(object$return.cov)
+}

@@ -2,6 +2,7 @@
 % Please edit documentation in R/fmCov.R
 \name{fmCov}
 \alias{fmCov}
+\alias{fmCov.ffm}
 \alias{fmCov.sfm}
 \alias{fmCov.tsfm}
 \title{Covariance Matrix for assets' returns from fitted factor model.}
@@ -11,6 +12,8 @@ fmCov(object, ...)
 \method{fmCov}{tsfm}(object, factor.cov, use = "pairwise.complete.obs", ...)
 
 \method{fmCov}{sfm}(object, use = "pairwise.complete.obs", ...)
+
+\method{fmCov}{ffm}(object, use = "pairwise.complete.obs", ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
@@ -64,22 +67,13 @@ fmCov(fit)
 data(StockReturns)
 sfm.pca.fit <- fitSfm(r.M, k=2)
 fmCov(sfm.pca.fit)
-                      
-\dontrun{
-# Fundamental Factor Model
-data(stock)
-# there are 447 assets  
-exposure.names <- c("BOOK2MARKET", "LOG.MARKETCAP") 
-beta.mat <- subset(stock, DATE=="2003-12-31")[, exposure.names]
-beta.mat1 <- cbind(rep(1, 447), beta.mat1)
-# FM return covariance 
-fit.fund <- fitFfm(exposure.names=c("BOOK2MARKET", "LOG.MARKETCAP"), 
-                   data=stock, returnsvar="RETURN", datevar="DATE", 
-                   assetvar="TICKER", wls=TRUE, regression="classic", 
-                   covariance="classic", full.resid.cov=FALSE)
-ret.cov.fundm <- fmCov(beta.mat1,fit.fund$factor.cov$cov,fit.fund$resid.sd)
-fit.fund$returns.cov$cov == ret.cov.fundm
-}
+
+# Fundamental factor Model
+data(Stock.df)
+exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
+fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+              date.var="DATE", exposure.vars=exposure.vars)
+fmCov(fit2)
 
 }
 \author{

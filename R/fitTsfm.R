@@ -351,7 +351,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # choose best subset of factors depending on specified subset size
     fm.subsets <- do.call("regsubsets", c(list(fm.formula,data=quote(reg.xts)), 
-                                        regsubsets.args))
+                                          regsubsets.args))
     sum.sub <- summary(fm.subsets)
     
     # choose best model of a given subset size nvmax=nvmin (or) 
@@ -457,7 +457,7 @@ WeightsDLS <- function(t,d) {
 #
 makePaddedDataFrame <- function(l) {
   DF <- do.call("rbind", lapply(lapply(l, unlist), "[", 
-                              unique(unlist(c(sapply(l,names))))))
+                                unique(unlist(c(sapply(l,names))))))
   DF <- as.data.frame(DF)
   names(DF) <- unique(unlist(c(sapply(l,names))))
   # as.matrix(DF) # if matrix output needed

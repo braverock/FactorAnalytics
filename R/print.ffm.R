@@ -5,6 +5,9 @@
 #' factor returns, cross-sectional r-squared values and residual variances 
 #' from the fitted object. 
 #' 
+#' Refer to \code{\link{summary.ffm}} for a more detailed summary of the fit at 
+#' each time period.
+#' 
 #' @param x an object of class \code{ffm} produced by \code{fitFfm}.
 #' @param digits an integer value, to indicate the required number of 
 #' significant digits. Default is 3.

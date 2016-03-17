@@ -77,9 +77,10 @@
 #' 
 #' An object of class \code{"ffm"} is a list containing the following 
 #' components:
-#' \item{factor.fit}{list of fitted objects for each time period. Each object 
-#' is of class \code{lm} if \code{fit.method="LS" or "WLS"}, or, class 
-#' \code{lmRob} if \code{fit.method="Rob" or "W-Rob"}.}
+#' \item{factor.fit}{list of fitted objects that estimate factor returns in each 
+#' time period. Each fitted object is of class \code{lm} if 
+#' \code{fit.method="LS" or "WLS"}, or, class \code{lmRob} if 
+#' \code{fit.method="Rob" or "W-Rob"}.}
 #' \item{beta}{N x K matrix of factor exposures for the last time period.}
 #' \item{factor.returns}{xts object of K-factor returns (including intercept).}
 #' \item{residuals}{xts object of residuals for N-assets.}
