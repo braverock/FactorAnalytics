@@ -2,6 +2,7 @@
 % Please edit documentation in R/fmVaRDecomp.R
 \name{fmVaRDecomp}
 \alias{fmVaRDecomp}
+\alias{fmVaRDecomp.ffm}
 \alias{fmVaRDecomp.sfm}
 \alias{fmVaRDecomp.tsfm}
 \title{Decompose VaR into individual factor contributions}
@@ -13,6 +14,8 @@ fmVaRDecomp(object, ...)
 
 \method{fmVaRDecomp}{sfm}(object, p = 0.95, type = c("np", "normal"),
   use = "pairwise.complete.obs", ...)
+
+\method{fmVaRDecomp}{ffm}(object, p = 0.95, type = c("np", "normal"), ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
