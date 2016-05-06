@@ -408,7 +408,7 @@ coef.ffm <- function(object, ...) {
 fitted.ffm <- function(object, ...) {  
   # get fitted values for all assets in each time period
   # transpose and convert into xts/zoo objects
-  fitted.xts <- checkData(t(sapply(object$asset.fit, fitted)))
+  fitted.xts <- checkData(t(sapply(object$factor.fit, fitted)))
   names(fitted.xts) <- object$asset.names
   return(fitted.xts)
 }
