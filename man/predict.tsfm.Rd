@@ -17,7 +17,9 @@ containing the variables with which to predict.}
 \code{\link[lars]{predict.lars}} such as \code{mode}.}
 }
 \value{
-\code{predict.tsfm} produces a vector or a matrix of predictions.
+\code{predict.tsfm} produces a matrix of return predictions, if all assets 
+have equal history. If not, a list of predicted return vectors of unequal 
+length is produced.
 }
 \description{
 S3 \code{predict} method for object of class \code{tsfm}. It 

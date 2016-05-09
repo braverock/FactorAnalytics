@@ -12,7 +12,9 @@
 #' \code{\link[lars]{predict.lars}} such as \code{mode}.
 #' 
 #' @return 
-#' \code{predict.tsfm} produces a vector or a matrix of predictions.
+#' \code{predict.tsfm} produces a matrix of return predictions, if all assets 
+#' have equal history. If not, a list of predicted return vectors of unequal 
+#' length is produced.
 #' 
 #' @author Yi-An Chen and Sangeetha Srinivasan
 #' 
@@ -34,12 +36,10 @@
 #' @export
 #' 
 
-predict.tsfm <- function(object, newdata = NULL, ...){
+predict.tsfm <- function(object, newdata=NULL, ...){
   
   if (missing(newdata) || is.null(newdata)) {
-    lapply(object$asset.fit, predict, ...)
-  } else {
-    newdata <- checkData(newdata, method = "data.frame")
-    lapply(object$asset.fit, predict, newdata, ...)
-  } 
+    newdata <- checkData(newdata, method="data.frame")
+  }
+  sapply(object$asset.fit, predict, newdata, ...)
 }
