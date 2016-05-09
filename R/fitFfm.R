@@ -231,7 +231,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     }
     # calculate z-scores looping through all numeric exposures
     for (i in exposures.num) {
-      std.expo.num <- by(data=data, INDICES=data[[date.var]], FUN=z.score,
+      std.expo.num <- by(data=data, INDICES=data[[date.var]], FUN=zScore,
                          i=i, w=w, rob.stats=rob.stats)
       data[[i]] <- unlist(std.expo.num)
     }
@@ -375,7 +375,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
 ## x is a data.frame object, i is a character string and w has same length as x 
 # rob.stats is a logical argument to compute robust location and scale
 
-z.score <- function (x, i, w, rob.stats) {
+zScore <- function (x, i, w, rob.stats) {
   if (rob.stats) {
     x_bar <- median(w*x[[i]])
     (x[[i]] - x_bar)/mad(x[[i]], center=x_bar)
