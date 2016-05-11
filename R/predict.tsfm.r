@@ -38,8 +38,10 @@
 
 predict.tsfm <- function(object, newdata=NULL, ...){
   
-  if (missing(newdata) || is.null(newdata)) {
+  if (is.null(newdata)) {
+    sapply(object$asset.fit, predict, ...)
+  } else {
     newdata <- checkData(newdata, method="data.frame")
+    sapply(object$asset.fit, predict, newdata, ...)
   }
-  sapply(object$asset.fit, predict, newdata, ...)
 }

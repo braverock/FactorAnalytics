@@ -55,13 +55,14 @@ predict.ffm <- function(object, newdata=NULL, pred.date=NULL, ...){
          of the dates used in the fit")
   }
   
-  if (!is.null(newdata)) {
-    newdata <- checkData(newdata, method="data.frame")
-  }
-  
-  if (!is.null(pred.date)) {
-    as.matrix(predict(object$factor.fit[[pred.date]], newdata, ...))
+  if (is.null(newdata)) {
+    sapply(object$factor.fit, predict, ...)
   } else {
-    sapply(object$factor.fit, predict, newdata, ...)
+    newdata <- checkData(newdata, method="data.frame")
+    if (is.null(pred.date)) {
+      sapply(object$factor.fit, predict, newdata, ...)
+    } else {
+      as.matrix(predict(object$factor.fit[[pred.date]], newdata, ...))
+    }
   }
 }
