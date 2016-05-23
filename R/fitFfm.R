@@ -383,7 +383,7 @@ zScore <- function (x, i, w, rob.stats) {
     x_bar <- mean(w*x[[i]]) 
     n <- length(x[[i]])
     # use equal weighted squared deviation about the weighted mean
-    (x[[i]] - x_bar)/sqrt((x[[i]]-x_bar)^2/(n-1))
+    (x[[i]] - x_bar)/sqrt(sum((x[[i]]-x_bar)^2)/(n-1))
   }
 }
 
