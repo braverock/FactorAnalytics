@@ -32,6 +32,7 @@ industry.mod <- fitFfm(data = stacked.df, # Change fit object to mixed.mod
                        fit.method="WLS",
                        z.score = F)
 
+
 repExposures(industry.mod, wts.lo, isPlot = TRUE)
 #dev.off()
 repReturn(industry.mod, wts.lo, isPlot = TRUE)
