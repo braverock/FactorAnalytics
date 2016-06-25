@@ -1,10 +1,31 @@
 #' @title Portfolio return reports for risk decomposition and performance analysis
 #' 
-#' @description 
+#' @description conduct portfolio return analysis reporting 
 #' 
+#' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
+#' @param ... additional arguments unused
+#' @author Lingjie Yi
+#' @examples 
+#'
+#' #Load the data 
+#' data("stocks145scores6")
+#'  
+#' #Fit a Ffm
+#' fit <- fitFfm(data = data145, # Change fit object to mixed.mod
+#' exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
+#' date.var = "DATE", 
+#' ret.var = "RETURN", 
+#' asset.var = "TICKER", 
+#' fit.method="WLS",
+#' z.score = F)
+#'               
+#' Conduct portfolio return analysis reporting with default weights.               
+#' repReturn(fit)
 #' 
-#'Not the final version 
+#' @export
 
+# Not the final version
 
 
 repReturn <- function(object, weights = NULL, ...){
