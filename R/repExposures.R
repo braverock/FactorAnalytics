@@ -82,5 +82,6 @@ repExposures.ffm <- function(object, weights = NULL, ...) {
   vol = apply(X[,exposures.num], 2, sd)
   sum = rbind(mean, vol)
   rownames(sum) = c('mean','volatility')
+  
 }
 
