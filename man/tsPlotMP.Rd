@@ -9,6 +9,6 @@ tsPlotMP(ret, add.grid = F, cex = 1, layout = NULL, type = "l",
   main = NULL, lwd = 1, color = "black")
 }
 \description{
-Not the final version
+
 }
 
