@@ -15,8 +15,8 @@ portRsqr(ffmObj, weight = NULL, ...)
 }
 \value{
 \code{portRsqr} returns a list with the follwing components:
-\item{port.Rsqr} {length-T vector of R-squared values for the portfolio.}
-\item{port.AdjRsqr} {length-T vector of adjusted R-squared values for the portfolio.}
+\item{port.Rsqr}{length-T vector of R-squared values for the portfolio.}
+\item{port.AdjRsqr}{length-T vector of adjusted R-squared values for the portfolio.}
 }
 \description{
 Calcluate the R-squared and Adjusted R-squared for a portfolio of assets
