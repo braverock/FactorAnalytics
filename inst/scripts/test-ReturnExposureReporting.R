@@ -12,10 +12,10 @@ source('R/repExposures.R')
 source('R/repReturn.R')
 
 ##sample data
-load("stocks145scores6.rda")
+load("data/stocks145scores6.rda")
 head(stacked.df)
 
-load("stocks145scores6GMVlong.rda")
+load("data/stocks145scores6GMVlong.rda")
 head(wts.lo)
 
 # GET FIVE YEAR SEGMENT
