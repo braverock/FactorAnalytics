@@ -129,7 +129,7 @@ repReturn.ffm <- function(ffmObj, weights = NULL, isPlot = FALSE, ...) {
   vol = apply(dat, 2, sd)
   stats.sum = rbind(avg, vol)
   rownames(stats.sum) = c('mean','volatility')
-  
+    
   return(stats.sum)
   
 }
