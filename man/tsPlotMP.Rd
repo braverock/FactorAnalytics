@@ -2,13 +2,30 @@
 % Please edit documentation in R/tsPlotMP.R
 \name{tsPlotMP}
 \alias{tsPlotMP}
-\title{Plot}
+\title{Time Series Plots}
 \usage{
 tsPlotMP(ret, add.grid = F, cex = 1, layout = NULL, type = "l",
   pct = 100, yname = "RETURNS (\%)", scaleType = "free", stripLeft = T,
   main = NULL, lwd = 1, color = "black")
 }
+\arguments{
+\item{ret}{an object of class c('integer', 'numeric') or xts}
+}
 \description{
+plot time series
+}
+\examples{
 
+#Load the data 
+data("stocks145scores6")
+stacked.df = data145
+returns = tapply(stacked.df$RETURN,list(stacked.df$DATE,stacked.df$TICKER),I)
+ret = xts(returns[,1:5],as.Date(rownames(returns)))
+#Conduct portfolio exposures analysis reporting with default weights.               
+tsPlotMP(ret)
+
+}
+\author{
+Lingjie Yi
 }
 
