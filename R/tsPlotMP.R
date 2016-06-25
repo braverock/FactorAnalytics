@@ -1,9 +1,21 @@
-#' @title Plot
+#' @title Time Series Plots
 #' 
-#' @description 
+#' @description plot time series 
+#' 
+#' @param ret an object of class c('integer', 'numeric') or xts 
+#' @author Lingjie Yi
+#' @examples 
+#'
+#' #Load the data 
+#' data("stocks145scores6")
+#' stacked.df = data145
+#' returns = tapply(stacked.df$RETURN,list(stacked.df$DATE,stacked.df$TICKER),I)
+#' ret = xts(returns[,1:5],as.Date(rownames(returns)))
+#' #Conduct portfolio exposures analysis reporting with default weights.               
+#' tsPlotMP(ret)
 #' 
 #' @export
-
+#' 
 #Not the final version 
 
 
