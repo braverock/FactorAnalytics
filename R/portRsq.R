@@ -1,11 +1,16 @@
-#' @title Portfolio R-squared and Adjusted R-squared
+#' @title  R-squared and Adjusted R-squared for a Portfolio
 #' 
-#' @description Calcluate the R-squared and Adjusted R-squared for the portfolio of stocks
+#' @description Calcluate the R-squared and Adjusted R-squared for the portfolio of assets
 #' 
-#' @param z  an object of class \code{ffm} produced by \code{fitFfm}
+#' @param ffmObj  an object of class \code{ffm} produced by \code{fitFfm}
 #' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
 #' @param ... additional arguments unused
 #' @author Avinash Acharya
+#' 
+#' @return \code{portRsqr} returns an object of class list with the follwing components:
+#' \item{port.Rsqr} time series of R-squared values for the portfolio.
+#' \item{port.AdjRsqr} time series of adjusted R-squared values for the portfolio. 
+#' 
 #' @examples 
 #'
 #' #Load the data 
@@ -15,24 +20,24 @@
 #' fit <- fitFfm(data=data145, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars="SECTOR")
 #'               
-#' #Find the portfolio R-squared and adjusted portfolio R-squared with default weights.               
-#' portRsq(fit)
+#' #Find the portfolio R-squared and adjusted portfolio R-squared for the 145 stocks data with default weights.               
+#' portRsqr(fit)
 #' 
 #' @export
 
 # Not the final version
-portRsq <- function(z, weight=NULL, ...)
+portRsqr <- function(ffmObj, weight=NULL, ...)
 {
   # set defaults and check input validity
-  if (!inherits(z, "ffm")) {
+  if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: Object should be of class'ffm'.")
   }
   
-  data <- z$data
-  date.var = z$date.var
+  data <- ffmObj$data
+  date.var = ffmObj$date.var
   data <- data[order(data[,date.var]),]
-  assets.names<- z$asset.names
-  n.assets <- length(z$asset.names)
+  assets.names<- ffmObj$asset.names
+  n.assets <- length(ffmObj$asset.names)
   if (!is.null(weight))
   {
     w <- weight[assets.names]
@@ -44,19 +49,19 @@ portRsq <- function(z, weight=NULL, ...)
   
   W<- diag(w)#NxN 
   
-  returns = matrix(data = z$data[[z$ret.var]] , nrow = n.assets) #NxT Matrix of Returns
-  residuals = t(z$residuals) #NxT Matrix of residual returns
-  time.periods = length(z$time.periods)
+  returns = matrix(data = ffmObj$data[[ffmObj$ret.var]] , nrow = n.assets) #NxT Matrix of Returns
+  residuals = t(ffmObj$residuals) #NxT Matrix of residual returns
+  time.periods = length(ffmObj$time.periods)
   r2<-0
   for (i in 1:time.periods)
   {
     r2[i] = 1 - ((t(residuals[,i]) %*% W %*% residuals[,i]) / (t(returns[,i]) %*% W %*% returns[,i])) 
   } 
-  names(r2) <- names(z$r2)
-  K <- length(z$factor.name)
+  names(r2) <- names(ffmObj$r2)
+  K <- length(ffmObj$factor.name)
   p <- K-1
   adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
   
-  return(list(portRsqr = r2, portAdjRsqr = adj.r2))
+  return(list(port.Rsqr = r2, port.AdjRsqr = adj.r2))
 }
 
