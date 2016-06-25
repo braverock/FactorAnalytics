@@ -2,7 +2,7 @@
 #' 
 #' @description conduct portfolio return analysis reporting 
 #' 
-#' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @param ffmObj fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
 #' @param ... additional arguments unused
 #' @author Lingjie Yi
@@ -20,7 +20,7 @@
 #' fit.method="WLS",
 #' z.score = F)
 #'               
-#' Conduct portfolio return analysis reporting with default weights.               
+#' Conduct portfolio returns analysis reporting with default weights.               
 #' repReturn(fit)
 #' 
 #' @export
@@ -28,24 +28,19 @@
 # Not the final version
 
 
-repReturn <- function(object, weights = NULL, ...){
-  # check input object validity
-  if (!inherits(object, c("tsfm", "sfm", "ffm"))) {
-    stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
-  }
-  UseMethod("repReturn")
-}
-
-
-repReturn.ffm <- function(object, weights = NULL, ...) {
+repReturn.ffm <- function(ffmObj, weights = NULL, isPlot = FALSE, ...) {
   
-  which.numeric <- sapply(object$data[,object$exposure.vars,drop=FALSE], is.numeric)
-  exposures.num <- object$exposure.vars[which.numeric]
-  exposures.char <- object$exposure.vars[!which.numeric]
-  exposures.char.name <- as.vector(unique(object$data[,exposures.char]))
+  if (!inherits(ffmObj, "ffm")) {
+    stop("Invalid argument: ffmObjshould be of class'ffm'.")
+  }
+  
+  which.numeric <- sapply(ffmObj$data[,ffmObj$exposure.vars,drop=FALSE], is.numeric)
+  exposures.num <- ffmObj$exposure.vars[which.numeric]
+  exposures.char <- ffmObj$exposure.vars[!which.numeric]
+  exposures.char.name <- as.vector(unique(ffmObj$data[,exposures.char]))
   
   # get factor model returns from 
-  facRet = object$factor.returns
+  facRet = ffmObj$factor.returns
   
   if(!length(exposures.char)){
     alpha = facRet[,1]
@@ -54,13 +49,13 @@ repReturn.ffm <- function(object, weights = NULL, ...) {
   }else{
     alpha = c()
   }
-  sig = object$residuals
+  sig = ffmObj$residuals
   
   # get parameters from the factor model fit  
-  beta = object$beta
+  beta = ffmObj$beta
   n.assets = nrow(beta)
-  asset.names <- unique(object$data[[object$asset.var]])
-  TP = length(object$time.periods)
+  asset.names <- unique(ffmObj$data[[ffmObj$asset.var]])
+  TP = length(ffmObj$time.periods)
   
   # check if there is weight input
   if(is.null(weights)){
@@ -81,7 +76,7 @@ repReturn.ffm <- function(object, weights = NULL, ...) {
   
   
   if(length(exposures.char)){
-    dat <- object$data[object$data$DATE==object$time.periods[TP], ]
+    dat <- ffmObj$data[ffmObj$data$DATE==ffmObj$time.periods[TP], ]
     B <- as.matrix(table(dat$TICKER,dat$SECTOR))
     B[B>0] <- 1
     B <- B[asset.names,]
@@ -92,13 +87,13 @@ repReturn.ffm <- function(object, weights = NULL, ...) {
   #calculate x = t(w) * B
   X = c()
   for(i in 1:TP){
-    dat <- object$data[object$data$DATE==object$time.periods[i], ]
+    dat <- ffmObj$data[ffmObj$data$DATE==ffmObj$time.periods[i], ]
     beta <- as.matrix(dat[,exposures.num])
     rownames(beta) <- asset.names
     beta = cbind(beta,B)
     
     temp = as.data.frame(weights %*% beta)
-    temp = cbind('Date'=object$time.periods[i],temp)
+    temp = cbind('Date'=ffmObj$time.periods[i],temp)
     X = rbind(X,temp)
   }
   X = as.xts(X[,-1],order.by = X[,1])
@@ -116,14 +111,25 @@ repReturn.ffm <- function(object, weights = NULL, ...) {
   colnames(ret.p) = 'Return'
   
   dat = merge(ret.p, alpha, facRet.p, rk, sig.p)
-
-  boxplot(coredata(dat),col=5,
-          cex.names=0.5,
-          main=paste("Portfolio Detailed Returns Decomposition"))
   
-  tsPlotMP(dat[,c('Return','Alpha','facRet','Residuals')], main = "Portfolio Returns Decomposition", scaleType = "free", layout = c(3,3))
-  tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], main = "Portfolio Individual Style Factor Returns", scaleType = "free", layout = c(3,3))
-  tsPlotMP(dat[,c(exposures.char.name)], main = "Portfolio Sector Returns", scaleType = "free", layout = c(3,4))
+  if(isPlot){
+    
+    boxplot(coredata(dat),col=5,
+            cex.names=0.5,
+            main=paste("Portfolio Detailed Returns Decomposition"))
+    
+    tsPlotMP(dat[,c('Return','Alpha','facRet','Residuals')], main = "Portfolio Returns Decomposition", scaleType = "free", layout = c(3,3))
+    tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], main = "Portfolio Individual Style Factor Returns", scaleType = "free", layout = c(3,3))
+    tsPlotMP(dat[,c(exposures.char.name)], main = "Portfolio Sector Returns", scaleType = "free", layout = c(3,4))
+    
+  }
   
+  # tabular report 
+  avg = apply(dat, 2, mean)
+  vol = apply(dat, 2, sd)
+  stats.sum = rbind(avg, vol)
+  rownames(stats.sum) = c('mean','volatility')
+  
+  return(stats.sum)
   
 }
