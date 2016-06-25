@@ -23,7 +23,7 @@
 portRsq <- function(z, weight=NULL, ...)
 {
   # set defaults and check input validity
-  if (!inherits(object, "ffm")) {
+  if (!inherits(z, "ffm")) {
     stop("Invalid argument: Object should be of class'ffm'.")
   }
   
