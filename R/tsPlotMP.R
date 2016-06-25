@@ -2,9 +2,10 @@
 #' 
 #' @description 
 #' 
-#' 
-#'Not the final version 
-#'
+#' @export
+
+#Not the final version 
+
 
 # Lattice type time series plotting function
 tsPlotMP = function(ret,add.grid = F,cex = 1.0, layout = NULL,type = "l",

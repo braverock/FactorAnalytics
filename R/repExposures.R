@@ -21,7 +21,7 @@
 #' fit.method="WLS",
 #' z.score = F)
 #'               
-#' Conduct portfolio exposures analysis reporting with default weights.               
+#' #Conduct portfolio exposures analysis reporting with default weights.               
 #' repExposures(fit)
 #' 
 #' @export

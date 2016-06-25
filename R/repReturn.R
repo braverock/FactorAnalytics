@@ -21,7 +21,7 @@
 #' fit.method="WLS",
 #' z.score = F)
 #'               
-#' Conduct portfolio returns analysis reporting with default weights.               
+#' #Conduct portfolio returns analysis reporting with default weights.               
 #' repReturn(fit)
 #' 
 #' @export
