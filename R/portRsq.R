@@ -8,7 +8,7 @@
 #' @author Avinash Acharya
 #' @examples 
 #'
-# #Load the data 
+#' #Load the data 
 #' data("stocks145scores6")
 #'  
 #' #Fit a Ffm
