@@ -22,6 +22,7 @@ tsPlotMP = function(ret,add.grid = F,cex = 1.0, layout = NULL,type = "l",
          scales = list(y = list(cex = cex,relation=scaleType),
                        x = list(cex = cex)),layout = layout,main = main,
                        col = color, strip = strip, strip.left = strip.left)
+  
   print(pl)
 }
 
