@@ -11,15 +11,15 @@ portRsqr(ffmObj, weight = NULL, ...)
 
 \item{weight}{a vector of weights of the assets in the portfolio. Default is NULL.}
 
-\item{...}{additional arguments unused}
+\item{...}{potentially further arguments passed.}
 }
 \value{
-\code{portRsqr} returns an object of class list with the follwing components:
-\item{port.Rsqr} time series of R-squared values for the portfolio.
-\item{port.AdjRsqr} time series of adjusted R-squared values for the portfolio.
+\code{portRsqr} returns a list with the follwing components:
+\item{port.Rsqr} {length-T vector of R-squared values for the portfolio.}
+\item{port.AdjRsqr} {length-T vector of adjusted R-squared values for the portfolio.}
 }
 \description{
-Calcluate the R-squared and Adjusted R-squared for the portfolio of assets
+Calcluate the R-squared and Adjusted R-squared for a portfolio of assets
 }
 \examples{
 
@@ -30,7 +30,8 @@ data("stocks145scores6")
 fit <- fitFfm(data=data145, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars="SECTOR")
               
-#Find the portfolio R-squared and adjusted portfolio R-squared for the 145 stocks data with default weights.               
+#Find the portfolio R-squared and adjusted portfolio R-squared 
+#for the 145 stocks data with default weights.               
 portRsqr(fit)
 
 }
