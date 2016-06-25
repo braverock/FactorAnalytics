@@ -8,9 +8,11 @@
 \usage{
 fmEsDecomp(object, ...)
 
-\method{fmEsDecomp}{tsfm}(object, p = 0.95, type = c("np", "normal"), ...)
+\method{fmEsDecomp}{tsfm}(object, p = 0.95, type = c("np", "normal"),
+  use = "pairwise.complete.obs", ...)
 
-\method{fmEsDecomp}{sfm}(object, p = 0.95, type = c("np", "normal"), ...)
+\method{fmEsDecomp}{sfm}(object, p = 0.95, type = c("np", "normal"),
+  use = "pairwise.complete.obs", ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
@@ -21,6 +23,12 @@ fmEsDecomp(object, ...)
 
 \item{type}{one of "np" (non-parametric) or "normal" for calculating VaR. 
 Default is "np".}
+
+\item{use}{an optional character string giving a method for computing factor
+covariances in the presence of missing values. This must be (an 
+abbreviation of) one of the strings "everything", "all.obs", 
+"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
+"pairwise.complete.obs".}
 }
 \value{
 A list containing 

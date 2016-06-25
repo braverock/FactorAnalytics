@@ -4,10 +4,12 @@
 \alias{repReturn}
 \title{Portfolio return reports for risk decomposition and performance analysis}
 \usage{
-repReturn(object, weights = NULL, ...)
+repReturn(ffmObj, weights = NULL, isPlot = FALSE, ...)
 }
 \arguments{
-\item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
+\item{ffmObj}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
+
+\item{isPlot}{logical variable to generate plot or not.}
 
 \item{...}{additional arguments unused}
 
@@ -30,7 +32,7 @@ asset.var = "TICKER",
 fit.method="WLS",
 z.score = F)
               
-Conduct portfolio return analysis reporting with default weights.               
+Conduct portfolio returns analysis reporting with default weights.               
 repReturn(fit)
 
 }
