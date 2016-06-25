@@ -1,22 +1,18 @@
-#' @title Portfolio tabular reports for risk decomposition and performance analysis
+#' @title Portfolio return reports for risk decomposition and performance analysis testing
 #' 
-#' @description 
+#' @description testing functions for portfolio return analysis reporting, repReturn, repExposures 
 #' 
-#' 
-#' 
-# Not the final version 
+#' @param ffmObj fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @author Lingjie Yi
 
-##testing functions
-source('R/tsPlotMP.R')
-source('R/repExposures.R')
-source('R/repReturn.R')
 
+library(factorAnalytics)
 ##sample data
-load("data/stocks145scores6.rda")
+load("stocks145scores6.rda")
 stacked.df = data145
 head(stacked.df)
 
-load("data/wts145stocksGMVlong.rda")
+load("wts145stocksGMVlong.rda")
 head(wts.lo)
 
 # GET FIVE YEAR SEGMENT
@@ -36,8 +32,8 @@ industry.mod <- fitFfm(data = stacked.df, # Change fit object to mixed.mod
                        fit.method="WLS",
                        z.score = F)
 
-repExposures(industry.mod, wts.lo)
+repExposures(industry.mod, wts.lo, isPlot = TRUE)
 #dev.off()
-repReturn(industry.mod, wts.lo)
+repReturn(industry.mod, wts.lo, isPlot = TRUE)
 #dev.off()
                                                 

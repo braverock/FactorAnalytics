@@ -4,6 +4,7 @@
 #' 
 #' @param ffmObj fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
+#' @param isPlot logical variable to generate plot or not.
 #' @param ... additional arguments unused
 #' @author Lingjie Yi
 #' @examples 
