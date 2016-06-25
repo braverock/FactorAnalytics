@@ -12,8 +12,9 @@
 #' data("stocks145scores6")
 #'  
 #' #Fit a Ffm
-#' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+#' fit <- fitFfm(data=data145, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars="SECTOR")
+#'               
 #' #Find the portfolio R-squared and adjusted portfolio R-squared with default weights.               
 #' portRsq(fit)
 #' 
