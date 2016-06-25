@@ -16,7 +16,7 @@ load("data/stocks145scores6.rda")
 stacked.df = data145
 head(stacked.df)
 
-load("data/stocks145scores6GMVlong.rda")
+load("data/wts145stocksGMVlong.rda")
 head(wts.lo)
 
 # GET FIVE YEAR SEGMENT
