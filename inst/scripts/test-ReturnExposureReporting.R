@@ -13,6 +13,7 @@ source('R/repReturn.R')
 
 ##sample data
 load("data/stocks145scores6.rda")
+stacked.df = data145
 head(stacked.df)
 
 load("data/stocks145scores6GMVlong.rda")
