@@ -104,4 +104,5 @@ repReturn.ffm <- function(object, weights = NULL, ...) {
   tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], main = "Portfolio Individual Style Factor Returns", scaleType = "free", layout = c(3,3))
   tsPlotMP(dat[,c(exposures.char.name)], main = "Portfolio Sector Returns", scaleType = "free", layout = c(3,4))
   
+  
 }
