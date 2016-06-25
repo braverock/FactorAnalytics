@@ -51,7 +51,6 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = FALSE, ...) {
     alpha = c()
   }
   sig = ffmObj$residuals
-  
   # get parameters from the factor model fit  
   beta = ffmObj$beta
   n.assets = nrow(beta)
