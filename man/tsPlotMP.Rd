@@ -6,7 +6,7 @@
 \usage{
 tsPlotMP(ret, add.grid = F, cex = 1, layout = NULL, type = "l",
   pct = 100, yname = "RETURNS (\%)", scaleType = "free", stripLeft = T,
-  main = NULL, lwd = 1, color = "black")
+  main = NULL, lwd = 1, color = "black", zeroLine = T)
 }
 \arguments{
 \item{ret}{an time series exposure/return object}
@@ -15,7 +15,11 @@ tsPlotMP(ret, add.grid = F, cex = 1, layout = NULL, type = "l",
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
 
+\item{scaleType}{scaleType controls if use a same scale of y-axis, choose from c('same', 'free')}
+
 \item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel}
+
+\item{zeroLine}{logical varible to choose add a dotted horizontal line at the zero vertical distance}
 }
 \description{
 Plot time series with specific plotting parameters
@@ -30,10 +34,12 @@ returns = tapply(dat$RETURN,list(dat$DATE,dat$TICKER),I)
 ret = xts(returns[,1:5],as.yearmon(rownames(returns)))
 
 #generate return time series plot               
-tsPlotMP(ret)
+tsPlotMP(ret, color = 'Blue')
+tsPlotMP(ret, scaleType = "same", zeroLine = F)
+tsPlotMP(ret, stripLeft = F, main = 'Time Series Plot')
    
 }
 \author{
-Lingjie Yi
+Douglas Martin, Lingjie Yi
 }
 

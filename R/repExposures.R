@@ -6,10 +6,12 @@
 #' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
 #' @param isPlot logical variable to generate plot or not.
 #' @param isPrint logical variable to print numeric summary or not.
-#' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPrint = 'TRUE'
-#' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPrint = 'TRUE'
-#' @param ... futher arguments passed to or from other methods.
-#' @author Lingjie Yi
+#' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
+#' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
+#' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
+#' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
+#' @param ... other graphics parameters available in tsPlotMP can be passed in through the ellipses, see \code{\link[factorAnalytics]{tsPlotMP}}
+#' @author Douglas Martin, Lingjie Yi
 #' @examples 
 #'
 #' #Load fundamental and return data 
@@ -20,6 +22,7 @@
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
+#' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
 #'                                                      
 #' #fit a fundamental factor model
 #' fit <- fitFfm(data = dat, 
@@ -27,12 +30,14 @@
 #'               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
 #'               fit.method="WLS", z.score = T)
 #' 
-#' repExposures(fit, wtsStocks145GmvLo)
+#' repExposures(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+#' repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = T, scaleType = 'same', layout = c(3,2))
+#' repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = F, zeroLine = T, color = 'Blue')
 #' @export
 
 
-repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
-                         stripLeft = TRUE, layout = NULL, ...) {
+repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, scaleType = 'free',
+                         stripLeft = TRUE, layout = NULL, digits = 1, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObj should be of class'ffm'.")
@@ -87,28 +92,31 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
     ###generate plots
     for(i in 1:ncol(X[,exposures.num])){
       name = colnames(X[,exposures.num])[i]
-      barplot(X[,exposures.num][,i],las=2,col=5,
+      barplot(100*X[,exposures.num][,i],las=2,col=5,
               names.arg= as.yearmon(index(X)),
-              cex.names=0.5,
-              main=paste("Factor Exposure for",name))
+              cex.names=0.5, 
+              ylab = "Percentage (%)",
+              main=paste(name, "Exposure"))
     } 
     
     boxplot(100*coredata(X[,exposures.num]), col=5,
-            cex.names=0.5, notch = T,
+            cex.names=0.5, nnotch = T,
+            ylab = "Percentage (%)",
             main=paste("Distributions of Exposures"))
     
-    tsPlotMP(X[,exposures.num], main = "Factor Exposures", stripLeft = stripLeft, scaleType = "free", layout = layout)
+    tsPlotMP(X[,exposures.num], main = "Factor Exposures", stripLeft = stripLeft, layout = layout, scaleType = scaleType, ...)
   }
   
   if(isPrint){
     # tabular report 
-    avg = apply(X[,exposures.num], 2, mean)
-    vol = apply(X[,exposures.num], 2, sd)
-    stats.sum = rbind(avg, vol)
-    rownames(stats.sum) = c('mean','volatility')
+    avg = apply(X, 2, mean) * 100
+    vol = apply(X, 2, sd) * 100
+    stats.sum = cbind(avg, vol)
+    colnames(stats.sum) = c('Mean','Volatility')
     
-    return(stats.sum)    
+    ret = round(stats.sum, digits)
+    
+    return(ret)   
   }
-  
 }
 

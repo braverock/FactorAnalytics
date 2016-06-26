@@ -6,9 +6,12 @@
 #' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
 #' @param isPlot logical variable to generate plot or not.
 #' @param isPrint logical variable to print numeric summary or not.
-#' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel
-#' @param ... futher arguments passed to or from other methods.
-#' @author Lingjie Yi
+#' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
+#' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
+#' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
+#' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
+#' @param ... other graphics parameters available in tsPlotMP can be passed in through the ellipses, see \code{\link[factorAnalytics]{tsPlotMP}}
+#' @author Douglas Martin, Lingjie Yi
 #' @examples 
 #'
 #' #Load fundamental and return data 
@@ -19,21 +22,22 @@
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
-#'                                                      
+#' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)                         
+#'                                                                                  
 #' #fit a fundamental factor model
 #' fit <- fitFfm(data = dat, 
 #'               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
 #'               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
 #'               fit.method="WLS", z.score = T)
 #'
-#' repReturn(fit, wtsStocks145GmvLo)               
+#' repReturn(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+#' repReturn(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = T, scaleType = 'same')
+#' repReturn(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = F, zeroLine = T, color = 'Blue')              
 #' @export
 
-# Not the final version
 
-
-repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
-                      stripLeft = TRUE, ...) {
+repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, scaleType = 'free',
+                      stripLeft = TRUE, digits = 1, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObjshould be of class'ffm'.")
@@ -114,27 +118,33 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
   
   colnames(ret.p) = 'Return'
   
-  dat = merge(ret.p, alpha, facRet.p, rk, sig.p)
+  dat = merge(ret.p, sig.p, alpha, facRet.p, rk)
   
   if(isPlot){
+    par(mar=c(7,5,5,5))
+    boxplot(100*coredata(dat), col=5, las = 2, 
+            xaxt = "n", 
+            ylab = "Percentage (%)",
+            main=paste("Portfolio Returns Components Distributions"))
+    axis(1, at=c(1:ncol(dat)) , labels = FALSE)
+    text(x = c(1:ncol(dat)), srt = 45, adj = 1, labels = colnames(dat), 
+         par("usr")[3] - 3, xpd = TRUE, cex = 0.8)
     
-    boxplot(coredata(dat),col=5,
-            cex.names=0.5,
-            main=paste("Portfolio Detailed Returns Decomposition"))
-    
-    tsPlotMP(dat[,c('Return','Alpha','facRet','Residuals')], stripLeft = stripLeft, main = "Portfolio Returns Decomposition", scaleType = "free", layout = c(3,3))
-    tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], stripLeft = stripLeft, main = "Portfolio Individual Style Factor Returns", scaleType = "free", layout = c(3,3))
-    tsPlotMP(dat[,c(exposures.char.name)], stripLeft = stripLeft, main = "Portfolio Sector Returns", scaleType = "free", layout = c(3,4))
+    tsPlotMP(dat[,c('Return','Alpha','facRet','Residuals')], yname = NULL, main = "Portfolio Returns Decomposition", layout = c(3,3), stripLeft = stripLeft, scaleType = scaleType, ...)
+    tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], main = "Portfolio Style Factors Returns", layout = c(3,3), stripLeft = stripLeft, scaleType = scaleType, ...)
+    tsPlotMP(dat[,c(exposures.char.name)], main = "Portfolio Sector Returns", layout = c(3,4), stripLeft = stripLeft, scaleType = scaleType, ...)
     
   }
   
   if(isPrint){
     # tabular report 
-    avg = apply(dat, 2, mean)
-    vol = apply(dat, 2, sd)
-    stats.sum = rbind(avg, vol)
-    rownames(stats.sum) = c('mean','volatility')
-    return(stats.sum)
+    avg = apply(dat, 2, mean) * 100
+    vol = apply(dat, 2, sd) * 100 
+    stats.sum = cbind(avg, vol)
+    colnames(stats.sum) = c('Mean','Volatility')
+    
+    ret = round(stats.sum, digits)
+    return(ret)
   }
   
 }
