@@ -7,7 +7,6 @@
 #' @param isPlot logical variable to generate plot or not.
 #' @param isPrint logical variable to print numeric summary or not.
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel
-#' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
 #' @param ... futher arguments passed to or from other methods.
 #' @author Lingjie Yi
 #' @examples 
@@ -34,7 +33,7 @@
 
 
 repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
-                      stripLeft = TRUE, layout = NULL, ...) {
+                      stripLeft = TRUE, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObjshould be of class'ffm'.")

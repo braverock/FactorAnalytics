@@ -5,7 +5,7 @@
 \title{Portfolio return decomposition report}
 \usage{
 repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
-  stripLeft = TRUE, layout = NULL, ...)
+  stripLeft = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
@@ -15,8 +15,6 @@ repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 \item{isPrint}{logical variable to print numeric summary or not.}
 
 \item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel}
-
-\item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
 
 \item{...}{futher arguments passed to or from other methods.}
 
