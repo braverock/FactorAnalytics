@@ -25,7 +25,7 @@ Plot time series of the R-squared values, t-statistic vales and the
 data("factorDataSetDjia5Yrs")
  
 #Fit a Ffm
-fit <- fitFfm(data=stocks145scores6, asset.var="TICKER", ret.var="RETURN", 
+fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars="SECTOR")
               riskindices.mod <- fitFfm(data = stacked.df,exposure.vars = c("MARKETCAP","ENTVALUE","P2B","EV2S"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS")
