@@ -1,6 +1,6 @@
 #' @title  R-squared and Adjusted R-squared for a Portfolio
 #' 
-#' @description Calcluate the R-squared and Adjusted R-squared for a portfolio of assets
+#' @description Calcluate and plot the R-squared and Adjusted R-squared for a portfolio of assets
 #' 
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param weight   a vector of weights of the assets in the portfolio. Default is NULL.
@@ -16,14 +16,14 @@
 #' @examples 
 #'
 #' #Load the data 
-#' data("factorDataSetDjia5Yrs")
+#'  data("factorDataSetDjia5Yrs")
 #'  
 #' #Fit a Ffm
-#' fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+#'  fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars="SECTOR")
 #'               
-#' #Find the portfolio R-squared values 
-#' portRsqr(fit)
+#' #Calcuate and plot the portfolio R-squared values
+#'  portRsqr(fit)
 #' 
 #' 
 #' 
