@@ -6,7 +6,7 @@
 #' 
 #' @param ffmObj  an object of class \code{ffm} produced by \code{fitFfm}
 #' @param col     A specification for the default plotting color. Default is cyan
-#' @param z.score critical value corresponding to the confidence interval. Default is 1.96 i.e 95% C.I
+#' @param z.score critical value corresponding to the confidence interval. Default is 1.96 i.e 95\% C.I
 #' @param ...     potentially further arguments passed.
 #' 
 #' @author Doug Martin, Avinash Acharya

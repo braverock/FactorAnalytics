@@ -11,7 +11,7 @@ rsqTstatsTs(ffmObj, col = "cyan", z.score = 1.96, ...)
 
 \item{col}{A specification for the default plotting color. Default is cyan}
 
-\item{z.score}{critical value corresponding to the confidence interval. Default is 1.96 i.e 95% C.I}
+\item{z.score}{critical value corresponding to the confidence interval. Default is 1.96 i.e 95\% C.I}
 
 \item{...}{potentially further arguments passed.}
 }
