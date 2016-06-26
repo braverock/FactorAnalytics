@@ -131,8 +131,8 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, sca
          par("usr")[3] - 3, xpd = TRUE, cex = 0.8)
     
     tsPlotMP(dat[,c('Return','Alpha','facRet','Residuals')], yname = NULL, main = "Portfolio Returns Decomposition", layout = c(3,3), stripLeft = stripLeft, scaleType = scaleType, ...)
-    tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], main = "Portfolio Style Factors Returns", layout = c(3,3), stripLeft = stripLeft, scaleType = scaleType, ...)
-    tsPlotMP(dat[,c(exposures.char.name)], main = "Portfolio Sector Returns", layout = c(3,4), stripLeft = stripLeft, scaleType = scaleType, ...)
+    tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], yname = NULL, main = "Portfolio Style Factors Returns", layout = c(3,3), stripLeft = stripLeft, scaleType = scaleType, ...)
+    tsPlotMP(dat[,c(exposures.char.name)], yname = NULL, main = "Portfolio Sector Returns", layout = c(3,4), stripLeft = stripLeft, scaleType = scaleType, ...)
     
   }
   
