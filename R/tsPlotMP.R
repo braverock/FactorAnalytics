@@ -12,9 +12,9 @@
 #'
 #' #Load the data 
 #' data("stocks145scores6")
-#' dat = data145
+#' dat = stocks145scores6
 #' returns = tapply(dat$RETURN,list(dat$DATE,dat$TICKER),I)
-#' ret = xts(returns[,1:5],as.Date(rownames(returns)))
+#' ret = xts(returns[,1:5],as.yearmon(rownames(returns)))
 #' 
 #' #generate return time series plot               
 #' tsPlotMP(ret)
