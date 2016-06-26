@@ -2,17 +2,16 @@
 #' 
 #' @description Calcluate the R-squared and Adjusted R-squared for a portfolio of assets
 #' 
-#' @param ffmObj  an object of class \code{ffm} produced by \code{fitFfm}
-#' @param weight  a vector of weights of the assets in the portfolio. Default is NULL.
-#' @param rsq     logical; if \code{TRUE}, R-squared values are computed for the portfolio. Default is \code{TRUE}.
-#' @param rsqAdj  logical; if \code{TRUE}, Adjusted R-squared values are computed for the portfolio. Default is \code{FALSE}. 
-#' @param digits  an integer indicating the number of decimal places to be used for rounding. Default is 2. 
-#' @param ... potentially further arguments passed.
+#' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
+#' @param weight   a vector of weights of the assets in the portfolio. Default is NULL.
+#' @param rsq      logical; if \code{TRUE}, R-squared values are computed for the portfolio. Default is \code{TRUE}.
+#' @param rsqAdj   logical; if \code{TRUE}, Adjusted R-squared values are computed for the portfolio. Default is \code{FALSE}. 
+#' @param digits   an integer indicating the number of decimal places to be used for rounding. Default is 2. 
+#' @param ...      potentially further arguments passed.
 #' @author Avinash Acharya
 #' 
-#' @return \code{portRsqr} returns a list with the follwing components:
-#' \item{port.Rsqr}{ length-T vector of R-squared values for the portfolio.}
-#' \item{port.AdjRsqr}{ length-T vector of adjusted R-squared values for the portfolio.} 
+#' @return \code{portRsqr} returns the sample mean along with the time series plot of R squared values for the portfolio.
+#'                        If \code{rsqAdj} is \code{TRUE}, correspoding mean and plot for adjusted R-squared is also returned. 
 #' 
 #' @examples 
 #'
