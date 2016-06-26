@@ -9,21 +9,29 @@ tsPlotMP(ret, add.grid = F, cex = 1, layout = NULL, type = "l",
   main = NULL, lwd = 1, color = "black")
 }
 \arguments{
-\item{ret}{an object of class c('integer', 'numeric') or xts}
+\item{ret}{an time series exposure/return object}
+
+\item{add.grid}{logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')}
+
+\item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
+
+\item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel}
 }
 \description{
-plot time series
+Plot time series with specific plotting parameters
 }
 \examples{
+
 
 #Load the data 
 data("stocks145scores6")
 stacked.df = data145
 returns = tapply(stacked.df$RETURN,list(stacked.df$DATE,stacked.df$TICKER),I)
 ret = xts(returns[,1:5],as.Date(rownames(returns)))
-#Conduct portfolio exposures analysis reporting with default weights.               
-tsPlotMP(ret)
 
+#generate return time series plot               
+tsPlotMP(ret)
+   
 }
 \author{
 Lingjie Yi
