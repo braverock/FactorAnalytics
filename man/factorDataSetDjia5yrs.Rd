@@ -8,7 +8,7 @@
 TBA
 }
 \usage{
-data(factorDataSetDjia5Yrs)
+data("factorDataSetDjia5Yrs")
 }
 \description{
 Contains returns for 30 DJIA stocks along with the 4 factors: MARKETCAP, ENTVALUE, P2B, EV2S, SIZE

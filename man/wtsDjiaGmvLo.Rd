@@ -8,7 +8,7 @@
 TBA
 }
 \usage{
-data(wtsDjiaGmvLo)
+data("wtsDjiaGmvLo")
 }
 \description{
 Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs) 

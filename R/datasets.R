@@ -4,7 +4,7 @@
 #'              starting from Jan 2000 to march 2013.
 #' @docType data
 #' @source TBA
-#' @usage data(factorDataSetDjia)
+#' @usage data("factorDataSetDjia")
 NULL
 
 #' @name factorDataSetDjia5yrs
@@ -13,7 +13,7 @@ NULL
 #'              starting from Jan 2008 to Dec 2012.
 #' @docType data
 #' @source TBA
-#' @usage data(factorDataSetDjia5Yrs)
+#' @usage data("factorDataSetDjia5Yrs")
 NULL
 
 #' @name stocks145scores6
@@ -22,7 +22,7 @@ NULL
 #'              starting from Jan 2000 to march 2013.
 #' @docType data
 #' @source TBA
-#' @usage data(stocks145scores6)
+#' @usage data("stocks145scores6")
 #' 
 #' 
 NULL
@@ -33,7 +33,7 @@ NULL
 #'              for a full investment Min-Var portfolio starting from Jan 2008 to Dec 2012.
 #' @docType data
 #' @source TBA
-#' @usage data(wtsDjiaGmv)
+#' @usage data("wtsDjiaGmv")
 NULL
 
 #' @name wtsDjiaGmvLo
@@ -42,7 +42,7 @@ NULL
 #'              for a Long-only Min-Var portfolio starting from Jan 2008 to Dec 2012.
 #' @docType data
 #' @source TBA
-#' @usage data(wtsDjiaGmvLo)
+#' @usage data("wtsDjiaGmvLo")
 NULL
 
 #' @name wtsStocks145Gmv
@@ -51,7 +51,7 @@ NULL
 #'              for a full investment Min-Var portfolio starting from Jan 2000 to Mar 2013.
 #' @docType data
 #' @source TBA
-#' @usage data(wtsStocks145Gmv)
+#' @usage data("wtsStocks145Gmv")
 NULL
 
 #' @name wtsStocks145GmvLo
@@ -60,5 +60,5 @@ NULL
 #'              for a Long-only Min-Var portfolio starting from Jan 2000 to Mar 2013.
 #' @docType data
 #' @source TBA
-#' @usage data(wtsStocks145GmvLo)
+#' @usage data("wtsStocks145GmvLo")
 NULL

@@ -8,7 +8,7 @@
 TBA
 }
 \usage{
-data(stocks145scores6)
+data("stocks145scores6")
 }
 \description{
 Contains returns for 145 stocks spanned across 10 Sectors along with 6 factors: ROE, BP, PM12M1M, EP, ANNVOL1M, SIZE)

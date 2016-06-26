@@ -8,7 +8,7 @@
 TBA
 }
 \usage{
-data(wtsStocks145Gmv)
+data("wtsStocks145Gmv")
 }
 \description{
 Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6) 
