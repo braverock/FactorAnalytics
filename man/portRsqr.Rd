@@ -4,35 +4,41 @@
 \alias{portRsqr}
 \title{R-squared and Adjusted R-squared for a Portfolio}
 \usage{
-portRsqr(ffmObj, weight = NULL, ...)
+portRsqr(ffmObj, weight = NULL, rsq = T, rsqAdj = F, digits = 2, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
 
 \item{weight}{a vector of weights of the assets in the portfolio. Default is NULL.}
 
+\item{rsq}{logical; if \code{TRUE}, R-squared values are computed for the portfolio. Default is \code{TRUE}.}
+
+\item{rsqAdj}{logical; if \code{TRUE}, Adjusted R-squared values are computed for the portfolio. Default is \code{FALSE}.}
+
+\item{digits}{an integer indicating the number of decimal places to be used for rounding. Default is 2.}
+
 \item{...}{potentially further arguments passed.}
 }
 \value{
-\code{portRsqr} returns a list with the follwing components:
-\item{port.Rsqr}{ length-T vector of R-squared values for the portfolio.}
-\item{port.AdjRsqr}{ length-T vector of adjusted R-squared values for the portfolio.}
+\code{portRsqr} returns the sample mean and plots the time series of corresponding R squared values for the portfolio
+                       depending on the values of \code{rsq} and \code{rsqAdj}.
 }
 \description{
-Calcluate the R-squared and Adjusted R-squared for a portfolio of assets
+Calcluate and plot the R-squared and Adjusted R-squared for a portfolio of assets
 }
 \examples{
 
 #Load the data 
-data("stocks145scores6")
+ data("factorDataSetDjia5Yrs")
  
 #Fit a Ffm
-fit <- fitFfm(data=stocks145scores6, asset.var="TICKER", ret.var="RETURN", 
+ fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars="SECTOR")
               
-#Find the portfolio R-squared and adjusted portfolio R-squared 
-#for the 145 stocks data with default weights.               
-portRsqr(fit)
+#Calcuate and plot the portfolio R-squared values
+ portRsqr(fit)
+
+
 
 }
 \author{

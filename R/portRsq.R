@@ -1,38 +1,46 @@
 #' @title  R-squared and Adjusted R-squared for a Portfolio
 #' 
-#' @description Calcluate the R-squared and Adjusted R-squared for a portfolio of assets
+#' @description Calcluate and plot the R-squared and Adjusted R-squared for a portfolio of assets
 #' 
-#' @param ffmObj  an object of class \code{ffm} produced by \code{fitFfm}
-#' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
-#' @param ... potentially further arguments passed.
+#' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
+#' @param weight   a vector of weights of the assets in the portfolio. Default is NULL.
+#' @param rsq      logical; if \code{TRUE}, R-squared values are computed for the portfolio. Default is \code{TRUE}.
+#' @param rsqAdj   logical; if \code{TRUE}, Adjusted R-squared values are computed for the portfolio. Default is \code{FALSE}. 
+#' @param digits   an integer indicating the number of decimal places to be used for rounding. Default is 2. 
+#' @param ...      potentially further arguments passed.
 #' @author Avinash Acharya
 #' 
-#' @return \code{portRsqr} returns a list with the follwing components:
-#' \item{port.Rsqr}{ length-T vector of R-squared values for the portfolio.}
-#' \item{port.AdjRsqr}{ length-T vector of adjusted R-squared values for the portfolio.} 
+#' @return \code{portRsqr} returns the sample mean and plots the time series of corresponding R squared values for the portfolio
+#'                        depending on the values of \code{rsq} and \code{rsqAdj}.
 #' 
 #' @examples 
 #'
 #' #Load the data 
-#' data("stocks145scores6")
+#'  data("factorDataSetDjia5Yrs")
 #'  
 #' #Fit a Ffm
-#' fit <- fitFfm(data=stocks145scores6, asset.var="TICKER", ret.var="RETURN", 
+#'  fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars="SECTOR")
 #'               
-#' #Find the portfolio R-squared and adjusted portfolio R-squared 
-#' #for the 145 stocks data with default weights.               
-#' portRsqr(fit)
+#' #Calcuate and plot the portfolio R-squared values
+#'  portRsqr(fit)
+#' 
+#' 
 #' 
 #' @export
 
 # Not the final version
-portRsqr <- function(ffmObj, weight=NULL, ...)
+portRsqr <- function(ffmObj, weight=NULL, rsq=T, rsqAdj=F, digits=2, ...)
 {
   # set defaults and check input validity
   if (!inherits(ffmObj, "ffm"))
   {
     stop("Invalid argument: Object should be of class'ffm'.")
+  }
+  
+  if (!(rsq) && !(rsqAdj))
+  {
+    stop("Invalid arguments: Inputs rsq and rsqAdj both cannot be False.")
   }
   
   data <- ffmObj$data
@@ -56,17 +64,41 @@ portRsqr <- function(ffmObj, weight=NULL, ...)
   }
   
   W<- diag(w)#NxN 
-  
   returns = matrix(data = ffmObj$data[[ffmObj$ret.var]] , nrow = n.assets) #NxT Matrix of Returns
   residuals = t(ffmObj$residuals) #NxT Matrix of residual returns
   time.periods = length(ffmObj$time.periods)
   r2 = 1 - ((t(residuals[,1:time.periods]) %*% W %*% residuals[,1:time.periods]) / (t(returns[,1:time.periods]) %*% W %*% returns[,1:time.periods])) 
   r2<- diag(r2)
   names(r2) <- names(ffmObj$r2)
-  K <- length(ffmObj$factor.name)
-  p <- K-1
-  adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
   
-  list(port.Rsqr = r2, port.AdjRsqr = adj.r2)
+  if(rsq)
+    {
+      barplot(r2,las=2,col=5,
+              names.arg= as.yearmon(names(r2)),
+              cex.names=0.5,
+              main="R-squared Values for the Portfolio")
+      r2.mean<- round(mean(r2),digits = digits)
+      out<- r2.mean
+      names(out) <- "Mean R-Square"
+   }
+  if(rsqAdj)
+    {
+      K <- length(ffmObj$factor.name)
+      p <- K-1
+      adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
+      barplot(adj.r2,las=2,col=5,
+          names.arg= as.yearmon(names(r2)),
+          cex.names=0.5,
+          main="Adjusted R-squared Values for the Portfolio")
+          adj.r2.mean<- round(mean(adj.r2),digits = digits)
+          out<- adj.r2.mean
+          names(out) <- "Mean Adj R-Square"    
+    }
+  if(rsqAdj && rsq)
+    {
+      out<- rbind(r2.mean, adj.r2.mean)
+      #row.names(out)<- c("Mean R-Square", "Mean Adj R-Square")
+    }
+  print(out)
 }
 
