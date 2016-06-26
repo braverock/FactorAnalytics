@@ -5,7 +5,7 @@
 \title{Portfolio return decomposition report}
 \usage{
 repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
-  stripLeft = TRUE, ...)
+  scaleType = "free", stripLeft = TRUE, digits = 1, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
@@ -14,11 +14,17 @@ repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 
 \item{isPrint}{logical variable to print numeric summary or not.}
 
-\item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel}
+\item{scaleType}{scaleType controls if use a same scale of y-axis, choose from c('same', 'free')}
 
-\item{...}{futher arguments passed to or from other methods.}
+\item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'}
+
+\item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
+
+\item{...}{other graphics parameters available in tsPlotMP can be passed in through the ellipses, see \code{\link[factorAnalytics]{tsPlotMP}}}
 
 \item{weight}{a vector of weights of the assets in the portfolio. Default is NULL.}
+
+\item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'}
 }
 \description{
 Decompostite return of portfolio into return of different factors based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization.
@@ -33,16 +39,19 @@ dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-
 
 #Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
-                                                     
+wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)                         
+                                                                                 
 #fit a fundamental factor model
 fit <- fitFfm(data = dat, 
               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
               fit.method="WLS", z.score = T)
 
-repReturn(fit, wtsStocks145GmvLo)               
+repReturn(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+repReturn(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = T, scaleType = 'same')
+repReturn(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = F, zeroLine = T, color = 'Blue')              
 }
 \author{
-Lingjie Yi
+Douglas Martin, Lingjie Yi
 }
 
