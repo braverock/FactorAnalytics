@@ -29,21 +29,20 @@ Decompostite return of portfolio into return of different factors based on funda
 
 #Load fundamental and return data 
 data("stocks145scores6")
-dat = data145
-dat = as.yearmon(datDATE)
-dat = dat[datDATE >=as.yearmon("2008-01-01") &
-                          dat$DATE <= as.yearmon("2012-12-31"),]
+dat = stocks145scores6
+dat$DATE = as.yearmon(dat$DATE)
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
 
 #Load long-only GMV weights for the return data
-data("wts145stocksGMVlong.rda")
+data("wtsStocks145GmvLo")
                                                      
 #fit a fundamental factor model
-fit <- fitFfm(data = data145, # Change fit object to mixed.mod
+fit <- fitFfm(data = dat, 
               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
               fit.method="WLS", z.score = T)
 
-repReturn(fit, wtsStocks145.GmvLo)               
+repReturn(fit, wtsStocks145GmvLo)               
 }
 \author{
 Lingjie Yi
