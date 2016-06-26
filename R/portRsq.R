@@ -67,6 +67,6 @@ portRsqr <- function(ffmObj, weight=NULL, ...)
   p <- K-1
   adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
   
-  return(list(port.Rsqr = r2, port.AdjRsqr = adj.r2))
+  list(port.Rsqr = r2, port.AdjRsqr = adj.r2)
 }
 
