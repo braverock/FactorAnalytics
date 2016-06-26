@@ -20,8 +20,8 @@ portRsqr(ffmObj, weight = NULL, rsq = T, rsqAdj = F, digits = 2, ...)
 \item{...}{potentially further arguments passed.}
 }
 \value{
-\code{portRsqr} returns the sample mean along with the time series plot of R squared values for the portfolio.
-                       If \code{rsqAdj} is \code{TRUE}, correspoding mean and plot for adjusted R-squared is also returned.
+\code{portRsqr} returns the sample mean and plots the time series of corresponding R squared values for the portfolio
+                       depending on the values of \code{rsq} and \code{rsqAdj}.
 }
 \description{
 Calcluate the R-squared and Adjusted R-squared for a portfolio of assets

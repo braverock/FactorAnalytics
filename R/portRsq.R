@@ -10,8 +10,8 @@
 #' @param ...      potentially further arguments passed.
 #' @author Avinash Acharya
 #' 
-#' @return \code{portRsqr} returns the sample mean along with the time series plot of R squared values for the portfolio.
-#'                        If \code{rsqAdj} is \code{TRUE}, correspoding mean and plot for adjusted R-squared is also returned. 
+#' @return \code{portRsqr} returns the sample mean and plots the time series of corresponding R squared values for the portfolio
+#'                        depending on the values of \code{rsq} and \code{rsqAdj}.
 #' 
 #' @examples 
 #'
@@ -38,6 +38,11 @@ portRsqr <- function(ffmObj, weight=NULL, rsq=T, rsqAdj=F, digits=2, ...)
     stop("Invalid argument: Object should be of class'ffm'.")
   }
   
+  if (!(rsq) && !(rsqAdj))
+  {
+    stop("Invalid arguments: Inputs rsq and rsqAdj both cannot be False.")
+  }
+  
   data <- ffmObj$data
   date.var = ffmObj$date.var
   data <- data[order(data[,date.var]),]
@@ -59,21 +64,23 @@ portRsqr <- function(ffmObj, weight=NULL, rsq=T, rsqAdj=F, digits=2, ...)
   }
   
   W<- diag(w)#NxN 
-  
   returns = matrix(data = ffmObj$data[[ffmObj$ret.var]] , nrow = n.assets) #NxT Matrix of Returns
   residuals = t(ffmObj$residuals) #NxT Matrix of residual returns
   time.periods = length(ffmObj$time.periods)
   r2 = 1 - ((t(residuals[,1:time.periods]) %*% W %*% residuals[,1:time.periods]) / (t(returns[,1:time.periods]) %*% W %*% returns[,1:time.periods])) 
   r2<- diag(r2)
   names(r2) <- names(ffmObj$r2)
-
-  barplot(r2,las=2,col=5,
-          names.arg= as.yearmon(names(r2)),
-          cex.names=0.5,
-          main="R-squared Values for the Portfolio")
-  r2.mean<- round(mean(r2),digits = digits)
-  out<- r2.mean
-  names(out) <- "Mean R-Square"
+  
+  if(rsq)
+    {
+      barplot(r2,las=2,col=5,
+              names.arg= as.yearmon(names(r2)),
+              cex.names=0.5,
+              main="R-squared Values for the Portfolio")
+      r2.mean<- round(mean(r2),digits = digits)
+      out<- r2.mean
+      names(out) <- "Mean R-Square"
+   }
   if(rsqAdj)
     {
       K <- length(ffmObj$factor.name)
@@ -83,9 +90,14 @@ portRsqr <- function(ffmObj, weight=NULL, rsq=T, rsqAdj=F, digits=2, ...)
           names.arg= as.yearmon(names(r2)),
           cex.names=0.5,
           main="Adjusted R-squared Values for the Portfolio")
-      adj.r2.mean<- round(mean(adj.r2),digits = digits)
+          adj.r2.mean<- round(mean(adj.r2),digits = digits)
+          out<- adj.r2.mean
+          names(out) <- "Mean Adj R-Square"    
+    }
+  if(rsqAdj && rsq)
+    {
       out<- rbind(r2.mean, adj.r2.mean)
-      row.names(out)<- c("Mean R-Square", "Mean Adj R-Square")
+      #row.names(out)<- c("Mean R-Square", "Mean Adj R-Square")
     }
   print(out)
 }
