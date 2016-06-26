@@ -22,7 +22,7 @@ rsqTstatsTs(ffmObj, isPlot = TRUE, col = "cyan", z.alpha = 1.96, ...)
 \item{R-squared}{ length-T vector of R-squared values.}
 \item{tstats}{ an xts object of t-stats values.}
 \item{z.alpha}{ critical value corresponding to the confidence interval.}
- It plots the barplots for R-squared, t-stats and significant t-stats if \code{isPlot} is TRUE.
+ It plots the barplots for R-squared, t-stats and significant t-stats if \code{isPlot} is \code{TRUE}.
 }
 \description{
 Calculate and plot the time series of the R-squared values, t-statistic vales and the
@@ -33,7 +33,7 @@ Calculate and plot the time series of the R-squared values, t-statistic vales an
 #Fit a Ffm
  fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MARKETCAP","ENTVALUE","P2B","EV2S"),
                date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS")
- #Find R2, tstats  with C.I = 95\\\% and plot the results.
+ #Find R2, tstats  with C.I = 95\% and plot the results.
  stats = rsqTstatsTs(fit, isPlot = T, col = "blue", z.alpha =1.96)  
    
               
