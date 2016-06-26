@@ -25,8 +25,8 @@ Plot time series with specific plotting parameters
 
 #Load the data 
 data("stocks145scores6")
-stacked.df = data145
-returns = tapply(stacked.df$RETURN,list(stacked.df$DATE,stacked.df$TICKER),I)
+dat = data145
+returns = tapply(dat$RETURN,list(dat$DATE,dat$TICKER),I)
 ret = xts(returns[,1:5],as.Date(rownames(returns)))
 
 #generate return time series plot               

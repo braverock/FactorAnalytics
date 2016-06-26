@@ -42,6 +42,7 @@ fit <- fitFfm(data = data145, # Change fit object to mixed.mod
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
               fit.method="WLS", z.score = T)
 
+repExposures(fit, wtsStocks145.GmvLo)
 }
 \author{
 Lingjie Yi

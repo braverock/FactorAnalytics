@@ -27,6 +27,7 @@
 #'               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
 #'               fit.method="WLS", z.score = T)
 #' 
+#' repExposures(fit, wtsStocks145.GmvLo)
 #' @export
 
 
