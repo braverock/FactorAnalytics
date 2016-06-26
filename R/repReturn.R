@@ -33,7 +33,8 @@
 # Not the final version
 
 
-repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, stripLeft = TRUE, layout = NULL, ...) {
+repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
+                      stripLeft = TRUE, layout = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObjshould be of class'ffm'.")

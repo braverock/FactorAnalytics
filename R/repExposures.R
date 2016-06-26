@@ -31,7 +31,8 @@
 #' @export
 
 
-repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, stripLeft = TRUE, layout = NULL, ...) {
+repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
+                         stripLeft = TRUE, layout = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObj should be of class'ffm'.")

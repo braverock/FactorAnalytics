@@ -24,10 +24,9 @@
 #Not the final version 
 
 # Lattice type time series plotting function
-tsPlotMP = function(ret,add.grid = F,cex = 1.0, layout = NULL,type = "l",
-                    pct = 100, yname = "RETURNS (%)",scaleType = "free",
-                    stripLeft = T,main = NULL,
-                    lwd = 1, color = "black")
+tsPlotMP = function(ret,add.grid = F,cex = 1.0, layout = NULL,type = "l", 
+                    pct = 100, yname = "RETURNS (%)",scaleType = "free", stripLeft = T,
+                    main = NULL, lwd = 1, color = "black")
 {
   strip.left = stripLeft
   strip = !strip.left
