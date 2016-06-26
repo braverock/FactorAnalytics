@@ -1,35 +1,39 @@
-#' @title Portfolio return reports for risk decomposition and performance analysis
+#' @title Portfolio return decomposition report
 #' 
-#' @description conduct portfolio return analysis reporting 
+#' @description Decompostite return of portfolio into return of different factors based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
-#' @param ffmObj fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @param ffmObj an object of class ffm returned by fitFfm.
 #' @param weight a vector of weights of the assets in the portfolio. Default is NULL.
 #' @param isPlot logical variable to generate plot or not.
-#' @param ... additional arguments unused
+#' @param isPrint logical variable to print numeric summary or not.
+#' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel
+#' @param ... futher arguments passed to or from other methods.
 #' @author Lingjie Yi
 #' @examples 
 #'
-#' #Load the data 
+#' #Load fundamental and return data 
 #' data("stocks145scores6")
-#'  
-#' #Fit a Ffm
-#' fit <- fitFfm(data = data145, # Change fit object to mixed.mod
-#' exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
-#' date.var = "DATE", 
-#' ret.var = "RETURN", 
-#' asset.var = "TICKER", 
-#' fit.method="WLS",
-#' z.score = F)
-#'               
-#' #Conduct portfolio returns analysis reporting with default weights.               
-#' repReturn(fit)
-#' 
+#' dat = stocks145scores6
+#' dat$DATE = as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+#'
+#' #Load long-only GMV weights for the return data
+#' data("wtsStocks145GmvLo")
+#'                                                      
+#' #fit a fundamental factor model
+#' fit <- fitFfm(data = dat, 
+#'               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
+#'               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#'               fit.method="WLS", z.score = T)
+#'
+#' repReturn(fit, wtsStocks145GmvLo)               
 #' @export
 
 # Not the final version
 
 
-repReturn <- function(ffmObj, weights = NULL, isPlot = FALSE, ...) {
+repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
+                      stripLeft = TRUE, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObjshould be of class'ffm'.")
@@ -67,7 +71,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = FALSE, ...) {
     }
     weights = weights[asset.names]
   }
-
+  
   
   #portfolio residuals
   sig.p <- sig * weights
@@ -118,18 +122,19 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = FALSE, ...) {
             cex.names=0.5,
             main=paste("Portfolio Detailed Returns Decomposition"))
     
-    tsPlotMP(dat[,c('Return','Alpha','facRet','Residuals')], main = "Portfolio Returns Decomposition", scaleType = "free", layout = c(3,3))
-    tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], main = "Portfolio Individual Style Factor Returns", scaleType = "free", layout = c(3,3))
-    tsPlotMP(dat[,c(exposures.char.name)], main = "Portfolio Sector Returns", scaleType = "free", layout = c(3,4))
+    tsPlotMP(dat[,c('Return','Alpha','facRet','Residuals')], stripLeft = stripLeft, main = "Portfolio Returns Decomposition", scaleType = "free", layout = c(3,3))
+    tsPlotMP(dat[,c('facRet',exposures.num,'Residuals')], stripLeft = stripLeft, main = "Portfolio Individual Style Factor Returns", scaleType = "free", layout = c(3,3))
+    tsPlotMP(dat[,c(exposures.char.name)], stripLeft = stripLeft, main = "Portfolio Sector Returns", scaleType = "free", layout = c(3,4))
     
   }
   
-  # tabular report 
-  avg = apply(dat, 2, mean)
-  vol = apply(dat, 2, sd)
-  stats.sum = rbind(avg, vol)
-  rownames(stats.sum) = c('mean','volatility')
-    
-  return(stats.sum)
+  if(isPrint){
+    # tabular report 
+    avg = apply(dat, 2, mean)
+    vol = apply(dat, 2, sd)
+    stats.sum = rbind(avg, vol)
+    rownames(stats.sum) = c('mean','volatility')
+    return(stats.sum)
+  }
   
 }
