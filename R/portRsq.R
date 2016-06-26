@@ -8,8 +8,8 @@
 #' @author Avinash Acharya
 #' 
 #' @return \code{portRsqr} returns a list with the follwing components:
-#' \item{port.Rsqr}{length-T vector of R-squared values for the portfolio.}
-#' \item{port.AdjRsqr}{length-T vector of adjusted R-squared values for the portfolio.} 
+#' \item{port.Rsqr}{ length-T vector of R-squared values for the portfolio.}
+#' \item{port.AdjRsqr}{ length-T vector of adjusted R-squared values for the portfolio.} 
 #' 
 #' @examples 
 #'
@@ -60,7 +60,6 @@ portRsqr <- function(ffmObj, weight=NULL, ...)
   returns = matrix(data = ffmObj$data[[ffmObj$ret.var]] , nrow = n.assets) #NxT Matrix of Returns
   residuals = t(ffmObj$residuals) #NxT Matrix of residual returns
   time.periods = length(ffmObj$time.periods)
-  r2<-0
   r2 = 1 - ((t(residuals[,1:time.periods]) %*% W %*% residuals[,1:time.periods]) / (t(returns[,1:time.periods]) %*% W %*% returns[,1:time.periods])) 
   r2<- diag(r2)
   names(r2) <- names(ffmObj$r2)
