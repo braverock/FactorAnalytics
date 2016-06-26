@@ -5,24 +5,24 @@
 #'  number of risk indices with significant t-stats for a fundamentally fit object.
 #' 
 #' @param ffmObj  an object of class \code{ffm} produced by \code{fitFfm}
+#' @param isPlot  logical. If \code{TRUE} the barplots are plotted.
 #' @param col     A specification for the default plotting color. Default is cyan
 #' @param z.alpha critical value corresponding to the confidence interval. Default is 1.96 i.e 95\% C.I
 #' @param ...     potentially further arguments passed.
 #' 
 #' @author Doug Martin, Avinash Acharya
 #' 
-#' @return \code{rsqTstatsTs} plots three barplots if \code{isPlot} is TRUE. It returns a list with following components:
+#' @return \code{rsqTstatsTs}  returns a list with following components:
 #' \item{R-squared}{ length-T vector of R-squared values.}
 #' \item{tstats}{ an xts object of t-stats values.}
 #' \item{z.alpha}{ critical value corresponding to the confidence interval.}
+#'  It plots the barplots for R-squared, t-stats and significant t-stats if \code{isPlot} is TRUE.
 #' @examples 
-#'
 #'  data("factorDataSetDjia5Yrs")
-#'
 #' #Fit a Ffm
 #'  fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MARKETCAP","ENTVALUE","P2B","EV2S"),
-#'              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS")
-#'
+#'                date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS")
+#'  #Find R2, tstats  with C.I = 95\% and plot the results.
 #'  stats = rsqTstatsTs(fit, isPlot = T, col = "blue", z.alpha =1.96)  
 #'    
 #'               
