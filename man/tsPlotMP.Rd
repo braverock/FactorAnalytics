@@ -26,7 +26,6 @@ Plot time series with specific plotting parameters
 }
 \examples{
 
-
 #Load the data 
 data("stocks145scores6")
 dat = stocks145scores6
@@ -37,6 +36,7 @@ ret = xts(returns[,1:5],as.yearmon(rownames(returns)))
 tsPlotMP(ret, color = 'Blue')
 tsPlotMP(ret, scaleType = "same", zeroLine = F)
 tsPlotMP(ret, stripLeft = F, main = 'Time Series Plot')
+ 
    
 }
 \author{

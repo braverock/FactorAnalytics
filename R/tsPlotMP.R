@@ -1,6 +1,9 @@
 #' @title Time Series Plots
 #' 
 #' @description Plot time series with specific plotting parameters 
+#'
+#' @import lattice 
+#' @importForm lattice panel.abline.
 #' 
 #' @param ret an time series exposure/return object  
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel
@@ -12,7 +15,6 @@
 #' @author Douglas Martin, Lingjie Yi
 #' @examples 
 #'
-#'
 #' #Load the data 
 #' data("stocks145scores6")
 #' dat = stocks145scores6
@@ -23,6 +25,7 @@
 #' tsPlotMP(ret, color = 'Blue')
 #' tsPlotMP(ret, scaleType = "same", zeroLine = F)
 #' tsPlotMP(ret, stripLeft = F, main = 'Time Series Plot')
+#'  
 #'    
 #' @export
 
