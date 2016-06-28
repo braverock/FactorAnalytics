@@ -2,8 +2,7 @@
 #' 
 #' @description Plot time series with specific plotting parameters 
 #'
-#' @import lattice 
-#' @importForm lattice panel.abline.
+#' @importForm lattice panel.abline
 #' 
 #' @param ret an time series exposure/return object  
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel
