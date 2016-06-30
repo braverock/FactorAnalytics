@@ -7,7 +7,7 @@
 #' 
 #' @param ret an time series exposure/return object 
 #' @param add.grid logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')
-#' @param cex A numerical value giving the amount by which plotting text and symbols should be magnified relative to the default. Default is 1.0
+#' @param cex a numerical value giving the amount by which plotting text and symbols should be magnified relative to the default. Default is 1.0
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
 #' @param type character. type of the plot; "l" denotes a line, "p" denotes a point, and "b" and "o" both denote both together.deafault is "l".
 #' @param yname character or espression giving label(s) for the y-axis 
