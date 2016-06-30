@@ -10,6 +10,8 @@ repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
 
+\item{weights}{a vector of weights of the assets in the portfolio. Default is NULL.}
+
 \item{isPlot}{logical variable to generate plot or not.}
 
 \item{isPrint}{logical variable to print numeric summary or not.}
@@ -23,8 +25,6 @@ repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 \item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
 
 \item{...}{other graphics parameters available in tsPlotMP can be passed in through the ellipses, see \code{\link[factorAnalytics]{tsPlotMP}}}
-
-\item{weight}{a vector of weights of the assets in the portfolio. Default is NULL.}
 }
 \description{
 Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization.
@@ -42,14 +42,17 @@ data("wtsStocks145GmvLo")
 wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
                                                      
 #fit a fundamental factor model
+require(factorAnalytics) 
 fit <- fitFfm(data = dat, 
               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = T)
+              fit.method="WLS", z.score = TRUE)
 
 repExposures(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = T, scaleType = 'same', layout = c(3,2))
-repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = F, zeroLine = T, color = 'Blue')
+repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE,
+             add.grid = TRUE, scaleType = 'same', layout = c(3,2))
+repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE,
+             add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
 }
 \author{
 Douglas Martin, Lingjie Yi

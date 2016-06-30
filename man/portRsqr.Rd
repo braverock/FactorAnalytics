@@ -28,13 +28,14 @@ Calcluate and plot the R-squared and Adjusted R-squared for a portfolio of asset
 }
 \examples{
 
-#Load the data 
+#Load the data
  data("factorDataSetDjia5Yrs")
- 
+
 #Fit a Ffm
- fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+require(factorAnalytics)
+ fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
               date.var="DATE", exposure.vars="SECTOR")
-              
+
 #Calcuate and plot the portfolio R-squared values
  portRsqr(fit)
 

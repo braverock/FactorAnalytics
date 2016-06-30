@@ -4,20 +4,32 @@
 \alias{tsPlotMP}
 \title{Time Series Plots}
 \usage{
-tsPlotMP(ret, add.grid = F, cex = 1, layout = NULL, type = "l",
-  pct = 100, yname = "RETURNS (\%)", scaleType = "free", stripLeft = T,
-  main = NULL, lwd = 1, color = "black", zeroLine = T)
+tsPlotMP(ret, add.grid = FALSE, cex = 1, layout = NULL, type = "l",
+  yname = "RETURNS (\%)", scaleType = "free", stripLeft = TRUE,
+  main = NULL, lwd = 1, color = "black", zeroLine = TRUE)
 }
 \arguments{
 \item{ret}{an time series exposure/return object}
 
 \item{add.grid}{logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')}
 
+\item{cex}{A numerical value giving the amount by which plotting text and symbols should be magnified relative to the default. Default is 1.0}
+
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
+
+\item{type}{character. type of the plot; "l" denotes a line, "p" denotes a point, and "b" and "o" both denote both together.deafault is "l".}
+
+\item{yname}{character or espression giving label(s) for the y-axis}
 
 \item{scaleType}{scaleType controls if use a same scale of y-axis, choose from c('same', 'free')}
 
 \item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel}
+
+\item{main}{Typically a character string or expression describing the main title.}
+
+\item{lwd}{The line width, a positive number, defaulting to 1}
+
+\item{color}{A specification for the default plotting color. Default is black.}
 
 \item{zeroLine}{logical varible to choose add a dotted horizontal line at the zero vertical distance}
 }
@@ -26,7 +38,8 @@ Plot time series with specific plotting parameters
 }
 \examples{
 
-#Load the data 
+#Load the data
+require(factorAnalytics) 
 data("stocks145scores6")
 dat = stocks145scores6
 returns = tapply(dat$RETURN,list(dat$DATE,dat$TICKER),I)
@@ -34,8 +47,8 @@ ret = xts(returns[,1:5],as.yearmon(rownames(returns)))
 
 #generate return time series plot               
 tsPlotMP(ret, color = 'Blue')
-tsPlotMP(ret, scaleType = "same", zeroLine = F)
-tsPlotMP(ret, stripLeft = F, main = 'Time Series Plot')
+tsPlotMP(ret, scaleType = "same", zeroLine = FALSE)
+tsPlotMP(ret, stripLeft = FALSE, main = 'Time Series Plot')
  
    
 }

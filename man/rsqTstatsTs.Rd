@@ -29,12 +29,14 @@ Calculate and plot the time series of the R-squared values, t-statistic vales an
  number of risk indices with significant t-stats for a fundamentally fit object.
 }
 \examples{
+ 
  data("factorDataSetDjia5Yrs")
 #Fit a Ffm
+ require(factorAnalytics)
  fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MARKETCAP","ENTVALUE","P2B","EV2S"),
                date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS")
  #Find R2, tstats  with C.I = 95\% and plot the results.
- stats = rsqTstatsTs(fit, isPlot = T, col = "blue", z.alpha =1.96)  
+ stats = rsqTstatsTs(fit, isPlot = TRUE, col = "blue", z.alpha =1.96)  
    
               
 
