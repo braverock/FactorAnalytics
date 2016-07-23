@@ -2,29 +2,36 @@
 % Please edit documentation in R/portRsq.R
 \name{portRsqr}
 \alias{portRsqr}
-\title{R-squared and Adjusted R-squared for a Portfolio}
+\title{Factor Model R-squared and VIF Values}
 \usage{
-portRsqr(ffmObj, weight = NULL, rsq = T, rsqAdj = F, digits = 2, ...)
+portRsqr(ffmObj, rsq = T, rsqAdj = F, VIF = F, digits = 2,
+  isPrint = F, isPlot = T, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
 
-\item{weight}{a vector of weights of the assets in the portfolio. Default is NULL.}
-
-\item{rsq}{logical; if \code{TRUE}, R-squared values are computed for the portfolio. Default is \code{TRUE}.}
+\item{rsq}{logical; if \code{TRUE}, Factor Model R-squared values are computed for the portfolio. Default is \code{TRUE}.}
 
 \item{rsqAdj}{logical; if \code{TRUE}, Adjusted R-squared values are computed for the portfolio. Default is \code{FALSE}.}
 
+\item{VIF}{logical; if \code{TRUE}, Variance Inflation factor is calculated. Default is \code{FALSE}.
+At least 2 continous variables are required in \code{exposure.vars} of fitted model to find VIF.}
+
 \item{digits}{an integer indicating the number of decimal places to be used for rounding. Default is 2.}
+
+\item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed along with their mean values. Default is \code{FALSE},}
+
+\item{isPlot}{logical. if \code{TRUE}, the time series of the output is plotted. Default is \code{TRUE},}
 
 \item{...}{potentially further arguments passed.}
 }
 \value{
-\code{portRsqr} returns the sample mean and plots the time series of corresponding R squared values for the portfolio
-                       depending on the values of \code{rsq} and \code{rsqAdj}.
+\code{portRsqr} returns the sample mean values and plots the time series of corresponding R squared values
+                        and the Variance Inflation factors depending on the values of \code{rsq}, \code{rsqAdj} and \code{VIF}.
+                        The time series of the output values are also printed if \code{isPrint} is \code{TRUE}
 }
 \description{
-Calcluate and plot the R-squared and Adjusted R-squared for a portfolio of assets
+Calcluate and plot the Factor Model R-squared, Adjusted R-squared and Variance Inflation Factors for a portfolio of assets
 }
 \examples{
 
@@ -38,9 +45,12 @@ require(factorAnalytics)
 
 #Calcuate and plot the portfolio R-squared values
  portRsqr(fit)
+ 
+ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
+              date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MARKETCAP"))
 
-
-
+#Plot and print the time series of VIF
+ portRsqr(fit1, VIF=TRUE, isPrint=TRUE)
 }
 \author{
 Avinash Acharya

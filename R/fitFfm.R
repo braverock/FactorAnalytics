@@ -43,6 +43,12 @@
 #' re-factored, tested, corrected and expanded the functionalities and S3 
 #' methods.
 #'
+#' @importFrom stats lm as.formula coef contr.treatment fitted mad median model.matrix
+#'             na.exclude na.fail na.omit var 
+#' @importFrom robustbase scaleTau2 covOGK
+#' @importFrom PerformanceAnalytics checkData
+#' @importFrom robust covRob covClassic lmRob
+#'
 #' @param data data.frame of the balanced panel data containing the variables 
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and 
 #' optionally, \code{weight.var}.
@@ -65,6 +71,7 @@
 #' estimated. Default is \code{FALSE}.
 #' @param z.score logical; If \code{TRUE}, style exposures will be converted to 
 #' z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.
+#' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},
 #' @param ... potentially further arguments passed.
 #' 
 #' @return \code{fitFfm} returns an object of class \code{"ffm"} for which 
@@ -113,9 +120,6 @@
 #' Grinold, R. C., & Kahn, R. N. (2000). Active portfolio management (Second
 #' Ed.). New York: McGraw-Hill.
 #'
-#' @seealso The \code{ffm} methods for generic functions: 
-#' \code{\link{plot.ffm}}, \code{\link{predict.ffm}}, 
-#' \code{\link{print.ffm}} and \code{\link{summary.ffm}}. 
 #' 
 #' And, the following extractor functions: \code{\link[stats]{coef}}, 
 #' \code{\link[stats]{fitted}}, \code{\link[stats]{residuals}},
@@ -126,31 +130,33 @@
 #'
 #' @examples
 #'
+#' 
 #' # Load fundamental and return data
-#' data(Stock.df)
+#'  data("factorDataSetDjia5Yrs")
 #' 
 #' # fit a fundamental factor model
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-#' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+#' exposure.vars <- c("P2B", "MARKETCAP")
+#' fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars=exposure.vars)
 #' names(fit)
 #' 
 #' # fit a BARRA Industry Factor Model
-#' exposure.vars <- c("GICS.SECTOR")
-#' fit1 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-#'                date.var="DATE", exposure.vars=exposure.vars, 
-#'                fit.method="Rob", rob.stats=TRUE)
+#' exposure.vars <- c("SECTOR")
+#' fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+#'                date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
 #' 
 #' # example with sector dummy included
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
-#' fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+#' exposure.vars <- c("P2B", "MARKETCAP", "SECTOR")
+#' fit2 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars=exposure.vars)
 #'
 #' @export
 
+
+
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
-                   weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
-                   rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE, ...) {
+                         weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
+                         rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
@@ -194,6 +200,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   # initialize to avoid R CMD check's NOTE: no visible binding for global var
   DATE=NULL 
   W=NULL
+  #addIntercept = TRUE
   
   # ensure dates are in required format
   data[[date.var]] <- as.Date(data[[date.var]])
@@ -216,9 +223,9 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   which.numeric <- sapply(data[,exposure.vars,drop=FALSE], is.numeric)
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
-  if (length(exposures.char) > 1) {
-    stop("Only one dummy variable can be included per regression at this time.")
-  }
+  #   if (length(exposures.char) > 1) {
+  #     stop("Only one dummy variable can be included per regression at this time.")
+  #   }
   
   # convert numeric exposures to z-scores
   if (z.score) {
@@ -253,107 +260,162 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   # estimate factor returns using LS or Robust regression
   # returns a list of the fitted lm or lmRob objects for each time period
-  if (grepl("LS",fit.method)) {
-    reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lm, 
-                   formula=fm.formula, contrasts=contrasts.list, 
-                   na.action=na.fail)
-  } else if (grepl("Rob",fit.method)) {
-    reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lmRob, 
-                   formula=fm.formula, contrasts=contrasts.list, 
-                   mxr=200, mxf=200, mxs=200, na.action=na.fail)
-  }
-  
-  # compute residual variance for all assets for weighted regression
-  if (grepl("W",fit.method)) {
+  if (addIntercept == FALSE)
+  {
+    if (grepl("LS",fit.method)) 
+    {
+      reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lm, 
+                     formula=fm.formula, contrasts=contrasts.list, 
+                     na.action=na.fail)
+    } 
+    else if (grepl("Rob",fit.method))
+    {
+      reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lmRob, 
+                     formula=fm.formula, contrasts=contrasts.list, 
+                     mxr=200, mxf=200, mxs=200, na.action=na.fail)
+    }
+    # compute residual variance for all assets for weighted regression
+    if (grepl("W",fit.method)) {
+      if (rob.stats) {
+        resid.var <- apply(sapply(reg.list, residuals), 1, scaleTau2)^2
+      } else {
+        resid.var <- apply(sapply(reg.list, residuals), 1, var)
+      }
+      # add column of weights to data replicating resid.var for each period
+      data <- cbind(data, W=1/resid.var)
+    }
+    
+    # estimate factor returns using WLS or weighted-Robust regression
+    # returns a list of the fitted lm or lmRob objects for each time period
+    if (fit.method=="WLS") {
+      reg.list <- by(data=data, INDICES=data[[date.var]], 
+                     FUN=function(x) {
+                       lm(data=x, formula=fm.formula, contrasts=contrasts.list, 
+                          na.action=na.fail, weights=W)
+                     })
+    } else if (fit.method=="W-Rob") {
+      reg.list <- by(data=data, INDICES=data[[date.var]], 
+                     FUN=function(x) {
+                       lmRob(data=x, formula=fm.formula, contrasts=contrasts.list, 
+                             na.action=na.fail, weights=W, 
+                             mxr=200, mxf=200, mxs=200)
+                     })
+    }
+    
+    ## Compute or Extract objects to be returned
+    
+    # number of factors including Intercept and dummy variables
+    if (length(exposures.char)) {
+      factor.names <- c(exposures.num, 
+                        paste(exposures.char,levels(data[,exposures.char]),sep=""))
+    } else {
+      factor.names <- c("(Intercept)", exposures.num)
+    }
+    K <- length(factor.names)
+    # exposure matrix B or beta for the last time period - N x K
+    beta <- model.matrix(fm.formula, data=subset(data, DATE==time.periods[TP]))
+    rownames(beta) <- asset.names
+    
+    # time series of factor returns = estimated coefficients in each period
+    factor.returns <- sapply(reg.list, function(x) {
+      temp <- coef(x) 
+      temp[match(factor.names, names(temp))]})
+    # simplify factor.names for dummy variables
+    if (length(exposures.char)) {
+      factor.names <- c(exposures.num, levels(data[,exposures.char]))
+    }
+    rownames(factor.returns) <- factor.names
+    factor.returns <- checkData(t(factor.returns)) # T x K
+    
+    # time series of residuals
+    residuals <- checkData(t(sapply(reg.list, residuals))) # T x N
+    names(residuals) <- asset.names
+    
+    # r-squared values for each time period
+    r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
+    
+    # factor and residual covariances
     if (rob.stats) {
-      resid.var <- apply(sapply(reg.list, residuals), 1, scaleTau2)^2
+      if (kappa(na.exclude(coredata(factor.returns))) < 1e+10) {
+        factor.cov <- covRob(coredata(factor.returns), estim="pairwiseGK", 
+                             distance=FALSE, na.action=na.omit)$cov
+      } else {
+        cat("Covariance matrix of factor returns is singular.\n")
+        factor.cov <- covRob(coredata(factor.returns), distance=FALSE, 
+                             na.action=na.omit)$cov
+      }
+      resid.var <- apply(coredata(residuals), 2, scaleTau2, na.rm=T)^2
+      if (full.resid.cov) {
+        resid.cov <- covOGK(coredata(residuals), sigmamu=scaleTau2, n.iter=1)$cov
+      } else {
+        resid.cov <- diag(resid.var)
+      }
     } else {
-      resid.var <- apply(sapply(reg.list, residuals), 1, var)
+      factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
+                               na.action=na.omit)$cov
+      resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
+      if (full.resid.cov) {
+        resid.cov <- covClassic(coredata(residuals), distance=FALSE, 
+                                na.action=na.omit)$cov
+      } else {
+        resid.cov <- diag(resid.var)
+      }
     }
-    # add column of weights to data replicating resid.var for each period
-    data <- cbind(data, W=1/resid.var)
+    
+    
+    # return covariance estimated by the factor model
+    return.cov <-  beta %*% factor.cov %*% t(beta) + resid.cov
   }
-  
-  # estimate factor returns using WLS or weighted-Robust regression
-  # returns a list of the fitted lm or lmRob objects for each time period
-  if (fit.method=="WLS") {
-    reg.list <- by(data=data, INDICES=data[[date.var]], 
-                   FUN=function(x) {
-                     lm(data=x, formula=fm.formula, contrasts=contrasts.list, 
-                        na.action=na.fail, weights=W)
-                   })
-  } else if (fit.method=="W-Rob") {
-    reg.list <- by(data=data, INDICES=data[[date.var]], 
-                   FUN=function(x) {
-                     lmRob(data=x, formula=fm.formula, contrasts=contrasts.list, 
-                           na.action=na.fail, weights=W, 
-                           mxr=200, mxf=200, mxs=200)
-                   })
-  }
-  
-  ## Compute or Extract objects to be returned
-  
-  # number of factors including Intercept and dummy variables
-  if (length(exposures.char)) {
-    factor.names <- c(exposures.num, 
+  #If intercept+Sector/Country is required
+  else if (addIntercept == TRUE)
+  {
+    factor.names <- c("Intercept",exposures.num, 
                       paste(exposures.char,levels(data[,exposures.char]),sep=""))
-  } else {
-    factor.names <- c("(Intercept)", exposures.num)
-  }
-  K <- length(factor.names)
-  
-  # exposure matrix B or beta for the last time period - N x K
-  beta <- model.matrix(fm.formula, data=subset(data, DATE==time.periods[TP]))
-  rownames(beta) <- asset.names
-  
-  # time series of factor returns = estimated coefficients in each period
-  factor.returns <- sapply(reg.list, function(x) {
-    temp <- coef(x) 
-    temp[match(factor.names, names(temp))]})
-  # simplify factor.names for dummy variables
-  if (length(exposures.char)) {
-    factor.names <- c(exposures.num, levels(data[,exposures.char]))
-  }
-  rownames(factor.returns) <- factor.names
-  factor.returns <- checkData(t(factor.returns)) # T x K
-  
-  # time series of residuals
-  residuals <- checkData(t(sapply(reg.list, residuals))) # T x N
-  names(residuals) <- asset.names
-  
-  # r-squared values for each time period
-  r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
-  
-  # factor and residual covariances
-  if (rob.stats) {
-    if (kappa(na.exclude(coredata(factor.returns))) < 1e+10) {
-      factor.cov <- covRob(coredata(factor.returns), estim="pairwiseGK", 
-                           distance=FALSE, na.action=na.omit)$cov
-    } else {
-      cat("Covariance matrix of factor returns is singular.\n")
-      factor.cov <- covRob(coredata(factor.returns), distance=FALSE, 
-                           na.action=na.omit)$cov
-    }
-    resid.var <- apply(coredata(residuals), 2, scaleTau2, na.rm=T)^2
-    if (full.resid.cov) {
-      resid.cov <- covOGK(coredata(residuals), sigmamu=scaleTau2, n.iter=1)$cov
-    } else {
-      resid.cov <- diag(resid.var)
-    }
-  } else {
+    beta <- model.matrix(fm.formula, data=subset(data, DATE==time.periods[TP]))
+    rownames(beta) <- asset.names
+    beta.star = cbind("Int" = rep(1,nrow(beta)),beta)
+    tickers.count <- unique(data[[asset.var]])
+    ret.matrix = matrix(data[[ret.var]],nrow = length(tickers.count))
+    reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lm, 
+                   formula=fm.formula, na.action=na.fail)
+    resid.var <- apply(sapply(reg.list, residuals), 1, var)
+    resid.var.inv = diag(resid.var^-1) #V Inverse Matrix
+    resid.sd.inv = sqrt(resid.var.inv) # V^0.5 Inverse matrix
+    K <- length(factor.names)# K is with the intercept
+    R_matrix = rbind(diag(K-1), c(0,rep(-1,K-2)))
+    ret_star = resid.sd.inv %*% ret.matrix # r~ as in Menchero Equation A6
+    Y_matrix = (resid.sd.inv %*% beta.star) %*% R_matrix  #Y = V^-0.5*X*R
+    colnames(Y_matrix) <- factor.names[-1]
+    row.names(Y_matrix) = asset.names
+    reg.list = lm(ret_star ~ Y_matrix)
+    g = solve(t(Y_matrix)%*%Y_matrix) %*% t(Y_matrix) %*% ret_star #g as in eq A7
+    
+    # w.Y_matrix = (beta.star %*% R_matrix)
+    # w.reg.list = lm(ret.matrix ~ w.Y_matrix, weights = diag(resid.sd.inv))
+    
+    B_new = beta.star %*% R_matrix #Define X*R in equation A8 as B_new 
+    facWeights = R_matrix %*% (solve(t(B_new)%*%resid.var.inv%*%B_new))%*%t(B_new)%*%resid.var.inv
+    factor.returns = facWeights%*%ret.matrix
+    rownames(factor.returns) <- factor.names
+    colnames(factor.returns) = as.character(unique(data[[date.var]]))
+    residuals = ret_star - Y_matrix %*% g #NxT
+    x = resid(reg.list)
+    colnames(residuals) = as.character(unique(data[[date.var]]))
+    residuals <- checkData(t(residuals)) # T x N
+    #all.equal(x,residuals)
+    r2 <- as.numeric(sapply(X = summary(reg.list), FUN = "[","r.squared"))
+    names(r2) = as.character(unique(data[[date.var]]))
+    factor.returns <- checkData(t(factor.returns)) # T x K
     factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
                              na.action=na.omit)$cov
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
-    if (full.resid.cov) {
-      resid.cov <- covClassic(coredata(residuals), distance=FALSE, 
-                              na.action=na.omit)$cov
-    } else {
-      resid.cov <- diag(resid.var)
-    }
+    names(resid.var) <- asset.names
+    resid.cov <- diag(resid.var)
+    return.cov <-  beta.star %*% factor.cov %*% t(beta.star) + resid.cov
+    beta = beta.star
+    
   }
   
-  # return covariance estimated by the factor model
-  return.cov <-  beta %*% factor.cov %*% t(beta) + resid.cov
   
   # create list of return values.
   result <- list(factor.fit=reg.list, beta=beta, factor.returns=factor.returns, 
@@ -368,7 +430,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   class(result) <- "ffm"
   return(result)
-}
+  }
 
 
 ### function to calculate z-scores for numeric exposure i using weights w
@@ -420,3 +482,6 @@ fitted.ffm <- function(object, ...) {
 residuals.ffm <- function(object, ...) {
   return(object$residuals)
 }
+
+
+

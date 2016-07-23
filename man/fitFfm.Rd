@@ -9,7 +9,7 @@
 \usage{
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
-  full.resid.cov = FALSE, z.score = FALSE, ...)
+  full.resid.cov = FALSE, z.score = FALSE, addIntercept = FALSE, ...)
 
 \method{coef}{ffm}(object, ...)
 
@@ -49,6 +49,8 @@ estimated. Default is \code{FALSE}.}
 
 \item{z.score}{logical; If \code{TRUE}, style exposures will be converted to 
 z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.}
+
+\item{addIntercept}{logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},}
 
 \item{...}{potentially further arguments passed.}
 
@@ -139,24 +141,24 @@ methods.
 }
 \examples{
 
+
 # Load fundamental and return data
-data(Stock.df)
+ data("factorDataSetDjia5Yrs")
 
 # fit a fundamental factor model
-exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+exposure.vars <- c("P2B", "MARKETCAP")
+fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)
 names(fit)
 
 # fit a BARRA Industry Factor Model
-exposure.vars <- c("GICS.SECTOR")
-fit1 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-               date.var="DATE", exposure.vars=exposure.vars, 
-               fit.method="Rob", rob.stats=TRUE)
+exposure.vars <- c("SECTOR")
+fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+               date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
 
 # example with sector dummy included
-exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
-fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+exposure.vars <- c("P2B", "MARKETCAP", "SECTOR")
+fit2 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)
 
 }
@@ -169,11 +171,7 @@ Performance Measurement, 15(1), 52-62.
 
 Grinold, R. C., & Kahn, R. N. (2000). Active portfolio management (Second
 Ed.). New York: McGraw-Hill.
-}
-\seealso{
-The \code{ffm} methods for generic functions: 
-\code{\link{plot.ffm}}, \code{\link{predict.ffm}}, 
-\code{\link{print.ffm}} and \code{\link{summary.ffm}}. 
+
 
 And, the following extractor functions: \code{\link[stats]{coef}}, 
 \code{\link[stats]{fitted}}, \code{\link[stats]{residuals}},

@@ -6,37 +6,42 @@
 #' @importFrom xts xts
 #' @importFrom zoo plot.zoo
 #' @importFrom zoo as.yearmon
-#' @importFrom factorAnalytics fitFfm
-#' @importFrom graphics barplot lines abline 
+#' @importFrom graphics barplot
+#' @importFrom lattice panel.abline xyplot panel.xyplot
 #'  
 #' @param ffmObj  an object of class \code{ffm} produced by \code{fitFfm}
 #' @param isPlot  logical. If \code{TRUE} the barplots are plotted.
-#' @param col     A specification for the default plotting color. Default is cyan
+#' @param col     specification for the default plotting color. Default is cyan
 #' @param z.alpha critical value corresponding to the confidence interval. Default is 1.96 i.e 95\% C.I
+#' @param layout  numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in the xyplot of t-statistics. Default is c(2,3).
+#' @param type    character. Type of the xyplot of t-statistics; \code{"l"} for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) vertical lines
+#'                 and \code{"b"} for both. Deafault is \code{"h"}.
+
 #' @param ...     potentially further arguments passed.
 #' 
 #' @author Doug Martin, Avinash Acharya
 #' 
-#' @return \code{rsqTstatsTs}  returns a list with following components:
+#' @return \code{rsqTstatsTs} plots the R-squared, t-stats and significant t-stats values  if \code{isPlot} is \code{TRUE} and returns a list with following components:
 #' \item{R-squared}{ length-T vector of R-squared values.}
 #' \item{tstats}{ an xts object of t-stats values.}
 #' \item{z.alpha}{ critical value corresponding to the confidence interval.}
-#'  It plots the barplots for R-squared, t-stats and significant t-stats if \code{isPlot} is \code{TRUE}.
 #' @examples 
 #'  
 #'  data("factorDataSetDjia5Yrs")
+#'  
 #' #Fit a Ffm
 #'  require(factorAnalytics)
 #'  fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MARKETCAP","ENTVALUE","P2B","EV2S"),
 #'                date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS")
-#'  #Find R2, tstats  with C.I = 95% and plot the results.
+#'                
+#'  #Find r2, tstats  with C.I = 95% and plot the results.
 #'  stats = rsqTstatsTs(fit, isPlot = TRUE, col = "blue", z.alpha =1.96)  
 #'    
 #'               
 #' 
 #' @export
 
-rsqTstatsTs<- function(ffmObj, isPlot = TRUE, col = "cyan", z.alpha = 1.96, ... )
+rsqTstatsTs<- function(ffmObj, isPlot = TRUE, col = "cyan", z.alpha = 1.96, layout =c(2,3),type ="h", ... )
 {
   
   # CREATE TIME SERIES OF T-STATS
@@ -61,15 +66,16 @@ rsqTstatsTs<- function(ffmObj, isPlot = TRUE, col = "cyan", z.alpha = 1.96, ... 
     
     hlines1 = rep(z.alpha, n.exposures+1)
     hlines2 = rep(-z.alpha, n.exposures+1)
-    my.panel <- function(x, ...) 
-    {
-      lines(x, ...)
-      panel.number <- parent.frame()$panel.number
-      abline(h = hlines1[panel.number], col = "red", lty = "dashed", lwd = 1.5)
-      abline(h = hlines2[panel.number], col = "red", lty = "dashed", lwd = 1.5)
+    panel =  function(...){
+      panel.abline(h=hlines1,lty = 3, col = "red")
+      panel.abline(h=hlines2,lty = 3, col = "red")
+      panel.xyplot(...)
     }
-    # PLOT T-STATS WITH PLOT.ZOO
-    plot.zoo(tstatsTs,type = "h", lwd = 1.7, panel = my.panel, main = "t-statistic values")
+    
+    # PLOT T-STATS WITH XYPLOT
+    plt<- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = 1), x = list(cex = 1)),
+            layout = layout, main = "t-statistic values", col = col, strip.left = T, strip = F)
+    print(plt)
     # PLOT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
     barplot(sigTstatsTs,col = col, main = "Number of Risk Indices with significant t-stats")
     

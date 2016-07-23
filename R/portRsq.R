@@ -1,21 +1,26 @@
-#' @title  R-squared and Adjusted R-squared for a Portfolio
+#' @title  Factor Model R-squared and VIF Values
 #'
-#' @description Calcluate and plot the R-squared and Adjusted R-squared for a portfolio of assets
+#' @description Calcluate and plot the Factor Model R-squared, Adjusted R-squared and Variance Inflation Factors for a portfolio of assets
 #'
 #' @importFrom zoo as.yearmon
-#' @importFrom factorAnalytics fitFfm
 #' @importFrom graphics barplot
+#' @importFrom stats lm
+#' @importFrom xts xts
 #' 
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
-#' @param weight   a vector of weights of the assets in the portfolio. Default is NULL.
-#' @param rsq      logical; if \code{TRUE}, R-squared values are computed for the portfolio. Default is \code{TRUE}.
+#' @param rsq      logical; if \code{TRUE}, Factor Model R-squared values are computed for the portfolio. Default is \code{TRUE}.
 #' @param rsqAdj   logical; if \code{TRUE}, Adjusted R-squared values are computed for the portfolio. Default is \code{FALSE}.
+#' @param VIF      logical; if \code{TRUE}, Variance Inflation factor is calculated. Default is \code{FALSE}.
+#'                 At least 2 continous variables are required in \code{exposure.vars} of fitted model to find VIF.
 #' @param digits   an integer indicating the number of decimal places to be used for rounding. Default is 2.
 #' @param ...      potentially further arguments passed.
+#' @param isPrint  logical. if \code{TRUE}, the time series of the computed factor model values is printed along with their mean values. Default is \code{FALSE}, 
+#' @param isPlot   logical. if \code{TRUE}, the time series of the output is plotted. Default is \code{TRUE}, 
 #' @author Avinash Acharya
 #'
-#' @return \code{portRsqr} returns the sample mean and plots the time series of corresponding R squared values for the portfolio
-#'                        depending on the values of \code{rsq} and \code{rsqAdj}.
+#' @return \code{portRsqr} returns the sample mean values and plots the time series of corresponding R squared values
+#'                         and the Variance Inflation factors depending on the values of \code{rsq}, \code{rsqAdj} and \code{VIF}.
+#'                         The time series of the output values are also printed if \code{isPrint} is \code{TRUE} 
 #'
 #' @examples
 #'
@@ -29,81 +34,110 @@
 #'
 #' #Calcuate and plot the portfolio R-squared values
 #'  portRsqr(fit)
+#'  
+#'  fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
+#'               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MARKETCAP"))
 #'
-#'
-#'
+#' #Plot and print the time series of VIF
+#'  portRsqr(fit1, VIF=TRUE, isPrint=TRUE)
 #' @export
 
 # Not the final version
-portRsqr <- function(ffmObj, weight=NULL, rsq=T, rsqAdj=F, digits=2, ...)
+portRsqr <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, digits=2, isPrint=F, isPlot =T, ...)
 {
   # set defaults and check input validity
   if (!inherits(ffmObj, "ffm"))
   {
     stop("Invalid argument: Object should be of class'ffm'.")
   }
-
-  if (!(rsq) && !(rsqAdj))
+  
+  if (!(rsq) && !(rsqAdj) && !(VIF))
   {
-    stop("Invalid arguments: Inputs rsq and rsqAdj both cannot be False.")
+    stop("Invalid arguments: Inputs rsq, rsqAdj and VIF cannot be False.")
   }
-
-  data <- ffmObj$data
-  date.var = ffmObj$date.var
-  data <- data[order(data[,date.var]),]
-  assets.names<- ffmObj$asset.names
+  
   n.assets <- length(ffmObj$asset.names)
-  if (!is.null(weight))
-  {
-    if(length(weight) == n.assets)
-    {
-      w <- weight[assets.names]
-    }
-    else
-      stop("Error: Length of weight should be equal to the number of assets ")
-
-  }
-  else
-  {
-    w <- rep(1/n.assets, n.assets)
-  }
-
-  W<- diag(w)#NxN
-  returns = matrix(data = ffmObj$data[[ffmObj$ret.var]] , nrow = n.assets) #NxT Matrix of Returns
-  residuals = t(ffmObj$residuals) #NxT Matrix of residual returns
-  time.periods = length(ffmObj$time.periods)
-  r2 = 1 - ((t(residuals[,1:time.periods]) %*% W %*% residuals[,1:time.periods]) / (t(returns[,1:time.periods]) %*% W %*% returns[,1:time.periods]))
-  r2<- diag(r2)
-  names(r2) <- names(ffmObj$r2)
-
+  r2<- ffmObj$r2
+  out<- list()
+  ret<- list()
+  
   if(rsq)
-    {
-      barplot(r2,las=2,col=5,
-              names.arg= as.yearmon(names(r2)),
-              cex.names=0.5,
-              main="R-squared Values for the Portfolio")
-      r2.mean<- round(mean(r2),digits = digits)
-      out<- r2.mean
-      names(out) <- "Mean R-Square"
-   }
+  {
+    if(isPlot)
+      {
+        barplot(r2,las=2,col=5,
+                names.arg= as.yearmon(names(r2)),
+                cex.names=0.5,
+                main="Factor Model R-squared Values")
+      }
+    r2.mean<- round(mean(r2),digits = digits)
+    names(r2.mean) <- "Mean R-Square"
+    out<- r2.mean
+    r2<- round(r2,digits = digits)
+    ret<- list("R-squared" = r2)
+  }
   if(rsqAdj)
+  {
+    K <- length(ffmObj$factor.name)
+    p <- K-1
+    adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
+    if(isPlot)
     {
-      K <- length(ffmObj$factor.name)
-      p <- K-1
-      adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
       barplot(adj.r2,las=2,col=5,
-          names.arg= as.yearmon(names(r2)),
-          cex.names=0.5,
-          main="Adjusted R-squared Values for the Portfolio")
-          adj.r2.mean<- round(mean(adj.r2),digits = digits)
-          out<- adj.r2.mean
-          names(out) <- "Mean Adj R-Square"
+            names.arg= as.yearmon(names(r2)),
+            cex.names=0.5,
+            main=" Factor Model Adjusted R-squared Values")
     }
+    adj.r2.mean<- round(mean(adj.r2),digits = digits)
+    names(adj.r2.mean) <- "Mean Adj R-Square"
+    out<- adj.r2.mean
+    adj.r2 <- round(adj.r2,digits = digits)
+    ret<- list("Adj.r-Squared" = adj.r2 )
+  }
   if(rsqAdj && rsq)
+  {
+    out<- c(r2.mean, adj.r2.mean)
+    ret<- list("R-Squared"= r2, "Adj.R-Squared" = adj.r2)
+  }
+  if(VIF)
+  {
+    exposure.vars= ffmObj$exposure.vars
+    which.numeric <- sapply(ffmObj$data[,exposure.vars,drop=FALSE], is.numeric)
+    exposures.num <- exposure.vars[which.numeric]
+    if(length(exposures.num) < 2)
+      {
+        stop(" At least 2 continous variables required to find VIF")
+      }
+
+    object = ffmObj$data[exposures.num]  
+    object <- as.matrix(object)
+    ncols <- dim(object)[2]
+    time.periods = length(ffmObj$time.periods)
+    vifs = matrix(0, nrow = time.periods, ncol = ncols)
+    for(i in 1:60)
+      {
+      vifs[i,1:ncols] = sapply(seq(ncols), function(x)
+                                1/(1 - summary(lm(object[((i-1)*n.assets+1) : (i*n.assets), x] ~ 
+                                                  object[((i-1)*n.assets+1) :(i*n.assets), -x]))$r.squared))
+      }
+    colnames(vifs) <- dimnames(object)[[2]]
+    vifs.xts = xts(vifs, order.by = ffmObj$time.periods)
+    vifs.mean = round(colMeans(vifs.xts),digits = digits)
+    if(isPlot)
     {
-      out<- rbind(r2.mean, adj.r2.mean)
-      #row.names(out)<- c("Mean R-Square", "Mean Adj R-Square")
+    #Assuming the number of continous variables in exposure.vars is less than 6,layout=c(1,ncols) is defined.
+    tsPlotMP(0.01*vifs.xts,stripLeft = TRUE, layout = c(1,ncols), scaleType = "same",
+             color = "blue", yname = "", main = "Factor Model VIF Values", type = "h")
     }
-  print(out)
+    vifs.xts = round(vifs.xts,digits = digits)
+    out<- append(out, list("Mean.VIF" = vifs.mean))
+    ret<- append(ret, list("VIF" = vifs.xts))
+  }
+
+  if(isPrint)
+    {
+      return(c(out, ret))
+    }
+  out
 }
 

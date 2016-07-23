@@ -7,7 +7,7 @@
 #' @usage data("factorDataSetDjia")
 NULL
 
-#' @name factorDataSetDjia5yrs
+#' @name factorDataSetDjia5Yrs
 #' @title DJIA Factor Data
 #' @description Contains returns for 30 DJIA stocks along with the 4 factors: MARKETCAP, ENTVALUE, P2B, EV2S, SIZE
 #'              starting from Jan 2008 to Dec 2012.
