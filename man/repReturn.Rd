@@ -5,7 +5,8 @@
 \title{Portfolio return decomposition report}
 \usage{
 repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
-  layout = NULL, scaleType = "free", stripLeft = TRUE, digits = 1, ...)
+  layout = NULL, scaleType = "free", stripLeft = TRUE, digits = 1,
+  which = NULL, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
@@ -24,7 +25,16 @@ repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 
 \item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
 
-\item{...}{other graphics parameters available in tsPlotMP can be passed in through the ellipses, see \code{\link[factorAnalytics]{tsPlotMP}}}
+\item{which}{a number to indicate the type of plot. If a subset of the plots 
+is required, specify a subset of the numbers 1:3 for plots. If \code{which=NULL} (default), the following menu 
+appears: \cr \cr
+For plots of a group of assets: \cr
+1 = Time Series plot of portfolio returns decomposition, \cr
+2 = Time Series plot of portfolio style factors returns, \cr
+3 = Time Series plot of portfolio sector returns, \cr
+4 = Baxplot of Portfolio Returns Components. \cr \cr}
+
+\item{...}{other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses}
 }
 \description{
 Decompostite return of portfolio into return of different factors based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization.
@@ -42,16 +52,18 @@ data("wtsStocks145GmvLo")
 wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)                         
                                                                                  
 #fit a fundamental factor model
-require(factorAnalytics) 
+require(factorAnalytics)
 fit <- fitFfm(data = dat, 
               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
               fit.method="WLS", z.score = TRUE)
 
 repReturn(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-repReturn(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = TRUE, scaleType = 'same')
-repReturn(fit, wtsStocks145GmvLo, isPlot = TRUE, add.grid = FALSE, 
-          zeroLine = TRUE, color = 'Blue')              
+repReturn(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
+repReturn(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
+          add.grid = TRUE, scaleType = 'same')
+repReturn(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
+          add.grid = FALSE, zeroLine = TRUE, color = 'Blue', scaleType = 'free')              
 }
 \author{
 Douglas Martin, Lingjie Yi
