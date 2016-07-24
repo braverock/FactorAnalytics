@@ -55,12 +55,32 @@
 #' # get the component contributions
 #' ES.decomp$cES
 #' 
+#' 
+#' # Fundamental Factor Model
+#' data("stocks145scores6")
+#' dat = stocks145scores6
+#' dat$DATE = as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+#'
+#' #Load long-only GMV weights for the return data
+#' data("wtsStocks145GmvLo")
+#' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
+#'                                                      
+#' #fit a fundamental factor model
+#' fit.cross <- fitFfm(data = dat, 
+#'               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
+#'               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#'               fit.method="WLS", z.score = TRUE)
+#' decomp = portEsDecomp(fit.cross) 
+#' # get the factor contributions of risk 
+#' decomp$cEs
+#' portEsDecomp(fit.cross, weights = wtsStocks145GmvLo)  
 #' @export
 
 portEsDecomp <- function(object, ...){
   # check input object validity
-  if (!inherits(object, c("tsfm"))) {
-    stop("Invalid argument: Object should be of class 'tsfm'")
+  if (!inherits(object, c("tsfm", "ffm"))) {
+    stop("Invalid argument: Object should be of class 'tsfm', or 'ffm'.")
   }
   UseMethod("portEsDecomp")
 }
@@ -172,3 +192,106 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
 }
 
 
+
+#' @rdname portEsDecomp
+#' @method portEsDecomp ffm
+#' @export
+
+portEsDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","normal"), ...){
+  
+  # set default for type
+  type = type[1]
+  
+  if (!(type %in% c("np","normal"))) {
+    stop("Invalid args: type must be 'np' or 'normal' ")
+  }
+  
+  # get beta.star
+  beta <- object$beta
+  beta[is.na(beta)] <- 0
+  n.assets = nrow(beta)
+  asset.names <- object$asset.names
+  
+  # check if there is weight input
+  if(is.null(weights)){
+    weights = rep(1/n.assets, n.assets)
+  }else{
+    # check if number of weight parameter matches 
+    if(n.assets != length(weights)){
+      stop("Invalid argument: incorrect number of weights")
+    }
+    weights = weights[asset.names]
+  }   
+  
+  # get portfolio beta.star: 1 x (K+N)
+  beta.star <- as.matrix(cbind(weights %*% as.matrix(beta), t(weights * sqrt(object$resid.var))))   
+  
+  
+  # factor returns and residuals data
+  factors.xts <- object$factor.returns
+  resid.xts <- as.xts(t(t(residuals(object))/sqrt(object$resid.var)))
+  time(resid.xts) <- as.Date(time(resid.xts))
+  
+  
+  # initialize lists and matrices
+  N <- length(object$asset.names)
+  K <- length(object$factor.names)
+  VaR.fm <- rep(NA, 1)
+  ES.fm <- rep(NA, 1)
+  idx.exceed <- list()
+  n.exceed <- rep(NA, 1)
+  
+  mES <- rep(NA, N+K)
+  cES <- rep(NA, N+K)
+  pcES <- rep(NA, N+K)
+  names(mES)=names(cES)=names(pcES)=c(colnames(beta),asset.names)
+  
+  dat = object$data
+  # return data for portfolio
+  R.xts = tapply(dat[,object$ret.var], list(dat[,object$date.var], dat[,object$asset.var]), FUN = I)
+  R.xts <- R.xts * weights
+  R.xts = as.xts(rowSums(R.xts), order.by = object$time.periods)
+  names(R.xts) = 'RETURN'
+  
+  
+  # get VaR for portfolio
+  if (type=="np") {
+    VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+  } else {
+    VaR.fm <- mean(R.xts, na.rm=TRUE) + sd(R.xts, na.rm=TRUE)*qnorm(1-p)
+  }
+  
+  # index of VaR exceedances
+  idx.exceed <- which(R.xts <= VaR.fm)
+  # number of VaR exceedances
+  n.exceed <- length(idx.exceed)
+  
+  # compute ES as expected value of asset return, such that the given asset 
+  # return is less than or equal to its value-at-risk (VaR)
+  ES.fm <- mean(R.xts[idx.exceed], na.rm =TRUE)
+  
+  # get F.star data object
+  time(factors.xts) <- time(resid.xts)
+  factor.star <- merge(factors.xts, resid.xts)
+  
+  # compute marginal ES as expected value of factor returns, when the asset's 
+  # return is less than or equal to its value-at-risk (VaR)
+  mES <- colMeans(factor.star[idx.exceed,], na.rm =TRUE)
+  
+  # correction factor to ensure that sum(cES) = asset ES
+  cf <- as.numeric( ES.fm / sum(mES*beta.star), na.rm=TRUE) 
+  
+  # compute marginal, component and percentage contributions to ES
+  # each of these have dimensions: N x (K+1)
+  mES <- drop(cf * mES)
+  cES <- drop(mES * beta.star)
+  pcES <- drop(100* cES / ES.fm)
+  
+  fm.ES.decomp <- list(ES.fm=ES.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
+                       mES=mES, cES=cES, pcES=pcES)
+  
+  return(fm.ES.decomp)
+  
+  
+}
+  

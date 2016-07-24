@@ -2,6 +2,7 @@
 % Please edit documentation in R/portEsDecomp.R
 \name{portEsDecomp}
 \alias{portEsDecomp}
+\alias{portEsDecomp.ffm}
 \alias{portEsDecomp.tsfm}
 \title{Decompose portfolio ES into individual factor contributions}
 \usage{
@@ -9,6 +10,9 @@ portEsDecomp(object, ...)
 
 \method{portEsDecomp}{tsfm}(object, weights = NULL, p = 0.95,
   type = c("np", "normal"), use = "pairwise.complete.obs", ...)
+
+\method{portEsDecomp}{ffm}(object, weights = NULL, p = 0.95,
+  type = c("np", "normal"), ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -71,6 +75,26 @@ ES.decomp <- portEsDecomp(fit.macro)
 # get the component contributions
 ES.decomp$cES
 
+
+# Fundamental Factor Model
+data("stocks145scores6")
+dat = stocks145scores6
+dat$DATE = as.yearmon(dat$DATE)
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+
+#Load long-only GMV weights for the return data
+data("wtsStocks145GmvLo")
+wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
+                                                     
+#fit a fundamental factor model
+fit.cross <- fitFfm(data = dat, 
+              exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
+              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+              fit.method="WLS", z.score = TRUE)
+decomp = portEsDecomp(fit.cross) 
+# get the factor contributions of risk 
+decomp$cEs
+portEsDecomp(fit.cross, weights = wtsStocks145GmvLo)  
 }
 \author{
 Douglas Martin, Lingjie Yi
