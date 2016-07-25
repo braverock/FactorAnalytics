@@ -114,7 +114,9 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
     if(n.assets != length(weights)){
       stop("Invalid argument: incorrect number of weights")
     }
-    weights = weights[asset.names]
+    if(!is.null(names(wts))){
+      weights = weights[asset.names]
+    }
   }   
   
   # get portfolio beta.star: 1 x (K+N)
