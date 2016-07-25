@@ -20,7 +20,8 @@ portEsDecomp(object, ...)
 \item{...}{other optional arguments passed to \code{\link[stats]{quantile}} and 
 optional arguments passed to \code{\link[stats]{cov}}}
 
-\item{weights}{a vector of weights of the assets in the portfolio. Default is NULL.}
+\item{weights}{a vector of weights of the assets in the portfolio. Default is NULL, 
+in which case an equal weights will be used.}
 
 \item{p}{confidence level for calculation. Default is 0.95.}
 

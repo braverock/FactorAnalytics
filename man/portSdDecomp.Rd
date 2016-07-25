@@ -18,7 +18,8 @@ portSdDecomp(object, ...)
 
 \item{...}{optional arguments passed to \code{\link[stats]{cov}}.}
 
-\item{weights}{a vector of weights of the assets in the portfolio. Default is NULL.}
+\item{weights}{a vector of weights of the assets in the portfolio. Default is NULL, 
+in which case an equal weights will be used.}
 
 \item{use}{an optional character string giving a method for computing 
 covariances in the presence of missing values. This must be (an 

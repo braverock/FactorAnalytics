@@ -23,7 +23,7 @@
 #' 1 = Time Series plot of portfolio returns decomposition, \cr
 #' 2 = Time Series plot of portfolio style factors returns, \cr
 #' 3 = Time Series plot of portfolio sector returns, \cr
-#' 4 = Baxplot of Portfolio Returns Components. \cr \cr
+#' 4 = Barplot of Portfolio Returns Components. \cr \cr
 #' @param ... other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses 
 #' @author Douglas Martin, Lingjie Yi
 #' @examples 
@@ -102,8 +102,8 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   
   
   if(length(exposures.char)){
-    dat <- ffmObj$data[ffmObj$data$DATE==ffmObj$time.periods[TP], ]
-    B <- as.matrix(table(dat$TICKER,dat$SECTOR))
+    dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
+    B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
     B[B>0] <- 1
     B <- B[asset.names,]
   }else{
@@ -113,7 +113,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   #calculate x = t(w) * B
   X = c()
   for(i in 1:TP){
-    dat <- ffmObj$data[ffmObj$data$DATE==ffmObj$time.periods[i], ]
+    dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
     beta <- as.matrix(dat[,exposures.num])
     rownames(beta) <- asset.names
     beta = cbind(beta,B)
@@ -163,7 +163,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
       switch(which,
              "1L" = { 
                ## Time Series plot of portfolio returns decomposition
-               tsPlotMP(dat[,c('PortfolioRet','SpecificRet','FactorRet')], 
+               tsPlotMP(dat[,c('PortfolioRet','FactorRet','SpecificRet')], 
                         main = "Portfolio Returns Decomposition", layout = c(1,3), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                
@@ -177,7 +177,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
              }, 
              "3L" = {    
                ## Time Series plot of portfolio sector returns
-               tsPlotMP(dat[,c(exposures.char.name)], 
+               tsPlotMP(dat[,c('FactorRet',exposures.char.name)], 
                         main = "Portfolio Sector Returns", layout = c(3,4), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                

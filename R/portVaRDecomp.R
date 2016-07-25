@@ -23,7 +23,8 @@
 #' Epperlein & Smillie (2006); a triangular smoothing kernel is used here. 
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
-#' @param weights a vector of weights of the assets in the portfolio. Default is NULL.
+#' @param weights a vector of weights of the assets in the portfolio. Default is NULL, 
+#' in which case an equal weights will be used.
 #' @param p confidence level for calculation. Default is 0.95.
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR. 
 #' Default is "np".

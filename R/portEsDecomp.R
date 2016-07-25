@@ -21,7 +21,8 @@
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param p confidence level for calculation. Default is 0.95.
-#' @param weights a vector of weights of the assets in the portfolio. Default is NULL.
+#' @param weights a vector of weights of the assets in the portfolio. Default is NULL, 
+#' in which case an equal weights will be used.
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR. 
 #' Default is "np".
 #' @param use an optional character string giving a method for computing factor

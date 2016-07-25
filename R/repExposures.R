@@ -19,8 +19,8 @@
 #' is required, specify a subset of the numbers 1:3 for plots. If \code{which=NULL} (default), the following menu 
 #' appears: \cr \cr
 #' For plots of a group of assets: \cr
-#' 1 = Time Series plot of factor exposures, \cr
-#' 2 = Boxplot of factor exposures, \cr
+#' 1 = Time series plot of style factor exposures, \cr
+#' 2 = Boxplot of style factor exposures, \cr
 #' 3 = Barplot of factor exposures. \cr \cr
 #' @param ... other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses 
 #' @author Douglas Martin, Lingjie Yi
@@ -45,7 +45,7 @@
 #'
 #' repExposures(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
 #' repExposures(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
-#'              add.grid = TRUE, scaleType = 'same', layout = c(3,2))
+#'              add.grid = TRUE, scaleType = 'same', layout = c(3,3))
 #' repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
 #'              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
 #' repExposures(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
@@ -82,8 +82,8 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
   }
   
   if(length(exposures.char)){
-    dat <- ffmObj$data[ffmObj$data$DATE==ffmObj$time.periods[TP], ]
-    B <- as.matrix(table(dat$TICKER,dat$SECTOR))
+    dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
+    B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
     B[B>0] <- 1
     B <- B[asset.names,]
   }else{
@@ -93,7 +93,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
   #calculate x = t(w) * B
   X = c()
   for(i in 1:TP){
-    dat <- ffmObj$data[ffmObj$data$DATE==ffmObj$time.periods[i], ]
+    dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
     beta <- as.matrix(dat[,exposures.num])
     rownames(beta) <- asset.names
     beta = cbind(beta,B)
@@ -112,8 +112,8 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     repeat {
       if (is.null(which)) {
         which <- 
-          menu(c("Time Series plot of factor exposures",
-                 "Boxplot of factor exposures",
+          menu(c("Time series plot of style factor exposures",
+                 "Boxplot of style factor exposures",
                  "Barplot of factor exposures"), 
                title="\nMake a plot selection (or 0 to exit):") 
       }
@@ -133,14 +133,18 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
              "3L" = {    
                ## Barplot of factor exposures
                par(mfrow = layout)
-               for(i in 1:ncol(X[,exposures.num])){
-                 name = colnames(X[,exposures.num])[i]
-                 barplot(100*X[,exposures.num][,i],las=2,col=5,
-                         names.arg= as.yearmon(index(X)),
-                         cex.names=0.5, 
-                         ylab = "Percentage (%)",
-                         main=paste(name, "Exposure"))
-               } 
+               
+               a = colMeans(X[,exposures.num])
+               b = apply(X[,exposures.num],2,sd)
+               c = rbind(a,b)
+               sect = as.character(unique(dat[,exposures.char]))
+               d = colMeans(X[,sect])
+               
+               barplot(c,las=2,col=c(5,2), cex.axis = 0.8, beside = T, ylab = "Percent (%)", main="Style Exposures Means and Vols")
+               legend(x = 'topleft', legend = c('mean','vol'), pch = 15, col = c(5,2), bty = 'n')
+               
+               barplot(d,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main="Sector Exposure Means")
+               
                par(mfrow = c(1,1))
              },
              invisible()       
