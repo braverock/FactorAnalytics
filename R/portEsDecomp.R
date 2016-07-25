@@ -74,7 +74,7 @@
 #'               fit.method="WLS", z.score = TRUE)
 #' decomp = portEsDecomp(fit.cross) 
 #' # get the factor contributions of risk 
-#' decomp$cEs
+#' decomp$cES
 #' portEsDecomp(fit.cross, weights = wtsStocks145GmvLo)  
 #' @export
 
