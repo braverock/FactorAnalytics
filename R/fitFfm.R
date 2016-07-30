@@ -92,10 +92,11 @@
 #' \item{factor.returns}{xts object of K-factor returns (including intercept).}
 #' \item{residuals}{xts object of residuals for N-assets.}
 #' \item{r2}{length-T vector of R-squared values.}
-#' \item{factor.cov}{N x N covariance matrix of the factor returns.}
+#' \item{factor.cov}{K x K covariance matrix of the factor returns.}
 #' \item{resid.cov}{N x N covariance matrix of residuals.}
 #' \item{return.cov}{N x N return covariance estimated by the factor model, 
 #' using the factor exposures from the last time period.}
+#' \item{restriction.mat}{The restriction matrix used in the computation of f=Rg.}
 #' \item{resid.var}{length-N vector of residual variances.}
 #' \item{call}{the matched function call.}
 #' \item{data}{data frame object as input.}
@@ -135,21 +136,26 @@
 #'  data("factorDataSetDjia5Yrs")
 #' 
 #' # fit a fundamental factor model
-#' exposure.vars <- c("P2B", "MARKETCAP")
+#' exposure.vars <- c("P2B", "MKTCAP")
 #' fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars=exposure.vars)
 #' names(fit)
 #' 
-#' # fit a BARRA Industry Factor Model
-#' exposure.vars <- c("SECTOR")
+#' # fit a Industry Factor Model with Intercept
+#' exposure.vars <- c("SECTOR","P2B")
 #' fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
+#'                
+#' # Fit a SECTOR+COUNTRY+Style model with Intercept
+#' # Create a COUNTRY column with just 3 countries
 #' 
-#' # example with sector dummy included
-#' exposure.vars <- c("P2B", "MARKETCAP", "SECTOR")
-#' fit2 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#'
+#'  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("INDIA", 1),
+#'                                        rep("GERMANY", 1 )), 10), 60)
+#'  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
+#'  
+#'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+#'                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
+
 #' @export
 
 
@@ -200,8 +206,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   # initialize to avoid R CMD check's NOTE: no visible binding for global var
   DATE=NULL 
   W=NULL
-  #addIntercept = TRUE
-  
+  model.MSCI=FALSE
+  restriction.mat = NULL
   # ensure dates are in required format
   data[[date.var]] <- as.Date(data[[date.var]])
   # extract unique time periods from data
@@ -223,9 +229,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   which.numeric <- sapply(data[,exposure.vars,drop=FALSE], is.numeric)
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
-  #   if (length(exposures.char) > 1) {
-  #     stop("Only one dummy variable can be included per regression at this time.")
-  #   }
+     if (length(exposures.char) > 1)
+       {
+         model.MSCI = TRUE
+       }
   
   # convert numeric exposures to z-scores
   if (z.score) {
@@ -243,7 +250,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       data[[i]] <- unlist(std.expo.num)
     }
   }
-  
+  if(!model.MSCI)
+    {
   # determine factor model formula to be passed to lm or lmRob
   fm.formula <- paste(ret.var, "~", paste(exposure.vars, collapse="+"))
   if (length(exposures.char)) {
@@ -257,10 +265,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   }
   # convert the pasted expression into a formula object
   fm.formula <- as.formula(fm.formula)
-  
+  }
   # estimate factor returns using LS or Robust regression
   # returns a list of the fitted lm or lmRob objects for each time period
-  if (addIntercept == FALSE)
+  if (addIntercept == FALSE && model.MSCI == FALSE)
   {
     if (grepl("LS",fit.method)) 
     {
@@ -367,60 +375,204 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     return.cov <-  beta %*% factor.cov %*% t(beta) + resid.cov
   }
   #If intercept+Sector/Country is required
-  else if (addIntercept == TRUE)
+  else if (addIntercept == TRUE && model.MSCI == FALSE)
   {
-    factor.names <- c("Intercept",exposures.num, 
-                      paste(exposures.char,levels(data[,exposures.char]),sep=""))
-    beta <- model.matrix(fm.formula, data=subset(data, DATE==time.periods[TP]))
-    rownames(beta) <- asset.names
-    beta.star = cbind("Int" = rep(1,nrow(beta)),beta)
-    tickers.count <- unique(data[[asset.var]])
-    ret.matrix = matrix(data[[ret.var]],nrow = length(tickers.count))
+    formula.expochar = as.formula(paste(ret.var, "~", exposures.char, "-1"))
+    factor.names <- c("Intercept", 
+                      paste(exposures.char,levels(data[,exposures.char]),sep=" "), exposures.num)
+    beta <- model.matrix(fm.formula, data=data)
+    rownames(beta) <- rep(asset.names, length(time.periods))
+    
+    beta.expochar <- model.matrix(formula.expochar, data=data)
+    rownames(beta.expochar) <- rep(asset.names, length(time.periods))
+    
+    beta.star <- cbind("Intercept" = rep(1, nrow(beta.expochar)), beta.expochar)
+    if(length(exposures.num) > 0){
+      beta.style<- matrix(beta[,exposures.num], ncol = length(exposures.num))
+      colnames(beta.style) = exposures.num}
+    
+    asset.names <- unique(data[[asset.var]])
+    N <- length(asset.names)
+    
+    #Define Retrun matrix 
+    ret.matrix = matrix(data[[ret.var]],nrow = N)
+    #Initial regression to get residual variances. 
     reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lm, 
                    formula=fm.formula, na.action=na.fail)
     resid.var <- apply(sapply(reg.list, residuals), 1, var)
-    resid.var.inv = diag(resid.var^-1) #V Inverse Matrix
-    resid.sd.inv = sqrt(resid.var.inv) # V^0.5 Inverse matrix
-    K <- length(factor.names)# K is with the intercept
+    #V Inverse Matrix of resid variances
+    resid.var.inv = diag(resid.var^-1) 
+    # V^0.5 Inverse matrix
+    resid.sd.inv = sqrt(resid.var.inv) 
+    #K is with the intercept
+    K <- dim(beta.star)[2]
+    #Define Restriction matrix 
     R_matrix = rbind(diag(K-1), c(0,rep(-1,K-2)))
-    ret_star = resid.sd.inv %*% ret.matrix # r~ as in Menchero Equation A6
-    Y_matrix = (resid.sd.inv %*% beta.star) %*% R_matrix  #Y = V^-0.5*X*R
-    colnames(Y_matrix) <- factor.names[-1]
-    row.names(Y_matrix) = asset.names
-    reg.list = lm(ret_star ~ Y_matrix)
-    g = solve(t(Y_matrix)%*%Y_matrix) %*% t(Y_matrix) %*% ret_star #g as in eq A7
+    # Modify return matrix to get r~ as in Menchero Equation A6
+    ret_star = resid.sd.inv %*% ret.matrix 
+    #Y matrix as in Eq.A6
+    row.names(ret_star) = asset.names
+    colnames(ret_star) = as.character(time.periods)
+    #ret_star = checkData(t(ret_star))
     
-    # w.Y_matrix = (beta.star %*% R_matrix)
-    # w.reg.list = lm(ret.matrix ~ w.Y_matrix, weights = diag(resid.sd.inv))
+    reg.list<- list()
+    for(i in 1:length(time.periods))
+    {
+      B.mod = ( beta.star[((i-1)*N+1) : (i*N), ]) %*% R_matrix  #Y = X*R
+      #Find g as in Eq.A7
+      if(length(exposures.num) > 0)
+      {
+        B.style = beta.style[((i-1)*N+1) : (i*N), ]
+        reg.list[[i]] = lm(ret_star[,i] ~ B.mod + B.style -1)
+      }
+      else
+        reg.list[[i]] = lm(ret_star[,i] ~ B.mod-1)
+    }
+    #colnames(B.mod) <- factor.names[-1]
+    #row.names(B.mod) = asset.names
     
-    B_new = beta.star %*% R_matrix #Define X*R in equation A8 as B_new 
-    facWeights = R_matrix %*% (solve(t(B_new)%*%resid.var.inv%*%B_new))%*%t(B_new)%*%resid.var.inv
-    factor.returns = facWeights%*%ret.matrix
+    g = sapply(reg.list, function(x) coef(x))
+    
+    factor.returns  = R_matrix %*% g[1:(K-1), ]
+    if(length(exposures.num) > 0)
+      factor.returns = rbind(factor.returns, g[K:nrow(g), ])
     rownames(factor.returns) <- factor.names
     colnames(factor.returns) = as.character(unique(data[[date.var]]))
-    residuals = ret_star - Y_matrix %*% g #NxT
-    x = resid(reg.list)
+    residuals = sapply(reg.list, residuals)
     colnames(residuals) = as.character(unique(data[[date.var]]))
-    residuals <- checkData(t(residuals)) # T x N
+    # Create a T x N xts object of residuals
+    residuals <- checkData(t(residuals))
     #all.equal(x,residuals)
-    r2 <- as.numeric(sapply(X = summary(reg.list), FUN = "[","r.squared"))
+    r2<- sapply(reg.list, function(x) summary(x)$r.squared)
+    #r2 <- as.numeric(sapply(X = summary(reg.list), FUN = "[","r.squared"))
     names(r2) = as.character(unique(data[[date.var]]))
     factor.returns <- checkData(t(factor.returns)) # T x K
+    #Fac Covarinace
     factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
                              na.action=na.omit)$cov
+    #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
     names(resid.var) <- asset.names
     resid.cov <- diag(resid.var)
-    return.cov <-  beta.star %*% factor.cov %*% t(beta.star) + resid.cov
-    beta = beta.star
-    
+    #Returns covariance
+    if(length(exposures.num) > 0){
+      beta.combine = cbind(beta.star, beta.style)
+    }else 
+      beta.combine = beta.star
+    return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)]) + resid.cov
+    #Exposure matrix 
+    beta = beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)]
+    #Restriction matrix
+    restriction.mat = R_matrix
   }
+  else if(model.MSCI)
+    {
+    
+    # determine factor model formula to be passed to lm
+    fm.formula <- paste(ret.var, "~", paste(exposure.vars, collapse="+"))
+    if (length(exposures.char)) {
+      fm.formula <- paste(fm.formula, "- 1")
+      for(i in exposures.char)
+      {
+        data[, i] <- as.factor(data[,i])
+        if (grepl("SECTOR",i)) 
+          formula.ind = as.formula(paste(ret.var, "~", i, "-1"))
+        else formula.cty = as.formula(paste(ret.var, "~", i, "-1"))
+        #data[, exposures.char] <- as.factor(data[,exposures.char])
+      }
+      contrasts.list <- lapply(seq(length(exposures.char)), function(i) 
+        function(n) contr.treatment(n, contrasts=FALSE))
+      names(contrasts.list) <- exposures.char
+    } else {
+      contrasts.list <- NULL
+    }
+    
+    # convert the pasted expression into a formula object
+    fm.formula <- as.formula(fm.formula)
+    beta <- model.matrix(fm.formula, data=data)
+    beta.ind <- model.matrix(formula.ind, data=data)
+    beta.cty <- model.matrix(formula.cty, data=data)
+    beta.mic <- cbind("Intercept" = rep(1, nrow(beta.ind)), beta.ind, beta.cty)
+    if(length(exposures.num) > 0)
+      beta.style<- beta[,exposures.num]
+    
+    fac.names.indcty = lapply(seq(exposures.char), function(x)
+      paste(exposures.char[x],levels(data[,exposures.char[x]]),sep=""))
+    factor.names <- c("Intercept",unlist(fac.names.indcty),
+                      exposures.num)
+    rownames(beta.mic) <- rep(asset.names, TP)
+    asset.names <- unique(data[[asset.var]])
+    N <- length(asset.names)
+    #Define Retrun matrix 
+    returns = matrix(data[[ret.var]],nrow = N)
+    K <- length(factor.names)
+    K1<- dim(beta.ind)[2]
+    K2<- dim(beta.cty)[2]
+    #Define Restriction matrix 
+    rMic<-  rbind( cbind(diag(K1), matrix(0, nrow = K1, ncol = K2-1)), 
+                   c(c(0,rep(-1, K1-1)), rep(0, K2-1)),
+                   cbind(matrix(0, ncol = K1, nrow = K2-1), diag(K2-1)),
+                   c(rep(0, K1), rep(-1, K2-1)))
+    
+    row.names(returns) = asset.names
+    colnames(returns) = as.character(time.periods)
+    
+    reg.list<- list()
+    
+    for(i in 1:length(time.periods))
+    {
+      B.mod = ( beta.mic[((i-1)*N+1) : (i*N), ]) %*% rMic  #Y = X*R
+      #Find g as in Eq.A7
+      if(length(exposures.num) > 0)
+      {
+        B.style = beta.style[((i-1)*N+1) : (i*N), ]
+        reg.list[[i]] = lm(returns[,i] ~ B.mod + B.style -1)
+      }
+      else
+        reg.list[[i]] = lm(returns[,i] ~ B.mod-1)
+    }
+
+    g = sapply(reg.list, function(x) coef(x))
+    factor.returns  = rMic %*% g[1:(K1+K2-1), ]
+    if(length(exposures.num) > 0)
+      factor.returns = rbind(factor.returns, g[(K1+K2):nrow(g), ])
+    rownames(factor.returns) <- factor.names
+    colnames(factor.returns) = as.character(unique(data[[date.var]]))
+    if(length(exposures.num) > 0){
+      residuals = returns - B.mod %*% g[1:(K1+K2-1), ] - B.style %*% g[(K1+K2):nrow(g), ] #NxT
+    }else residuals = returns - B.mod %*% g[1:(K1+K2-1), ]
+    colnames(residuals) = as.character(unique(data[[date.var]]))
+    # Create a T x N xts object of residuals
+    residuals <- checkData(t(residuals))
+    #all.equal(x,residuals)
+    r2<- sapply(reg.list, function(x) summary(x)$r.squared)
+    #r2 <- as.numeric(sapply(X = summary(reg.list), FUN = "[","r.squared"))
+    names(r2) = as.character(unique(data[[date.var]]))
+    factor.returns <- checkData(t(factor.returns)) # T x K
+    #Fac Covarinace
+    factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
+                             na.action=na.omit)$cov
+    #Residual Variance
+    resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
+    names(resid.var) <- asset.names
+    resid.cov <- diag(resid.var)
+    #Returns covariance
+    if(length(exposures.num) > 0){
+      beta.combine = cbind(beta.mic, beta.style)
+    }else 
+      beta.combine = beta.mic
+    return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:K] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:K]) + resid.cov
+    #Exposure matrix 
+    beta = beta.combine[((TP-1)*N+1):(TP*N), 1:K]
+    #Restriction matrix
+    restriction.mat = rMic
+    }
   
   
   # create list of return values.
   result <- list(factor.fit=reg.list, beta=beta, factor.returns=factor.returns, 
                  residuals=residuals, r2=r2, factor.cov=factor.cov, 
-                 resid.cov=resid.cov, return.cov=return.cov, 
+                 resid.cov=resid.cov, return.cov=return.cov, restriction.mat=restriction.mat,
                  resid.var=resid.var, call=this.call, 
                  data=data, date.var=date.var, ret.var=ret.var, 
                  asset.var=asset.var, exposure.vars=exposure.vars, 
@@ -430,7 +582,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   class(result) <- "ffm"
   return(result)
-  }
+}
 
 
 ### function to calculate z-scores for numeric exposure i using weights w

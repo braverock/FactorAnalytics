@@ -3,7 +3,7 @@
 \docType{data}
 \name{factorDataSetDjia}
 \alias{factorDataSetDjia}
-\title{DJIA Factor Data}
+\title{DJIA stocks Compustat factors 14yrs}
 \source{
 TBA
 }
@@ -11,7 +11,11 @@ TBA
 data("factorDataSetDjia")
 }
 \description{
-Contains returns for 30 DJIA stocks along with the factor data (MARKETCAP, ENTVALUE, P2B, EV2S, SIZE)
+Contains returns for 30 DJIA stocks spanned across 9 Sectors -ENERGY, COSTAP, INDUS,T MATRLS,
+              FINS, INFOTK, HEALTH, CODISC, and TELCOM stocks along with 4 factor data (MKTCAP, ENTVAL, P2B, EV2S, SIZE)
              starting from Jan 2000 to march 2013.
+             
+             The 9 Sectors correspond to Energy,ConsumerStaples, Industrials, Materials, Financials,
+             InformationTechnology, HealthCare, ConsumerDiscretionary and Telecommunications respectively.
 }
 

@@ -3,7 +3,7 @@
 \docType{data}
 \name{wtsDjiaGmvLo}
 \alias{wtsDjiaGmvLo}
-\title{Weights data}
+\title{DJIA GMV long-only portfolio weights}
 \source{
 TBA
 }
@@ -12,6 +12,6 @@ data("wtsDjiaGmvLo")
 }
 \description{
 Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs) 
-             for a Long-only Min-Var portfolio starting from Jan 2008 to Dec 2012.
+             for a long-only global minimum variance portfolio starting from Jan 2008 to Dec 2012.
 }
 

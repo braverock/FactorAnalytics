@@ -3,7 +3,7 @@
 \docType{data}
 \name{wtsStocks145GmvLo}
 \alias{wtsStocks145GmvLo}
-\title{Weights data}
+\title{CRSP 145 stocks GMV long-only weights}
 \source{
 TBA
 }
@@ -12,6 +12,6 @@ data("wtsStocks145GmvLo")
 }
 \description{
 Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6) 
-             for a Long-only Min-Var portfolio starting from Jan 2000 to Mar 2013.
+             for a long-only global minimum variance portfolio starting from Jan 1990 to Dec 2014.
 }
 
