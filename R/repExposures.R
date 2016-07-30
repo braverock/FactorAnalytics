@@ -3,7 +3,7 @@
 #' @description Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
 #' @importFrom zoo as.yearmon coredata index
-#' @importFrom graphics barplot boxplot legend 
+#' @importFrom graphics barplot boxplot 
 #' @importFrom stats sd
 #' @importFrom utils menu
 #' 
@@ -36,18 +36,18 @@
 #' data("wtsStocks145GmvLo")
 #' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
 #' 
-#' #fit a fundamental factor model
-#' fit <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
-#'               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#' # fit a fundamental factor model
+#' fit.cross <- fitFfm(data = dat, 
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
 #'               fit.method="WLS", z.score = TRUE)
 #'
-#' repExposures(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-#' repExposures(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
 #'              add.grid = TRUE, scaleType = 'same', layout = c(3,3))
-#' repExposures(fit, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
 #'              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
-#' repExposures(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
 #'              add.grid = FALSE, zeroLine = FALSE, color = 'Blue', layout = c(1,3))
 #' @export
 
@@ -77,8 +77,12 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     if(n.assets != length(weights)){
       stop("Invalid argument: incorrect number of weights")
     }
-    weights = weights[asset.names]
-  }
+    if(!is.null(names(weights))){
+      weights = weights[asset.names]
+    }else{
+      stop("Invalid argument: names of weights vector should match with asset names")
+    }
+  } 
   
   if(length(exposures.char)){
     dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
@@ -139,9 +143,8 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                sect = as.character(unique(dat[,exposures.char]))
                d = colMeans(X[,sect])
                
-               barplot(c,las=2,col=c(5,2), cex.axis = 0.8, beside = T, ylab = "Percent (%)", main="Style Exposures Means and Vols")
-               legend(x = 'topleft', legend = c('mean','vol'), pch = 15, col = c(5,2), bty = 'n')
-               
+               barplot(a,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main="Style Exposures Means")
+               barplot(b,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main="Style Exposures Vols")
                barplot(d,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main="Sector Exposure Means")
                
                par(mfrow = c(1,1))

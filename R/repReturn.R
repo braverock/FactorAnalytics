@@ -39,16 +39,17 @@
 #' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)                         
 #'                                                                                  
 #' #fit a fundamental factor model
-#' fit <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
-#'               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#' # fit a fundamental factor model
+#' fit.cross <- fitFfm(data = dat, 
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
 #'               fit.method="WLS", z.score = TRUE)
 #'
-#' repReturn(fit, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-#' repReturn(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
-#' repReturn(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
 #'           add.grid = TRUE, scaleType = 'same')
-#' repReturn(fit, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
 #'           add.grid = FALSE, zeroLine = TRUE, color = 'Blue', scaleType = 'free')              
 #' @export
 
@@ -90,8 +91,12 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
     if(n.assets != length(weights)){
       stop("Invalid argument: incorrect number of weights")
     }
-    weights = weights[asset.names]
-  }
+    if(!is.null(names(weights))){
+      weights = weights[asset.names]
+    }else{
+      stop("Invalid argument: names of weights vector should match with asset names")
+    }
+  } 
   
   
   #portfolio residuals
