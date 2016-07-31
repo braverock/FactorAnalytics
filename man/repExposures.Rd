@@ -31,9 +31,12 @@ appears: \cr \cr
 For plots of a group of assets: \cr
 1 = Time series plot of style factor exposures, \cr
 2 = Boxplot of style factor exposures, \cr
-3 = Barplot of factor exposures. \cr \cr}
+3 = Barplot of means and vols of style factor exposures, and means of sector exposures (which have no vol). \cr \cr}
 
 \item{...}{other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses}
+}
+\value{
+A K x 2 matrix containing mean and standard deviation of K factors
 }
 \description{
 Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization.
@@ -44,7 +47,8 @@ Calculate k factor time series based on fundamental factor model. This method ta
 data("stocks145scores6")
 dat = stocks145scores6
 dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") &  
+          dat$DATE <= as.yearmon("2012-12-31"),]
 
 #Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
@@ -52,17 +56,19 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
 
 # fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = TRUE)
+              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
+              "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
+              asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
 
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
-             add.grid = TRUE, scaleType = 'same', layout = c(3,3))
+repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE,
+             which = 2, add.grid = TRUE, scaleType = 'same', 
+             layout = c(3,3))
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
-repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
-             add.grid = FALSE, zeroLine = FALSE, color = 'Blue', layout = c(1,3))
+repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+             which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue', 
+             layout = c(1,3))
 }
 \author{
 Douglas Martin, Lingjie Yi

@@ -1,9 +1,9 @@
 
 # Time Series Factor Model
 data(managers)
-fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name="US.3m.TR", data=managers)
+                     rf.name=colnames(managers[,10]), data=managers)
 
 expect_equal(is.list(portSdDecomp(fit.macro)), TRUE) 
 

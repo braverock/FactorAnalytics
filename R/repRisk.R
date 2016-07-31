@@ -60,9 +60,10 @@
 #' @examples
 #' # Time Series Factor Model
 #' data(managers)
-#' fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name="US.3m.TR", data=managers)
+#'                      rf.name=colnames(managers)[10], 
+#'                      data=managers)
 #' report <- repRisk(fit.macro, riskMeasure = "ES", decompType = 'FPCR', 
 #'                   nrowPrint = 10)
 #' report 
@@ -87,9 +88,9 @@
 #'                                                      
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = TRUE)
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
+#'               "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
+#'               asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
 #' repRisk(fit.cross, riskMeasure = "Sd", decompType = 'FCR', nrowPrint = 10,
 #'         digits = 4) 
 #' # get the factor contributions of risk 

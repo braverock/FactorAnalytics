@@ -17,14 +17,18 @@
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
 #' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
 #' @param which a number to indicate the type of plot. If a subset of the plots 
-#' is required, specify a subset of the numbers 1:3 for plots. If \code{which=NULL} (default), the following menu 
+#' is required, specify a subset of the numbers 1:4 for plots. If \code{which=NULL} (default), the following menu 
 #' appears: \cr \cr
 #' For plots of a group of assets: \cr
 #' 1 = Time Series plot of portfolio returns decomposition, \cr
 #' 2 = Time Series plot of portfolio style factors returns, \cr
 #' 3 = Time Series plot of portfolio sector returns, \cr
-#' 4 = Barplot of Portfolio Returns Components. \cr \cr
+#' 4 = Baxplot of Portfolio Returns Components. \cr \cr
 #' @param ... other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses 
+#' 
+#' @return  
+#' A K x 2 matrix containing mean and standard deviation of K factors
+#' 
 #' @author Douglas Martin, Lingjie Yi
 #' @examples 
 #'
@@ -32,7 +36,8 @@
 #' data("stocks145scores6")
 #' dat = stocks145scores6
 #' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
+#'           dat$DATE <= as.yearmon("2012-12-31"),]
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -41,16 +46,19 @@
 #' #fit a fundamental factor model
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = TRUE)
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
+#'               "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
+#'               asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
 #'
 #' repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'           which = 4)
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'           which = 1,
 #'           add.grid = TRUE, scaleType = 'same')
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
-#'           add.grid = FALSE, zeroLine = TRUE, color = 'Blue', scaleType = 'free')              
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'           which = 2, add.grid = FALSE, zeroLine = TRUE, color = 'Blue', 
+#'           scaleType = 'free')              
 #' @export
 
 
@@ -160,7 +168,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
           menu(c("Time Series plot of portfolio returns decomposition",
                  "Time Series plot of portfolio style factors returns",
                  "Time Series plot of portfolio sector returns",
-                 "Barplot of Portfolio Returns Components"), 
+                 "Baxplot of Portfolio Returns Components"), 
                title="\nMake a plot selection (or 0 to exit):") 
       }
       
@@ -187,7 +195,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                
              },
              "4L" = {    
-               ## Barplot of Portfolio Returns Components
+               ## Baxplot of Portfolio Returns Components
                par(mar=c(7,5,5,5))
                boxplot(100*coredata(dat), col=5, las = 2, 
                        xaxt = "n", 

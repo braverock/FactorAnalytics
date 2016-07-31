@@ -16,7 +16,7 @@
 #' \code{portSd = sum(cSd_k) = sum(beta.star_k*mSd_k)} \cr \cr 
 #' where, summation is across the \code{K} factors and the residual, 
 #' \code{cSd} and \code{mSd} are the component and marginal 
-#' contributions to \code{SD} respectively. Computing \code{portSd} and 
+#' contributions to \code{Sd} respectively. Computing \code{portSd} and 
 #' \code{mSd} is very straight forward. The formulas are given below and 
 #' details are in the references. The covariance term is approximated by the 
 #' sample covariance. \cr \cr
@@ -53,9 +53,10 @@
 #' @examples
 #' # Time Series Factor Model
 #' data(managers)
-#' fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name="US.3m.TR", data=managers)
+#'                      rf.name=colnames(managers)[10], 
+#'                      data=managers)
 #' decomp <- portSdDecomp(fit.macro)
 #' # get the factor contributions of risk
 #' decomp$cSd
@@ -79,9 +80,9 @@
 #'                                                      
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = TRUE)
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
+#'               "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
+#'               asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
 #'               
 #' decomp = portSdDecomp(fit.cross) 
 #' # get the factor contributions of risk 

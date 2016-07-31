@@ -62,7 +62,7 @@ The factor model for a portfolio's return at time \code{t} has the
 form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
 where, \code{beta.star=(beta,sig.e)} and \code{f.star(t)=[f(t)',z(t)]'}. By 
 Euler's theorem, the ES of the portfolio's return is given by:
-\cr \cr \code{ES.fm = sum(cES_k) = sum(beta.star_k*mES_k)} \cr \cr
+\cr \cr \code{portEs = sum(cES_k) = sum(beta.star_k*mES_k)} \cr \cr
 where, summation is across the \code{K} factors and the residual, 
 \code{cES} and \code{mES} are the component and marginal 
 contributions to \code{ES} respectively. The marginal contribution to ES is
@@ -73,8 +73,10 @@ average of the observations in that data window.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
-                     factor.names=colnames(managers[,(7:8)]), data=managers)
+fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+                     factor.names=colnames(managers[,(7:9)]),
+                     rf.name=colnames(managers)[10], 
+                     data=managers)
 ES.decomp <- portEsDecomp(fit.macro,invert = TRUE)
 # get the component contributions
 ES.decomp$cES
@@ -98,9 +100,9 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
                                                      
 # fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = TRUE)
+              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
+              "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
+              asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
               
 decomp = portEsDecomp(fit.cross) 
 #get the factor contributions of risk 

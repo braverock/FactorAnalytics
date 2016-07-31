@@ -14,7 +14,7 @@
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
 #' where, \code{beta.star=(beta,sig.e)} and \code{f.star(t)=[f(t)',z(t)]'}. By 
 #' Euler's theorem, the VaR of the asset's return is given by: 
-#' \cr \cr \code{VaR.fm = sum(cVaR_k) = sum(beta.star_k*mVaR_k)} \cr \cr 
+#' \cr \cr \code{portVaR = sum(cVaR_k) = sum(beta.star_k*mVaR_k)} \cr \cr 
 #' where, summation is across the \code{K} factors and the residual, 
 #' \code{cVaR} and \code{mVaR} are the component and marginal 
 #' contributions to \code{VaR} respectively. The marginal contribution to VaR 
@@ -58,9 +58,10 @@
 #' @examples
 #' # Time Series Factor Model
 #' data(managers)
-#' fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name="US.3m.TR", data=managers)
+#'                      rf.name=colnames(managers)[10], 
+#'                      data=managers)
 #' decomp <- portVaRDecomp(fit.macro,invert = TRUE)
 #' # get the factor contributions of risk
 #' decomp$cVaR
@@ -85,9 +86,9 @@
 #'                                                       
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = TRUE)
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
+#'               "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
+#'               asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
 #'               
 #' decomp = portVaRDecomp(fit.cross) 
 #' # get the factor contributions of risk 
