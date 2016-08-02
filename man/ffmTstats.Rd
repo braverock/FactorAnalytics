@@ -6,28 +6,30 @@
 \usage{
 ffmTstats(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("black",
   "cyan"), lwd = 2, digits = 2, z.alpha = 1.96, layout = c(2, 3),
-  type = "h", ...)
+  type = "h", title = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
 
 \item{isPlot}{logical. If \code{FALSE} no plots are displayed.}
 
-\item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed. Default is \code{FALSE},}
+\item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE},}
 
 \item{myColor}{length 2 vector specifying the plotting color for t-stats plot and for barplot 
-respectively. Default is \code{c("black", "cyan")}}
+respectively. default is \code{c("black", "cyan")}}
 
-\item{lwd}{line width relative to the default. Default is 2.}
+\item{lwd}{line width relative to the default. default is 2.}
 
-\item{digits}{an integer indicating the number of decimal places to be used for rounding. Default is 2.}
+\item{digits}{an integer indicating the number of decimal places to be used for rounding. default is 2.}
 
-\item{z.alpha}{critical value corresponding to the confidence interval. Default is 1.96 i.e 95\% C.I}
+\item{z.alpha}{critical value corresponding to the confidence interval. default is 1.96 i.e 95\% C.I}
 
-\item{layout}{numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in the xyplot of t-statistics. Default is c(2,3).}
+\item{layout}{numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in the xyplot of t-statistics. default is c(2,3).}
 
 \item{type}{character. Type of the xyplot of t-statistics; \code{"l"} for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) vertical lines
 and \code{"b"} for both. Deafault is \code{"h"}.}
+
+\item{title}{logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.}
 
 \item{...}{potentially further arguments passed.}
 }
@@ -52,7 +54,7 @@ Calculate and plot the time series of the t-statistic values and the
 #Compute time series of t-stats and number of significant t-stats 
  stats = ffmTstats(fit, isPlot = TRUE, lwd = 2, myColor = c("blue", "blue"), z.alpha =1.96)
 
-fit1 <-fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+fit1 <- TestfactorAnalytics::fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
                date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B"), addIntercept=TRUE)
 #Compute time series of t-stats and number of significant t-stats 
  stats = ffmTstats(fit1, isPlot = TRUE, z.alpha =1.96) 
@@ -64,11 +66,11 @@ fit1 <-fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
                                        rep("GERMANY", 1 )), 10), 60)
  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
  
- fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+ fit.MICM <- TestfactorAnalytics::fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
  stats = ffmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96)
 }
 \author{
-Doug Martin, Avinash Acharya
+Avinash Acharya and Doug Martin
 }
 

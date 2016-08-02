@@ -4,8 +4,8 @@
 \alias{ffmRsq}
 \title{Factor Model R-squared and VIF Values}
 \usage{
-ffmRsq(ffmObj, rsq = T, rsqAdj = F, VIF = F, plt.type = 1, digits = 2,
-  isPrint = T, isPlot = T, lwd = 2, ...)
+ffmRsq(ffmObj, rsq = T, rsqAdj = F, VIF = F, plt.type = 2, digits = 2,
+  isPrint = T, isPlot = T, lwd = 2, title = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
@@ -18,7 +18,7 @@ ffmRsq(ffmObj, rsq = T, rsqAdj = F, VIF = F, plt.type = 1, digits = 2,
 At least 2 continous variables are required in \code{exposure.vars} of fitted model to find VIF.}
 
 \item{plt.type}{a number to indicate the type of plot for plotting Factor Model R-squared/Adj. R-squared values.
-1 indicates barplot, 2 indicates time series xy plot. Default is 1.}
+1 indicates barplot, 2 indicates time series xy plot. Default is 2.}
 
 \item{digits}{an integer indicating the number of decimal places to be used for rounding. Default is 2.}
 
@@ -28,6 +28,8 @@ Else, only the mean values are printed. Default is \code{TRUE}.}
 \item{isPlot}{logical. if \code{TRUE}, the time series of the output is plotted. Default is \code{TRUE}.}
 
 \item{lwd}{line width relative to the default. Default is 2.}
+
+\item{title}{logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.}
 
 \item{...}{potentially further arguments passed.}
 }
