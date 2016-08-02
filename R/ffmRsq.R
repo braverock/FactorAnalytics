@@ -3,7 +3,6 @@
 #' @description Calcluate and plot the Factor Model R-squared, Adjusted R-squared and Variance Inflation Factors for a portfolio of assets
 #'
 #' @importFrom zoo as.yearmon
-#' @importFrom factorAnalytics fitFfm
 #' @importFrom graphics barplot
 #' @importFrom stats lm
 #' @importFrom xts xts

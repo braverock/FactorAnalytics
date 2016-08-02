@@ -6,7 +6,6 @@
 #' @importFrom xts xts
 #' @importFrom zoo plot.zoo
 #' @importFrom zoo as.yearmon
-#' @importFrom factorAnalytics fitFfm
 #' @importFrom graphics barplot
 #' @importFrom lattice panel.abline xyplot panel.xyplot
 #' @importFrom grDevices dev.off
