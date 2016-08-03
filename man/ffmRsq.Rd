@@ -61,6 +61,6 @@ require(factorAnalytics)
  ffmRsq(fit1, VIF=TRUE, rsqAdj=TRUE, isPrint=TRUE, plt.type = 2)
 }
 \author{
-Doug Martin, Avinash Acharya
+Avinash Acharya and Doug Martin
 }
 
