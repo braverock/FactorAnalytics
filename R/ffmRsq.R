@@ -5,7 +5,8 @@
 #' @importFrom zoo as.yearmon
 #' @importFrom graphics barplot
 #' @importFrom stats lm
-#' @importFrom xts xts
+#' @importFrom xts xts merge.xts
+#' @importFrom lattice panel.abline xyplot panel.xyplot strip.custom
 #' 
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param rsq      logical; if \code{TRUE}, Factor Model R-squared values are computed for the portfolio. Default is \code{TRUE}.
