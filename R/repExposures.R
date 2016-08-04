@@ -14,7 +14,8 @@
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
-#' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
+#' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'.
+#' @param titleText logical varible to choose display plot title or not. Default is 'TRUE', and used only when isPlot = 'TRUE'.
 #' @param which a number to indicate the type of plot. If a subset of the plots 
 #' is required, specify a subset of the numbers 1:3 for plots. If \code{which=NULL} (default), the following menu 
 #' appears: \cr \cr
@@ -49,8 +50,7 @@
 #'
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE,
-#'              which = 2, add.grid = TRUE, scaleType = 'same', 
-#'              layout = c(3,3))
+#'              which = 2, add.grid = TRUE, scaleType = 'same')
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
 #'              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
@@ -60,7 +60,8 @@
 
 
 repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, scaleType = 'free',
-                         stripLeft = TRUE, layout = NULL, digits = 1, which = NULL, ...) {
+                         stripLeft = TRUE, layout = NULL, digits = 1, titleText = TRUE, 
+                         which = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObj should be of class'ffm'.")
@@ -130,17 +131,34 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
       
       switch(which,
              "1L" = { 
+               if(titleText){
+                 main = "Factor Exposures"
+               }else(
+                 main = ''
+               )
                ## Time Series plot of factor exposures
-               tsPlotMP(X[,exposures.num], main = "Factor Exposures", stripLeft = stripLeft, layout = layout, 
+               tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout, 
                         scaleType = scaleType, ...)
              }, 
              "2L" = {
+               if(titleText){
+                 main = "Distributions of Exposures"
+               }else(
+                 main = ''
+               )
                ## Boxplot of factor exposures
                boxplot(100*coredata(X[,exposures.num]), col=5,
                        notch = T, ylab = "Percentage (%)",
-                       main=paste("Distributions of Exposures"))
+                       main = main)
              }, 
-             "3L" = {    
+             "3L" = {  
+               if(titleText){
+                 main1 = "Style Exposures Means"
+                 main2 = "Style Exposures Vols"
+                 main3 = "Sector Exposure Means"
+               }else(
+                 main1 = main2 = main3 = ''
+               )
                ## Barplot of means and vols of style factor exposures, and means of sector exposures 
                par(mfrow = layout)
                
@@ -150,9 +168,9 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                sect = as.character(unique(dat[,exposures.char]))
                d = colMeans(X[,sect])
                
-               barplot(a,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main="Style Exposures Means")
-               barplot(b,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main="Style Exposures Vols")
-               barplot(d,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main="Sector Exposure Means")
+               barplot(a,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main1)
+               barplot(b,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main2)
+               barplot(d,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main3)
                
                par(mfrow = c(1,1))
              },

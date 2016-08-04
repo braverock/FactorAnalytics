@@ -6,7 +6,7 @@
 \usage{
 repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
   scaleType = "free", stripLeft = TRUE, layout = NULL, digits = 1,
-  which = NULL, ...)
+  titleText = TRUE, which = NULL, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
@@ -23,7 +23,9 @@ repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'}
 
-\item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
+\item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'.}
+
+\item{titleText}{logical varible to choose display plot title or not. Default is 'TRUE', and used only when isPlot = 'TRUE'.}
 
 \item{which}{a number to indicate the type of plot. If a subset of the plots 
 is required, specify a subset of the numbers 1:3 for plots. If \code{which=NULL} (default), the following menu 
@@ -62,8 +64,7 @@ fit.cross <- fitFfm(data = dat,
 
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
 repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE,
-             which = 2, add.grid = TRUE, scaleType = 'same', 
-             layout = c(3,3))
+             which = 2, add.grid = TRUE, scaleType = 'same')
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
 repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 

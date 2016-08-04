@@ -16,6 +16,7 @@
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
 #' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
+#' @param titleText logical varible to choose display plot title or not. Default is 'TRUE', and used only when isPlot = 'TRUE'.
 #' @param which a number to indicate the type of plot. If a subset of the plots 
 #' is required, specify a subset of the numbers 1:4 for plots. If \code{which=NULL} (default), the following menu 
 #' appears: \cr \cr
@@ -63,7 +64,7 @@
 
 
 repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, layout =NULL, scaleType = 'free',
-                      stripLeft = TRUE, digits = 1, which = NULL, ...) {
+                      stripLeft = TRUE, digits = 1, titleText = TRUE, which = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObjshould be of class'ffm'.")
@@ -173,34 +174,54 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
       }
       
       switch(which,
-             "1L" = { 
+             "1L" = {
+               if(titleText){
+                 main = "Portfolio Returns Decomposition"
+               }else(
+                 main = ''
+               )
                ## Time Series plot of portfolio returns decomposition
                tsPlotMP(dat[,c('PortfolioRet','FactorRet','SpecificRet')], 
-                        main = "Portfolio Returns Decomposition", layout = c(1,3), stripLeft = stripLeft, 
+                        main = main, layout = c(1,3), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                
              }, 
              "2L" = {
+               if(titleText){
+                 main = "Portfolio Style Factors Returns"
+               }else(
+                 main = ''
+               )
                ## Time Series plot of portfolio style factors returns
                tsPlotMP(dat[,c('FactorRet',exposures.num,'SpecificRet')], 
-                        main = "Portfolio Style Factors Returns", layout = c(3,3), stripLeft = stripLeft, 
+                        main = main, layout = c(3,3), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                
              }, 
-             "3L" = {    
+             "3L" = {  
+               if(titleText){
+                 main = "Portfolio Sector Returns"
+               }else(
+                 main = ''
+               )
                ## Time Series plot of portfolio sector returns
                tsPlotMP(dat[,c('FactorRet',exposures.char.name)], 
-                        main = "Portfolio Sector Returns", layout = c(3,4), stripLeft = stripLeft, 
+                        main = main, layout = c(3,4), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                
              },
-             "4L" = {    
+             "4L" = {  
+               if(titleText){
+                 main = "Portfolio Returns Components Distributions"
+               }else(
+                 main = ''
+               )
                ## Baxplot of Portfolio Returns Components
                par(mar=c(7,5,5,5))
                boxplot(100*coredata(dat), col=5, las = 2, 
                        xaxt = "n", 
                        ylab = "Percentage (%)",
-                       main=paste("Portfolio Returns Components Distributions"))
+                       main = main)
                axis(1, at=c(1:ncol(dat)) , labels = FALSE)
                text(x = c(1:ncol(dat)), srt = 45, adj = 1, labels = colnames(dat), 
                     par("usr")[3] - 3, xpd = TRUE, cex = 0.8)
