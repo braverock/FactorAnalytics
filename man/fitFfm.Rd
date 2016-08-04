@@ -168,7 +168,7 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
 }
 \author{
-Sangeetha Srinivasan, Guy Yollin and Yi-An Chen
+Sangeetha Srinivasan, Guy Yollin,  Yi-An Chen and Avinash Acharya
 }
 \references{
 Menchero, J. (2010). The Characteristics of Factor Portfolios. Journal of
