@@ -2,22 +2,29 @@
 % Please edit documentation in R/fmEsDecomp.R
 \name{fmEsDecomp}
 \alias{fmEsDecomp}
+\alias{fmEsDecomp.ffm}
 \alias{fmEsDecomp.sfm}
 \alias{fmEsDecomp.tsfm}
 \title{Decompose ES into individual factor contributions}
 \usage{
 fmEsDecomp(object, ...)
 
-\method{fmEsDecomp}{tsfm}(object, p = 0.95, type = c("np", "normal"),
-  use = "pairwise.complete.obs", ...)
+\method{fmEsDecomp}{tsfm}(object, factor.cov, p = 0.95, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 
 \method{fmEsDecomp}{sfm}(object, p = 0.95, type = c("np", "normal"),
   use = "pairwise.complete.obs", ...)
+
+\method{fmEsDecomp}{ffm}(object, factor.cov, p = 0.95, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
 
 \item{...}{other optional arguments passed to \code{\link[stats]{quantile}}.}
+
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
 
 \item{p}{confidence level for calculation. Default is 0.95.}
 
@@ -75,6 +82,15 @@ ES.decomp$cES
 data(StockReturns)
 sfm.pca.fit <- fitSfm(r.M, k=2)
 ES.decomp <- fmEsDecomp(sfm.pca.fit)
+ES.decomp$cES
+ 
+# Fundamental Factor Model
+data(Stock.df)
+exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
+fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+              date.var="DATE", exposure.vars=exposure.vars)
+
+ES.decomp <- fmEsDecomp(fit, type="normal")
 ES.decomp$cES
 
 }

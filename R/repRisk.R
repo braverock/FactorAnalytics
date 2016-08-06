@@ -95,7 +95,9 @@
 #'         digits = 4) 
 #' # get the factor contributions of risk 
 #' repRisk(fit.cross, wtsStocks145GmvLo, riskMeasure = "Sd", decompType = 'FPCR', 
-#'         nrowPrint = 10)               
+#'         nrowPrint = 10) 
+#' repRisk(fit.cross, wtsStocks145GmvLo, riskMeasure = "ES", decompType = 'FCR', 
+#'         nrowPrint = 10)                
 #'  
 #' @export    
 
@@ -136,7 +138,7 @@ repRisk.tsfm <- function(object, weights = NULL, riskMeasure = c("Sd", "VaR", "E
   
   if(length(which(riskMeasure == "Sd"))){
     port.Sd = portSdDecomp(object, weights = weights, use = use, ... )
-    asset.Sd = factorAnalytics::fmSdDecomp(object, use = use, ... )
+    asset.Sd = fmSdDecomp(object, use = use, ... )
     
     if(decompType == "RM"){
       port = port.Sd$portSd
@@ -175,7 +177,7 @@ repRisk.tsfm <- function(object, weights = NULL, riskMeasure = c("Sd", "VaR", "E
   
   else if(length(which(riskMeasure == "VaR"))){
     port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, use = use, invert = invert, ... )
-    asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, use = use, invert = invert, ... )
+    asset.VaR = fmVaRDecomp(object, p = p, type = type, use = use, invert = invert, ... )
     
     if(decompType == "RM"){
       port = port.VaR$portVaR
@@ -214,7 +216,7 @@ repRisk.tsfm <- function(object, weights = NULL, riskMeasure = c("Sd", "VaR", "E
 
   else if(length(which(riskMeasure == "ES"))){
     port.Es = portEsDecomp(object, weights = weights, p = p, type = type, use = use, invert = invert, ... )
-    asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, use = use, invert = invert, ... )
+    asset.Es = fmEsDecomp(object, p = p, type = type, use = use, invert = invert, ... )
     
     if(decompType == "RM"){
       port = port.Es$portES
@@ -285,7 +287,7 @@ repRisk.ffm <- function(object, weights = NULL, riskMeasure = c("Sd", "VaR", "ES
     stop("Invalid args: type must be 'np' or 'normal' ")
   }
   
-  if (!prod(riskMeasure %in% c("Sd", "VaR", "Es"))) {
+  if (!prod(riskMeasure %in% c("Sd", "VaR", "ES"))) {
     stop("Invalid args: riskMeasure must be 'Sd', 'VaR' or 'ES' ")
   }
   
@@ -295,7 +297,7 @@ repRisk.ffm <- function(object, weights = NULL, riskMeasure = c("Sd", "VaR", "ES
   
   if(length(which(riskMeasure == "Sd"))){
     port.Sd = portSdDecomp(object, weights = weights, ... )
-    asset.Sd = factorAnalytics::fmSdDecomp(object, ... )
+    asset.Sd = fmSdDecomp(object, ... )
     
     if(decompType == "RM"){
       port = port.Sd$portSd
@@ -334,7 +336,7 @@ repRisk.ffm <- function(object, weights = NULL, riskMeasure = c("Sd", "VaR", "ES
   
   else if(length(which(riskMeasure == "VaR"))){
     port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-    asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
+    asset.VaR = fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
     
     if(decompType == "RM"){
       port = port.VaR$portVaR
@@ -373,7 +375,7 @@ repRisk.ffm <- function(object, weights = NULL, riskMeasure = c("Sd", "VaR", "ES
   
   else if(length(which(riskMeasure == "ES"))){
     port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-    asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, invert = invert, ... )
+    asset.Es = fmEsDecomp(object, p = p, type = type, invert = invert, ... )
     
     if(decompType == "RM"){
       port = port.Es$portES

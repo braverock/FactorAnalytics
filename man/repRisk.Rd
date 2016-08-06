@@ -114,7 +114,9 @@ repRisk(fit.cross, riskMeasure = "Sd", decompType = 'FCR', nrowPrint = 10,
         digits = 4) 
 # get the factor contributions of risk 
 repRisk(fit.cross, wtsStocks145GmvLo, riskMeasure = "Sd", decompType = 'FPCR', 
-        nrowPrint = 10)               
+        nrowPrint = 10) 
+repRisk(fit.cross, wtsStocks145GmvLo, riskMeasure = "ES", decompType = 'FCR', 
+        nrowPrint = 10)                
  
 }
 \author{

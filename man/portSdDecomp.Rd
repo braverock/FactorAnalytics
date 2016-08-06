@@ -60,7 +60,7 @@ sample covariance. \cr \cr
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers)[10], 
+                     rf.name=colnames(managers[,10]), 
                      data=managers)
 decomp <- portSdDecomp(fit.macro)
 # get the factor contributions of risk
@@ -85,9 +85,9 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
                                                      
 # fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
-              "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
-              asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
+              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+              fit.method="WLS", z.score = TRUE)
               
 decomp = portSdDecomp(fit.cross) 
 # get the factor contributions of risk 

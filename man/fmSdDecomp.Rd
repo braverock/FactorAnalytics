@@ -9,22 +9,25 @@
 \usage{
 fmSdDecomp(object, ...)
 
-\method{fmSdDecomp}{tsfm}(object, use = "pairwise.complete.obs", ...)
+\method{fmSdDecomp}{tsfm}(object, factor.cov, use = "pairwise.complete.obs",
+  ...)
 
-\method{fmSdDecomp}{sfm}(object, use = "pairwise.complete.obs", ...)
+\method{fmSdDecomp}{sfm}(object, factor.cov, use = "pairwise.complete.obs",
+  ...)
 
-\method{fmSdDecomp}{ffm}(object, ...)
+\method{fmSdDecomp}{ffm}(object, factor.cov, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
 
 \item{...}{optional arguments passed to \code{\link[stats]{cov}}.}
 
-\item{use}{an optional character string giving a method for computing 
-covariances in the presence of missing values. This must be (an 
-abbreviation of) one of the strings "everything", "all.obs", 
-"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
-"pairwise.complete.obs".}
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
+
+\item{use}{method for computing covariances in the presence of missing 
+values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or 
+"pairwise.complete.obs". Default is "pairwise.complete.obs".}
 }
 \value{
 A list containing 
@@ -70,9 +73,18 @@ sfm.pca.fit <- fitSfm(r.M, k=2)
 decomp <- fmSdDecomp(sfm.pca.fit)
 decomp$pcSd
  
+# Fundamental Factor Model
+data(Stock.df)
+exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
+fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+              date.var="DATE", exposure.vars=exposure.vars)
+
+Sd.decomp <- fmSdDecomp(fit, type="normal")
+Sd.decomp$cSd
+
 }
 \author{
-Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
+Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 }
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 

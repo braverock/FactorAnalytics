@@ -14,7 +14,7 @@
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
 #' where, \code{beta.star=(beta,sig.e)} and \code{f.star(t)=[f(t)',z(t)]'}. By 
 #' Euler's theorem, the VaR of the asset's return is given by: 
-#' \cr \cr \code{portVaR = sum(cVaR_k) = sum(beta.star_k*mVaR_k)} \cr \cr 
+#' \cr \cr \code{VaR.fm = sum(cVaR_k) = sum(beta.star_k*mVaR_k)} \cr \cr 
 #' where, summation is across the \code{K} factors and the residual, 
 #' \code{cVaR} and \code{mVaR} are the component and marginal 
 #' contributions to \code{VaR} respectively. The marginal contribution to VaR 
@@ -60,7 +60,7 @@
 #' data(managers)
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name=colnames(managers)[10], 
+#'                      rf.name=colnames(managers[,10]), 
 #'                      data=managers)
 #' decomp <- portVaRDecomp(fit.macro,invert = TRUE)
 #' # get the factor contributions of risk
@@ -86,9 +86,9 @@
 #'                                                       
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
-#'               "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
-#'               asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#'               fit.method="WLS", z.score = TRUE)
 #'               
 #' decomp = portVaRDecomp(fit.cross) 
 #' # get the factor contributions of risk 
@@ -195,7 +195,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norm
     VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
   } 
   else if (type=="normal") {
-    VaR.fm <- mean(R.xts, na.rm=TRUE) + sd(R.xts, na.rm=TRUE)*qnorm(1-p)
+    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
   }
   # index of VaR exceedances
   idx.exceed <- which(R.xts <= VaR.fm)
@@ -261,11 +261,12 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
   exposures.char <- object$exposure.vars[!which.numeric]
   
   # get beta: 1 x K
-  if(!length(exposures.char)){
-    beta <- object$beta[,-1]
-  }else{
-    beta <- object$beta
-  }
+  #if(!length(exposures.char)){
+  #  beta <- object$beta[,-1]
+  #}else{
+  #  beta <- object$beta
+  #}
+  beta <- object$beta
   
   beta[is.na(beta)] <- 0
   n.assets = nrow(beta)
@@ -295,7 +296,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
   # re-order beta to match with factor.cov when both sector & style factors are used 
-  if(!is.null(exposures.char) & !is.null(exposures.num)){
+  if(length(exposures.char)>0 & length(exposures.num)>0){
     sectors.sec <- levels(object$data[,exposures.char])
     sectors.names <- paste(exposures.char,sectors.sec,sep="")
     
@@ -360,7 +361,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
     VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
   } 
   else if (type=="normal") {
-    VaR.fm <- mean(R.xts, na.rm=TRUE) + sd(R.xts, na.rm=TRUE)*qnorm(1-p)
+    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
   }
   
   # index of VaR exceedances
