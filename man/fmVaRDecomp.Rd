@@ -64,14 +64,16 @@ where, summation is across the \code{K} factors and the residual,
 contributions to \code{VaR} respectively. The marginal contribution to VaR 
 is defined as the expectation of \code{F.star}, conditional on the loss 
 being equal to \code{VaR.fm}. This is approximated as described in 
-Epperlein & Smillie (2006); a triangular smoothing kernel is used here.
+Epperlein & Smillie (2006); a triangular smoothing kernel is used here. 
+
+Refer to Eric Zivot's slides (referenced) for formulas pertaining to the 
+calculation of Normal VaR (adapted from a portfolio context to factor models)
 }
 \examples{
 # Time Series Factor Model
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]), data=managers)
-                     
 VaR.decomp <- fmVaRDecomp(fit.macro)
 # get the component contributions
 VaR.decomp$cVaR
@@ -79,7 +81,6 @@ VaR.decomp$cVaR
 # Statistical Factor Model
 data(StockReturns)
 sfm.pca.fit <- fitSfm(r.M, k=2)
-
 VaR.decomp <- fmVaRDecomp(sfm.pca.fit, type="normal")
 VaR.decomp$cVaR
 
@@ -88,7 +89,6 @@ data(Stock.df)
 exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)
-
 VaR.decomp <- fmVaRDecomp(fit, type="normal")
 VaR.decomp$cVaR
 
@@ -97,9 +97,6 @@ VaR.decomp$cVaR
 Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 }
 \references{
-Eric Zivot's slides from CFRM 546: Estimating risk measures: Portfolio of 
-Assets, April 28, 2015.
-
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
 The Journal of Risk, 5(2), 1-18.
 

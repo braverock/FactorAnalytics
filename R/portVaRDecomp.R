@@ -60,8 +60,7 @@
 #' data(managers)
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name=colnames(managers[,10]), 
-#'                      data=managers)
+#'                      rf.name=colnames(managers[,10]), data=managers)
 #' decomp <- portVaRDecomp(fit.macro,invert = TRUE)
 #' # get the factor contributions of risk
 #' decomp$cVaR
@@ -190,36 +189,36 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norm
   R.xts = as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
   names(R.xts) = 'RETURN'
   
-  # get VaR for porfolio
   if (type=="np") {
+    # get VaR for asset i
     VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
-  } 
-  else if (type=="normal") {
-    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
-  }
-  # index of VaR exceedances
-  idx.exceed <- which(R.xts <= VaR.fm)
-  # number of VaR exceedances
-  n.exceed <- length(idx.exceed)
-
-  # get F.star data object
-  factor.star <- merge(factors.xts, resid.xts)
-  colnames(factor.star)[dim(factor.star)[2]] <- "residual"
-  
-  if (type=="np") {
+    
+    # get F.star data object
+    factor.star <- merge(factors.xts, resid.xts)
+    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    
     # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
     # the constant 2.575 corresponds to a triangular kernel 
     eps <- 2.575*sd(R.xts, na.rm =TRUE) * (nrow(R.xts)^(-1/5))
+    
     # compute marginal VaR as expected value of factor returns, such that the
     # asset return was incident in the triangular kernel region peaked at the 
     # VaR value and bandwidth = epsilon.
     k.weight <- as.vector(1 - abs(R.xts - VaR.fm) / eps)
     k.weight[k.weight<0] <- 0
     mVaR <- colMeans(factor.star*k.weight, na.rm =TRUE)
-  } 
-  else if (type=="normal")  {
-    mVaR <- MU + SIGB * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
+    
+  } else if (type=="normal")  {
+    # get VaR for asset i
+    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
+    # compute marginal VaR
+    mVaR <- drop(MU + SIGB * qnorm(1-p)/sd(R.xts, na.rm=TRUE))
   }
+  
+  # index of VaR exceedances
+  idx.exceed <- which(R.xts <= VaR.fm)
+  # number of VaR exceedances
+  n.exceed <- length(idx.exceed)
   
   # correction factor to ensure that sum(cVaR) = asset VaR
   cf <- as.numeric( VaR.fm / sum(mVaR*beta.star, na.rm=TRUE) )
@@ -316,13 +315,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
   beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
   colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
-  if(type == 'np'){
-    # get F.star data object
-    zoo::index(factors.xts) <- zoo::index(resid.xts)
-    factor.star <- merge(factors.xts, resid.xts)
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
-  }
-  else if (type=="normal") {
+  if (type=="normal") {
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
@@ -356,20 +349,14 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
   R.xts = as.xts(rowSums(R.xts), order.by = object$time.periods)
   names(R.xts) = 'RETURN'
   
-  # get VaR for portfolio
   if (type=="np") {
     VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
-  } 
-  else if (type=="normal") {
-    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
-  }
-  
-  # index of VaR exceedances
-  idx.exceed <- which(R.xts <= VaR.fm)
-  # number of VaR exceedances
-  n.exceed <- length(idx.exceed)
-  
-  if (type=="np") {
+    
+    # get F.star data object
+    zoo::index(factors.xts) <- zoo::index(resid.xts)
+    factor.star <- merge(factors.xts, resid.xts)
+    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    
     # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
     # the constant 2.575 corresponds to a triangular kernel 
     eps <- 2.575*sd(R.xts, na.rm =TRUE) * (nrow(R.xts)^(-1/5))
@@ -381,8 +368,14 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
     mVaR <- colMeans(factor.star*k.weight, na.rm =TRUE)
   } 
   else if (type=="normal")  {
-    mVaR <- MU + drop(SIGB) * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
+    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
+    mVaR <- drop(MU + drop(SIGB) * qnorm(1-p)/sd(R.xts, na.rm=TRUE))
   }
+  
+  # index of VaR exceedances
+  idx.exceed <- which(R.xts <= VaR.fm)
+  # number of VaR exceedances
+  n.exceed <- length(idx.exceed)
   
   # correction factor to ensure that sum(cVaR) = asset VaR
   cf <- as.numeric( VaR.fm / sum(mVaR*beta.star, na.rm=TRUE) )

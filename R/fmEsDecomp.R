@@ -19,24 +19,22 @@
 #' being less than or equal to \code{VaR.fm}. This is estimated as a sample 
 #' average of the observations in that data window. 
 #' 
+#' Refer to Eric Zivot's slides (referenced) for formulas pertaining to the 
+#' calculation of Normal ES (adapted from a portfolio context to factor models).
+#' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
 #' @param p confidence level for calculation. Default is 0.95.
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR. 
 #' Default is "np".
-#' @param use an optional character string giving a method for computing factor
-#' covariances in the presence of missing values. This must be (an 
-#' abbreviation of) one of the strings "everything", "all.obs", 
-#' "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
-#' "pairwise.complete.obs".
+#' @param use method for computing covariances in the presence of missing 
+#' values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or 
+#' "pairwise.complete.obs". Default is "pairwise.complete.obs".
 #' @param ... other optional arguments passed to \code{\link[stats]{quantile}}.
 #' 
 #' @return A list containing 
 #' \item{ES.fm}{length-N vector of factor model ES of N-asset returns.}
-#' \item{n.exceed}{length-N vector of number of observations beyond VaR for 
-#' each asset.}
-#' \item{idx.exceed}{list of numeric vector of index values of exceedances.}
 #' \item{mES}{N x (K+1) matrix of marginal contributions to VaR.}
 #' \item{cES}{N x (K+1) matrix of component contributions to VaR.}
 #' \item{pcES}{N x (K+1) matrix of percentage component contributions to VaR.}
@@ -45,6 +43,7 @@
 #' @author Eric Zviot, Sangeetha Srinivasan and Yi-An Chen
 #' 
 #' @references 
+#' 
 #' Epperlein, E., & Smillie, A. (2006). Portfolio risk analysis Cracking VAR 
 #' with kernels. RISK-LONDON-RISK MAGAZINE LIMITED-, 19(8), 70.
 #' 
@@ -65,7 +64,7 @@
 #' \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 #' 
 #' @examples
-#' # Time Series Factor Model
+#' #' # Time Series Factor Model
 #' data(managers)
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:8)]), data=managers)
@@ -76,17 +75,16 @@
 #' # Statistical Factor Model
 #' data(StockReturns)
 #' sfm.pca.fit <- fitSfm(r.M, k=2)
-#' ES.decomp <- fmEsDecomp(sfm.pca.fit)
+#' ES.decomp <- fmEsDecomp(sfm.pca.fit, type="normal")
 #' ES.decomp$cES
-#'  
+#' 
 #' # Fundamental Factor Model
 #' data(Stock.df)
 #' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 #' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars=exposure.vars)
-#' 
 #' ES.decomp <- fmEsDecomp(fit, type="normal")
-#' ES.decomp$cES
+#' head(ES.decomp$cES)
 #' 
 #' @export
 
@@ -102,9 +100,8 @@ fmEsDecomp <- function(object, ...){
 #' @method fmEsDecomp tsfm
 #' @export
 
-fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
+fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),  
                             use="pairwise.complete.obs", ...) {
-  
   # set default for type
   type = type[1]
   
@@ -133,19 +130,16 @@ fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
            compatible with the number of factors in the fitTsfm object")
       }
     }
-    
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
     colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
     rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
     names(MU) <- colnames(beta.star)
-    
-    # SIGMA*Beta to compute normal mVaR
+    # SIGMA*Beta to compute normal mES
     SIGB <-  beta.star %*% factor.star.cov
   }
   
@@ -155,8 +149,7 @@ fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   VaR.fm <- rep(NA, N)
   ES.fm <- rep(NA, N)
   idx.exceed <- list()
-  n.exceed <- rep(NA, N)
-  names(VaR.fm) = names(ES.fm) = names(n.exceed) = object$asset.names
+  names(VaR.fm) = names(ES.fm) = object$asset.names
   mES <- matrix(NA, N, K+1)
   cES <- matrix(NA, N, K+1)
   pcES <- matrix(NA, N, K+1)
@@ -166,29 +159,30 @@ fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   for (i in object$asset.names) {
     # return data for asset i
     R.xts <- object$data[,i]
-    # get VaR for asset i
-    if (type=="np") {
+    
+    if (type=="np") { 
+      # get VaR for asset i
       VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
-    } else {
-      VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
+      # index of VaR exceedances
+      idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+      # compute ES as expected value of asset return, such that the given asset 
+      # return is less than or equal to its value-at-risk (VaR)
+      ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
+      # get F.star data object
+      factor.star <- merge(factors.xts, resid.xts[,i])
+      colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+      # compute marginal ES as expected value of factor returns, when the asset's 
+      # return is less than or equal to its value-at-risk (VaR)
+      mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
+      
+    } else if (type=="normal") {
+      # extract vector of factor model loadings for asset i
+      beta.i <- beta.star[i,,drop=F]
+      # compute ES
+      ES.fm[i] <- beta.star[i,] %*% MU + sqrt(beta.i %*% factor.star.cov %*% t(beta.i))*dnorm(qnorm(1-p))/(1-p) 
+      # compute marginal ES
+      mES[i,] <- t(MU) + SIGB[i,]/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p)
     }
-    # index of VaR exceedances
-    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
-    # number of VaR exceedances
-    n.exceed[i] <- length(idx.exceed[[i]])
-    
-    # compute ES as expected value of asset return, such that the given asset 
-    # return is less than or equal to its value-at-risk (VaR)
-    ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
-    
-    # get F.star data object
-    factor.star <- merge(factors.xts, resid.xts[,i])
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
-    
-    # compute marginal ES as expected value of factor returns, when the asset's 
-    # return is less than or equal to its value-at-risk (VaR)
-    mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
     
     # correction factor to ensure that sum(cES) = asset ES
     cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
@@ -200,8 +194,7 @@ fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     pcES[i,] <- 100* cES[i,] / ES.fm[i]
   }
   
-  fm.ES.decomp <- list(ES.fm=ES.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
-                       mES=mES, cES=cES, pcES=pcES)
+  fm.ES.decomp <- list(ES.fm=ES.fm, mES=mES, cES=cES, pcES=pcES)
   
   return(fm.ES.decomp)
 }
@@ -210,9 +203,8 @@ fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
 #' @method fmEsDecomp sfm
 #' @export
 
-fmEsDecomp.sfm <- function(object, p=0.95, type=c("np","normal"),  
+fmEsDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),  
                            use="pairwise.complete.obs", ...) {
-  
   # set default for type
   type = type[1]
   
@@ -231,46 +223,68 @@ fmEsDecomp.sfm <- function(object, p=0.95, type=c("np","normal"),
   resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
   time(resid.xts) <- as.Date(time(resid.xts))
   
+  if (type=="normal") {
+    # get cov(F): K x K
+    if (missing(factor.cov)) {
+      factor.cov = cov(as.matrix(factors.xts), use=use, ...) 
+    } else {
+      if (!identical(dim(factor.cov), as.integer(c(object$k, object$k)))) {
+        stop("Dimensions of user specified factor covariance matrix are not 
+             compatible with the number of factors in the fitSfm object")
+      }
+    }
+    # get cov(F.star): (K+1) x (K+1)
+    K <- object$k
+    factor.star.cov <- diag(K+1)
+    factor.star.cov[1:K, 1:K] <- factor.cov
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    # factor expected returns
+    MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
+    # SIGMA*Beta to compute normal mVaR
+    SIGB <- beta.star %*% factor.star.cov
+  }
+  
   # initialize lists and matrices
   N <- length(object$asset.names)
   K <- object$k
   VaR.fm <- rep(NA, N)
   ES.fm <- rep(NA, N)
   idx.exceed <- list()
-  n.exceed <- rep(NA, N)
-  names(VaR.fm) = names(ES.fm) = names(n.exceed) = object$asset.names
+  names(VaR.fm) = names(ES.fm) = object$asset.names
   mES <- matrix(NA, N, K+1)
   cES <- matrix(NA, N, K+1)
   pcES <- matrix(NA, N, K+1)
   rownames(mES)=rownames(cES)=rownames(pcES)=object$asset.names
-  colnames(mES)=colnames(cES)=colnames(pcES)=c(paste("F",1:K,sep="."),
-                                               "residuals")
+  colnames(mES)=colnames(cES)=colnames(pcES)=c(paste("F",1:K,sep="."),"residuals")
   
   for (i in object$asset.names) {
     # return data for asset i
     R.xts <- object$data[,i]
-    # get VaR for asset i
+    
     if (type=="np") {
+      # get VaR for asset i
       VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
-    } else {
-      VaR.fm[i] <- mean(R.xts, na.rm=TRUE) + sd(R.xts, na.rm=TRUE)*qnorm(1-p)
+      # index of VaR exceedances
+      idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+      # compute ES as expected value of asset return, such that the given asset 
+      # return is less than or equal to its value-at-risk (VaR)
+      ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
+      # get F.star data object
+      factor.star <- merge(factors.xts, resid.xts[,i])
+      colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+      # compute marginal ES as expected value of factor returns, when the asset's 
+      # return is less than or equal to its value-at-risk (VaR)
+      mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
+      
+    } else if (type=="normal") {
+      # extract vector of factor model loadings for asset i
+      beta.i <- beta.star[i,,drop=F]
+      # compute ES
+      ES.fm[i] <- beta.star[i,] %*% MU + sqrt(beta.i %*% factor.star.cov %*% t(beta.i))*dnorm(qnorm(1-p))/(1-p) 
+      # compute marginal ES
+      mES[i,] <- t(MU) + SIGB[i,]/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p)
     }
-    # index of VaR exceedances
-    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
-    # number of VaR exceedances
-    n.exceed[i] <- length(idx.exceed[[i]])
-    
-    # compute ES as expected value of asset return, such that the given asset 
-    # return is less than or equal to its value-at-risk (VaR)
-    ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
-    
-    # get F.star data object
-    factor.star <- merge(factors.xts, resid.xts[,i])
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
-    
-    # compute marginal ES as expected value of factor returns, when the asset's 
-    # return is less than or equal to its value-at-risk (VaR)
-    mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
     
     # correction factor to ensure that sum(cES) = asset ES
     cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
@@ -282,19 +296,17 @@ fmEsDecomp.sfm <- function(object, p=0.95, type=c("np","normal"),
     pcES[i,] <- 100* cES[i,] / ES.fm[i]
   }
   
-  fm.ES.decomp <- list(ES.fm=ES.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
-                       mES=mES, cES=cES, pcES=pcES)
+  fm.ES.decomp <- list(ES.fm=ES.fm, mES=mES, cES=cES, pcES=pcES)
   
   return(fm.ES.decomp)
 }
 
-
 #' @rdname fmEsDecomp
 #' @method fmEsDecomp ffm
 #' @export
-fmEsDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
+
+fmEsDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),  
                            use="pairwise.complete.obs", ...) {
-  
   # set default for type
   type = type[1]
   if (!(type %in% c("np","normal"))) {
@@ -344,19 +356,15 @@ fmEsDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
   colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
-  
   if (type=="normal") {
-    
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
     colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
     rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
   }
@@ -367,45 +375,46 @@ fmEsDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   VaR.fm <- rep(NA, N)
   ES.fm <- rep(NA, N)
   idx.exceed <- list()
-  n.exceed <- rep(NA, N)
-  names(VaR.fm) = names(ES.fm) = names(n.exceed) = object$asset.names
+  names(VaR.fm) = names(ES.fm) = object$asset.names
   mES <- matrix(NA, N, K+1)
   cES <- matrix(NA, N, K+1)
   pcES <- matrix(NA, N, K+1)
   rownames(mES)=rownames(cES)=rownames(pcES)=object$asset.names
-  colnames(mES)=colnames(cES)=colnames(pcES)=c(object$factor.names,"residuals")
+  colnames(mES)=colnames(cES)=colnames(pcES)=c(object$factor.names, "residuals")
   
   for (i in object$asset.names) {
     # return data for asset i
     subrows <- which(object$data[[object$asset.var]]==i)
     R.xts <- as.xts(object$data[subrows,object$ret.var], 
                     as.Date(object$data[subrows,object$date.var]))
-    # get VaR for asset i
+    
     if (type=="np") {
+      # get VaR for asset i
       VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+      # index of VaR exceedances
+      idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+      # compute ES as expected value of asset return, such that the given asset 
+      # return is less than or equal to its value-at-risk (VaR)
+      ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
+      
+      # get F.star data object
+      temp = resid.xts[,i]
+      zoo::index(temp) = zoo::index(factors.xts)
+      factor.star <- merge(factors.xts, temp)
+      colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+      
+      # compute marginal ES as expected value of factor returns, when the asset's 
+      # return is less than or equal to its value-at-risk (VaR)
+      mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
+      
+    } else if (type=="normal")  {
+      # extract vector of factor model loadings for asset i
+      beta.i <- beta.star[i,,drop=F]
+      # compute ES
+      ES.fm[i] <- beta.star[i,] %*% MU + sqrt(beta.i %*% factor.star.cov %*% t(beta.i))*dnorm(qnorm(1-p))/(1-p) 
+      # compute marginal ES
+      mES[i,] <- t(MU) + SIGB[i,]/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p)
     }
-    else if (type=="normal") {
-      VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
-    }
-    # index of VaR exceedances
-    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
-    # number of VaR exceedances
-    n.exceed[i] <- length(idx.exceed[[i]])
-    
-    # compute ES as expected value of asset return, such that the given asset 
-    # return is less than or equal to its value-at-risk (VaR)
-    ES.fm[i] <- mean(R.xts[idx.exceed[[i]]], na.rm =TRUE)
-    
-    # get F.star data object
-    temp = resid.xts[,i]
-    zoo::index(temp) = zoo::index(factors.xts)
-    factor.star <- merge(factors.xts, temp)
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
-    
-    # compute marginal ES as expected value of factor returns, when the asset's 
-    # return is less than or equal to its value-at-risk (VaR)
-    mES[i,] <- colMeans(factor.star[idx.exceed[[i]],], na.rm =TRUE)
     
     # correction factor to ensure that sum(cES) = asset ES
     cf <- as.numeric( ES.fm[i] / sum(mES[i,]*beta.star[i,], na.rm=TRUE) )
@@ -417,9 +426,7 @@ fmEsDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     pcES[i,] <- 100* cES[i,] / ES.fm[i]
   }
   
-  fm.ES.decomp <- list(ES.fm=ES.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
-                       mES=mES, cES=cES, pcES=pcES)
+  fm.ES.decomp <- list(ES.fm=ES.fm, mES=mES, cES=cES, pcES=pcES)
   
   return(fm.ES.decomp)
-
 }

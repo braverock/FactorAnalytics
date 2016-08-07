@@ -18,6 +18,8 @@
 #' being equal to \code{VaR.fm}. This is approximated as described in 
 #' Epperlein & Smillie (2006); a triangular smoothing kernel is used here. 
 #' 
+#' Refer to Eric Zivot's slides (referenced) for formulas pertaining to the 
+#' calculation of Normal VaR (adapted from a portfolio context to factor models)
 #' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param factor.cov optional user specified factor covariance matrix with 
@@ -43,8 +45,6 @@
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 #' 
 #' @references 
-#' Eric Zivot's slides from CFRM 546: Estimating risk measures: Portfolio of 
-#' Assets, April 28, 2015.
 #' 
 #' Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
 #' The Journal of Risk, 5(2), 1-18.
@@ -67,7 +67,6 @@
 #' data(managers)
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:8)]), data=managers)
-#'                      
 #' VaR.decomp <- fmVaRDecomp(fit.macro)
 #' # get the component contributions
 #' VaR.decomp$cVaR
@@ -75,7 +74,6 @@
 #' # Statistical Factor Model
 #' data(StockReturns)
 #' sfm.pca.fit <- fitSfm(r.M, k=2)
-#' 
 #' VaR.decomp <- fmVaRDecomp(sfm.pca.fit, type="normal")
 #' VaR.decomp$cVaR
 #' 
@@ -84,7 +82,6 @@
 #' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 #' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars=exposure.vars)
-#' 
 #' VaR.decomp <- fmVaRDecomp(fit, type="normal")
 #' VaR.decomp$cVaR
 #' 
@@ -104,7 +101,6 @@ fmVaRDecomp <- function(object, ...){
 
 fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
                              use="pairwise.complete.obs", ...) {
-  
   # set default for type
   type = type[1]
   if (!(type %in% c("np","normal"))) {
@@ -132,18 +128,15 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
            compatible with the number of factors in the fitTsfm object")
       }
     }
-    
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
     colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
     rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
     names(MU) <- colnames(beta.star)
-    
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
   }
@@ -164,20 +157,11 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   for (i in object$asset.names) {
     # return data for asset i
     R.xts <- object$data[,i]
-    # get VaR for asset i
-    if (type=="np") {
-      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
-    }
-    else if (type=="normal") {
-      VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
-    }
-    # index of VaR exceedances
-    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
-    # number of VaR exceedances
-    n.exceed[i] <- length(idx.exceed[[i]])
     
     if (type=="np") {
+      # get VaR for asset i
+      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+      
       # get F.star data object
       factor.star <- merge(factors.xts, resid.xts[,i])
       colnames(factor.star)[dim(factor.star)[2]] <- "residual"
@@ -192,10 +176,20 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
       k.weight <- as.vector(1 - abs(R.xts - VaR.fm[i]) / eps)
       k.weight[k.weight<0] <- 0
       mVaR[i,] <- colMeans(factor.star*k.weight, na.rm =TRUE)
-    } 
-    else if (type=="normal")  {
+      
+    } else if (type=="normal")  {
+      # get VaR for asset i
+      VaR.fm[i] <- beta.star[i,] %*% MU + 
+        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
+      
+      # compute marginal VaR
       mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
     }
+    
+    # index of VaR exceedances
+    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+    # number of VaR exceedances
+    n.exceed[i] <- length(idx.exceed[[i]])
     
     # correction factor to ensure that sum(cVaR) = asset VaR
     cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,], na.rm=TRUE) )
@@ -219,7 +213,6 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
 
 fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
                             use="pairwise.complete.obs", ...) {
-  
   # set default for type
   type = type[1]
   if (!(type %in% c("np","normal"))) {
@@ -247,17 +240,14 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
              compatible with the number of factors in the fitSfm object")
       }
     }
-    
     # get cov(F.star): (K+1) x (K+1)
     K <- object$k
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
     colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
     rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    
     # SIGMA*Beta to compute normal mVaR
     SIGB <- beta.star %*% factor.star.cov
   }
@@ -278,20 +268,11 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   for (i in object$asset.names) {
     # return data for asset i
     R.xts <- object$data[,i]
-    # get VaR for asset i
-    if (type=="np") {
-      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE)
-    }
-    else if (type=="normal") {
-      VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
-    }
-    # index of VaR exceedances
-    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
-    # number of VaR exceedances
-    n.exceed[i] <- length(idx.exceed[[i]])
     
     if (type=="np") {
+      # get VaR for asset i
+      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+      
       # get F.star data object
       factor.star <- merge(factors.xts, resid.xts[,i])
       colnames(factor.star)[dim(factor.star)[2]] <- "residual"
@@ -306,10 +287,20 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
       k.weight <- as.vector(1 - abs(R.xts - VaR.fm[i]) / eps)
       k.weight[k.weight<0] <- 0
       mVaR[i,] <- colMeans(factor.star*k.weight, na.rm =TRUE)
-    } 
-    else if (type=="normal")  {
+      
+    } else if (type=="normal")  {
+      # get VaR for asset i
+      VaR.fm[i] <- beta.star[i,] %*% MU + 
+        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
+      
+      # compute marginal VaR
       mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
     }
+    
+    # index of VaR exceedances
+    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+    # number of VaR exceedances
+    n.exceed[i] <- length(idx.exceed[[i]])
     
     # correction factor to ensure that sum(cVaR) = asset VaR
     cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,], na.rm=TRUE) )
@@ -333,7 +324,6 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
 
 fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
                             use="pairwise.complete.obs", ...) {
-  
   # set default for type
   type = type[1]
   if (!(type %in% c("np","normal"))) {
@@ -383,19 +373,15 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
   colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
-  
   if (type=="normal") {
-    
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
     colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
     rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
   }
@@ -418,20 +404,11 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     subrows <- which(object$data[[object$asset.var]]==i)
     R.xts <- as.xts(object$data[subrows,object$ret.var], 
                     as.Date(object$data[subrows,object$date.var]))
-    # get VaR for asset i
-    if (type=="np") {
-      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
-    }
-    else if (type=="normal") {
-      VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
-    }
-    # index of VaR exceedances
-    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
-    # number of VaR exceedances
-    n.exceed[i] <- length(idx.exceed[[i]])
     
     if (type=="np") {
+      # get VaR for asset i
+      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+      
       # get F.star data object
       factor.star <- merge(factors.xts, resid.xts[,i])
       colnames(factor.star)[dim(factor.star)[2]] <- "residual"
@@ -446,10 +423,20 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
       k.weight <- as.vector(1 - abs(R.xts - VaR.fm[i]) / eps)
       k.weight[k.weight<0] <- 0
       mVaR[i,] <- colMeans(factor.star*k.weight, na.rm =TRUE)
-    } 
-    else if (type=="normal")  {
+      
+    } else if (type=="normal")  {
+      # get VaR for asset i
+      VaR.fm[i] <- beta.star[i,] %*% MU + 
+        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
+      
+      # compute marginal VaR
       mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
     }
+    
+    # index of VaR exceedances
+    idx.exceed[[i]] <- which(R.xts <= VaR.fm[i])
+    # number of VaR exceedances
+    n.exceed[i] <- length(idx.exceed[[i]])
     
     # correction factor to ensure that sum(cVaR) = asset VaR
     cf <- as.numeric( VaR.fm[i] / sum(mVaR[i,]*beta.star[i,], na.rm=TRUE) )

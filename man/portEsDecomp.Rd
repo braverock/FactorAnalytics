@@ -42,8 +42,6 @@ abbreviation of) one of the strings "everything", "all.obs",
 \value{
 A list containing 
 \item{portEs}{factor model ES of portfolio returns.}
-\item{n.exceed}{number of observations beyond VaR for portfolio.}
-\item{idx.exceed}{a numeric vector of index values of exceedances.}
 \item{mEs}{length-(K + 1) vector of marginal contributions to Es.}
 \item{cEs}{length-(K + 1) vector of component contributions to Es.}
 \item{pcEs}{length-(K + 1) vector of percentage component contributions to Es.}
@@ -75,8 +73,7 @@ average of the observations in that data window.
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers[,10]), 
-                     data=managers)
+                     rf.name=colnames(managers[,10]), data=managers)
 ES.decomp <- portEsDecomp(fit.macro,invert = TRUE)
 # get the component contributions
 ES.decomp$cES
