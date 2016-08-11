@@ -24,7 +24,7 @@
 #' 1 = Time Series plot of portfolio returns decomposition, \cr
 #' 2 = Time Series plot of portfolio style factors returns, \cr
 #' 3 = Time Series plot of portfolio sector returns, \cr
-#' 4 = Baxplot of Portfolio Returns Components. \cr \cr
+#' 4 = Baxplot of Portfolio Factor Returns Components. \cr \cr
 #' @param ... other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses 
 #' 
 #' @return  
@@ -37,8 +37,7 @@
 #' data("stocks145scores6")
 #' dat = stocks145scores6
 #' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-#'           dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -47,19 +46,16 @@
 #' #fit a fundamental factor model
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
-#'               "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
-#'               asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#'               fit.method="WLS", z.score = TRUE)
 #'
 #' repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-#'           which = 4)
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-#'           which = 1,
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
 #'           add.grid = TRUE, scaleType = 'same')
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-#'           which = 2, add.grid = FALSE, zeroLine = TRUE, color = 'Blue', 
-#'           scaleType = 'free')              
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
+#'           add.grid = FALSE, zeroLine = TRUE, color = 'Blue', scaleType = 'free')              
 #' @export
 
 
@@ -78,13 +74,6 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   # get factor model returns from 
   facRet = ffmObj$factor.returns
   
-  if(!length(exposures.char)){
-    alpha = facRet[,1]
-    colnames(alpha) = 'Alpha'
-    facRet = facRet[,-1]
-  }else{
-    alpha = c()
-  }
   sig = ffmObj$residuals
   # get parameters from the factor model fit  
   beta = ffmObj$beta
@@ -111,14 +100,27 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   #portfolio residuals
   sig.p <- sig * weights
   sig.p <- as.xts(rowSums(coredata(sig.p)), order.by = index(sig.p))
-  colnames(sig.p) = 'Residuals'
+  colnames(sig.p) = 'ResidRet'
   
   
-  if(length(exposures.char)){
-    dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
-    B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
-    B[B>0] <- 1
-    B <- B[asset.names,]
+  if(length(exposures.char)>0){
+    if(length(exposures.char) == 1){
+      dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
+      B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
+      B[B>0] <- 1
+      B <- B[asset.names,]
+    }else{
+      dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
+      B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[1]]))
+      B[B>0] <- 1
+      B <- B[asset.names,]
+      for(i in 2:length(exposures.char)){
+        temp <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[i]]))
+        temp[temp>0] <- 1
+        temp <- temp[asset.names,]
+        B <- cbind(B,temp)
+      }
+    }
   }else{
     B = c()
   }
@@ -130,6 +132,10 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
     beta <- as.matrix(dat[,exposures.num])
     rownames(beta) <- asset.names
     beta = cbind(beta,B)
+    if(ncol(ffmObj$beta) > ncol(beta)){
+      beta = cbind(rep(1,nrow(beta)),beta)
+      colnames(beta)[1] = colnames(ffmObj$beta)[1]
+    }
     
     temp = as.data.frame(weights %*% beta)
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
@@ -139,24 +145,13 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   
   rk = as.xts(coredata(X) * coredata(facRet), order.by = index(sig.p)) 
   facRet.p = as.xts(rowSums(coredata(rk)), order.by = index(sig.p))
-  colnames(facRet.p) = 'FactorRet'
+  colnames(facRet.p) = 'FacRet'
   
-  if(!length(exposures.char)){
-    ret.p = alpha + facRet.p + sig.p
-  }else{
-    ret.p =facRet.p + sig.p
-  }  
-
-  if(!length(exposures.char)){
-    spe.p = alpha + sig.p
-  }else{
-    spe.p = sig.p
-  } 
-  names(spe.p) = 'SpecificRet'
+  ret.p =facRet.p + sig.p
   
-  colnames(ret.p) = 'PortfolioRet'
+  colnames(ret.p) = 'PortRet'
   
-  dat = merge(ret.p, spe.p, sig.p, alpha, facRet.p, rk)
+  dat = merge(ret.p, sig.p, facRet.p, rk)
 
   if(isPlot){
     
@@ -169,7 +164,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
           menu(c("Time Series plot of portfolio returns decomposition",
                  "Time Series plot of portfolio style factors returns",
                  "Time Series plot of portfolio sector returns",
-                 "Baxplot of Portfolio Returns Components"), 
+                 "Barplot of Portfolio Factor Returns Components"), 
                title="\nMake a plot selection (or 0 to exit):") 
       }
       
@@ -181,7 +176,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                  main = ''
                )
                ## Time Series plot of portfolio returns decomposition
-               tsPlotMP(dat[,c('PortfolioRet','FactorRet','SpecificRet')], 
+               tsPlotMP(dat[,c('PortRet','FacRet','ResidRet')], 
                         main = main, layout = c(1,3), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                
@@ -193,7 +188,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                  main = ''
                )
                ## Time Series plot of portfolio style factors returns
-               tsPlotMP(dat[,c('FactorRet',exposures.num,'SpecificRet')], 
+               tsPlotMP(dat[,c('FacRet',exposures.num,'ResidRet')], 
                         main = main, layout = c(3,3), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                
@@ -205,7 +200,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                  main = ''
                )
                ## Time Series plot of portfolio sector returns
-               tsPlotMP(dat[,c('FactorRet',exposures.char.name)], 
+               tsPlotMP(dat[,c('FacRet',exposures.char.name)], 
                         main = main, layout = c(3,4), stripLeft = stripLeft, 
                         scaleType = scaleType, ...)
                
@@ -218,13 +213,13 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                )
                ## Baxplot of Portfolio Returns Components
                par(mar=c(7,5,5,5))
-               boxplot(100*coredata(dat), col=5, las = 2, 
+               boxplot(100*coredata(dat[,-c(1:3)]), col=5, las = 2, 
                        xaxt = "n", 
                        ylab = "Percentage (%)",
                        main = main)
-               axis(1, at=c(1:ncol(dat)) , labels = FALSE)
-               text(x = c(1:ncol(dat)), srt = 45, adj = 1, labels = colnames(dat), 
-                    par("usr")[3] - 3, xpd = TRUE, cex = 0.8)
+               axis(1, at=c(1:ncol(dat[,-c(1:3)])) , labels = FALSE)
+               text(x = c(1:ncol(dat[,-c(1:3)])), srt = 90, adj = 1, labels = colnames(dat[,-c(1:3)]), 
+                    par("usr")[3] - 1, xpd = TRUE, cex = 0.8)
                
              },
              invisible()       

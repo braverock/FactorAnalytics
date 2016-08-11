@@ -69,15 +69,6 @@
 #' decomp <- fmSdDecomp(sfm.pca.fit)
 #' decomp$pcSd
 #'  
-#' # Fundamental Factor Model
-#' data(Stock.df)
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-#' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' 
-#' Sd.decomp <- fmSdDecomp(fit, type="normal")
-#' Sd.decomp$cSd
-#' 
 #' @export                                       
 
 fmSdDecomp <- function(object, ...){
@@ -196,10 +187,11 @@ fmSdDecomp.sfm <- function(object, factor.cov,
 
 fmSdDecomp.ffm <- function(object, factor.cov, ...) {
   
-  which.numeric <- sapply(object$data[,object$exposure.vars,drop=FALSE], is.numeric)
-  exposures.num <- object$exposure.vars[which.numeric]
-  exposures.char <- object$exposure.vars[!which.numeric]
-
+  # get beta.star: N x (K+1)
+  beta <- object$beta
+  beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
+  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  
   # get cov(F): K x K
   if (missing(factor.cov)) {
     factor.cov = object$factor.cov
@@ -210,24 +202,6 @@ fmSdDecomp.ffm <- function(object, factor.cov, ...) {
            fitFfm object")
     }
   }
-  
-  # get beta.star: N x (K+1)
-  beta <- object$beta
-
-  # re-order beta to match with factor.cov when both sector & style factors are used 
-  if(length(exposures.char)>0 & length(exposures.num)>0){
-    sectors.sec <- levels(object$data[,exposures.char])
-    sectors.names <- paste(exposures.char,sectors.sec,sep="")
-    
-    for(i in 1:length(sectors.sec)){
-      colnames(beta)[colnames(beta) == sectors.names[i]] = sectors.sec[i]
-    }
-    
-    beta = beta[,colnames(factor.cov)]
-  }
-  
-  beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
   # get cov(F.star): (K+1) x (K+1)
   K <- ncol(object$beta)

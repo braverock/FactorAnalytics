@@ -5,8 +5,7 @@
 #' 
 #' @importFrom stats quantile residuals cov resid qnorm
 #' @importFrom xts as.xts 
-#' @importFrom zoo index
-#' @importFrom zoo as.Date  
+#' @importFrom zoo index as.Date  
 #' 
 #' @details The factor model for a portfolio's return at time \code{t} has the 
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
@@ -26,6 +25,8 @@
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param weights a vector of weights of the assets in the portfolio. Default is NULL, 
 #' in which case an equal weights will be used.
+#' @param factor.cov optional user specified factor covariance matrix with 
+#' named columns; defaults to the sample covariance matrix.
 #' @param use an optional character string giving a method for computing 
 #' covariances in the presence of missing values. This must be (an 
 #' abbreviation of) one of the strings "everything", "all.obs", 
@@ -53,10 +54,9 @@
 #' @examples
 #' # Time Series Factor Model
 #' data(managers)
-#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#' fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name=colnames(managers[,10]), 
-#'                      data=managers)
+#'                      rf.name=colnames(managers[,10]), data=managers)
 #' decomp <- portSdDecomp(fit.macro)
 #' # get the factor contributions of risk
 #' decomp$cSd
@@ -104,7 +104,8 @@ portSdDecomp <- function(object, ...){
 #' @method portSdDecomp tsfm
 #' @export
 
-portSdDecomp.tsfm <- function(object, weights = NULL, use="pairwise.complete.obs", ...) {
+portSdDecomp.tsfm <- function(object, weights = NULL, factor.cov, 
+                              use="pairwise.complete.obs", ...) {
   
   # get beta.star: 1 x (K+1)
   beta <- object$beta
@@ -132,8 +133,16 @@ portSdDecomp.tsfm <- function(object, weights = NULL, use="pairwise.complete.obs
   colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
   # get cov(F): K x K
+  # get cov(F): K x K
   factor <- as.matrix(object$data[, object$factor.names])
-  factor.cov = cov(factor, use=use, ...)
+  if (missing(factor.cov)) {
+    factor.cov = cov(factor, use=use, ...) 
+  } else {
+    if (!identical(dim(factor.cov), as.integer(c(ncol(factor), ncol(factor))))) {
+      stop("Dimensions of user specified factor covariance matrix are not 
+           compatible with the number of factors in the fitTsfm object")
+    }
+  }
   
   # get cov(F.star): (K+1) x (K+1)
   K <- ncol(object$beta)
@@ -160,20 +169,9 @@ portSdDecomp.tsfm <- function(object, weights = NULL, use="pairwise.complete.obs
 #' @method portSdDecomp ffm
 #' @export
 
-portSdDecomp.ffm <- function(object, weights = NULL, ...) {
+portSdDecomp.ffm <- function(object, weights = NULL, factor.cov, ...) {
   
-  which.numeric <- sapply(object$data[,object$exposure.vars,drop=FALSE], is.numeric)
-  exposures.num <- object$exposure.vars[which.numeric]
-  exposures.char <- object$exposure.vars[!which.numeric]
-    
-  # get beta: 1 x K
-  #if(!length(exposures.char)){
-  #  beta <- object$beta[,-1]
-  #}else{
-  #  beta <- object$beta
-  #}
   beta <- object$beta
-  
   beta[is.na(beta)] <- 0
   n.assets = nrow(beta)
   asset.names <- unique(object$data[[object$asset.var]])
@@ -192,32 +190,23 @@ portSdDecomp.ffm <- function(object, weights = NULL, ...) {
       stop("Invalid argument: names of weights vector should match with asset names")
     }
   }  
+
   
-  # get cov(F): K x K
-  
-  #if(!length(exposures.char)){
-  #  factor.cov = object$factor.cov[,-1][-1,]
-  #}else{
-  #  factor.cov = object$factor.cov
-  #}  
-  
-  factor.cov = object$factor.cov
-  
-  # re-order beta to match with factor.cov when both sector & style factors are used 
-  if(length(exposures.char)>0 & length(exposures.num)>0){
-    sectors.sec <- levels(object$data[,exposures.char])
-    sectors.names <- paste(exposures.char,sectors.sec,sep="")
-    
-    for(i in 1:length(sectors.sec)){
-      colnames(beta)[colnames(beta) == sectors.names[i]] = sectors.sec[i]
-    }
-    
-    beta = beta[,colnames(factor.cov)]
-  }
-   
   # get portfolio beta.star: 1 x (K+1)
   beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
   colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  
+  
+  # get cov(F): K x K
+  if (missing(factor.cov)) {
+    factor.cov = object$factor.cov
+  } else {
+    if (!identical(dim(factor.cov), dim(object$factor.cov))) {
+      stop("Dimensions of user specified factor covariance matrix are not 
+           compatible with the number of factors (including dummies) in the 
+           fitFfm object")
+    }
+  }
   
   # get cov(F.star): (K+1) x (K+1)
   K <- ncol(beta)

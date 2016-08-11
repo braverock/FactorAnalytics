@@ -12,7 +12,7 @@ portEsDecomp(object, ...)
   type = c("np", "normal"), invert = FALSE, use = "pairwise.complete.obs",
   ...)
 
-\method{portEsDecomp}{ffm}(object, weights = NULL, p = 0.95,
+\method{portEsDecomp}{ffm}(object, weights = NULL, factor.cov, p = 0.95,
   type = c("np", "normal"), invert = FALSE, ...)
 }
 \arguments{
@@ -38,13 +38,16 @@ covariances in the presence of missing values. This must be (an
 abbreviation of) one of the strings "everything", "all.obs", 
 "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 "pairwise.complete.obs".}
+
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
 }
 \value{
 A list containing 
-\item{portEs}{factor model ES of portfolio returns.}
-\item{mEs}{length-(K + 1) vector of marginal contributions to Es.}
-\item{cEs}{length-(K + 1) vector of component contributions to Es.}
-\item{pcEs}{length-(K + 1) vector of percentage component contributions to Es.}
+\item{portES}{factor model ES of portfolio returns.}
+\item{mES}{length-(K + 1) vector of marginal contributions to Es.}
+\item{cES}{length-(K + 1) vector of component contributions to Es.}
+\item{pcES}{length-(K + 1) vector of percentage component contributions to Es.}
 Where, K is the number of factors.
 }
 \description{
@@ -71,7 +74,7 @@ average of the observations in that data window.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)
 ES.decomp <- portEsDecomp(fit.macro,invert = TRUE)

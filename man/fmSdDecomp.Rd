@@ -73,15 +73,6 @@ sfm.pca.fit <- fitSfm(r.M, k=2)
 decomp <- fmSdDecomp(sfm.pca.fit)
 decomp$pcSd
  
-# Fundamental Factor Model
-data(Stock.df)
-exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-              date.var="DATE", exposure.vars=exposure.vars)
-
-Sd.decomp <- fmSdDecomp(fit, type="normal")
-Sd.decomp$cSd
-
 }
 \author{
 Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
