@@ -69,9 +69,11 @@ ffmTstats<- function(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("black"
   exposure.vars = ffmObj$exposure.vars
   n.exposures =  length(exposure.vars)
   which.numeric <- sapply(ffmObj$data[,exposure.vars,drop=FALSE], is.numeric)
-  exposures.num <- length(exposure.vars[which.numeric])
-  exposures.char <- length(exposure.vars[!which.numeric])
-  if ( exposures.char > 0 && grepl("Intercept", ffmObj$factor.names[1]))
+  exposures.num <- exposure.vars[which.numeric]
+  exposures.char <- exposure.vars[!which.numeric]
+  n.expo.num <- length(exposures.num)
+  n.expo.char <- length(exposures.char)
+  if ( n.expo.char > 0 && grepl("Market|Alpha", ffmObj$factor.names[1]))
   { #Covaraince matrix for g coefficients.
     cov.g = lapply(seq(time.periods), function(a) vcov((ffmObj$factor.fit)[[a]]))
     restriction.mat = ffmObj$restriction.mat
@@ -83,26 +85,31 @@ ffmTstats<- function(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("black"
     
     std.errors = lapply(seq(time.periods), function(x) sqrt(diag(cov.factors[[x]])))
     std.errors = matrix(unlist(std.errors), byrow = TRUE, nrow = time.periods)
-    if(exposures.num > 0)
+    fac.names.indcty = lapply(seq(n.expo.char), function(x)
+      paste(levels(ffmObj$data[,exposures.char[x]]),sep=""))
+    colnames(std.errors) <- c("Market",unlist(fac.names.indcty))
+    if(n.expo.num > 0)
     {
       #std.errs of stly factors 
       stdErr.sty = lapply(seq(time.periods), function(a) summary(ffmObj)$sum.list[[a]]$
-                            coefficients[((fac.num+1):(fac.num+exposures.num)),2])
+                            coefficients[((fac.num+1):(fac.num+n.expo.num)),2])
       stdErr.sty = matrix(unlist(stdErr.sty), byrow = TRUE, nrow = time.periods)
-      #Should be in same order as factor.retunrs
+      colnames(stdErr.sty) = exposures.num
+      #Should be in same order as that of factor.retunrs
       std.errors = cbind(std.errors,stdErr.sty)
+      std.errors = std.errors[, colnames(ffmObj$factor.returns)]
     }
-    colnames(std.errors) = colnames(ffmObj$factor.returns)
+    #colnames(std.errors) = colnames(ffmObj$factor.returns)
     tstatsTs = ffmObj$factor.returns/std.errors
     
   }else
   { tstats = lapply(seq(time.periods), function(a) summary(ffmObj)$sum.list[[a]]$coefficients[,3])
-    secNames = names(tstats[[1]])
-    tstats = matrix(unlist(tstats), byrow = TRUE, nrow = time.periods)
-    colnames(tstats)=secNames
-    tstatsTs = xts(tstats,order.by=as.yearmon(names(ffmObj$r2)))
+  secNames = names(tstats[[1]])
+  tstats = matrix(unlist(tstats), byrow = TRUE, nrow = time.periods)
+  colnames(tstats)=secNames
+  tstatsTs = xts(tstats,order.by=as.yearmon(names(ffmObj$r2)))
   }
-
+  
   
   # COUNT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
   sigTstats = as.matrix(rowSums(ifelse(abs(tstatsTs) > z.alpha,1,0)))
@@ -121,13 +128,13 @@ ffmTstats<- function(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("black"
     
     # PLOT T-STATS WITH XYPLOT
     if(title) title.tstats = "t statistic values " else title.tstats = " " 
-      
-      plt <- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = 1), x = list(cex = 1)),
+    
+    plt <- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = 1), x = list(cex = 1)),
                   layout = layout, main = title.tstats , col = myColor[1], lwd = lwd, strip.left = T, strip = F)
     print(plt)
     
   }
   out = list("tstats" =round(tstatsTs, digits), "z.alpha" =z.alpha)
   if(isPrint){print(out)}else invisible(out)
-    
+  
 }

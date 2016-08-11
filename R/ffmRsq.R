@@ -89,7 +89,7 @@ ffmRsq <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, plt.type= 2, digits=2, isPrin
           panel.abline(h=0,lty = 3)
           panel.xyplot(...)}
         plt = xyplot(r2.xts,col = "blue",lwd =lwd, panel =panel, scale = list(y = list(cex=1,rot =0),x = list(cex =1)),
-                     main = title.Rsq, type = "h", ylim = c(0,(max(r2.xts)+0.05)), strip.left = strip.custom(var.name = "R-Squared", style = 1, strip.names = T,strip.levels=F ))
+                     main = title.Rsq, type = "h", ylim = c(0,(max(r2.xts)+0.05)), strip.left = strip.custom(var.name = "Rsq", style = 1, strip.names = T,strip.levels=F ))
         print(plt) 
         
       }
@@ -122,7 +122,7 @@ ffmRsq <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, plt.type= 2, digits=2, isPrin
         panel.xyplot(...)}
       plt = xyplot(adj.r2.xts,col = "blue", lwd =lwd, main = title.AdjRsq, type = "h",panel = panel,
                    scales = list(y = list(cex = 1,relation="same"),x = list(cex =1)),
-                   strip.left = strip.custom(var.name = "Adj R-Squared", style = 1, strip.names = T,strip.levels=F ))
+                   strip.left = strip.custom(var.name = "AdjRsq", style = 1, strip.names = T,strip.levels=F ))
       print(plt) 
     }
     adj.r2.mean<- round(mean(adj.r2),digits = digits)
@@ -136,7 +136,7 @@ ffmRsq <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, plt.type= 2, digits=2, isPrin
     if (isPlot && plt.type == 2)
     { 
       if(title) title.comb = "Factor Model R-squared Values" else title.comb = " " 
-      r2.combined = merge.xts("R-squared" = r2.xts,"Adj R-squared" =  adj.r2.xts)
+      r2.combined = merge.xts("Rsq" = r2.xts,"AdjRsq" =  adj.r2.xts)
       tsPlotMP(0.01*r2.combined,stripLeft = TRUE, scaleType = "same",
                color = "blue", yname = "", lwd = lwd, main = title.comb, type = "h", cex = 1.2)
       
@@ -159,7 +159,7 @@ ffmRsq <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, plt.type= 2, digits=2, isPrin
     ncols <- dim(object)[2]
     time.periods = length(ffmObj$time.periods)
     vifs = matrix(0, nrow = time.periods, ncol = ncols)
-    for(i in 1:60)
+    for(i in 1:time.periods)
     {
       vifs[i,1:ncols] = sapply(seq(ncols), function(x)
         1/(1 - summary(lm(object[((i-1)*n.assets+1) : (i*n.assets), x] ~ 
