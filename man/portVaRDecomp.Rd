@@ -8,11 +8,11 @@
 \usage{
 portVaRDecomp(object, ...)
 
-\method{portVaRDecomp}{tsfm}(object, weights = NULL, p = 0.95,
+\method{portVaRDecomp}{tsfm}(object, weights = NULL, factor.cov, p = 0.95,
   type = c("np", "normal"), invert = FALSE, use = "pairwise.complete.obs",
   ...)
 
-\method{portVaRDecomp}{ffm}(object, weights = NULL, p = 0.95,
+\method{portVaRDecomp}{ffm}(object, weights = NULL, factor.cov, p = 0.95,
   type = c("np", "normal"), invert = FALSE, ...)
 }
 \arguments{
@@ -23,6 +23,9 @@ optional arguments passed to \code{\link[stats]{cov}}}
 
 \item{weights}{a vector of weights of the assets in the portfolio. Default is NULL, 
 in which case an equal weights will be used.}
+
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
 
 \item{p}{confidence level for calculation. Default is 0.95.}
 
@@ -71,7 +74,7 @@ Epperlein & Smillie (2006); a triangular smoothing kernel is used here.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)
 decomp <- portVaRDecomp(fit.macro,invert = TRUE)

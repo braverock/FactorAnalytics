@@ -45,7 +45,6 @@
 #' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 #' 
 #' @references 
-#' 
 #' Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
 #' The Journal of Risk, 5(2), 1-18.
 #' 
@@ -274,6 +273,7 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
       VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
       
       # get F.star data object
+      time(factors.xts) <- time(resid.xts[,i])
       factor.star <- merge(factors.xts, resid.xts[,i])
       colnames(factor.star)[dim(factor.star)[2]] <- "residual"
       
@@ -330,50 +330,27 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     stop("Invalid args: type must be 'np' or 'normal' ")
   }
   
-  which.numeric <- sapply(object$data[,object$exposure.vars,drop=FALSE], is.numeric)
-  exposures.num <- object$exposure.vars[which.numeric]
-  exposures.char <- object$exposure.vars[!which.numeric]
+  # get beta.star
+  beta <- object$beta
+  beta[is.na(beta)] <- 0
+  beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
+  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
   
   # factor returns and residuals data
   factors.xts <- object$factor.returns
   resid.xts <- as.xts(t(t(residuals(object))/sqrt(object$resid.var)))
   time(resid.xts) <- as.Date(time(resid.xts))
   
-  # get cov(F): K x K
-  if (missing(factor.cov)) {
-    factor.cov <- object$factor.cov
-  } else {
-    if (!identical(dim(factor.cov), dim(object$factor.cov))) {
-      stop("Dimensions of user specified factor covariance matrix are not 
-           compatible with the number of factors in the fitSfm object")
-    }
-  }
-  
-  # get beta.star
-  beta <- object$beta
-  beta[is.na(beta)] <- 0
-  
-  # re-order beta to match with factor.cov when both sector & style factors are used 
-  if(length(exposures.char)>0 & length(exposures.num)>0){
-    sectors.sec <- levels(object$data[,exposures.char])
-    sectors.names <- paste(exposures.char,sectors.sec,sep="")
-    
-    for(i in 1:length(sectors.sec)){
-      colnames(beta)[colnames(beta) == sectors.names[i]] = sectors.sec[i]
-    }
-    
-    if(type == 'np'){
-      beta = beta[,colnames(factors.xts)]
-    }
-    else if(type == 'normal'){
-      beta = beta[,colnames(factor.cov)]
-    }
-  }
-  
-  beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
-  
   if (type=="normal") {
+    # get cov(F): K x K
+    if (missing(factor.cov)) {
+      factor.cov <- object$factor.cov
+    } else {
+      if (!identical(dim(factor.cov), dim(object$factor.cov))) {
+        stop("Dimensions of user specified factor covariance matrix are not 
+             compatible with the number of factors in the fitSfm object")
+      }
+    }
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
@@ -410,6 +387,7 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
       VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
       
       # get F.star data object
+      time(factors.xts) <- time(resid.xts[,i])
       factor.star <- merge(factors.xts, resid.xts[,i])
       colnames(factor.star)[dim(factor.star)[2]] <- "residual"
       

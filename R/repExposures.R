@@ -6,6 +6,7 @@
 #' @importFrom graphics barplot boxplot 
 #' @importFrom stats sd
 #' @importFrom utils menu
+#' @importFrom lattice barchart
 #' 
 #' @param ffmObj an object of class ffm returned by fitFfm.
 #' @param weights a vector of weights of the assets in the portfolio. Default is NULL.
@@ -14,7 +15,7 @@
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
-#' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'.
+#' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
 #' @param titleText logical varible to choose display plot title or not. Default is 'TRUE', and used only when isPlot = 'TRUE'.
 #' @param which a number to indicate the type of plot. If a subset of the plots 
 #' is required, specify a subset of the numbers 1:3 for plots. If \code{which=NULL} (default), the following menu 
@@ -35,8 +36,7 @@
 #' data("stocks145scores6")
 #' dat = stocks145scores6
 #' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") &  
-#'           dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -44,18 +44,17 @@
 #' 
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
-#'               "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
-#'               asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
+#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#'               fit.method="WLS", z.score = TRUE)
 #'
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE,
-#'              which = 2, add.grid = TRUE, scaleType = 'same')
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
+#'              add.grid = TRUE, scaleType = 'same')
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
 #'              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
-#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-#'              which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue', 
-#'              layout = c(1,3))
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
+#'              add.grid = FALSE, zeroLine = FALSE, color = 'Blue', layout = c(1,3))
 #' @export
 
 
@@ -92,11 +91,24 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     }
   } 
   
-  if(length(exposures.char)){
-    dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
-    B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
-    B[B>0] <- 1
-    B <- B[asset.names,]
+  if(length(exposures.char)>0){
+    if(length(exposures.char) == 1){
+      dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
+      B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
+      B[B>0] <- 1
+      B <- B[asset.names,]
+    }else{
+      dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
+      B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[1]]))
+      B[B>0] <- 1
+      B <- B[asset.names,]
+      for(i in 2:length(exposures.char)){
+        temp <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[i]]))
+        temp[temp>0] <- 1
+        temp <- temp[asset.names,]
+        B <- cbind(B,temp)
+      }
+    }
   }else{
     B = c()
   }
@@ -107,6 +119,10 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
     beta <- as.matrix(dat[,exposures.num])
     rownames(beta) <- asset.names
+    if(ncol(ffmObj$beta) > ncol(beta)){
+      beta = cbind(rep(1,nrow(beta)),beta)
+      colnames(beta)[1] = colnames(ffmObj$beta)[1]
+    }
     beta = cbind(beta,B)
     
     temp = as.data.frame(weights %*% beta)
@@ -125,7 +141,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
         which <- 
           menu(c("Time series plot of style factor exposures",
                  "Boxplot of style factor exposures",
-                 "Barplot of means and vols of style factor exposures, and means of sector exposures"), 
+                 "Barplot of factor exposures"), 
                title="\nMake a plot selection (or 0 to exit):") 
       }
       
@@ -175,7 +191,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                par(mfrow = c(1,1))
              },
              invisible()       
-      )         
+      )        
       # repeat menu if user didn't choose to exit from the plot options
       if (which==0 || length(which.vec)==1) {break} 
       if (length(which.vec)>1) {

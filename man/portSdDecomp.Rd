@@ -8,10 +8,10 @@
 \usage{
 portSdDecomp(object, ...)
 
-\method{portSdDecomp}{tsfm}(object, weights = NULL,
+\method{portSdDecomp}{tsfm}(object, weights = NULL, factor.cov,
   use = "pairwise.complete.obs", ...)
 
-\method{portSdDecomp}{ffm}(object, weights = NULL, ...)
+\method{portSdDecomp}{ffm}(object, weights = NULL, factor.cov, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -20,6 +20,9 @@ portSdDecomp(object, ...)
 
 \item{weights}{a vector of weights of the assets in the portfolio. Default is NULL, 
 in which case an equal weights will be used.}
+
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
 
 \item{use}{an optional character string giving a method for computing 
 covariances in the presence of missing values. This must be (an 
@@ -58,10 +61,9 @@ sample covariance. \cr \cr
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers[,10]), 
-                     data=managers)
+                     rf.name=colnames(managers[,10]), data=managers)
 decomp <- portSdDecomp(fit.macro)
 # get the factor contributions of risk
 decomp$cSd

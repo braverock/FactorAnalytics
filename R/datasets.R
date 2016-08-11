@@ -84,3 +84,11 @@ NULL
 #' @source TBA
 #' @usage data("managers")
 NULL
+
+#' @name managers.ffm
+#' @title managers data for ffm
+#' @description Hypothetical Alternative Asset Manager and Benchmark Data for Time Series Factor Model Fit
+#' @docType data
+#' @source TBA
+#' @usage data("managers.ffm")
+NULL

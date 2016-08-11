@@ -23,7 +23,7 @@ repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'}
 
-\item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'.}
+\item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
 
 \item{titleText}{logical varible to choose display plot title or not. Default is 'TRUE', and used only when isPlot = 'TRUE'.}
 
@@ -49,8 +49,7 @@ Calculate k factor time series based on fundamental factor model. This method ta
 data("stocks145scores6")
 dat = stocks145scores6
 dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") &  
-          dat$DATE <= as.yearmon("2012-12-31"),]
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
 
 #Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
@@ -58,18 +57,17 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
 
 # fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
-              "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
-              asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
+              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+              fit.method="WLS", z.score = TRUE)
 
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE,
-             which = 2, add.grid = TRUE, scaleType = 'same')
+repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
+             add.grid = TRUE, scaleType = 'same')
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
-repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-             which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue', 
-             layout = c(1,3))
+repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
+             add.grid = FALSE, zeroLine = FALSE, color = 'Blue', layout = c(1,3))
 }
 \author{
 Douglas Martin, Lingjie Yi

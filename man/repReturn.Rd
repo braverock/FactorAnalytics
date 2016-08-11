@@ -34,7 +34,7 @@ For plots of a group of assets: \cr
 1 = Time Series plot of portfolio returns decomposition, \cr
 2 = Time Series plot of portfolio style factors returns, \cr
 3 = Time Series plot of portfolio sector returns, \cr
-4 = Baxplot of Portfolio Returns Components. \cr \cr}
+4 = Baxplot of Portfolio Factor Returns Components. \cr \cr}
 
 \item{...}{other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses}
 }
@@ -50,8 +50,7 @@ Decompostite return of portfolio into return of different factors based on funda
 data("stocks145scores6")
 dat = stocks145scores6
 dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-          dat$DATE <= as.yearmon("2012-12-31"),]
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
 
 #Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
@@ -60,19 +59,16 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
 #fit a fundamental factor model
 # fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
-              "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
-              asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
+              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+              fit.method="WLS", z.score = TRUE)
 
 repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-          which = 4)
-repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-          which = 1,
+repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
+repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
           add.grid = TRUE, scaleType = 'same')
-repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-          which = 2, add.grid = FALSE, zeroLine = TRUE, color = 'Blue', 
-          scaleType = 'free')              
+repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
+          add.grid = FALSE, zeroLine = TRUE, color = 'Blue', scaleType = 'free')              
 }
 \author{
 Douglas Martin, Lingjie Yi

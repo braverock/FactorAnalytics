@@ -8,15 +8,14 @@
 \usage{
 repRisk(object, ...)
 
-\method{repRisk}{tsfm}(object, weights = NULL, riskMeasure = c("Sd", "VaR",
-  "ES"), decompType = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL,
-  invert = FALSE, nrowPrint = 20, p = 0.95, type = c("np", "normal"),
+\method{repRisk}{tsfm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
+  decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
+  nrowPrint = 20, p = 0.95, type = c("np", "normal"),
   use = "pairwise.complete.obs", ...)
 
-\method{repRisk}{ffm}(object, weights = NULL, riskMeasure = c("Sd", "VaR",
-  "ES"), decompType = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL,
-  invert = FALSE, nrowPrint = 20, p = 0.95, type = c("np", "normal"),
-  ...)
+\method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
+  decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
+  nrowPrint = 20, p = 0.95, type = c("np", "normal"), ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -28,14 +27,14 @@ optional arguments passed to \code{\link[stats]{cov}}}
 the vector should match with asset names. Default is NULL, in which case an 
 equal weights will be used.}
 
-\item{riskMeasure}{one of 'Sd' (standard deviation), 'VaR' (Value-at-Risk) or 'ES' (Expected Tail 
+\item{risk}{one of 'Sd' (standard deviation), 'VaR' (Value-at-Risk) or 'ES' (Expected Tail 
 Loss or Expected Shortfall for calculating risk decompositon. Default is 'Sd'}
 
-\item{decompType}{one of 'RM' (risk measure), 'FMCR' (factor marginal contribution to risk), 
+\item{decomp}{one of 'RM' (risk measure), 'FMCR' (factor marginal contribution to risk), 
 'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk). Default is 'RM'}
 
 \item{digits}{digits of number in the resulting table. Default is NULL, in which case digtis = 3 will be
-used for decompType = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decompType = 'FPCR'}
+used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'}
 
 \item{invert}{a logical variable to choose if change VaR/ES to positive number, default
 is False}
@@ -55,17 +54,17 @@ abbreviation of) one of the strings "everything", "all.obs",
 }
 \value{
 A table containing 
-\item{decompType = 'RM'}{length-(N + 1) vector of factor model risk measure of portfolio return 
+\item{decomp = 'RM'}{length-(N + 1) vector of factor model risk measure of portfolio return 
 as well assets return.}
-\item{decompType = 'FMCR'}{(N + 1) * (K + 1) matrix of marginal contributions to risk of portfolio 
+\item{decomp = 'FMCR'}{(N + 1) * (K + 1) matrix of marginal contributions to risk of portfolio 
 return as well assets return, with first row of values for the portfolio and the remaining rows for 
 the assets in the portfolio, with  (K + 1) columns containing values for the K risk factors and the
 residual respectively}
-\item{decompType = 'FCR'}{(N + 1) * (K + 2) matrix of component contributions to risk of portfolio 
+\item{decomp = 'FCR'}{(N + 1) * (K + 2) matrix of component contributions to risk of portfolio 
 return as well assets return, with first row of values for the portfolio and the remaining rows for 
 the assets in the portfolio, with  first column containing portfolio and asset risk values and remaining
 (K + 1) columns containing values for the K risk factors and the residual respectively}
-\item{decompType = 'FPCR'}{(N + 1) * (K + 1) matrix of percentage component contributions to risk 
+\item{decomp = 'FPCR'}{(N + 1) * (K + 1) matrix of percentage component contributions to risk 
 of portfolio return as well assets return, with first row of values for the portfolio and the remaining rows for 
 the assets in the portfolio, with  (K + 1) columns containing values for the K risk factors and the
 residual respectively}
@@ -79,11 +78,10 @@ return of a portfolio based on Euler's theorem, given the fitted factor model.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers)[10], 
-                     data=managers)
-report <- repRisk(fit.macro, riskMeasure = "ES", decompType = 'FPCR', 
+                     rf.name=colnames(managers[,10]), data=managers)
+report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR', 
                   nrowPrint = 10)
 report 
 
@@ -91,7 +89,7 @@ report
 wts = runif(6)
 wts = wts/sum(wts)
 names(wts) <- colnames(managers)[1:6]
-repRisk(fit.macro, weights = wts, riskMeasure = "VaR", decompType = 'FMCR', 
+repRisk(fit.macro, weights = wts, risk = "VaR", decomp = 'FMCR', 
         nrowPrint = 10, digits = 4)
 
 # Fundamental Factor Model
@@ -107,16 +105,14 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
                                                      
 # fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE",
-              "VOL121","EP"), date.var = "DATE", ret.var = "RETURN", 
-              asset.var = "TICKER", fit.method="WLS", z.score = TRUE)
-repRisk(fit.cross, riskMeasure = "Sd", decompType = 'FCR', nrowPrint = 10,
+              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+              fit.method="WLS", z.score = TRUE)
+repRisk(fit.cross, risk = "Sd", decomp = 'FCR', nrowPrint = 10,
         digits = 4) 
 # get the factor contributions of risk 
-repRisk(fit.cross, wtsStocks145GmvLo, riskMeasure = "Sd", decompType = 'FPCR', 
-        nrowPrint = 10) 
-repRisk(fit.cross, wtsStocks145GmvLo, riskMeasure = "ES", decompType = 'FCR', 
-        nrowPrint = 10)                
+repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
+        nrowPrint = 10)               
  
 }
 \author{

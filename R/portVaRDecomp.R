@@ -25,6 +25,8 @@
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param weights a vector of weights of the assets in the portfolio. Default is NULL, 
 #' in which case an equal weights will be used.
+#' @param factor.cov optional user specified factor covariance matrix with 
+#' named columns; defaults to the sample covariance matrix.
 #' @param p confidence level for calculation. Default is 0.95.
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR. 
 #' Default is "np".
@@ -58,7 +60,7 @@
 #' @examples
 #' # Time Series Factor Model
 #' data(managers)
-#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
+#' fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
 #'                      rf.name=colnames(managers[,10]), data=managers)
 #' decomp <- portVaRDecomp(fit.macro,invert = TRUE)
@@ -110,7 +112,7 @@ portVaRDecomp <- function(object,  ...){
 #' @export
 
 
-portVaRDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","normal"),  
+portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.95, type=c("np","normal"),  
                                invert = FALSE, use="pairwise.complete.obs", ...) {
   
   # set default for type
@@ -153,8 +155,14 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norm
   
   if (type=="normal") {
     # get cov(F): K x K
-    factor <- as.matrix(object$data[, object$factor.names])
-    factor.cov = cov(factor, use=use, ...)
+    if (missing(factor.cov)) {
+      factor.cov = cov(as.matrix(factors.xts), use=use, ...)
+    } else {
+      if (!identical(dim(factor.cov), as.integer(c(ncol(factor), ncol(factor))))) {
+        stop("Dimensions of user specified factor covariance matrix are not
+             compatible with the number of factors in the fitTsfm object")
+      }
+    }
     
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
@@ -245,7 +253,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norm
 #' @importFrom zoo index 
 #' @export
 
-portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","normal"),
+portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c("np","normal"),
                               invert = FALSE , ...) {
   
   # set default for type
@@ -255,18 +263,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
     stop("Invalid args: type must be 'np' or 'normal' ")
   }
   
-  which.numeric <- sapply(object$data[,object$exposure.vars,drop=FALSE], is.numeric)
-  exposures.num <- object$exposure.vars[which.numeric]
-  exposures.char <- object$exposure.vars[!which.numeric]
-  
-  # get beta: 1 x K
-  #if(!length(exposures.char)){
-  #  beta <- object$beta[,-1]
-  #}else{
-  #  beta <- object$beta
-  #}
   beta <- object$beta
-  
   beta[is.na(beta)] <- 0
   n.assets = nrow(beta)
   asset.names <- unique(object$data[[object$asset.var]])
@@ -285,37 +282,26 @@ portVaRDecomp.ffm <- function(object, weights = NULL, p=0.95, type=c("np","norma
       stop("Invalid argument: names of weights vector should match with asset names")
     }
   }   
-  
-  # get cov(F): K x K
-  factor.cov = object$factor.cov
-  
+
+  # get portfolio beta.star: 1 x (K+1)  
+  beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
+  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+
   # factor returns and residuals data
   factors.xts <- object$factor.returns
   resid.xts <- as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
-  
-  # re-order beta to match with factor.cov when both sector & style factors are used 
-  if(length(exposures.char)>0 & length(exposures.num)>0){
-    sectors.sec <- levels(object$data[,exposures.char])
-    sectors.names <- paste(exposures.char,sectors.sec,sep="")
-    
-    for(i in 1:length(sectors.sec)){
-      colnames(beta)[colnames(beta) == sectors.names[i]] = sectors.sec[i]
-    }
-    
-    if(type == 'np'){
-      beta = beta[,colnames(factors.xts)]
-    }
-    else if(type == 'normal'){
-      beta = beta[,colnames(factor.cov)]
-    }
-  }
-  
-  # get portfolio beta.star: 1 x (K+1)
-  beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
-  
+
   if (type=="normal") {
+    # get cov(F): K x K
+    if (missing(factor.cov)) {
+      factor.cov <- object$factor.cov
+    } else {
+      if (!identical(dim(factor.cov), dim(object$factor.cov))) {
+        stop("Dimensions of user specified factor covariance matrix are not 
+             compatible with the number of factors in the fitSfm object")
+      }
+    }
     # get cov(F.star): (K+1) x (K+1)
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
