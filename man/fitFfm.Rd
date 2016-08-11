@@ -53,6 +53,8 @@ z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.}
 
 \item{addIntercept}{logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},}
 
+\item{lagExposures}{logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{FALSE},}
+
 \item{...}{potentially further arguments passed.}
 
 \item{object}{a fit object of class \code{ffm} which is returned by 

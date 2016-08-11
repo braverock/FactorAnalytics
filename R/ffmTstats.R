@@ -43,7 +43,7 @@
 #'#Compute time series of t-stats and number of significant t-stats 
 #'  stats = ffmTstats(fit, isPlot = TRUE, lwd = 2, myColor = c("blue", "blue"), z.alpha =1.96)
 #'
-#' fit1 <- TestfactorAnalytics::fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+#' fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B"), addIntercept=TRUE)
 #' #Compute time series of t-stats and number of significant t-stats 
 #'  stats = ffmTstats(fit1, isPlot = TRUE, z.alpha =1.96) 
@@ -55,7 +55,7 @@
 #'                                        rep("GERMANY", 1 )), 10), 60)
 #'  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
 #'  
-#'  fit.MICM <- TestfactorAnalytics::fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+#'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
 #'  stats = ffmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96)
 

@@ -72,6 +72,7 @@
 #' @param z.score logical; If \code{TRUE}, style exposures will be converted to 
 #' z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},
+#' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{FALSE},
 #' @param ... potentially further arguments passed.
 #' 
 #' @return \code{fitFfm} returns an object of class \code{"ffm"} for which 
@@ -349,11 +350,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     # exposure matrix B or beta for the last time period - N x K
     beta <- model.matrix(fm.formula, data=subset(data, DATE==time.periods[TP]))
     rownames(beta) <- asset.names
-    colnames(beta) = gsub("COUNTRY|SECTOR", "", colnames(beta))
+    colnames(beta) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta))
     #Remove SECTOR/COUNTRY from the coef names.
     if (length(exposures.char) >0 )
     { 
-      reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) = gsub("COUNTRY|SECTOR", "",names(reg.list[[x]]$coefficients) ) ;reg.list[[x]]})
+      reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) = gsub("COUNTRY|SECTOR|GICS.", "",names(reg.list[[x]]$coefficients) ) ;reg.list[[x]]})
     }else if(model.styleOnly && addIntercept)
     {
       reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients)[1] = "Alpha";reg.list[[x]]})
@@ -505,7 +506,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)]) + resid.cov
     #Exposure matrix 
     beta = beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)]
-    colnames(beta) = gsub("COUNTRY|SECTOR", "", colnames(beta))
+    colnames(beta) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta))
     factor.names<- c("Market", exposures.num,
                      paste(levels(data[,exposures.char]),sep=" "))
     #Re-order the columns mkt-style-sector/country
@@ -615,7 +616,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:K] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:K]) + resid.cov
     #Exposure matrix 
     beta = beta.combine[((TP-1)*N+1):(TP*N), 1:K]
-    colnames(beta) = gsub("COUNTRY|SECTOR", "", colnames(beta))
+    colnames(beta) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta))
     
     #Re-order the columns in the order mkt-style-sector-country
     if(length(exposures.num)>0)
