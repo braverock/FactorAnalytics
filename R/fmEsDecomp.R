@@ -178,9 +178,9 @@ fmEsDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
       # extract vector of factor model loadings for asset i
       beta.i <- beta.star[i,,drop=F]
       # compute ES
-      ES.fm[i] <- beta.star[i,] %*% MU + sqrt(beta.i %*% factor.star.cov %*% t(beta.i))*dnorm(qnorm(1-p))/(1-p) 
+      ES.fm[i] <- -(beta.star[i,] %*% MU + sqrt(beta.i %*% factor.star.cov %*% t(beta.i))*dnorm(qnorm(1-p))/(1-p)) 
       # compute marginal ES
-      mES[i,] <- t(MU) + SIGB[i,]/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p)
+      mES[i,] <- -(t(MU) + SIGB[i,]/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p))
     }
     
     # correction factor to ensure that sum(cES) = asset ES
