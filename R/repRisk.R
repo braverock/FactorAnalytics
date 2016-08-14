@@ -273,7 +273,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     result = round(result, digits)
     
     output = list(decomp = result)
-    names(output) = decomp
+    names(output) = paste(risk,decomp,sep = '')
     
     return(output)
   }
@@ -475,7 +475,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     result = round(result, digits)
     
     output = list(decomp = result)
-    names(output) = decomp
+    names(output) = paste(risk,decomp,sep = '')
     
     return(output)
   }
