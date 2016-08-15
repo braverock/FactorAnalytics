@@ -5,7 +5,7 @@
 \title{Semi-parametric factor model Monte Carlo}
 \usage{
 fmmcSemiParam(B = 1000, factor.ret, beta, alpha, resid.par,
-  resid.dist = c("normal", "Cornish-Fisher", "skew-t"),
+  resid.dist = c("normal", "Cornish-Fisher", "skew-t", "empirical"),
   boot.method = c("random", "block"), seed = 123)
 }
 \arguments{
@@ -19,8 +19,8 @@ a complete history of data.}
 \item{alpha}{\code{N x 1} matrix of factor alphas (intercepts). If missing, 
 these are assumed to be 0 for all funds.}
 
-\item{resid.par}{\code{N x P} matrix of parameters for the residual 
-distribution.}
+\item{resid.par}{matrix of parameters for the residual 
+distribution. See \code{Details}.}
 
 \item{resid.dist}{the residual distribution; one of "normal", 
 "Cornish-Fisher" or "skew-t". Default is "normal".}
@@ -59,7 +59,8 @@ has three columns for sigma=standard deviation, skew=skewness and ekurt=
 excess kurtosis. If \code{resid.dist = "skew-t"}, \code{resid.par} has four 
 columns for xi=location, omega=scale, alpha=shape, and nu=degrees of freedom. 
 Cornish-Fisher distribution is based on the Cornish-Fisher expansion of the 
-Normal quantile. Skew-t is the skewed Student's t-distribution-- Azzalini and 
+Normal quantile. If \code{resid.dist = "empirical"}, \code{resid.par} should be the TxN residuals
+retunred by the ffm object. Skew-t is the skewed Student's t-distribution-- Azzalini and 
 Captiano. The parameters can differ across funds, though the type of 
 distribution is the same. 
 
@@ -93,6 +94,15 @@ rownames(resid.par) <- colnames(managers[,(1:6)])
 fmmc.returns.skewt <- fmmcSemiParam(factor.ret=managers[,(7:9)], 
                                     beta=fit$beta, alpha=fit$alpha, 
                                     resid.dist="skew-t", resid.par=resid.par)
+                                    
+#Empirical deistribution with boot.method = "block"
+data("factorDataSetDjia5Yrs")
+exposure.vars <- c("P2B", "MKTCAP", "SECTOR")
+fit.ffm <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+                 date.var="DATE", exposure.vars=exposure.vars, addIntercept = FALSE)
+resid.par = fit.ffm$residuals
+fmmc.returns.ffm <- fmmcSemiParam(factor.ret=fit.ffm$factor.returns, beta=fit.ffm$beta, 
+                                 resid.par=resid.par, resid.dist = "empirical", boot.method = "block")
 
 }
 \author{

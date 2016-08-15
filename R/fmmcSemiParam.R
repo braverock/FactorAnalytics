@@ -11,8 +11,8 @@
 #' @param beta \code{N x K} matrix of factor betas.
 #' @param alpha \code{N x 1} matrix of factor alphas (intercepts). If missing, 
 #' these are assumed to be 0 for all funds.
-#' @param resid.par \code{N x P} matrix of parameters for the residual 
-#' distribution.
+#' @param resid.par  matrix of parameters for the residual 
+#' distribution. See \code{Details}.
 #' @param resid.dist the residual distribution; one of "normal", 
 #' "Cornish-Fisher" or "skew-t". Default is "normal".
 #' @param boot.method the resampling method for factor returns; one of "random"
@@ -35,7 +35,8 @@
 #' excess kurtosis. If \code{resid.dist = "skew-t"}, \code{resid.par} has four 
 #' columns for xi=location, omega=scale, alpha=shape, and nu=degrees of freedom. 
 #' Cornish-Fisher distribution is based on the Cornish-Fisher expansion of the 
-#' Normal quantile. Skew-t is the skewed Student's t-distribution-- Azzalini and 
+#' Normal quantile. If \code{resid.dist = "empirical"}, \code{resid.par} should be the TxN residuals
+#' retunred by the ffm object. Skew-t is the skewed Student's t-distribution-- Azzalini and 
 #' Captiano. The parameters can differ across funds, though the type of 
 #' distribution is the same. 
 #' 
@@ -81,11 +82,20 @@
 #' fmmc.returns.skewt <- fmmcSemiParam(factor.ret=managers[,(7:9)], 
 #'                                     beta=fit$beta, alpha=fit$alpha, 
 #'                                     resid.dist="skew-t", resid.par=resid.par)
+#'                                     
+#' #Empirical deistribution with boot.method = "block"
+#' data("factorDataSetDjia5Yrs")
+#' exposure.vars <- c("P2B", "MKTCAP", "SECTOR")
+#' fit.ffm <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+#'                  date.var="DATE", exposure.vars=exposure.vars, addIntercept = FALSE)
+#' resid.par = fit.ffm$residuals
+#' fmmc.returns.ffm <- fmmcSemiParam(factor.ret=fit.ffm$factor.returns, beta=fit.ffm$beta, 
+#'                                  resid.par=resid.par, resid.dist = "empirical", boot.method = "block")
 #' 
 #' @export
 
 fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par, 
-                           resid.dist=c("normal","Cornish-Fisher","skew-t"), 
+                           resid.dist=c("normal","Cornish-Fisher","skew-t", "empirical"), 
                            boot.method=c("random","block"), seed=123) {
   
   # set defaults and check input vailidity
@@ -95,7 +105,7 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
     factor.ret <- na.omit(as.matrix(factor.ret))
     factor.names <- colnames(factor.ret)
     K = ncol(factor.ret)
-    T = nrow(factor.ret)
+    TP = nrow(factor.ret)
   }
   if (missing(beta)) {
     stop("Missing argument: beta")
@@ -109,10 +119,11 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
   }
   resid.dist = resid.dist[1]
   switch(resid.dist,
-         "normal" = {if (ncol(resid.par)!=1) {stop("Invalid argument: resid.par")}}, 
+         "normal" = {if (!((ncol(resid.par)==1) || (ncol(resid.par)==2))) {stop("Invalid argument: resid.par")}}, 
          "Cornish-Fisher" = {if (ncol(resid.par)!=3) {stop("Invalid argument: resid.par")}}, 
          "skew-t" = {if (ncol(resid.par)!=4) {stop("Invalid argument: resid.par")}},
-         stop("Invalid argument: resid.dist must be 'normal', 'Cornish-Fisher' or 'skew-t'")
+         "empirical" = {if ((nrow(resid.par)!= TP) && (ncol(resid.par)!=N)) {stop("Invalid argument: resid.par")}},
+         stop("Invalid argument: resid.dist must be 'normal', 'Cornish-Fisher', 'skew-t' or 'empirical ")
   )
   boot.method = boot.method[1]
   if (!(boot.method %in% c("random","block"))) {
@@ -122,7 +133,7 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
     alpha <- matrix(0, nrow(beta))
     rownames(alpha) = fund.names
   }
-  if ((nrow(beta) != nrow(alpha)) || (nrow(beta) != nrow(resid.par))) {
+  if ((resid.dist!="empirical") &&((nrow(beta) != nrow(alpha)) || (nrow(beta) != nrow(resid.par)))) {
     stop("Invalid argument: alpha, beta and resid.par should have the same 
          number of funds")
   }
@@ -130,13 +141,18 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
   # set seed for random number generator
   set.seed(seed)
   
+  # initialize resulting matrices of simulated values
+  sim.fund.ret <- matrix(0,B,N)
+  sim.resid <- matrix(0,B,N)
+  colnames(sim.fund.ret) = colnames(sim.resid) = fund.names
+  
   # determine resampling index
   if (boot.method == "random") {
-    boot.idx <- sample(x=T, size=B, replace=TRUE)
+    boot.idx <- sample(x=TP, size=B, replace=TRUE)
   } else {
     # stationary block resampling
-    boot.idx <- as.vector(tsbootstrap(x=1:T, nb=ceiling(B/T), type="stationary"))
-    adj.B <- ceiling(B/T)* T - B
+    boot.idx <- as.vector(tsbootstrap(x=1:TP, nb=ceiling(B/TP), type="stationary"))
+    adj.B <- ceiling(B/TP)* TP - B
     if (adj.B > 0) {
       boot.idx <- boot.idx[1:B]
     }
@@ -144,17 +160,21 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
   
   # bootstrap factor returns
   boot.factor.ret <- factor.ret[boot.idx,] # BxK
+  # bootstrap residulas
+  if(resid.dist == "empirical")
+  {
+    resid.par = na.omit(as.matrix(resid.par))
+    sim.resid <- resid.par[boot.idx,]
+  }
   
-  # initialize resulting matrices of simulated values
-  sim.fund.ret <- matrix(0,B,N)
-  sim.resid <- matrix(0,B,N)
-  colnames(sim.fund.ret) = colnames(sim.resid) = fund.names
+  
   
   # loop through funds to simulate residuals and fund returns
   for (i in fund.names) {
     # check type of parametric distribution for residuals
     switch(resid.dist,
-           "normal" = {sim.resid[,i] <- rnorm(n=B, mean=0, sd=resid.par[i,]) }, # Bx1
+           "normal" = {if(ncol(resid.par)==1)sim.resid[,i] <- rnorm(n=B, mean=0, sd=resid.par[i,])
+                        else if(ncol(resid.par)==2)sim.resid[,i] <- rnorm(n=B, mean=resid.par[i,1], sd=resid.par[i,2])}, 
            "Cornish-Fisher" = {sim.resid[,i] <- rCornishFisher(n=B, dp=resid.par[i,])}, 
            "skew-t" = {sim.resid[,i] <- rst(n=B, dp=resid.par[i,])}
     )
