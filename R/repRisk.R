@@ -4,6 +4,7 @@
 #' Expected Tail Loss or Expected Shortfall (ES) of the return of individual asset within a portfolio 
 #' return of a portfolio based on Euler's theorem, given the fitted factor model.
 #' 
+#' @importFrom lattice barchart
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param p confidence level for calculation. Default is 0.95.
@@ -15,10 +16,14 @@
 #' @param decomp one of 'RM' (risk measure), 'FMCR' (factor marginal contribution to risk), 
 #' 'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk). Default is 'RM'
 #' @param digits digits of number in the resulting table. Default is NULL, in which case digtis = 3 will be
-#' used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'
-#' @param nrowPrint a numerical value deciding number of assets/portfolio in result vector/table to print  
+#' used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
+#' isPrint = 'TRUE'
+#' @param nrowPrint a numerical value deciding number of assets/portfolio in result vector/table to print.
+#' Used only when isPrint = 'TRUE'  
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR & Es. 
 #' Default is "np".
+#' @param bystock a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
+#' Used only when isPlot = 'TRUE'  
 #' @param invert a logical variable to choose if change VaR/ES to positive number, default
 #' is False 
 #' @param use an optional character string giving a method for computing factor
@@ -26,6 +31,8 @@
 #' abbreviation of) one of the strings "everything", "all.obs", 
 #' "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 #' "pairwise.complete.obs".
+#' @param isPlot logical variable to generate plot or not. isPlot = FALSE when decomp = 'RM'.
+#' @param isPrint logical variable to print numeric output or not.
 #' @param ... other optional arguments passed to \code{\link[stats]{quantile}} and 
 #' optional arguments passed to \code{\link[stats]{cov}}
 #'
@@ -67,12 +74,9 @@
 #'                   nrowPrint = 10)
 #' report 
 #' 
-#' # random weights 
-#' wts = runif(6)
-#' wts = wts/sum(wts)
-#' names(wts) <- colnames(managers)[1:6]
-#' repRisk(fit.macro, weights = wts, risk = "VaR", decomp = 'FMCR', 
-#'         nrowPrint = 10, digits = 4)
+#' # plot
+#' repRisk(fit.macro, risk = "ES", decomp = 'FPCR', isPrint = FALSE, 
+#'         isPlot = TRUE)
 #' 
 #' # Fundamental Factor Model
 #' data("stocks145scores6")
@@ -95,7 +99,9 @@
 #' # get the factor contributions of risk 
 #' repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
 #'         nrowPrint = 10)               
-#'  
+#' # plot
+#' repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
+#'         isPrint = FALSE, isPlot = TRUE)  
 #' @export    
 
 
@@ -114,7 +120,8 @@ repRisk <- function(object, ...){
 
 repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"), 
                          decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
-                         nrowPrint = 20, p=0.95, type=c("np","normal"), use="pairwise.complete.obs", ...) {
+                         nrowPrint = 20, p=0.95, type=c("np","normal"), use="pairwise.complete.obs", 
+                         bystock = TRUE, isPrint = TRUE, isPlot = TRUE, ...) {
   
   # set default for type
   type = type[1]
@@ -138,6 +145,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     asset.Sd = factorAnalytics::fmSdDecomp(object, use = use, ... )
     
     if(decomp == "RM"){
+      isPlot = FALSE
       port = port.Sd$portSd
       asset = asset.Sd$Sd.fm
       result = c(port, asset)
@@ -177,6 +185,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, use = use, invert = invert, ... )
     
     if(decomp == "RM"){
+      isPlot = FALSE
       port = port.VaR$portVaR
       asset = asset.VaR$VaR.fm
       result = c(port, asset)
@@ -216,6 +225,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, use = use, invert = invert, ... )
     
     if(decomp == "RM"){
+      isPlot = FALSE
       port = port.Es$portES
       asset = asset.Es$ES.fm
       result = c(port, asset)
@@ -258,12 +268,51 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     }
   }
  
+  if(isPrint){
+    result = head(result, nrowPrint)
+    result = round(result, digits)
+    
+    output = list(decomp = result)
+    names(output) = paste(risk,decomp,sep = '')
+    
+    return(output)
+  }
   
-  
-  result = head(result, nrowPrint)
-  result = round(result, digits)
-  
-  return(result)
+  if(isPlot){
+    if(decomp == "FCR"){
+      result = result[,-1]
+    }
+    if(bystock){
+      nRow = nrow(result)
+      l = 15
+      while(nRow %% l == 1){
+        l = l+1
+      }
+      k = ceiling(nRow/l)
+      for(i in 1:k){
+        if(i == k){
+          m = nRow
+        }else{
+          m = i * l
+        }
+        n = (i-1) * l +1
+        print(barchart(result[n:m,], groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,2), 
+                       ylab = '', xlab = ''))
+      }
+      
+    }else{
+      result = t(result)
+      nCol = ncol(result)
+      l = 8
+      while(nCol %% l == 1){
+        l = l+4
+      }
+      p = l/4
+      
+      print(barchart(result, groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,p), 
+                     ylab = '', xlab = ''))
+    }
+  }
 }
 
 #' @rdname repRisk
@@ -273,7 +322,8 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
 
 repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
                         decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
-                        nrowPrint = 20, p=0.95, type=c("np","normal"), ...) {
+                        nrowPrint = 20, p=0.95, type=c("np","normal"), 
+                        bystock = TRUE, isPrint = TRUE, isPlot = TRUE, ...) {
   
   # set default for type
   type = type[1]
@@ -297,6 +347,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     asset.Sd = factorAnalytics::fmSdDecomp(object, ... )
     
     if(decomp == "RM"){
+      isPlot = FALSE
       port = port.Sd$portSd
       asset = asset.Sd$Sd.fm
       result = c(port, asset)
@@ -336,6 +387,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
     
     if(decomp == "RM"){
+      isPlot = FALSE
       port = port.VaR$portVaR
       asset = asset.VaR$VaR.fm
       result = c(port, asset)
@@ -375,6 +427,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, invert = invert, ... )
     
     if(decomp == "RM"){
+      isPlot = FALSE
       port = port.Es$portES
       asset = asset.Es$ES.fm
       result = c(port, asset)
@@ -417,9 +470,49 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     }
   }
   
-  result = head(result, nrowPrint)
-  result = round(result, digits)
-  
-  return(result)
+  if(isPrint){
+    result = head(result, nrowPrint)
+    result = round(result, digits)
+    
+    output = list(decomp = result)
+    names(output) = paste(risk,decomp,sep = '')
+    
+    return(output)
+  }
 
+  if(isPlot){
+    if(decomp == "FCR"){
+      result = result[,-1]
+    }
+    if(bystock){
+      nRow = nrow(result)
+      l = 15
+      while(nRow %% l == 1){
+        l = l+1
+      }
+      k = ceiling(nRow/l)
+      for(i in 1:k){
+        if(i == k){
+          m = nRow
+        }else{
+          m = i * l
+        }
+        n = (i-1) * l +1
+        print(barchart(result[n:m,], groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,2), 
+                       ylab = '', xlab = ''))
+      }
+      
+    }else{
+      result = t(result)
+      nCol = ncol(result)
+      l = 8
+      while(nCol %% l == 1){
+        l = l+4
+      }
+      p = l/4
+
+      print(barchart(result, groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,p), 
+                     ylab = '', xlab = ''))
+    }
+  }
 }

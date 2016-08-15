@@ -11,11 +11,13 @@ repRisk(object, ...)
 \method{repRisk}{tsfm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
   nrowPrint = 20, p = 0.95, type = c("np", "normal"),
-  use = "pairwise.complete.obs", ...)
+  use = "pairwise.complete.obs", bystock = TRUE, isPrint = TRUE,
+  isPlot = TRUE, ...)
 
 \method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
-  nrowPrint = 20, p = 0.95, type = c("np", "normal"), ...)
+  nrowPrint = 20, p = 0.95, type = c("np", "normal"), bystock = TRUE,
+  isPrint = TRUE, isPlot = TRUE, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -34,12 +36,14 @@ Loss or Expected Shortfall for calculating risk decompositon. Default is 'Sd'}
 'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk). Default is 'RM'}
 
 \item{digits}{digits of number in the resulting table. Default is NULL, in which case digtis = 3 will be
-used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'}
+used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
+isPrint = 'TRUE'}
 
 \item{invert}{a logical variable to choose if change VaR/ES to positive number, default
 is False}
 
-\item{nrowPrint}{a numerical value deciding number of assets/portfolio in result vector/table to print}
+\item{nrowPrint}{a numerical value deciding number of assets/portfolio in result vector/table to print.
+Used only when isPrint = 'TRUE'}
 
 \item{p}{confidence level for calculation. Default is 0.95.}
 
@@ -51,6 +55,13 @@ covariances in the presence of missing values. This must be (an
 abbreviation of) one of the strings "everything", "all.obs", 
 "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 "pairwise.complete.obs".}
+
+\item{bystock}{a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
+Used only when isPlot = 'TRUE'}
+
+\item{isPrint}{logical variable to print numeric output or not.}
+
+\item{isPlot}{logical variable to generate plot or not. isPlot = FALSE when decomp = 'RM'.}
 }
 \value{
 A table containing 
@@ -85,12 +96,9 @@ report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR',
                   nrowPrint = 10)
 report 
 
-# random weights 
-wts = runif(6)
-wts = wts/sum(wts)
-names(wts) <- colnames(managers)[1:6]
-repRisk(fit.macro, weights = wts, risk = "VaR", decomp = 'FMCR', 
-        nrowPrint = 10, digits = 4)
+# plot
+repRisk(fit.macro, risk = "ES", decomp = 'FPCR', isPrint = FALSE, 
+        isPlot = TRUE)
 
 # Fundamental Factor Model
 data("stocks145scores6")
@@ -113,7 +121,9 @@ repRisk(fit.cross, risk = "Sd", decomp = 'FCR', nrowPrint = 10,
 # get the factor contributions of risk 
 repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
         nrowPrint = 10)               
- 
+# plot
+repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
+        isPrint = FALSE, isPlot = TRUE)  
 }
 \author{
 Douglas Martin, Lingjie Yi

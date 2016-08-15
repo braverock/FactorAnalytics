@@ -208,10 +208,10 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
   } else if (type=="normal") {
 
     # compute ES
-    ES.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))
+    ES.fm <- -drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))
                   *dnorm(qnorm(1-p))/(1-p))
     # compute marginal ES
-    mES <- drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p))
+    mES <- -drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p))
   }
   
   # correction factor to ensure that sum(cES) = asset ES
@@ -343,10 +343,10 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c(
   } else if (type=="normal")  {
 
     # compute ES
-    ES.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))
+    ES.fm <- -drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))
                   *dnorm(qnorm(1-p))/(1-p))
     # compute marginal ES
-    mES <- drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p))
+    mES <- -drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p))
   }
   
   # correction factor to ensure that sum(cES) = asset ES
