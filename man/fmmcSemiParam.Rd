@@ -95,14 +95,16 @@ fmmc.returns.skewt <- fmmcSemiParam(factor.ret=managers[,(7:9)],
                                     beta=fit$beta, alpha=fit$alpha, 
                                     resid.dist="skew-t", resid.par=resid.par)
                                     
-#Empirical deistribution with boot.method = "block"
+#Empirical deistribution 
 data("factorDataSetDjia5Yrs")
 exposure.vars <- c("P2B", "MKTCAP", "SECTOR")
-fit.ffm <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-                 date.var="DATE", exposure.vars=exposure.vars, addIntercept = FALSE)
+fit.ffm <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER",
+                   ret.var="RETURN", date.var="DATE", 
+                   exposure.vars=exposure.vars, addIntercept = FALSE)
 resid.par = fit.ffm$residuals
-fmmc.returns.ffm <- fmmcSemiParam(factor.ret=fit.ffm$factor.returns, beta=fit.ffm$beta, 
-                                 resid.par=resid.par, resid.dist = "empirical", boot.method = "block")
+fmmc.returns.ffm <- fmmcSemiParam(factor.ret=fit.ffm$factor.returns,
+                                   beta=fit.ffm$beta, resid.par=resid.par,
+                                   resid.dist = "empirical", boot.method = "block")
 
 }
 \author{
