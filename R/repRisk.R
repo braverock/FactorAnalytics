@@ -7,7 +7,7 @@
 #' @importFrom lattice barchart
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
-#' @param p confidence level for calculation. Default is 0.95.
+#' @param p tail probability for calculation. Default is 0.05.
 #' @param weights a vector of weights of the assets in the portfolio, names of 
 #' the vector should match with asset names. Default is NULL, in which case an 
 #' equal weights will be used.
@@ -18,21 +18,24 @@
 #' @param digits digits of number in the resulting table. Default is NULL, in which case digtis = 3 will be
 #' used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
 #' isPrint = 'TRUE'
-#' @param nrowPrint a numerical value deciding number of assets/portfolio in result vector/table to print.
-#' Used only when isPrint = 'TRUE'  
+#' @param nrowPrint a numerical value deciding number of assets/portfolio in result vector/table to print
+#' or plot  
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR & Es. 
 #' Default is "np".
-#' @param bystock a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
+#' @param byasset a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
 #' Used only when isPlot = 'TRUE'  
 #' @param invert a logical variable to choose if change VaR/ES to positive number, default
 #' is False 
+#' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
+#' @param portfolio.only logical variable to choose if to calculate portfolio only decomposition, in which case multiple risk measures are 
+#' allowed.
+#' @param isPlot logical variable to generate plot or not. isPlot = FALSE when decomp = 'RM'.
+#' @param isPrint logical variable to print numeric output or not.
 #' @param use an optional character string giving a method for computing factor
 #' covariances in the presence of missing values. This must be (an 
 #' abbreviation of) one of the strings "everything", "all.obs", 
 #' "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 #' "pairwise.complete.obs".
-#' @param isPlot logical variable to generate plot or not. isPlot = FALSE when decomp = 'RM'.
-#' @param isPrint logical variable to print numeric output or not.
 #' @param ... other optional arguments passed to \code{\link[stats]{quantile}} and 
 #' optional arguments passed to \code{\link[stats]{cov}}
 #'
@@ -98,10 +101,13 @@
 #'         digits = 4) 
 #' # get the factor contributions of risk 
 #' repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-#'         nrowPrint = 10)               
+#'         nrowPrint = 10)          
+#' # portfolio only decomposition
+#' repRisk(fit.cross, wtsStocks145GmvLo, risk = c("VaR", "ES"), decomp = 'FPCR', 
+#'         portfolio.only = TRUE)       
 #' # plot
 #' repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-#'         isPrint = FALSE, isPlot = TRUE)  
+#'         isPrint = FALSE, nrowPrint = 15, isPlot = TRUE, layout = c(4,2))  
 #' @export    
 
 
@@ -120,12 +126,15 @@ repRisk <- function(object, ...){
 
 repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"), 
                          decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
-                         nrowPrint = 20, p=0.95, type=c("np","normal"), use="pairwise.complete.obs", 
-                         bystock = TRUE, isPrint = TRUE, isPlot = TRUE, ...) {
+                         nrowPrint = 20, p=0.05, type=c("np","normal"), use="pairwise.complete.obs", 
+                         byasset = TRUE, isPrint = TRUE, isPlot = FALSE, layout =NULL,
+                         portfolio.only = FALSE, ...) {
   
   # set default for type
   type = type[1]
-  risk = risk[1]
+  if(!portfolio.only){
+    risk = risk[1]
+  }
   decomp = decomp[1]
   
   if (!(type %in% c("np","normal"))) {
@@ -140,178 +149,230 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     stop("Invalid args: decomp must be 'RM', 'FMCR', 'FCR' or 'FPCR' ")
   }
   
-  if(length(which(risk == "Sd"))){
-    port.Sd = portSdDecomp(object, weights = weights, use = use, ... )
-    asset.Sd = factorAnalytics::fmSdDecomp(object, use = use, ... )
-    
-    if(decomp == "RM"){
-      isPlot = FALSE
-      port = port.Sd$portSd
-      asset = asset.Sd$Sd.fm
-      result = c(port, asset)
-      names(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FMCR"){
-      port = port.Sd$mSd
-      asset = asset.Sd$mSd
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FCR"){
-      portRM = port.Sd$portSd
-      assetRM = asset.Sd$Sd.fm
-      resultRM = c(portRM, assetRM)
+  if(!portfolio.only){
+    if(length(which(risk == "Sd"))){
+      port.Sd = portSdDecomp(object, weights = weights, ... )
+      asset.Sd = factorAnalytics::fmSdDecomp(object, ... )
       
-      port = port.Sd$cSd
-      asset = asset.Sd$cSd
-      result = cbind(resultRM,rbind(port, asset))
-      rownames(result)[1] = 'Portfolio'
-      colnames(result)[1] = 'RM'
-    }
-    
-    else if(decomp == "FPCR"){
-      port = port.Sd$pcSd
-      asset = asset.Sd$pcSd
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-  }
-  
-  else if(length(which(risk == "VaR"))){
-    port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, use = use, invert = invert, ... )
-    asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, use = use, invert = invert, ... )
-    
-    if(decomp == "RM"){
-      isPlot = FALSE
-      port = port.VaR$portVaR
-      asset = asset.VaR$VaR.fm
-      result = c(port, asset)
-      names(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FMCR"){
-      port = port.VaR$mVaR
-      asset = asset.VaR$mVaR
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FCR"){
-      portRM = port.VaR$portVaR
-      assetRM = asset.VaR$VaR.fm
-      resultRM = c(portRM, assetRM)
-      
-      port = port.VaR$cVaR
-      asset = asset.VaR$cVaR
-      result = cbind(resultRM,rbind(port, asset))
-      rownames(result)[1] = 'Portfolio'
-      colnames(result)[1] = 'RM'
-    }
-    
-    else if(decomp == "FPCR"){
-      port = port.VaR$pcVaR
-      asset = asset.VaR$pcVaR
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-  }
-
-  else if(length(which(risk == "ES"))){
-    port.Es = portEsDecomp(object, weights = weights, p = p, type = type, use = use, invert = invert, ... )
-    asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, use = use, invert = invert, ... )
-    
-    if(decomp == "RM"){
-      isPlot = FALSE
-      port = port.Es$portES
-      asset = asset.Es$ES.fm
-      result = c(port, asset)
-      names(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FMCR"){
-      port = port.Es$mES
-      asset = asset.Es$mES
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FCR"){
-      portRM = port.Es$portES
-      assetRM = asset.Es$ES.fm
-      resultRM = c(portRM, assetRM)
-      
-      port = port.Es$cES
-      asset = asset.Es$cES
-      result = cbind(resultRM,rbind(port, asset))
-      rownames(result)[1] = 'Portfolio'
-      colnames(result)[1] = 'RM'
-    }
-    
-    else if(decomp == "FPCR"){
-      port = port.Es$pcES
-      asset = asset.Es$pcES
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-  }
-  
-  if(is.null(digits)){
-    if(decomp == 'FPCR'){
-      digits = 1
-    }else{
-      digits = 3
-    }
-  }
- 
-  if(isPrint){
-    result = head(result, nrowPrint)
-    result = round(result, digits)
-    
-    output = list(decomp = result)
-    names(output) = paste(risk,decomp,sep = '')
-    
-    return(output)
-  }
-  
-  if(isPlot){
-    if(decomp == "FCR"){
-      result = result[,-1]
-    }
-    if(bystock){
-      nRow = nrow(result)
-      l = 15
-      while(nRow %% l == 1){
-        l = l+1
+      if(decomp == "RM"){
+        isPlot = FALSE
+        port = port.Sd$portSd
+        asset = asset.Sd$Sd.fm
+        result = c(port, asset)
+        names(result)[1] = 'Portfolio'
+      } else if(decomp == "FMCR"){
+        port = port.Sd$mSd
+        asset = asset.Sd$mSd
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+      } else if(decomp == "FCR"){
+        portRM = port.Sd$portSd
+        assetRM = asset.Sd$Sd.fm
+        resultRM = c(portRM, assetRM)
+        
+        port = port.Sd$cSd
+        asset = asset.Sd$cSd
+        result = cbind(resultRM,rbind(port, asset))
+        rownames(result)[1] = 'Portfolio'
+        colnames(result)[1] = 'RM'
+      } else if(decomp == "FPCR"){
+        port = port.Sd$pcSd
+        asset = asset.Sd$pcSd
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+        result = cbind(rowSums(result), result)
+        colnames(result)[1] = 'Sum'
       }
-      k = ceiling(nRow/l)
-      for(i in 1:k){
-        if(i == k){
-          m = nRow
-        }else{
-          m = i * l
+      
+    } else if(length(which(risk == "VaR"))){
+      port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+      asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
+      
+      if(decomp == "RM"){
+        isPlot = FALSE
+        port = port.VaR$portVaR
+        asset = asset.VaR$VaR.fm
+        result = c(port, asset)
+        names(result)[1] = 'Portfolio'
+      } else if(decomp == "FMCR"){
+        port = port.VaR$mVaR
+        asset = asset.VaR$mVaR
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+      } else if(decomp == "FCR"){
+        portRM = port.VaR$portVaR
+        assetRM = asset.VaR$VaR.fm
+        resultRM = c(portRM, assetRM)
+        
+        port = port.VaR$cVaR
+        asset = asset.VaR$cVaR
+        result = cbind(resultRM,rbind(port, asset))
+        rownames(result)[1] = 'Portfolio'
+        colnames(result)[1] = 'RM'
+      } else if(decomp == "FPCR"){
+        port = port.VaR$pcVaR
+        asset = asset.VaR$pcVaR
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+        result = cbind(rowSums(result), result)
+        colnames(result)[1] = 'Sum'
+      }
+      
+    } else if(length(which(risk == "ES"))){
+      port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+      asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, invert = invert, ... )
+      
+      if(decomp == "RM"){
+        isPlot = FALSE
+        port = port.Es$portES
+        asset = asset.Es$ES.fm
+        result = c(port, asset)
+        names(result)[1] = 'Portfolio'
+      } else if(decomp == "FMCR"){
+        port = port.Es$mES
+        asset = asset.Es$mES
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+      } else if(decomp == "FCR"){
+        portRM = port.Es$portES
+        assetRM = asset.Es$ES.fm
+        resultRM = c(portRM, assetRM)
+        
+        port = port.Es$cES
+        asset = asset.Es$cES
+        result = cbind(resultRM,rbind(port, asset))
+        rownames(result)[1] = 'Portfolio'
+        colnames(result)[1] = 'RM'
+      } else if(decomp == "FPCR"){
+        port = port.Es$pcES
+        asset = asset.Es$pcES
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+        result = cbind(rowSums(result), result)
+        colnames(result)[1] = 'Sum'
+      }
+      
+    }
+    
+    if(isPlot){
+      if(decomp == "FCR"){
+        result = result[,-1]
+      }else if(decomp == "FPCR"){
+        result = result[,-1]
+      }
+      
+      if(byasset){
+        result = head(result, nrowPrint)
+        
+        if(is.null(layout)){
+          n = ncol(result)
+          l = 3
+          while(n %% l == 1){
+            l = l+1
+          }
+          layout = c(l,1)
         }
-        n = (i-1) * l +1
-        print(barchart(result[n:m,], groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,2), 
-                       ylab = '', xlab = ''))
+        
+        print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout,
+                       ylab = '', xlab = '', as.table = TRUE))
+        
+      }else{
+        result = t(result)
+        result = head(result, nrowPrint)
+        
+        if(is.null(layout)){
+          n = ncol(result)
+          l = 3
+          while(n %% l == 1){
+            l = l+1
+          }
+          layout = c(l,1)
+        }
+        
+        print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout, 
+                       ylab = '', xlab = '', as.table = TRUE))
       }
-      
-    }else{
-      result = t(result)
-      nCol = ncol(result)
-      l = 8
-      while(nCol %% l == 1){
-        l = l+4
-      }
-      p = l/4
-      
-      print(barchart(result, groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,p), 
-                     ylab = '', xlab = ''))
     }
+    
+    if(isPrint){
+      if(is.null(digits)){
+        if(decomp == 'FPCR'){
+          digits = 1
+        }else{
+          digits = 3
+        }
+      }
+      result = head(result, nrowPrint)
+      result = round(result, digits)
+      
+      output = list(decomp = result)
+      names(output) = paste(risk,decomp,sep = '')
+      
+      return(output)
+    }
+  } else{
+    port.Sd = portSdDecomp(object, weights = weights, ... )
+    port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+    port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+    
+    if(decomp == "RM"){
+      isPlot = FALSE
+      Sd = port.Sd$portSd
+      VaR = port.VaR$portVaR
+      Es = port.Es$portES
+      
+      result = c(Sd, VaR, Es)
+      names(result) = c('Sd','VaR','ES')
+      result = result[risk]
+    } else if(decomp == "FMCR"){
+      Sd = port.Sd$mSd
+      VaR = port.VaR$mVaR
+      Es = port.Es$mES
+      result = rbind(Sd, VaR, Es)
+      rownames(result) = c('Sd','VaR','ES')
+      result = result[risk,]
+    } else if(decomp == "FCR"){
+      SdRM = port.Sd$portSd
+      VaRRM = port.VaR$portVaR
+      EsRM = port.Es$portES
+      resultRM = c(SdRM, VaRRM, EsRM)
+      names(resultRM) = c('Sd','VaR','ES')
+      
+      Sd = port.Sd$cSd
+      VaR = port.VaR$cVaR
+      Es = port.Es$cES
+      result = rbind(Sd, VaR, Es)
+      rownames(result) = c('Sd','VaR','ES')
+      result = cbind(resultRM,result)
+      colnames(result)[1] = 'RM'
+      result = result[risk,]
+    } else if(decomp == "FPCR"){
+      Sd = port.Sd$pcSd
+      VaR = port.VaR$pcVaR
+      Es = port.Es$pcES
+      result = rbind(Sd, VaR, Es)
+      rownames(result) = c('Sd','VaR','ES')
+      result = cbind(rowSums(result), result)
+      colnames(result)[1] = 'Sum'
+      result = result[risk,]
+    }
+    
+    if(isPrint){
+      if(is.null(digits)){
+        if(decomp == 'FPCR'){
+          digits = 1
+        }else{
+          digits = 3
+        }
+      }
+      result = round(result, digits)
+      
+      output = list(decomp = result)
+      names(output) = paste('PortfolioRisk',decomp,sep = '')
+      
+      return(output)
+    }
+    
   }
 }
 
@@ -322,12 +383,15 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
 
 repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
                         decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
-                        nrowPrint = 20, p=0.95, type=c("np","normal"), 
-                        bystock = TRUE, isPrint = TRUE, isPlot = TRUE, ...) {
+                        nrowPrint = 20, p=0.05, type=c("np","normal"), 
+                        byasset = TRUE, isPrint = TRUE, isPlot = FALSE, layout =NULL,
+                        portfolio.only = FALSE, ...) {
   
   # set default for type
   type = type[1]
-  risk = risk[1]
+  if(!portfolio.only){
+    risk = risk[1]
+  }
   decomp = decomp[1]
   
   if (!(type %in% c("np","normal"))) {
@@ -342,177 +406,230 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     stop("Invalid args: decomp must be 'RM', 'FMCR', 'FCR' or 'FPCR' ")
   }
   
-  if(length(which(risk == "Sd"))){
-    port.Sd = portSdDecomp(object, weights = weights, ... )
-    asset.Sd = factorAnalytics::fmSdDecomp(object, ... )
-    
-    if(decomp == "RM"){
-      isPlot = FALSE
-      port = port.Sd$portSd
-      asset = asset.Sd$Sd.fm
-      result = c(port, asset)
-      names(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FMCR"){
-      port = port.Sd$mSd
-      asset = asset.Sd$mSd
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FCR"){
-      portRM = port.Sd$portSd
-      assetRM = asset.Sd$Sd.fm
-      resultRM = c(portRM, assetRM)
-
-      port = port.Sd$cSd
-      asset = asset.Sd$cSd
-      result = cbind(resultRM,rbind(port, asset))
-      rownames(result)[1] = 'Portfolio'
-      colnames(result)[1] = 'RM'
-    }
-    
-    else if(decomp == "FPCR"){
-      port = port.Sd$pcSd
-      asset = asset.Sd$pcSd
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-  }
-  
-  else if(length(which(risk == "VaR"))){
-    port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-    asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
-    
-    if(decomp == "RM"){
-      isPlot = FALSE
-      port = port.VaR$portVaR
-      asset = asset.VaR$VaR.fm
-      result = c(port, asset)
-      names(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FMCR"){
-      port = port.VaR$mVaR
-      asset = asset.VaR$mVaR
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FCR"){
-      portRM = port.VaR$portVaR
-      assetRM = asset.VaR$VaR.fm
-      resultRM = c(portRM, assetRM)
+  if(!portfolio.only){
+    if(length(which(risk == "Sd"))){
+      port.Sd = portSdDecomp(object, weights = weights, ... )
+      asset.Sd = factorAnalytics::fmSdDecomp(object, ... )
       
-      port = port.VaR$cVaR
-      asset = asset.VaR$cVaR
-      result = cbind(resultRM,rbind(port, asset))
-      rownames(result)[1] = 'Portfolio'
-      colnames(result)[1] = 'RM'
-    }
-    
-    else if(decomp == "FPCR"){
-      port = port.VaR$pcVaR
-      asset = asset.VaR$pcVaR
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-  }
-  
-  else if(length(which(risk == "ES"))){
-    port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-    asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, invert = invert, ... )
-    
-    if(decomp == "RM"){
-      isPlot = FALSE
-      port = port.Es$portES
-      asset = asset.Es$ES.fm
-      result = c(port, asset)
-      names(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FMCR"){
-      port = port.Es$mES
-      asset = asset.Es$mES
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-    else if(decomp == "FCR"){
-      portRM = port.Es$portES
-      assetRM = asset.Es$ES.fm
-      resultRM = c(portRM, assetRM)
-      
-      port = port.Es$cES
-      asset = asset.Es$cES
-      result = cbind(resultRM,rbind(port, asset))
-      rownames(result)[1] = 'Portfolio'
-      colnames(result)[1] = 'RM'
-    }
-    
-    else if(decomp == "FPCR"){
-      port = port.Es$pcES
-      asset = asset.Es$pcES
-      result = rbind(port, asset)
-      rownames(result)[1] = 'Portfolio'
-    }
-    
-  }
-  
-  if(is.null(digits)){
-    if(decomp == 'FPCR'){
-      digits = 1
-    }else{
-      digits = 3
-    }
-  }
-  
-  if(isPrint){
-    result = head(result, nrowPrint)
-    result = round(result, digits)
-    
-    output = list(decomp = result)
-    names(output) = paste(risk,decomp,sep = '')
-    
-    return(output)
-  }
-
-  if(isPlot){
-    if(decomp == "FCR"){
-      result = result[,-1]
-    }
-    if(bystock){
-      nRow = nrow(result)
-      l = 15
-      while(nRow %% l == 1){
-        l = l+1
+      if(decomp == "RM"){
+        isPlot = FALSE
+        port = port.Sd$portSd
+        asset = asset.Sd$Sd.fm
+        result = c(port, asset)
+        names(result)[1] = 'Portfolio'
+      } else if(decomp == "FMCR"){
+        port = port.Sd$mSd
+        asset = asset.Sd$mSd
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+      } else if(decomp == "FCR"){
+        portRM = port.Sd$portSd
+        assetRM = asset.Sd$Sd.fm
+        resultRM = c(portRM, assetRM)
+        
+        port = port.Sd$cSd
+        asset = asset.Sd$cSd
+        result = cbind(resultRM,rbind(port, asset))
+        rownames(result)[1] = 'Portfolio'
+        colnames(result)[1] = 'RM'
+      } else if(decomp == "FPCR"){
+        port = port.Sd$pcSd
+        asset = asset.Sd$pcSd
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+        result = cbind(rowSums(result), result)
+        colnames(result)[1] = 'Sum'
       }
-      k = ceiling(nRow/l)
-      for(i in 1:k){
-        if(i == k){
-          m = nRow
-        }else{
-          m = i * l
+      
+    } else if(length(which(risk == "VaR"))){
+      port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+      asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
+      
+      if(decomp == "RM"){
+        isPlot = FALSE
+        port = port.VaR$portVaR
+        asset = asset.VaR$VaR.fm
+        result = c(port, asset)
+        names(result)[1] = 'Portfolio'
+      } else if(decomp == "FMCR"){
+        port = port.VaR$mVaR
+        asset = asset.VaR$mVaR
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+      } else if(decomp == "FCR"){
+        portRM = port.VaR$portVaR
+        assetRM = asset.VaR$VaR.fm
+        resultRM = c(portRM, assetRM)
+        
+        port = port.VaR$cVaR
+        asset = asset.VaR$cVaR
+        result = cbind(resultRM,rbind(port, asset))
+        rownames(result)[1] = 'Portfolio'
+        colnames(result)[1] = 'RM'
+      } else if(decomp == "FPCR"){
+        port = port.VaR$pcVaR
+        asset = asset.VaR$pcVaR
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+        result = cbind(rowSums(result), result)
+        colnames(result)[1] = 'Sum'
+      }
+      
+    } else if(length(which(risk == "ES"))){
+      port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+      asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, invert = invert, ... )
+      
+      if(decomp == "RM"){
+        isPlot = FALSE
+        port = port.Es$portES
+        asset = asset.Es$ES.fm
+        result = c(port, asset)
+        names(result)[1] = 'Portfolio'
+      } else if(decomp == "FMCR"){
+        port = port.Es$mES
+        asset = asset.Es$mES
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+      } else if(decomp == "FCR"){
+        portRM = port.Es$portES
+        assetRM = asset.Es$ES.fm
+        resultRM = c(portRM, assetRM)
+        
+        port = port.Es$cES
+        asset = asset.Es$cES
+        result = cbind(resultRM,rbind(port, asset))
+        rownames(result)[1] = 'Portfolio'
+        colnames(result)[1] = 'RM'
+      } else if(decomp == "FPCR"){
+        port = port.Es$pcES
+        asset = asset.Es$pcES
+        result = rbind(port, asset)
+        rownames(result)[1] = 'Portfolio'
+        result = cbind(rowSums(result), result)
+        colnames(result)[1] = 'Sum'
+      }
+      
+    }
+    
+    if(isPlot){
+      if(decomp == "FCR"){
+        result = result[,-1]
+      }else if(decomp == "FPCR"){
+        result = result[,-1]
+      }
+      
+      if(byasset){
+        result = head(result, nrowPrint)
+        
+        if(is.null(layout)){
+          n = ncol(result)
+          l = 3
+          while(n %% l == 1){
+            l = l+1
+          }
+          layout = c(l,1)
         }
-        n = (i-1) * l +1
-        print(barchart(result[n:m,], groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,2), 
-                       ylab = '', xlab = ''))
+        
+        print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout,
+                       ylab = '', xlab = '', as.table = TRUE))
+        
+      }else{
+        result = t(result)
+        result = head(result, nrowPrint)
+        
+        if(is.null(layout)){
+          n = ncol(result)
+          l = 3
+          while(n %% l == 1){
+            l = l+1
+          }
+          layout = c(l,1)
+        }
+        
+        print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout, 
+                       ylab = '', xlab = '', as.table = TRUE))
       }
-      
-    }else{
-      result = t(result)
-      nCol = ncol(result)
-      l = 8
-      while(nCol %% l == 1){
-        l = l+4
-      }
-      p = l/4
-
-      print(barchart(result, groups = FALSE, main = paste(decomp,"of", risk),layout = c(4,p), 
-                     ylab = '', xlab = ''))
     }
+    
+    if(isPrint){
+      if(is.null(digits)){
+        if(decomp == 'FPCR'){
+          digits = 1
+        }else{
+          digits = 3
+        }
+      }
+      result = head(result, nrowPrint)
+      result = round(result, digits)
+      
+      output = list(decomp = result)
+      names(output) = paste(risk,decomp,sep = '')
+      
+      return(output)
+    }
+  } else{
+    port.Sd = portSdDecomp(object, weights = weights, ... )
+    port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+    port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+    
+    if(decomp == "RM"){
+      isPlot = FALSE
+      Sd = port.Sd$portSd
+      VaR = port.VaR$portVaR
+      Es = port.Es$portES
+      
+      result = c(Sd, VaR, Es)
+      names(result) = c('Sd','VaR','ES')
+      result = result[risk]
+    } else if(decomp == "FMCR"){
+      Sd = port.Sd$mSd
+      VaR = port.VaR$mVaR
+      Es = port.Es$mES
+      result = rbind(Sd, VaR, Es)
+      rownames(result) = c('Sd','VaR','ES')
+      result = result[risk,]
+    } else if(decomp == "FCR"){
+      SdRM = port.Sd$portSd
+      VaRRM = port.VaR$portVaR
+      EsRM = port.Es$portES
+      resultRM = c(SdRM, VaRRM, EsRM)
+      names(resultRM) = c('Sd','VaR','ES')
+      
+      Sd = port.Sd$cSd
+      VaR = port.VaR$cVaR
+      Es = port.Es$cES
+      result = rbind(Sd, VaR, Es)
+      rownames(result) = c('Sd','VaR','ES')
+      result = cbind(resultRM,result)
+      colnames(result)[1] = 'RM'
+      result = result[risk,]
+    } else if(decomp == "FPCR"){
+      Sd = port.Sd$pcSd
+      VaR = port.VaR$pcVaR
+      Es = port.Es$pcES
+      result = rbind(Sd, VaR, Es)
+      rownames(result) = c('Sd','VaR','ES')
+      result = cbind(rowSums(result), result)
+      colnames(result)[1] = 'Sum'
+      result = result[risk,]
+    }
+    
+    if(isPrint){
+      if(is.null(digits)){
+        if(decomp == 'FPCR'){
+          digits = 1
+        }else{
+          digits = 3
+        }
+      }
+      result = round(result, digits)
+      
+      output = list(decomp = result)
+      names(output) = paste('PortfolioRisk',decomp,sep = '')
+      
+      return(output)
+    }
+    
   }
+
 }

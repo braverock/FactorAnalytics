@@ -10,14 +10,15 @@ repRisk(object, ...)
 
 \method{repRisk}{tsfm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
-  nrowPrint = 20, p = 0.95, type = c("np", "normal"),
-  use = "pairwise.complete.obs", bystock = TRUE, isPrint = TRUE,
-  isPlot = TRUE, ...)
+  nrowPrint = 20, p = 0.05, type = c("np", "normal"),
+  use = "pairwise.complete.obs", byasset = TRUE, isPrint = TRUE,
+  isPlot = FALSE, layout = NULL, portfolio.only = FALSE, ...)
 
 \method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
-  nrowPrint = 20, p = 0.95, type = c("np", "normal"), bystock = TRUE,
-  isPrint = TRUE, isPlot = TRUE, ...)
+  nrowPrint = 20, p = 0.05, type = c("np", "normal"), byasset = TRUE,
+  isPrint = TRUE, isPlot = FALSE, layout = NULL, portfolio.only = FALSE,
+  ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -42,10 +43,10 @@ isPrint = 'TRUE'}
 \item{invert}{a logical variable to choose if change VaR/ES to positive number, default
 is False}
 
-\item{nrowPrint}{a numerical value deciding number of assets/portfolio in result vector/table to print.
-Used only when isPrint = 'TRUE'}
+\item{nrowPrint}{a numerical value deciding number of assets/portfolio in result vector/table to print
+or plot}
 
-\item{p}{confidence level for calculation. Default is 0.95.}
+\item{p}{tail probability for calculation. Default is 0.05.}
 
 \item{type}{one of "np" (non-parametric) or "normal" for calculating VaR & Es. 
 Default is "np".}
@@ -56,12 +57,17 @@ abbreviation of) one of the strings "everything", "all.obs",
 "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 "pairwise.complete.obs".}
 
-\item{bystock}{a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
+\item{byasset}{a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
 Used only when isPlot = 'TRUE'}
 
 \item{isPrint}{logical variable to print numeric output or not.}
 
 \item{isPlot}{logical variable to generate plot or not. isPlot = FALSE when decomp = 'RM'.}
+
+\item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
+
+\item{portfolio.only}{logical variable to choose if to calculate portfolio only decomposition, in which case multiple risk measures are 
+allowed.}
 }
 \value{
 A table containing 
@@ -120,10 +126,13 @@ repRisk(fit.cross, risk = "Sd", decomp = 'FCR', nrowPrint = 10,
         digits = 4) 
 # get the factor contributions of risk 
 repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-        nrowPrint = 10)               
+        nrowPrint = 10)          
+# portfolio only decomposition
+repRisk(fit.cross, wtsStocks145GmvLo, risk = c("VaR", "ES"), decomp = 'FPCR', 
+        portfolio.only = TRUE)       
 # plot
 repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-        isPrint = FALSE, isPlot = TRUE)  
+        isPrint = FALSE, nrowPrint = 15, isPlot = TRUE, layout = c(4,2))  
 }
 \author{
 Douglas Martin, Lingjie Yi

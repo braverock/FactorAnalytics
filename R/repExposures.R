@@ -119,11 +119,11 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
     beta <- as.matrix(dat[,exposures.num])
     rownames(beta) <- asset.names
+    beta = cbind(beta,B)
     if(ncol(ffmObj$beta) > ncol(beta)){
       beta = cbind(rep(1,nrow(beta)),beta)
       colnames(beta)[1] = colnames(ffmObj$beta)[1]
     }
-    beta = cbind(beta,B)
     
     temp = as.data.frame(weights %*% beta)
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
@@ -184,9 +184,11 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                sect = as.character(unique(dat[,exposures.char]))
                d = colMeans(X[,sect])
                
+               par(mar= par()$mar+c(3,1,3,1))
                barplot(a,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main1)
                barplot(b,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main2)
                barplot(d,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main3)
+               par(mar= par()$mar+c(-3,-1,-3,-1))
                
                par(mfrow = c(1,1))
              },
