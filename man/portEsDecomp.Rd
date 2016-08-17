@@ -8,11 +8,11 @@
 \usage{
 portEsDecomp(object, ...)
 
-\method{portEsDecomp}{tsfm}(object, weights = NULL, p = 0.95,
+\method{portEsDecomp}{tsfm}(object, weights = NULL, p = 0.05,
   type = c("np", "normal"), invert = FALSE, use = "pairwise.complete.obs",
   ...)
 
-\method{portEsDecomp}{ffm}(object, weights = NULL, factor.cov, p = 0.95,
+\method{portEsDecomp}{ffm}(object, weights = NULL, factor.cov, p = 0.05,
   type = c("np", "normal"), invert = FALSE, ...)
 }
 \arguments{
@@ -25,7 +25,7 @@ optional arguments passed to \code{\link[stats]{cov}}}
 the vector should match with asset names. Default is NULL, in which case an 
 equal weights will be used.}
 
-\item{p}{confidence level for calculation. Default is 0.95.}
+\item{p}{tail probability for calculation. Default is 0.05.}
 
 \item{type}{one of "np" (non-parametric) or "normal" for calculating Es. 
 Default is "np".}

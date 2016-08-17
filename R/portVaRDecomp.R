@@ -27,7 +27,7 @@
 #' in which case an equal weights will be used.
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
-#' @param p confidence level for calculation. Default is 0.95.
+#' @param p tail probability for calculation. Default is 0.05.
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR. 
 #' Default is "np".
 #' @param invert a logical variable to choose if change VaR to positive number, default
@@ -112,7 +112,7 @@ portVaRDecomp <- function(object,  ...){
 #' @export
 
 
-portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.95, type=c("np","normal"),  
+portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.05, type=c("np","normal"),  
                                invert = FALSE, use="pairwise.complete.obs", ...) {
   
   # set default for type
@@ -145,7 +145,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.95, type=
   
   # get portfolio beta.star: 1 x (K+1)
   beta.star <- as.matrix(cbind(weights %*% as.matrix(beta), sqrt(sum(weights^2 * object$resid.sd^2))))  
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
 
 
   # factor returns and residuals data
@@ -168,12 +168,12 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.95, type=
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
     
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    names(MU) <- c(colnames(factor.cov),"residuals")
+    names(MU) <- c(colnames(factor.cov),"Residuals")
     
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
@@ -199,11 +199,11 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.95, type=
   
   if (type=="np") {
     # get VaR for asset i
-    VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    VaR.fm <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
     
     # get F.star data object
     factor.star <- merge(factors.xts, resid.xts)
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
     
     # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
     # the constant 2.575 corresponds to a triangular kernel 
@@ -218,9 +218,9 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.95, type=
     
   } else if (type=="normal")  {
     # get VaR for asset i
-    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
+    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(p))
     # compute marginal VaR
-    mVaR <- drop(MU + SIGB * qnorm(1-p)/sd(R.xts, na.rm=TRUE))
+    mVaR <- drop(MU + SIGB * qnorm(p)/sd(R.xts, na.rm=TRUE))
   }
   
   # index of VaR exceedances
@@ -253,7 +253,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.95, type=
 #' @importFrom zoo index 
 #' @export
 
-portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c("np","normal"),
+portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c("np","normal"),
                               invert = FALSE , ...) {
   
   # set default for type
@@ -285,7 +285,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c
 
   # get portfolio beta.star: 1 x (K+1)  
   beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
 
   # factor returns and residuals data
   factors.xts <- object$factor.returns
@@ -306,12 +306,12 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
     
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    names(MU) <- c(colnames(factor.cov),"residuals")
+    names(MU) <- c(colnames(factor.cov),"Residuals")
     
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
@@ -336,12 +336,12 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c
   names(R.xts) = 'RETURN'
   
   if (type=="np") {
-    VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    VaR.fm <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
     
     # get F.star data object
     zoo::index(factors.xts) <- zoo::index(resid.xts)
     factor.star <- merge(factors.xts, resid.xts)
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
     
     # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
     # the constant 2.575 corresponds to a triangular kernel 
@@ -354,8 +354,8 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c
     mVaR <- colMeans(factor.star*k.weight, na.rm =TRUE)
   } 
   else if (type=="normal")  {
-    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(1-p))
-    mVaR <- drop(MU + drop(SIGB) * qnorm(1-p)/sd(R.xts, na.rm=TRUE))
+    VaR.fm <- drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))*qnorm(p))
+    mVaR <- drop(MU + drop(SIGB) * qnorm(p)/sd(R.xts, na.rm=TRUE))
   }
   
   # index of VaR exceedances

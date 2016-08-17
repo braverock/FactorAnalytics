@@ -102,7 +102,7 @@ fmSdDecomp.tsfm <- function(object, factor.cov,
   beta <- object$beta
   beta[is.na(beta)] <- 0
   beta.star <- as.matrix(cbind(beta, object$resid.sd))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # get cov(F): K x K
   factor <- as.matrix(object$data[, object$factor.names])
@@ -119,8 +119,8 @@ fmSdDecomp.tsfm <- function(object, factor.cov,
   K <- ncol(object$beta)
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
   # compute factor model sd; a vector of length N
   Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))
@@ -147,7 +147,7 @@ fmSdDecomp.sfm <- function(object, factor.cov,
   beta <- object$loadings
   beta[is.na(beta)] <- 0
   beta.star <- as.matrix(cbind(beta, object$resid.sd))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # get cov(F): K x K
   factor <- as.matrix(object$factors)
@@ -164,8 +164,8 @@ fmSdDecomp.sfm <- function(object, factor.cov,
   K <- object$k
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
   # compute factor model sd; a vector of length N
   Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))
@@ -190,7 +190,7 @@ fmSdDecomp.ffm <- function(object, factor.cov, ...) {
   # get beta.star: N x (K+1)
   beta <- object$beta
   beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # get cov(F): K x K
   if (missing(factor.cov)) {
@@ -207,8 +207,8 @@ fmSdDecomp.ffm <- function(object, factor.cov, ...) {
   K <- ncol(object$beta)
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
   # compute factor model sd; a vector of length N
   Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))

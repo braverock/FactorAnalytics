@@ -29,7 +29,7 @@
 #' equal weights will be used.
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
-#' @param p confidence level for calculation. Default is 0.95.
+#' @param p tail probability for calculation. Default is 0.05.
 #' @param type one of "np" (non-parametric) or "normal" for calculating Es. 
 #' Default is "np".
 #' @param invert a logical variable to choose if change ES to positive number, default
@@ -110,7 +110,7 @@ portEsDecomp <- function(object, ...){
 #' @importFrom zoo index 
 #' @export
 
-portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","normal"), 
+portEsDecomp.tsfm <- function(object, weights = NULL, p=0.05, type=c("np","normal"), 
                               invert = FALSE, use="pairwise.complete.obs", ...) {
   
   # set default for type
@@ -143,7 +143,7 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
   
   # get portfolio beta.star: 1 x (K+1)
   beta.star <- as.matrix(cbind(weights %*% as.matrix(beta), sqrt(sum(weights^2 * object$resid.sd^2))))  
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual" 
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals" 
   
   
   # factor returns and residuals data
@@ -159,12 +159,12 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
     
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    names(MU) <- c(colnames(factor.cov),"residuals")
+    names(MU) <- c(colnames(factor.cov),"Residuals")
     
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
@@ -190,7 +190,7 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
   
   if (type=="np") { 
     # get VaR for asset i
-    VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    VaR.fm <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
     # index of VaR exceedances
     idx.exceed <- which(R.xts <= VaR.fm)
     # compute ES as expected value of asset return, such that the given asset 
@@ -199,7 +199,7 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
     
     # get F.star data object
     factor.star <- merge(factors.xts, resid.xts)
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
     # compute marginal ES as expected value of factor returns, when the asset's 
     # return is less than or equal to its value-at-risk (VaR)
     
@@ -209,9 +209,9 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
 
     # compute ES
     ES.fm <- -drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))
-                  *dnorm(qnorm(1-p))/(1-p))
+                  *dnorm(qnorm(p))/(p))
     # compute marginal ES
-    mES <- -drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p))
+    mES <- -drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(p))/(p))
   }
   
   # correction factor to ensure that sum(cES) = asset ES
@@ -239,7 +239,7 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.95, type=c("np","norma
 #' @importFrom zoo index 
 #' @export
 
-portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c("np","normal"), 
+portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c("np","normal"), 
                              invert = FALSE, ...){
   
   # set default for type
@@ -271,7 +271,7 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c(
   
   # get portfolio beta.star: 1 x (K+1)
   beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
 
   # factor returns and residuals data
   factors.xts <- object$factor.returns
@@ -292,12 +292,12 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c(
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
     
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    names(MU) <- c(colnames(factor.cov),"residuals")
+    names(MU) <- c(colnames(factor.cov),"Residuals")
     
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
@@ -312,7 +312,7 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c(
   mES <- rep(NA, 1+K)
   cES <- rep(NA, 1+K)
   pcES <- rep(NA, 1+K)
-  names(mES)=names(cES)=names(pcES)=c(colnames(beta),"residuals")
+  names(mES)=names(cES)=names(pcES)=c(colnames(beta),"Residuals")
   
   dat = object$data
   # return data for portfolio
@@ -324,7 +324,7 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c(
   
   if (type=="np") {
     # get VaR for asset i
-    VaR.fm <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+    VaR.fm <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
     # index of VaR exceedances
     idx.exceed <- which(R.xts <= VaR.fm)
     # compute ES as expected value of asset return, such that the given asset 
@@ -334,7 +334,7 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c(
     # get F.star data object
     zoo::index(factors.xts) <- zoo::index(resid.xts)
     factor.star <- merge(factors.xts, resid.xts)
-    colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+    colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
     
     # compute marginal ES as expected value of factor returns, when the asset's 
     # return is less than or equal to its value-at-risk (VaR)
@@ -344,9 +344,9 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.95, type=c(
 
     # compute ES
     ES.fm <- -drop(beta.star %*% MU + sqrt(beta.star %*% factor.star.cov %*% t(beta.star))
-                  *dnorm(qnorm(1-p))/(1-p))
+                  *dnorm(qnorm(p))/(p))
     # compute marginal ES
-    mES <- -drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(1-p))/(1-p))
+    mES <- -drop(MU + SIGB/sd(R.xts, na.rm=TRUE) * dnorm(qnorm(p))/(p))
   }
   
   # correction factor to ensure that sum(cES) = asset ES

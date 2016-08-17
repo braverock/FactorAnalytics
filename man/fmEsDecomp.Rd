@@ -9,13 +9,13 @@
 \usage{
 fmEsDecomp(object, ...)
 
-\method{fmEsDecomp}{tsfm}(object, factor.cov, p = 0.95, type = c("np",
+\method{fmEsDecomp}{tsfm}(object, factor.cov, p = 0.05, type = c("np",
   "normal"), use = "pairwise.complete.obs", ...)
 
-\method{fmEsDecomp}{sfm}(object, factor.cov, p = 0.95, type = c("np",
+\method{fmEsDecomp}{sfm}(object, factor.cov, p = 0.05, type = c("np",
   "normal"), use = "pairwise.complete.obs", ...)
 
-\method{fmEsDecomp}{ffm}(object, factor.cov, p = 0.95, type = c("np",
+\method{fmEsDecomp}{ffm}(object, factor.cov, p = 0.05, type = c("np",
   "normal"), use = "pairwise.complete.obs", ...)
 }
 \arguments{
@@ -26,7 +26,7 @@ fmEsDecomp(object, ...)
 \item{factor.cov}{optional user specified factor covariance matrix with 
 named columns; defaults to the sample covariance matrix.}
 
-\item{p}{confidence level for calculation. Default is 0.95.}
+\item{p}{tail probability for calculation. Default is 0.05.}
 
 \item{type}{one of "np" (non-parametric) or "normal" for calculating VaR. 
 Default is "np".}

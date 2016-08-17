@@ -8,11 +8,11 @@
 \usage{
 portVaRDecomp(object, ...)
 
-\method{portVaRDecomp}{tsfm}(object, weights = NULL, factor.cov, p = 0.95,
+\method{portVaRDecomp}{tsfm}(object, weights = NULL, factor.cov, p = 0.05,
   type = c("np", "normal"), invert = FALSE, use = "pairwise.complete.obs",
   ...)
 
-\method{portVaRDecomp}{ffm}(object, weights = NULL, factor.cov, p = 0.95,
+\method{portVaRDecomp}{ffm}(object, weights = NULL, factor.cov, p = 0.05,
   type = c("np", "normal"), invert = FALSE, ...)
 }
 \arguments{
@@ -27,7 +27,7 @@ in which case an equal weights will be used.}
 \item{factor.cov}{optional user specified factor covariance matrix with 
 named columns; defaults to the sample covariance matrix.}
 
-\item{p}{confidence level for calculation. Default is 0.95.}
+\item{p}{tail probability for calculation. Default is 0.05.}
 
 \item{type}{one of "np" (non-parametric) or "normal" for calculating VaR. 
 Default is "np".}

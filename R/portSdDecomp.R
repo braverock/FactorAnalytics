@@ -130,7 +130,7 @@ portSdDecomp.tsfm <- function(object, weights = NULL, factor.cov,
 
   # get portfolio beta.star: 1 x (K+1)
   beta.star <- as.matrix(cbind(weights %*% as.matrix(beta), sqrt(sum(weights^2 * object$resid.sd^2))))  
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # get cov(F): K x K
   # get cov(F): K x K
@@ -148,8 +148,8 @@ portSdDecomp.tsfm <- function(object, weights = NULL, factor.cov,
   K <- ncol(object$beta)
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
   # compute factor model sd; a vector of length 1
   Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))
@@ -194,7 +194,7 @@ portSdDecomp.ffm <- function(object, weights = NULL, factor.cov, ...) {
   
   # get portfolio beta.star: 1 x (K+1)
   beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   
   # get cov(F): K x K
@@ -212,8 +212,8 @@ portSdDecomp.ffm <- function(object, weights = NULL, factor.cov, ...) {
   K <- ncol(beta)
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
 
   # compute factor model sd; a vector of length 1

@@ -24,7 +24,7 @@
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
-#' @param p confidence level for calculation. Default is 0.95.
+#' @param p tail probability for calculation. Default is 0.05.
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR. 
 #' Default is "np".
 #' @param use method for computing covariances in the presence of missing 
@@ -98,7 +98,7 @@ fmVaRDecomp <- function(object, ...){
 #' @method fmVaRDecomp tsfm
 #' @export
 
-fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
+fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.05, type=c("np","normal"), 
                              use="pairwise.complete.obs", ...) {
   # set default for type
   type = type[1]
@@ -110,7 +110,7 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   beta <- object$beta
   beta[is.na(beta)] <- 0
   beta.star <- as.matrix(cbind(beta, object$resid.sd))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # factor returns and residuals data
   factors.xts <- object$data[,object$factor.names]
@@ -131,8 +131,8 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
     names(MU) <- colnames(beta.star)
@@ -151,7 +151,7 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   cVaR <- matrix(NA, N, K+1)
   pcVaR <- matrix(NA, N, K+1)
   rownames(mVaR)=rownames(cVaR)=rownames(pcVaR)=object$asset.names
-  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(object$factor.names, "residuals")
+  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(object$factor.names, "Residuals")
   
   for (i in object$asset.names) {
     # return data for asset i
@@ -159,11 +159,11 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     
     if (type=="np") {
       # get VaR for asset i
-      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+      VaR.fm[i] <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
       
       # get F.star data object
       factor.star <- merge(factors.xts, resid.xts[,i])
-      colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+      colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
       
       # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
       # the constant 2.575 corresponds to a triangular kernel 
@@ -179,10 +179,10 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     } else if (type=="normal")  {
       # get VaR for asset i
       VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
+        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(p)
       
       # compute marginal VaR
-      mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
+      mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(p)/sd(R.xts, na.rm=TRUE)
     }
     
     # index of VaR exceedances
@@ -210,7 +210,7 @@ fmVaRDecomp.tsfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
 #' @method fmVaRDecomp sfm
 #' @export
 
-fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
+fmVaRDecomp.sfm <- function(object, factor.cov, p=0.05, type=c("np","normal"), 
                             use="pairwise.complete.obs", ...) {
   # set default for type
   type = type[1]
@@ -222,7 +222,7 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   beta <- object$loadings
   beta[is.na(beta)] <- 0
   beta.star <- as.matrix(cbind(beta, object$resid.sd))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # factor returns and residuals data
   factors.xts <- object$factors
@@ -243,8 +243,8 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     K <- object$k
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
     # SIGMA*Beta to compute normal mVaR
@@ -262,7 +262,7 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   cVaR <- matrix(NA, N, K+1)
   pcVaR <- matrix(NA, N, K+1)
   rownames(mVaR)=rownames(cVaR)=rownames(pcVaR)=object$asset.names
-  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(paste("F",1:K,sep="."),"residuals")
+  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(paste("F",1:K,sep="."),"Residuals")
   
   for (i in object$asset.names) {
     # return data for asset i
@@ -270,12 +270,12 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     
     if (type=="np") {
       # get VaR for asset i
-      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+      VaR.fm[i] <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
       
       # get F.star data object
       time(factors.xts) <- time(resid.xts[,i])
       factor.star <- merge(factors.xts, resid.xts[,i])
-      colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+      colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
       
       # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
       # the constant 2.575 corresponds to a triangular kernel 
@@ -291,10 +291,10 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     } else if (type=="normal")  {
       # get VaR for asset i
       VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
+        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(p)
       
       # compute marginal VaR
-      mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
+      mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(p)/sd(R.xts, na.rm=TRUE)
     }
     
     # index of VaR exceedances
@@ -322,7 +322,7 @@ fmVaRDecomp.sfm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
 #' @method fmVaRDecomp ffm
 #' @export
 
-fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"), 
+fmVaRDecomp.ffm <- function(object, factor.cov, p=0.05, type=c("np","normal"), 
                             use="pairwise.complete.obs", ...) {
   # set default for type
   type = type[1]
@@ -334,7 +334,7 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   beta <- object$beta
   beta[is.na(beta)] <- 0
   beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # factor returns and residuals data
   factors.xts <- object$factor.returns
@@ -355,8 +355,8 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
     # SIGMA*Beta to compute normal mVaR
@@ -374,7 +374,7 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
   cVaR <- matrix(NA, N, K+1)
   pcVaR <- matrix(NA, N, K+1)
   rownames(mVaR)=rownames(cVaR)=rownames(pcVaR)=object$asset.names
-  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(object$factor.names, "residuals")
+  colnames(mVaR)=colnames(cVaR)=colnames(pcVaR)=c(object$factor.names, "Residuals")
   
   for (i in object$asset.names) {
     # return data for asset i
@@ -384,12 +384,12 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     
     if (type=="np") {
       # get VaR for asset i
-      VaR.fm[i] <- quantile(R.xts, probs=1-p, na.rm=TRUE, ...)
+      VaR.fm[i] <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
       
       # get F.star data object
       time(factors.xts) <- time(resid.xts[,i])
       factor.star <- merge(factors.xts, resid.xts[,i])
-      colnames(factor.star)[dim(factor.star)[2]] <- "residual"
+      colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
       
       # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
       # the constant 2.575 corresponds to a triangular kernel 
@@ -405,10 +405,10 @@ fmVaRDecomp.ffm <- function(object, factor.cov, p=0.95, type=c("np","normal"),
     } else if (type=="normal")  {
       # get VaR for asset i
       VaR.fm[i] <- beta.star[i,] %*% MU + 
-        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(1-p)
+        sqrt(beta.star[i,,drop=F] %*% factor.star.cov %*% t(beta.star[i,,drop=F]))*qnorm(p)
       
       # compute marginal VaR
-      mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(1-p)/sd(R.xts, na.rm=TRUE)
+      mVaR[i,] <- t(MU) + SIGB[i,] * qnorm(p)/sd(R.xts, na.rm=TRUE)
     }
     
     # index of VaR exceedances
