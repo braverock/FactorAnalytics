@@ -124,7 +124,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
       beta = cbind(rep(1,nrow(beta)),beta)
       colnames(beta)[1] = colnames(ffmObj$beta)[1]
     }
-    
+
     temp = as.data.frame(weights %*% beta)
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
     X = rbind(X,temp)
@@ -141,24 +141,24 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
         which <- 
           menu(c("Time series plot of style factor exposures",
                  "Boxplot of style factor exposures",
-                 "Barplot of factor exposures"), 
+                 "Barchart of factor exposures"), 
                title="\nMake a plot selection (or 0 to exit):") 
       }
       
       switch(which,
              "1L" = { 
                if(titleText){
-                 main = "Factor Exposures"
+                 main = "Style Factor Exposures"
                }else(
                  main = ''
                )
                ## Time Series plot of factor exposures
                tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout, 
-                        scaleType = scaleType, ...)
+                        scaleType = scaleType,...)
              }, 
              "2L" = {
                if(titleText){
-                 main = "Distributions of Exposures"
+                 main = "Distributions of Style Factor Exposures"
                }else(
                  main = ''
                )
@@ -169,28 +169,26 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
              }, 
              "3L" = {  
                if(titleText){
-                 main1 = "Style Exposures Means"
-                 main2 = "Style Exposures Vols"
-                 main3 = "Sector Exposure Means"
+                 main1 = "Style Exposures Means-Vols"
+                 main2 = "Sector Exposure Means"
                }else(
-                 main1 = main2 = main3 = ''
+                 main1 = main2 = ''
                )
                ## Barplot of means and vols of style factor exposures, and means of sector exposures 
-               par(mfrow = layout)
-               
                a = colMeans(X[,exposures.num])
                b = apply(X[,exposures.num],2,sd)
-               c = rbind(a,b)
-               sect = as.character(unique(dat[,exposures.char]))
+               c = rbind(b,a)
+               rownames(c) = c("Volatility", "Mean")
+               
+               sect = as.character(unique(ffmObj$data[,exposures.char]))
                d = colMeans(X[,sect])
+               d = t(d)
+               rownames(d) = "Mean"
                
-               par(mar= par()$mar+c(3,1,3,1))
-               barplot(a,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main1)
-               barplot(b,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main2)
-               barplot(d,las=2,col=5, cex.axis = 0.8, ylab = "Percent (%)", main = main3)
-               par(mar= par()$mar+c(-3,-1,-3,-1))
+               print(barchart(c, groups = FALSE, ylab = "Percent (%)", main = main1, layout = layout, as.table = TRUE))
+               print(barchart(colMeans(X[,sect]), xlab = "Percent (%)", main = main2, as.table = TRUE))
                
-               par(mfrow = c(1,1))
+               
              },
              invisible()       
       )        

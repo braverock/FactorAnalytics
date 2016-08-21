@@ -34,7 +34,7 @@ For plots of a group of assets: \cr
 1 = Time Series plot of portfolio returns decomposition, \cr
 2 = Time Series plot of portfolio style factors returns, \cr
 3 = Time Series plot of portfolio sector returns, \cr
-4 = Baxplot of Portfolio Factor Returns Components. \cr \cr}
+4 = Boxplot of Portfolio Factor Returns Components. \cr \cr}
 
 \item{...}{other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses}
 }

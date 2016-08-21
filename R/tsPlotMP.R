@@ -58,7 +58,7 @@ tsPlotMP = function(ret,add.grid = FALSE,cex = 1.0, layout = NULL,type = "l",
 
   pl = xyplot(100*ret,par.strip.text = list(cex = cex),type = type,
               xlab="", ylab = list(label = yname,cex = cex), lwd = lwd,
-              scales = list(y = list(cex = cex,relation=scaleType),
+              scales = list(y = list(cex = cex,relation=scaleType, rot = 0),
                             x = list(cex = cex)),layout = layout,main = main,
               col = color, strip = strip, strip.left = strip.left,
               panel =  panel)

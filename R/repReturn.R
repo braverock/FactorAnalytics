@@ -24,7 +24,7 @@
 #' 1 = Time Series plot of portfolio returns decomposition, \cr
 #' 2 = Time Series plot of portfolio style factors returns, \cr
 #' 3 = Time Series plot of portfolio sector returns, \cr
-#' 4 = Baxplot of Portfolio Factor Returns Components. \cr \cr
+#' 4 = Boxplot of Portfolio Factor Returns Components. \cr \cr
 #' @param ... other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses 
 #' 
 #' @return  
@@ -152,7 +152,18 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   colnames(ret.p) = 'PortRet'
   
   dat = merge(ret.p, sig.p, facRet.p, rk)
-
+  
+  secRet = c()
+  for(i in 1:length(exposures.char)){
+    chars = as.character(unique(ffmObj$data[[exposures.char[i]]]))
+    temp = rowSums(rk[,chars])
+    secRet = cbind(secRet,temp)
+  }
+  colnames(secRet) = paste(exposures.char,"Ret",sep='')
+  secRet = xts(secRet, order.by = zoo::index(dat))
+  FacRet = xts(rowSums(rk[,exposures.num]), order.by = zoo::index(dat))
+  colnames(FacRet) = 'StyleFacRet'
+  
   if(isPlot){
     
     which.vec <- which
@@ -164,7 +175,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
           menu(c("Time Series plot of portfolio returns decomposition",
                  "Time Series plot of portfolio style factors returns",
                  "Time Series plot of portfolio sector returns",
-                 "Barplot of Portfolio Factor Returns Components"), 
+                 "Boxplot of Portfolio Factor Returns Components"), 
                title="\nMake a plot selection (or 0 to exit):") 
       }
       
@@ -211,8 +222,11 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                }else(
                  main = ''
                )
-               ## Baxplot of Portfolio Returns Components
+               ## Boxplot of Portfolio Returns Components
                par(mar=c(7,5,5,5))
+               boxplot(100*coredata(merge(dat[,c(1:3)],FacRet,secRet)), col=5, las = 2, 
+                       ylab = "Percentage (%)",
+                       main = main)
                boxplot(100*coredata(dat[,-c(1:3)]), col=5, las = 2, 
                        xaxt = "n", 
                        ylab = "Percentage (%)",
