@@ -181,7 +181,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = rbind(port, asset)
         rownames(result)[1] = 'Portfolio'
         result = cbind(rowSums(result), result)
-        colnames(result)[1] = 'Sum'
+        colnames(result)[1] = 'Total'
       }
       
     } else if(length(which(risk == "VaR"))){
@@ -215,7 +215,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = rbind(port, asset)
         rownames(result)[1] = 'Portfolio'
         result = cbind(rowSums(result), result)
-        colnames(result)[1] = 'Sum'
+        colnames(result)[1] = 'Total'
       }
       
     } else if(length(which(risk == "ES"))){
@@ -249,7 +249,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = rbind(port, asset)
         rownames(result)[1] = 'Portfolio'
         result = cbind(rowSums(result), result)
-        colnames(result)[1] = 'Sum'
+        colnames(result)[1] = 'Total'
       }
       
     }
@@ -261,7 +261,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = result[,-1]
       }
       
-      if(byasset){
+      if(!byasset){
         result = head(result, nrowPrint)
         
         if(is.null(layout)){
@@ -353,7 +353,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       result = rbind(Sd, VaR, Es)
       rownames(result) = c('Sd','VaR','ES')
       result = cbind(rowSums(result), result)
-      colnames(result)[1] = 'Sum'
+      colnames(result)[1] = 'Total'
       result = result[risk,]
     }
     
@@ -367,10 +367,15 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       }
       result = round(result, digits)
       
+      if(type=="normal"){
+        Type = 'Parametric Normal'
+      }else{
+        Type = 'Non-Parametric'
+      }
       output = list(decomp = result)
-      names(output) = paste('PortfolioRisk',decomp,sep = '')
-      
-      return(output)
+      names(output) = paste('Portfolio',decomp, Type, sep = ' ')
+
+            return(output)
     }
     
   }
@@ -438,7 +443,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = rbind(port, asset)
         rownames(result)[1] = 'Portfolio'
         result = cbind(rowSums(result), result)
-        colnames(result)[1] = 'Sum'
+        colnames(result)[1] = 'Total'
       }
       
     } else if(length(which(risk == "VaR"))){
@@ -472,7 +477,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = rbind(port, asset)
         rownames(result)[1] = 'Portfolio'
         result = cbind(rowSums(result), result)
-        colnames(result)[1] = 'Sum'
+        colnames(result)[1] = 'Total'
       }
       
     } else if(length(which(risk == "ES"))){
@@ -506,7 +511,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = rbind(port, asset)
         rownames(result)[1] = 'Portfolio'
         result = cbind(rowSums(result), result)
-        colnames(result)[1] = 'Sum'
+        colnames(result)[1] = 'Total'
       }
       
     }
@@ -518,7 +523,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = result[,-1]
       }
       
-      if(byasset){
+      if(!byasset){
         result = head(result, nrowPrint)
         
         if(is.null(layout)){
@@ -610,7 +615,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       result = rbind(Sd, VaR, Es)
       rownames(result) = c('Sd','VaR','ES')
       result = cbind(rowSums(result), result)
-      colnames(result)[1] = 'Sum'
+      colnames(result)[1] = 'Total'
       result = result[risk,]
     }
     
@@ -624,8 +629,13 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       }
       result = round(result, digits)
       
+      if(type=="normal"){
+        Type = 'Parametric Normal'
+      }else{
+        Type = 'Non-Parametric'
+      }
       output = list(decomp = result)
-      names(output) = paste('PortfolioRisk',decomp,sep = '')
+      names(output) = paste('Portfolio',decomp, Type, sep = ' ')
       
       return(output)
     }
