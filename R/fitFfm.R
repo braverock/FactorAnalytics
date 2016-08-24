@@ -29,12 +29,6 @@
 #' standardizing style exposures, the \code{\link[stats]{median}} and 
 #' \code{\link[stats]{mad}} are used for location and scale respectively.
 #' 
-#' At this time, the regression can contain only one dummy exposure (one of 
-#' industry, sector, country etc.) or intercept term, otherwise the exposure 
-#' matrix will become singular. We plan to expand the function to allow 
-#' specifying more than one dummy variable, and, dummy variable(s) in 
-#' combination with an intercept term in the future. (Ex: Country + Sector + 
-#' Intercept)
 #' 
 #' The original function was designed by Doug Martin and initially implemented
 #' in S-PLUS by a number of University of Washington Ph.D. students:
@@ -73,6 +67,8 @@
 #' z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},
 #' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{FALSE},
+#' @param resid.EWMA logical; If \code{TRUE}, the residual variances are computed using EWMA and these would be used as weights for "WLS" or "W-Rob". Deafault is \code{FALSE},
+#' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
 #' @param ... potentially further arguments passed.
 #' 
 #' @return \code{fitFfm} returns an object of class \code{"ffm"} for which 
@@ -94,6 +90,7 @@
 #' \item{residuals}{xts object of residuals for N-assets.}
 #' \item{r2}{length-T vector of R-squared values.}
 #' \item{factor.cov}{K x K covariance matrix of the factor returns.}
+#' \item{g.cov}{ covariance matrix of the g coefficients for a Sector plus market and Sector plus Country plus global market models .}
 #' \item{resid.cov}{N x N covariance matrix of residuals.}
 #' \item{return.cov}{N x N return covariance estimated by the factor model, 
 #' using the factor exposures from the last time period.}
@@ -164,7 +161,8 @@
 
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                    weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
-                   rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE,lagExposures=FALSE, ...) {
+                   rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE,
+                   lagExposures=FALSE, resid.EWMA = FALSE, lambda = 0.9, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
@@ -211,6 +209,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   model.MSCI=FALSE
   model.styleOnly = FALSE
   restriction.mat = NULL
+  g.cov = NULL
   # ensure dates are in required format
   data[[date.var]] <- as.Date(data[[date.var]])
   # extract unique time periods from data
@@ -315,8 +314,26 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       } else {
         resid.var <- apply(sapply(reg.list, residuals), 1, var)
       }
-      # add column of weights to data replicating resid.var for each period
-      data <- cbind(data, W=1/resid.var)
+      if(resid.EWMA)
+      { res = sapply(reg.list, residuals)
+      #weights<- lapply(seq(1:N), function(x){resid.var[1]+(1-lambda)*(res)})
+      w<-matrix(0,N,TP)
+      for(i in 1:N)
+      {
+        var_tminus1 = as.numeric(resid.var[i])
+        for(j in 2:TP)
+        {
+          w[i,j] = var_tminus1 + ((1-lambda)*(res[i,j]^2-var_tminus1))
+          var_tminus1 = w[i,j]
+        }
+      }
+      w[,1] = resid.var
+      data<- cbind(data, W = as.numeric(w))
+      }
+      else
+      {
+        data <- cbind(data, W=1/resid.var)
+      }
     }
     
     # estimate factor returns using WLS or weighted-Robust regression
@@ -355,12 +372,14 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     if (length(exposures.char) >0 )
     { 
       reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) = gsub("COUNTRY|SECTOR|GICS.", "",names(reg.list[[x]]$coefficients) ) ;reg.list[[x]]})
+      names(reg.list) = as.character(unique(data[[date.var]]))
     }else if(model.styleOnly && addIntercept)
     {
       reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients)[1] = "Alpha";reg.list[[x]]})
+      names(reg.list) = as.character(unique(data[[date.var]]))
     }
     
-    names(reg.list) = as.character(unique(data[[date.var]]))
+    
     
     # time series of factor returns = estimated coefficients in each period
     factor.returns <- sapply(reg.list, function(x) {
@@ -461,17 +480,19 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #ret_star = checkData(t(ret_star))
     
     reg.list<- list()
+    
     for(i in 1:length(time.periods))
     {
-      B.mod = ( beta.star[((i-1)*N+1) : (i*N), ]) %*% R_matrix  #Y = X*R
+      B.mod = (beta.star[((i-1)*N+1) : (i*N), ]) %*% R_matrix  #Y = X*R
       #Find g as in Eq.A7
       if(length(exposures.num) > 0)
       {
-        B.style = beta.style[((i-1)*N+1) : (i*N), ]
-        reg.list[[i]] = lm(ret_star[,i] ~ B.mod + B.style -1)
+        B.style =beta.style[((i-1)*N+1) : (i*N), ]
+        reg.list[[i]] = lm(matrix((ret.matrix [,i]), nrow =N) ~ B.mod + B.style-1, weights = diag(resid.sd.inv))
+        
       }
       else
-        reg.list[[i]] = lm(ret_star[,i] ~ B.mod-1)
+        reg.list[[i]] = lm(matrix((ret.matrix [,i]), nrow =N) ~ B.mod - 1, weights = diag(resid.sd.inv))
     }
     
     reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) =  paste("g", seq(1:length(reg.list[[x]]$coefficients)), sep = "");reg.list[[x]]})
@@ -485,15 +506,22 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     rownames(factor.returns) <- factor.names
     colnames(factor.returns) = as.character(unique(data[[date.var]]))
     residuals = sapply(reg.list, residuals)
+    if(length(exposures.num) > 0) {g = g[c(1,K:nrow(g),2:(K-1)),]}
     colnames(residuals) = as.character(unique(data[[date.var]]))
+    row.names(residuals) = asset.names
     # Create a T x N xts object of residuals
     residuals <- checkData(t(residuals))
     r2<- sapply(reg.list, function(x) summary(x)$r.squared)
     names(r2) = as.character(unique(data[[date.var]]))
     factor.returns <- checkData(t(factor.returns)) # T x K
+    factor.names<- c("Market", exposures.num,
+                     paste(levels(data[,exposures.char]),sep=" "))
+    #Re-order the columns mkt-style-sector/country
+    factor.returns = factor.returns[, factor.names]
     #Fac Covarinace
-    factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
-                             na.action=na.omit)$cov
+    factor.cov <-covClassic(coredata(factor.returns), distance=FALSE, 
+               na.action=na.omit)$cov
+    g.cov <- cov(t(g))
     #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
     names(resid.var) <- asset.names
@@ -501,18 +529,17 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #Returns covariance
     if(length(exposures.num) > 0){
       beta.combine = cbind(beta.star, beta.style)
+      beta.stms = cbind(B.mod[,1], B.style, B.mod[,-1])
     }else 
       beta.combine = beta.star
-    return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)]) + resid.cov
+    colnames(beta.combine) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta.combine))
+    beta.combine = beta.combine[, factor.names]
+    return.cov <-  beta.stms %*% g.cov %*% t(beta.stms) + resid.cov
     #Exposure matrix 
     beta = beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)]
-    colnames(beta) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta))
-    factor.names<- c("Market", exposures.num,
-                     paste(levels(data[,exposures.char]),sep=" "))
-    #Re-order the columns mkt-style-sector/country
-    factor.returns = factor.returns[, factor.names]
-    beta = beta[, factor.names]
-    factor.cov = factor.cov[factor.names, factor.names]
+    
+    
+    #factor.cov = factor.cov[factor.names, factor.names]
     
     #Restriction matrix
     restriction.mat = R_matrix
@@ -601,6 +628,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #r2 <- as.numeric(sapply(X = summary(reg.list), FUN = "[","r.squared"))
     names(r2) = as.character(unique(data[[date.var]]))
     factor.returns <- checkData(t(factor.returns)) # T x K
+    #Re-order the columns in the order mkt-style-sector-country
+    if(length(exposures.num)>0)
+      factor.returns <- factor.returns[,c(1,(K1+2+K2):K, 2:(K1+1), (K1+2):(K1+K2+1))]
+    factor.names <- colnames(factor.returns)
     #Fac Covarinace
     factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
                              na.action=na.omit)$cov
@@ -613,16 +644,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       beta.combine = cbind(beta.mic, beta.style)
     }else 
       beta.combine = beta.mic
+    colnames(beta.combine) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta.combine))
+    beta.combine = beta.combine[, factor.names]
     return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:K] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:K]) + resid.cov
     #Exposure matrix 
     beta = beta.combine[((TP-1)*N+1):(TP*N), 1:K]
-    colnames(beta) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta))
-    
-    #Re-order the columns in the order mkt-style-sector-country
-    if(length(exposures.num)>0)
-      factor.returns <- factor.returns[,c(1,(K1+2+K2):K, 2:(K1+1), (K1+2):(K1+K2+1))]
-    factor.names <- colnames(factor.returns)
-    beta = beta[, factor.names]
+    #colnames(beta) = gsub("COUNTRY|SECTOR", "", colnames(beta))
     #factor.cov = factor.cov[factor.names, factor.names]
     #Restriction matrix
     restriction.mat = rMic
@@ -631,7 +658,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   # create list of return values.
   result <- list(factor.fit=reg.list, beta=beta, factor.returns=factor.returns, 
-                 residuals=residuals, r2=r2, factor.cov=factor.cov, 
+                 residuals=residuals, r2=r2, factor.cov=factor.cov, g.cov = g.cov,
                  resid.cov=resid.cov, return.cov=return.cov, restriction.mat=restriction.mat,
                  resid.var=resid.var, call=this.call, 
                  data=data, date.var=date.var, ret.var=ret.var, 

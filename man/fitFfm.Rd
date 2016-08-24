@@ -10,7 +10,7 @@
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
   full.resid.cov = FALSE, z.score = FALSE, addIntercept = FALSE,
-  lagExposures = FALSE, ...)
+  lagExposures = FALSE, resid.EWMA = FALSE, lambda = 0.9, ...)
 
 \method{coef}{ffm}(object, ...)
 
@@ -55,6 +55,10 @@ z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.}
 
 \item{lagExposures}{logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{FALSE},}
 
+\item{resid.EWMA}{logical; If \code{TRUE}, the residual variances are computed using EWMA and these would be used as weights for "WLS" or "W-Rob". Deafault is \code{FALSE},}
+
+\item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
+
 \item{...}{potentially further arguments passed.}
 
 \item{object}{a fit object of class \code{ffm} which is returned by 
@@ -80,6 +84,7 @@ time period. Each fitted object is of class \code{lm} if
 \item{residuals}{xts object of residuals for N-assets.}
 \item{r2}{length-T vector of R-squared values.}
 \item{factor.cov}{K x K covariance matrix of the factor returns.}
+\item{g.cov}{ covariance matrix of the g coefficients for a Sector plus market and Sector plus Country plus global market models .}
 \item{resid.cov}{N x N covariance matrix of residuals.}
 \item{return.cov}{N x N return covariance estimated by the factor model, 
 using the factor exposures from the last time period.}
@@ -129,12 +134,6 @@ of univariate scale for residuals during "WLS" or "W-Rob" regressions. When
 standardizing style exposures, the \code{\link[stats]{median}} and 
 \code{\link[stats]{mad}} are used for location and scale respectively.
 
-At this time, the regression can contain only one dummy exposure (one of 
-industry, sector, country etc.) or intercept term, otherwise the exposure 
-matrix will become singular. We plan to expand the function to allow 
-specifying more than one dummy variable, and, dummy variable(s) in 
-combination with an intercept term in the future. (Ex: Country + Sector + 
-Intercept)
 
 The original function was designed by Doug Martin and initially implemented
 in S-PLUS by a number of University of Washington Ph.D. students:
