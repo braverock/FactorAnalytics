@@ -11,14 +11,15 @@ repRisk(object, ...)
 \method{repRisk}{tsfm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
   nrowPrint = 20, p = 0.05, type = c("np", "normal"),
-  use = "pairwise.complete.obs", byasset = TRUE, isPrint = TRUE,
-  isPlot = FALSE, layout = NULL, portfolio.only = FALSE, ...)
+  use = "pairwise.complete.obs", sliceby = c("factor", "asset"),
+  isPrint = TRUE, isPlot = FALSE, layout = NULL, portfolio.only = FALSE,
+  ...)
 
 \method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
-  nrowPrint = 20, p = 0.05, type = c("np", "normal"), byasset = TRUE,
-  isPrint = TRUE, isPlot = FALSE, layout = NULL, portfolio.only = FALSE,
-  ...)
+  nrowPrint = 20, p = 0.05, type = c("np", "normal"),
+  sliceby = c("factor", "asset"), isPrint = TRUE, isPlot = FALSE,
+  layout = NULL, portfolio.only = FALSE, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -57,7 +58,7 @@ abbreviation of) one of the strings "everything", "all.obs",
 "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 "pairwise.complete.obs".}
 
-\item{byasset}{a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
+\item{sliceby}{one of “factor” (slice/condition by factor) or “asset” (slice/condition by asset)
 Used only when isPlot = 'TRUE'}
 
 \item{isPrint}{logical variable to print numeric output or not.}

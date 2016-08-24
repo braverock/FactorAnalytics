@@ -22,7 +22,7 @@
 #' or plot  
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR & Es. 
 #' Default is "np".
-#' @param byasset a logical value to choose slice/condition by stock(TRUE) or factors(FALSE. Default is TRUE.
+#' @param sliceby one of “factor” (slice/condition by factor) or “asset” (slice/condition by asset)
 #' Used only when isPlot = 'TRUE'  
 #' @param invert a logical variable to choose if change VaR/ES to positive number, default
 #' is False 
@@ -127,11 +127,13 @@ repRisk <- function(object, ...){
 repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"), 
                          decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
                          nrowPrint = 20, p=0.05, type=c("np","normal"), use="pairwise.complete.obs", 
-                         byasset = TRUE, isPrint = TRUE, isPlot = FALSE, layout =NULL,
+                         sliceby = c('factor', 'asset'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
                          portfolio.only = FALSE, ...) {
   
   # set default for type
   type = type[1]
+  sliceby = sliceby[1]
+  
   if(!portfolio.only){
     risk = risk[1]
   }
@@ -261,7 +263,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = result[,-1]
       }
       
-      if(!byasset){
+      if(sliceby == 'factor'){
         result = head(result, nrowPrint)
         
         if(is.null(layout)){
@@ -276,9 +278,9 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout,
                        ylab = '', xlab = '', as.table = TRUE))
         
-      }else{
-        result = t(result)
+      }else if(sliceby == 'asset'){
         result = head(result, nrowPrint)
+        result = t(result)
         
         if(is.null(layout)){
           n = ncol(result)
@@ -389,11 +391,13 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
 repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
                         decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
                         nrowPrint = 20, p=0.05, type=c("np","normal"), 
-                        byasset = TRUE, isPrint = TRUE, isPlot = FALSE, layout =NULL,
+                        sliceby = c('factor', 'asset'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
                         portfolio.only = FALSE, ...) {
   
   # set default for type
   type = type[1]
+  sliceby = sliceby[1]
+  
   if(!portfolio.only){
     risk = risk[1]
   }
@@ -523,7 +527,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         result = result[,-1]
       }
       
-      if(!byasset){
+      if(sliceby == 'factor'){
         result = head(result, nrowPrint)
         
         if(is.null(layout)){
@@ -538,9 +542,9 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout,
                        ylab = '', xlab = '', as.table = TRUE))
         
-      }else{
-        result = t(result)
+      }else if(sliceby == 'asset'){
         result = head(result, nrowPrint)
+        result = t(result)
         
         if(is.null(layout)){
           n = ncol(result)
