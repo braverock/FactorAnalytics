@@ -91,31 +91,31 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     }
   } 
   
-  if(length(exposures.char)>0){
-    if(length(exposures.char) == 1){
-      dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
-      B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
-      B[B>0] <- 1
-      B <- B[asset.names,]
-    }else{
-      dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[TP], ]
-      B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[1]]))
-      B[B>0] <- 1
-      B <- B[asset.names,]
-      for(i in 2:length(exposures.char)){
-        temp <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[i]]))
-        temp[temp>0] <- 1
-        temp <- temp[asset.names,]
-        B <- cbind(B,temp)
-      }
-    }
-  }else{
-    B = c()
-  }
-  
-  #calculate x = t(w) * B
   X = c()
   for(i in 1:TP){
+    
+    if(length(exposures.char)>0){
+      if(length(exposures.char) == 1){
+        dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
+        B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char]))
+        B[B>0] <- 1
+        B <- B[asset.names,]
+      }else{
+        dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
+        B <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[1]]))
+        B[B>0] <- 1
+        B <- B[asset.names,]
+        for(j in 2:length(exposures.char)){
+          temp <- as.matrix(table(dat[,ffmObj$asset.var],dat[,exposures.char[j]]))
+          temp[temp>0] <- 1
+          temp <- temp[asset.names,]
+          B <- cbind(B,temp)
+        }
+      }
+    }else{
+      B = c()
+    }
+    
     dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
     beta <- as.matrix(dat[,exposures.num])
     rownames(beta) <- asset.names
@@ -124,7 +124,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
       beta = cbind(rep(1,nrow(beta)),beta)
       colnames(beta)[1] = colnames(ffmObj$beta)[1]
     }
-
+    
     temp = as.data.frame(weights %*% beta)
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
     X = rbind(X,temp)
@@ -154,7 +154,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                )
                ## Time Series plot of factor exposures
                tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout, 
-                        scaleType = scaleType,...)
+                        scaleType = scaleType, las = 2,...)
              }, 
              "2L" = {
                if(titleText){
