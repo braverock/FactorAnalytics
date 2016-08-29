@@ -530,8 +530,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     if(length(exposures.num) > 0){
       beta.combine = cbind(beta.star, beta.style)
       beta.stms = cbind(B.mod[,1], B.style, B.mod[,-1])
-    }else 
-      beta.combine = beta.star
+    }else
+      {
+        beta.combine = beta.star
+        beta.stms = B.mod
+      }
+      
     colnames(beta.combine) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta.combine))
     beta.combine = beta.combine[, factor.names]
     return.cov <-  beta.stms %*% g.cov %*% t(beta.stms) + resid.cov
