@@ -36,7 +36,8 @@
 #' data("stocks145scores6")
 #' dat = stocks145scores6
 #' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
+#'           & dat$DATE <= as.yearmon("2012-12-31"),]
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -49,12 +50,13 @@
 #'               fit.method="WLS", z.score = TRUE)
 #'
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
-#'              add.grid = TRUE, scaleType = 'same')
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'              which = 2, add.grid = TRUE, scaleType = 'same')
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
 #'              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
-#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
-#'              add.grid = FALSE, zeroLine = FALSE, color = 'Blue', layout = c(1,3))
+#' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'              which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue', 
+#'              layout = c(1,3))
 #' @export
 
 
@@ -169,25 +171,28 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
              }, 
              "3L" = {  
                if(titleText){
-                 main1 = "Style Exposures Means-Vols"
-                 main2 = "Sector Exposure Means"
+                 main1 = "Style Exposures Means"
+                 main2 = "Style Exposures Vols"
+                 main3 = "Sector Exposure Means"
                }else(
-                 main1 = main2 = ''
+                 main1 = main2 = main3 = ''
                )
                ## Barplot of means and vols of style factor exposures, and means of sector exposures 
+               par(mfrow = layout)
+               par(mar= par()$mar + c(1,1,1,1))
+               
                a = colMeans(X[,exposures.num])
                b = apply(X[,exposures.num],2,sd)
-               c = rbind(b,a)
-               rownames(c) = c("Volatility", "Mean")
-               
-               sect = as.character(unique(ffmObj$data[,exposures.char]))
+               c = rbind(a,b)
+               sect = as.character(unique(dat[,exposures.char]))
                d = colMeans(X[,sect])
-               d = t(d)
-               rownames(d) = "Mean"
                
-               print(barchart(c, groups = FALSE, ylab = "Percent (%)", main = main1, layout = layout, as.table = TRUE))
-               print(barchart(colMeans(X[,sect]), xlab = "Percent (%)", main = main2, as.table = TRUE))
+               barplot(a,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main1)
+               barplot(b,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main2)
+               barplot(d,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main3)
                
+               par(mar= par()$mar + c(-1,-1,-1,-1))
+               par(mfrow = c(1,1))
                
              },
              invisible()       

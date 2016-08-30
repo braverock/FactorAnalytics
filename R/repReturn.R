@@ -37,7 +37,8 @@
 #' data("stocks145scores6")
 #' dat = stocks145scores6
 #' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
+#'           & dat$DATE <= as.yearmon("2012-12-31"),]
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -51,11 +52,13 @@
 #'               fit.method="WLS", z.score = TRUE)
 #'
 #' repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
-#'           add.grid = TRUE, scaleType = 'same')
-#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
-#'           add.grid = FALSE, zeroLine = TRUE, color = 'Blue', scaleType = 'free')              
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'           which = 4)
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'           which = 1, add.grid = TRUE, scaleType = 'same')
+#' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+#'           which = 2, add.grid = FALSE, zeroLine = TRUE, color = 'Blue', 
+#'           scaleType = 'free')              
 #' @export
 
 
@@ -224,10 +227,17 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                  main = ''
                )
                ## Boxplot of Portfolio Returns Components
-               par(mar=c(7,5,5,5))
-               boxplot(100*coredata(merge(dat[,c(1:3)],FacRet,secRet)), col=5, las = 2, 
+               par(mar=c(5,5,3,3))
+               comp = coredata(merge(dat[,c(1,3)],FacRet,secRet, dat[,2]))
+               boxplot(100*comp, col=5, las = 2, 
                        ylab = "Percentage (%)",
-                       main = main)
+                       main = main,
+                       xaxt = "n")
+               axis(1, at=c(1:ncol(comp)) , labels = FALSE)
+               text(x = c(1:ncol(comp)), srt = 45, adj = 1, labels = colnames(comp), 
+                    par("usr")[3] - 4, xpd = TRUE, cex = 0.9)
+               
+               par(mar=c(5,5,3,3))
                boxplot(100*coredata(dat[,-c(1:3)]), col=5, las = 2, 
                        xaxt = "n", 
                        ylab = "Percentage (%)",

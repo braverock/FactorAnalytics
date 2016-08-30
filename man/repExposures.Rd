@@ -49,7 +49,8 @@ Calculate k factor time series based on fundamental factor model. This method ta
 data("stocks145scores6")
 dat = stocks145scores6
 dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
+          & dat$DATE <= as.yearmon("2012-12-31"),]
 
 #Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
@@ -62,12 +63,13 @@ fit.cross <- fitFfm(data = dat,
               fit.method="WLS", z.score = TRUE)
 
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
-             add.grid = TRUE, scaleType = 'same')
+repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+             which = 2, add.grid = TRUE, scaleType = 'same')
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
-repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 3,
-             add.grid = FALSE, zeroLine = FALSE, color = 'Blue', layout = c(1,3))
+repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+             which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue', 
+             layout = c(1,3))
 }
 \author{
 Douglas Martin, Lingjie Yi

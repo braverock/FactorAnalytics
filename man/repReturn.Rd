@@ -50,7 +50,8 @@ Decompostite return of portfolio into return of different factors based on funda
 data("stocks145scores6")
 dat = stocks145scores6
 dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
+          & dat$DATE <= as.yearmon("2012-12-31"),]
 
 #Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
@@ -64,11 +65,13 @@ fit.cross <- fitFfm(data = dat,
               fit.method="WLS", z.score = TRUE)
 
 repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
-repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 4)
-repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 1,
-          add.grid = TRUE, scaleType = 'same')
-repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, which = 2,
-          add.grid = FALSE, zeroLine = TRUE, color = 'Blue', scaleType = 'free')              
+repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+          which = 4)
+repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+          which = 1, add.grid = TRUE, scaleType = 'same')
+repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
+          which = 2, add.grid = FALSE, zeroLine = TRUE, color = 'Blue', 
+          scaleType = 'free')              
 }
 \author{
 Douglas Martin, Lingjie Yi
