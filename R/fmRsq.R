@@ -1,6 +1,6 @@
-#' @title  Factor Model R-squared and VIF Values
+#' @title  Factor Model R-Squared and Adj R-Squared Values
 #'
-#' @description Calcluate and plot the Factor Model R-squared, Adjusted R-squared and Variance Inflation Factors for a portfolio of assets
+#' @description Calcluate and plot the Factor Model R-Squared, Adjusted R-Squared for a portfolio of assets
 #'
 #' @importFrom zoo as.yearmon
 #' @importFrom graphics barplot
@@ -11,8 +11,6 @@
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param rsq      logical; if \code{TRUE}, Factor Model R-squared values are computed for the portfolio. Default is \code{TRUE}.
 #' @param rsqAdj   logical; if \code{TRUE}, Adjusted R-squared values are computed for the portfolio. Default is \code{FALSE}.
-#' @param VIF      logical; if \code{TRUE}, Variance Inflation factor is calculated. Default is \code{FALSE}.
-#'                 At least 2 continous variables are required in \code{exposure.vars} of fitted model to find VIF.
 #' @param plt.type a number to indicate the type of plot for plotting Factor Model R-squared/Adj. R-squared values.
 #'                 1 indicates barplot, 2 indicates time series xy plot. Default is 2.
 #' @param digits   an integer indicating the number of decimal places to be used for rounding. Default is 2.
@@ -25,7 +23,7 @@
 #' @param ...      potentially further arguments passed.
 #' @author Avinash Acharya and Doug Martin
 #'
-#' @return \code{ffmRsq} returns the sample mean values and plots the time series of corresponding R squared values
+#' @return \code{fmRsq} returns the sample mean values and plots the time series of corresponding R squared values
 #'                         and the Variance Inflation factors depending on the values of \code{rsq}, \code{rsqAdj} and \code{VIF}.
 #'                         The time series of the output values are also printed if \code{isPrint} is \code{TRUE} 
 #'
@@ -40,17 +38,29 @@
 #'               date.var="DATE", exposure.vars="SECTOR")
 #'
 #' #Calcuate and plot the portfolio R-squared values
-#'  ffmRsq(fit)
+#'  fmRsq(fit)
 #'  
 #'  fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
-#'               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"))
+#'               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"), addIntercept=TRUE)
 #'
 #' #Plot and print the time series of Adj R-squared and VIF values
-#'  ffmRsq(fit1, VIF=TRUE, rsqAdj=TRUE, isPrint=TRUE, plt.type = 2)
+#'  fmRsq(fit1, rsqAdj=TRUE, isPrint=TRUE, plt.type = 2)
+#' @rdname fmRsq
 #' @export
 
+fmRsq <- function(ffmObj, ...){
+  # check input object validity
+  if (!inherits(ffmObj, c("tsfm", "sfm", "ffm"))) {
+    stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
+  }
+  UseMethod("fmRsq")
+}
 
-ffmRsq <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, plt.type= 2, digits=2, isPrint=T, isPlot =T, lwd =2, title = TRUE, ...)
+#' @rdname fmRsq
+#' @method fmRsq ffm
+#' @export
+#' 
+fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, isPlot =T, lwd =2, title = TRUE, ...)
 {
   # set defaults and check input validity
   if (!inherits(ffmObj, "ffm"))
@@ -58,9 +68,9 @@ ffmRsq <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, plt.type= 2, digits=2, isPrin
     stop("Invalid argument: Object should be of class'ffm'.")
   }
   
-  if (!(rsq) && !(rsqAdj) && !(VIF))
+  if (!(rsq) && !(rsqAdj))
   {
-    stop("Invalid arguments: Inputs rsq, rsqAdj and VIF cannot be False.")
+    stop("Invalid arguments: Inputs rsq and rsqAdj cannot be False.")
   }
   
   n.assets <- length(ffmObj$asset.names)
@@ -144,41 +154,41 @@ ffmRsq <- function(ffmObj, rsq=T, rsqAdj=F, VIF=F, plt.type= 2, digits=2, isPrin
     out<- c(r2.mean, adj.r2.mean)
     ret<- list("R-Squared"= r2, "Adj.R-Squared" = adj.r2)
   }
-  if(VIF)
-  {
-    exposure.vars= ffmObj$exposure.vars
-    which.numeric <- sapply(ffmObj$data[,exposure.vars,drop=FALSE], is.numeric)
-    exposures.num <- exposure.vars[which.numeric]
-    if(length(exposures.num) < 2)
-    {
-      stop(" At least 2 continous variables required to find VIF")
-    }
-    
-    object = ffmObj$data[exposures.num]  
-    object <- as.matrix(object)
-    ncols <- dim(object)[2]
-    time.periods = length(ffmObj$time.periods)
-    vifs = matrix(0, nrow = time.periods, ncol = ncols)
-    for(i in 1:time.periods)
-    {
-      vifs[i,1:ncols] = sapply(seq(ncols), function(x)
-        1/(1 - summary(lm(object[((i-1)*n.assets+1) : (i*n.assets), x] ~ 
-                            object[((i-1)*n.assets+1) :(i*n.assets), -x]))$r.squared))
-    }
-    colnames(vifs) <- dimnames(object)[[2]]
-    vifs.xts = xts(vifs, order.by = ffmObj$time.periods)
-    vifs.mean = round(colMeans(vifs.xts),digits = digits)
-    if(isPlot)
-    {
-      if(title) title.vif = "Factor Model VIF Values" else title.vif = " " 
-      #Assuming the number of continous variables in exposure.vars is less than 6,layout=c(1,ncols) is defined.
-      tsPlotMP(0.01*vifs.xts,stripLeft = TRUE, layout = c(1,ncols), scaleType = "same",
-               color = "blue", yname = "", lwd = lwd, main =title.vif, type = "h")
-    }
-    vifs.xts = round(vifs.xts,digits = digits)
-    out<- append(out, list("Mean.VIF" = vifs.mean))
-    ret<- append(ret, list("VIF" = vifs.xts))
-  }
+  # if(VIF)
+  # {
+  #   exposure.vars= ffmObj$exposure.vars
+  #   which.numeric <- sapply(ffmObj$data[,exposure.vars,drop=FALSE], is.numeric)
+  #   exposures.num <- exposure.vars[which.numeric]
+  #   if(length(exposures.num) < 2)
+  #   {
+  #     stop(" At least 2 continous variables required to find VIF")
+  #   }
+  #   
+  #   object = ffmObj$data[exposures.num]  
+  #   object <- as.matrix(object)
+  #   ncols <- dim(object)[2]
+  #   time.periods = length(ffmObj$time.periods)
+  #   vifs = matrix(0, nrow = time.periods, ncol = ncols)
+  #   for(i in 1:time.periods)
+  #   {
+  #     vifs[i,1:ncols] = sapply(seq(ncols), function(x)
+  #       1/(1 - summary(lm(object[((i-1)*n.assets+1) : (i*n.assets), x] ~ 
+  #                           object[((i-1)*n.assets+1) :(i*n.assets), -x]))$r.squared))
+  #   }
+  #   colnames(vifs) <- dimnames(object)[[2]]
+  #   vifs.xts = xts(vifs, order.by = ffmObj$time.periods)
+  #   vifs.mean = round(colMeans(vifs.xts),digits = digits)
+  #   if(isPlot)
+  #   {
+  #     if(title) title.vif = "Factor Model VIF Values" else title.vif = " " 
+  #     #Assuming the number of continous variables in exposure.vars is less than 6,layout=c(1,ncols) is defined.
+  #     tsPlotMP(0.01*vifs.xts,stripLeft = TRUE, layout = c(1,ncols), scaleType = "same",
+  #              color = "blue", yname = "", lwd = lwd, main =title.vif, type = "h")
+  #   }
+  #   vifs.xts = round(vifs.xts,digits = digits)
+  #   out<- append(out, list("Mean.VIF" = vifs.mean))
+  #   ret<- append(ret, list("VIF" = vifs.xts))
+  # }
   
   if(isPrint)
   {

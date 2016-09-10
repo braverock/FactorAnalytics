@@ -231,6 +231,9 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   which.numeric <- sapply(data[,exposure.vars,drop=FALSE], is.numeric)
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
+  if ((length(exposures.char) >1) && !addIntercept) {
+    stop("Invalid args: Sector + Country model without Market(Interecept) is currenlty not handled")
+  }
   if (length(exposures.char) > 1)
   {
     model.MSCI = TRUE

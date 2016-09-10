@@ -9,16 +9,16 @@ fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
 time.periods = fit$time.periods
 
 #test for output lengths
-out <- ffmTstats(fit, isPlot = T, col = "blue", z.alpha =z.score) 
+out <- fmTstats(fit, isPlot = T, col = "blue", z.alpha =z.score) 
 expect_equal(length(out), 2)
 
-out <- ffmTstats(fit, isPlot = F, col = "blue", z.alpha =z.score) 
+out <- fmTstats(fit, isPlot = F, col = "blue", z.alpha =z.score) 
 expect_equal(class(out), "list")
 
-out <- ffmTstats(fit, isPlot = F, col = "blue", z.alpha =z.score) 
+out <- fmTstats(fit, isPlot = F, col = "blue", z.alpha =z.score) 
 expect_equal(length(out), 2)
 
-out <- ffmTstats(fit, isPlot = F, col = "blue", z.alpha =z.score) 
+out <- fmTstats(fit, isPlot = F, col = "blue", z.alpha =z.score) 
 expect_equal(length(time.periods), nrow(out$tstats))
 
 

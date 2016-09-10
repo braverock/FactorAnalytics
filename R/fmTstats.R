@@ -28,7 +28,7 @@
 #' 
 #' @author Avinash Acharya and Doug Martin
 #' 
-#' @return \code{ffmTstats} plots the t-stats and significant t-stats values  if \code{isPlot} is \code{TRUE} and returns a list with following components:
+#' @return \code{fmTstats} plots the t-stats and significant t-stats values  if \code{isPlot} is \code{TRUE} and returns a list with following components:
 #' \item{tstats}{ an xts object of t-stats values.}
 #' \item{z.alpha}{ critical value corresponding to the confidence interval.}
 #' @examples 
@@ -41,12 +41,12 @@
 #'              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS",z.score = TRUE)
 #'
 #'#Compute time series of t-stats and number of significant t-stats 
-#'  stats = ffmTstats(fit, isPlot = TRUE, lwd = 2, myColor = c("blue", "blue"), z.alpha =1.96)
+#'  stats = fmTstats(fit, isPlot = TRUE, lwd = 2, myColor = c("blue", "blue"), z.alpha =1.96)
 #'
 #' fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B"), addIntercept=TRUE)
 #' #Compute time series of t-stats and number of significant t-stats 
-#'  stats = ffmTstats(fit1, isPlot = TRUE, z.alpha =1.96) 
+#'  stats = fmTstats(fit1, isPlot = TRUE, z.alpha =1.96) 
 #'                
 #' # Fit a SECTOR+COUNTRY+Style model with Intercept
 #' # Create a COUNTRY column with just 3 countries
@@ -57,11 +57,23 @@
 #'  
 #'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
-#'  stats = ffmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96)
-
+#'  stats = fmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96)
+#' @rdname fmTstats
 #' @export
 
-ffmTstats<- function(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("black", "cyan"),lwd =2, digits =2, z.alpha = 1.96, layout =c(2,3),type ="h", title = TRUE, ... )
+fmTstats <- function(ffmObj, ...){
+  # check input object validity
+  if (!inherits(ffmObj, c("tsfm", "sfm", "ffm"))) {
+    stop("Invalid argument: Object should be of class 'tsfm', 'sfm' or 'ffm'.")
+  }
+  UseMethod("fmTstats")
+}
+
+#' @rdname fmTstats
+#' @method fmTstats ffm
+#' @export
+#' 
+fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("black", "cyan"),lwd =2, digits =2, z.alpha = 1.96, layout =c(2,3),type ="h", title = TRUE, ... )
 {
   
   # CREATE TIME SERIES OF T-STATS
