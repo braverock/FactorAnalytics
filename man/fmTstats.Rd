@@ -8,8 +8,8 @@
 fmTstats(ffmObj, ...)
 
 \method{fmTstats}{ffm}(ffmObj, isPlot = TRUE, isPrint = FALSE,
-  myColor = c("black", "cyan"), lwd = 2, digits = 2, z.alpha = 1.96,
-  layout = c(2, 3), type = "h", title = TRUE, ...)
+  whichPlot = "all", color = c("black", "cyan"), lwd = 2, digits = 2,
+  z.alpha = 1.96, layout = c(2, 3), type = "h", title = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
@@ -20,7 +20,9 @@ fmTstats(ffmObj, ...)
 
 \item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE},}
 
-\item{myColor}{length 2 vector specifying the plotting color for t-stats plot and for barplot 
+\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstats"). Default is \code{all}.}
+
+\item{color}{length 2 vector specifying the plotting color for t-stats plot and for barplot 
 respectively. default is \code{c("black", "cyan")}}
 
 \item{lwd}{line width relative to the default. default is 2.}
@@ -55,7 +57,7 @@ Calculate and plot the time series of the t-statistic values and the
              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS",z.score = TRUE)
 
 #Compute time series of t-stats and number of significant t-stats 
- stats = fmTstats(fit, isPlot = TRUE, lwd = 2, myColor = c("blue", "blue"), z.alpha =1.96)
+ stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), z.alpha =1.96)
 
 fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
                date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B"), addIntercept=TRUE)

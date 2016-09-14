@@ -14,7 +14,8 @@
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param isPlot   logical. If \code{FALSE} no plots are displayed.
 #' @param isPrint  logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE}, 
-#' @param myColor  length 2 vector specifying the plotting color for t-stats plot and for barplot 
+#' @param whichPlot string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstats"). Default is \code{all}.
+#' @param color  length 2 vector specifying the plotting color for t-stats plot and for barplot 
 #'                 respectively. default is \code{c("black", "cyan")}
 #' @param lwd      line width relative to the default. default is 2.
 #' @param digits   an integer indicating the number of decimal places to be used for rounding. default is 2.
@@ -41,7 +42,7 @@
 #'              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS",z.score = TRUE)
 #'
 #'#Compute time series of t-stats and number of significant t-stats 
-#'  stats = fmTstats(fit, isPlot = TRUE, lwd = 2, myColor = c("blue", "blue"), z.alpha =1.96)
+#'  stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), z.alpha =1.96)
 #'
 #' fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B"), addIntercept=TRUE)
@@ -73,7 +74,7 @@ fmTstats <- function(ffmObj, ...){
 #' @method fmTstats ffm
 #' @export
 #' 
-fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("black", "cyan"),lwd =2, digits =2, z.alpha = 1.96, layout =c(2,3),type ="h", title = TRUE, ... )
+fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all", color = c("black", "cyan"),lwd =2, digits =2, z.alpha = 1.96, layout =c(2,3),type ="h", title = TRUE, ... )
 {
   
   # CREATE TIME SERIES OF T-STATS
@@ -134,17 +135,21 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE, myColor = c("bla
       panel.abline(h=-z.alpha,lty = 3, col = "red")
       panel.xyplot(...)
     }
-    # PLOT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
-    barplot(sigTstatsTs,col = myColor[2], main = " ")
-    if(title){ title("Number of Risk Indices with significant t-stats")}
-    
-    # PLOT T-STATS WITH XYPLOT
-    if(title) title.tstats = "t statistic values " else title.tstats = " " 
-    
-    plt <- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = 1), x = list(cex = 1)),
-                  layout = layout, main = title.tstats , col = myColor[1], lwd = lwd, strip.left = T, strip = F)
-    print(plt)
-    
+    if(whichPlot == "all" | whichPlot == "significantTstats")
+    {
+      # PLOT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
+      barplot(sigTstatsTs,col = color[2], main = " ")
+      if(title){ title("Number of Risk Indices with significant t-stats")}
+    }
+    if(whichPlot == "all" | whichPlot == "tStats")
+    {
+      # PLOT T-STATS WITH XYPLOT
+      if(title) title.tstats = "t statistic values " else title.tstats = " " 
+      
+      plt <- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = 1), x = list(cex = 1)),
+                    layout = layout, main = title.tstats , col = color[1], lwd = lwd, strip.left = T, strip = F)
+      print(plt)
+    }
   }
   out = list("tstats" =round(tstatsTs, digits), "z.alpha" =z.alpha)
   if(isPrint){print(out)}else invisible(out)
