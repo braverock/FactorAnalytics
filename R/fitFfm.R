@@ -147,8 +147,7 @@
 #' # Fit a SECTOR+COUNTRY+Style model with Intercept
 #' # Create a COUNTRY column with just 3 countries
 #' 
-#'  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("INDIA", 1),
-#'                                        rep("GERMANY", 1 )), 10), 60)
+#'  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
 #'  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
 #'  
 #'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
