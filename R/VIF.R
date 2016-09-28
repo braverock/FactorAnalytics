@@ -34,10 +34,10 @@
 #'               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"))
 #'
 #' #Plot and print the time series of VIF values
-#'  VIF(fit,isPrint=TRUE)
+#'  vif(fit,isPrint=TRUE)
 #' @export
 
-VIF <- function(ffmObj, digits=2, isPrint=T, isPlot =T, lwd =2, title = TRUE, ...)
+vif <- function(ffmObj, digits=2, isPrint=T, isPlot =T, lwd =2, title = TRUE, ...)
 { 
   # check input object validity
   if (!inherits(ffmObj, c("tsfm", "sfm", "ffm"))) 

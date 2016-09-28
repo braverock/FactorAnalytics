@@ -7,7 +7,7 @@ fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
 
 
 #Test for errors when  less than 2 exploratory variables are used to fit model. 
-expect_error(VIF(fit),"At least 2 continous variables required to find VIF")
+expect_error(vif(fit),"At least 2 continous variables required to find VIF")
 
 #Fit a Ffm
 fit.1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
@@ -15,5 +15,5 @@ fit.1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN"
 
 
 #test for output lengths
-out <- VIF(fit.1)
+out <- vif(fit.1)
 expect_equal(length(out), 2)
