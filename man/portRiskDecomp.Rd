@@ -28,8 +28,8 @@ optional arguments passed to \code{\link[stats]{cov}}}
 the vector should match with asset names. Default is NULL, in which case an 
 equal weights will be used.}
 
-\item{portDecomp}{logical. If {\True} the decomposition of risk is done for the portfolio based on the weights.
-Else, the decomposition of risk is done for each asset. {\Default} is {\FALSE}}
+\item{portDecomp}{logical. If \code{True} the decomposition of risk is done for the portfolio based on the weights.
+Else, the decomposition of risk is done for each asset. \code{Default} is \code{FALSE}}
 
 \item{p}{tail probability for calculation. Default is 0.05.}
 

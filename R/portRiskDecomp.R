@@ -13,8 +13,8 @@
 #' @param weights a vector of weights of the assets in the portfolio, names of 
 #' the vector should match with asset names. Default is NULL, in which case an 
 #' equal weights will be used.
-#' @param portDecomp logical. If {\True} the decomposition of risk is done for the portfolio based on the weights.
-#' Else, the decomposition of risk is done for each asset. {\Default} is {\FALSE}
+#' @param portDecomp logical. If \code{True} the decomposition of risk is done for the portfolio based on the weights.
+#' Else, the decomposition of risk is done for each asset. \code{Default} is \code{FALSE}
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
 #' @param p tail probability for calculation. Default is 0.05.
