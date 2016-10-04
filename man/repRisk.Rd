@@ -141,9 +141,5 @@ Douglas Martin, Lingjie Yi
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
-
-\code{\link{portSdDecomp}} for factor model Sd decomposition.
-\code{\link{portVaRDecomp}} for factor model VaR decomposition.
-\code{\link{portEsDecomp}} for factor model ES decomposition.
 }
 

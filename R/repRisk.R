@@ -62,10 +62,6 @@
 #' @seealso \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 #' for the different factor model fitting functions.
 #' 
-#' \code{\link{portSdDecomp}} for factor model Sd decomposition.
-#' \code{\link{portVaRDecomp}} for factor model VaR decomposition.
-#' \code{\link{portEsDecomp}} for factor model ES decomposition.
-#' 
 #' 
 #' @examples
 #' # Time Series Factor Model
@@ -153,8 +149,8 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   
   if(!portfolio.only){
     if(length(which(risk == "Sd"))){
-      port.Sd = portSdDecomp(object, weights = weights, ... )
-      asset.Sd = factorAnalytics::fmSdDecomp(object, ... )
+      port.Sd = riskDecomp(object, weights = weights,risk = "Sd", ... )
+      asset.Sd = riskDecomp(object,risk = "Sd", portDecomp =FALSE, ... )
       
       if(decomp == "RM"){
         isPlot = FALSE
@@ -187,8 +183,8 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       }
       
     } else if(length(which(risk == "VaR"))){
-      port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-      asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
+      port.VaR = riskDecomp(object, risk = "VaR", weights = weights, p = p, type = type, invert = invert, ... )
+      asset.VaR = riskDecomp(object, p = p, type = type, invert = invert, risk = "VaR", portDecomp =FALSE, ... )
       
       if(decomp == "RM"){
         isPlot = FALSE
@@ -221,8 +217,8 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       }
       
     } else if(length(which(risk == "ES"))){
-      port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-      asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, invert = invert, ... )
+      port.Es = riskDecomp(object, risk = "ES", weights = weights, p = p, type = type, invert = invert, ... )
+      asset.Es = riskDecomp(object, p = p, type = type, invert = invert,risk = "ES", portDecomp =FALSE, ... )
       
       if(decomp == "RM"){
         isPlot = FALSE
@@ -313,9 +309,9 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       return(output)
     }
   } else{
-    port.Sd = portSdDecomp(object, weights = weights, ... )
-    port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-    port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+    port.Sd = riskDecomp(object, risk = "Sd", weights = weights, ... )
+    port.VaR = riskDecomp(object, risk = "VaR", weights = weights, p = p, type = type, invert = invert, ... )
+    port.Es = riskDecomp(object, risk = "ES", weights = weights, p = p, type = type, invert = invert, ... )
     
     if(decomp == "RM"){
       isPlot = FALSE
@@ -417,8 +413,8 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   
   if(!portfolio.only){
     if(length(which(risk == "Sd"))){
-      port.Sd = portSdDecomp(object, weights = weights, ... )
-      asset.Sd = factorAnalytics::fmSdDecomp(object, ... )
+      port.Sd = riskDecomp(object,risk = "Sd",weights = weights, ... )
+      asset.Sd = riskDecomp(object,risk = "Sd", portDecomp =FALSE, ... )
       
       if(decomp == "RM"){
         isPlot = FALSE
@@ -451,8 +447,8 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       }
       
     } else if(length(which(risk == "VaR"))){
-      port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-      asset.VaR = factorAnalytics::fmVaRDecomp(object, p = p, type = type, invert = invert, ... )
+      port.VaR = riskDecomp(object, risk = "VaR", weights = weights, p = p, type = type, invert = invert, ... )
+      asset.VaR = riskDecomp(object,risk = "VaR", portDecomp =FALSE,  p = p, type = type, invert = invert, ... )
       
       if(decomp == "RM"){
         isPlot = FALSE
@@ -485,8 +481,8 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       }
       
     } else if(length(which(risk == "ES"))){
-      port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-      asset.Es = factorAnalytics::fmEsDecomp(object, p = p, type = type, invert = invert, ... )
+      port.Es = riskDecomp(object, risk = "ES", weights = weights, p = p, type = type, invert = invert, ... )
+      asset.Es = riskDecomp(object,risk = "ES", portDecomp =FALSE, p = p, type = type, invert = invert, ... )
       
       if(decomp == "RM"){
         isPlot = FALSE
@@ -577,9 +573,9 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       return(output)
     }
   } else{
-    port.Sd = portSdDecomp(object, weights = weights, ... )
-    port.VaR = portVaRDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
-    port.Es = portEsDecomp(object, weights = weights, p = p, type = type, invert = invert, ... )
+    port.Sd = riskDecomp(object, risk = "Sd", weights = weights, ... )
+    port.VaR = riskDecomp(object, risk ="VaR", weights = weights, p = p, type = type, invert = invert, ... )
+    port.Es = riskDecomp(object,risk ="ES", weights = weights, p = p, type = type, invert = invert, ... )
     
     if(decomp == "RM"){
       isPlot = FALSE

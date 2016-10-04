@@ -9,7 +9,7 @@
 #' 
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
-#' @param risk.measure one of "Sd" (Standard Deviation) or "VaR" (Value at Risk) or "ES" (Expected Shortfall)
+#' @param risk one of "Sd" (Standard Deviation) or "VaR" (Value at Risk) or "ES" (Expected Shortfall)
 #' @param weights a vector of weights of the assets in the portfolio, names of 
 #' the vector should match with asset names. Default is NULL, in which case an 
 #' equal weights will be used.
@@ -51,18 +51,18 @@
 #' fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
 #'                      rf.name=colnames(managers[,10]), data=managers)
-#' decompSd <- portRiskDecomp(fit.macro,risk.measure = "Sd")
-#' decompVaR <- portRiskDecomp(fit.macro,invert = TRUE, risk.measure = "VaR")
-#' decompES <- portRiskDecomp(fit.macro,invert = TRUE, risk.measure = "ES")
+#' decompSd <- riskDecomp(fit.macro,risk = "Sd")
+#' decompVaR <- riskDecomp(fit.macro,invert = TRUE, risk = "VaR")
+#' decompES <- riskDecomp(fit.macro,invert = TRUE, risk = "ES")
 #' # get the component contribution
 #' 
 #' # random weights 
 #' wts = runif(6)
 #' wts = wts/sum(wts)
 #' names(wts) <- colnames(managers)[1:6]
-#' portSd.decomp <- portRiskDecomp(fit.macro, wts, portDecomp = TRUE, risk.measure = "Sd")
-#' portVaR.decomp <- portRiskDecomp(fit.macro, wts, portDecomp = TRUE, risk.measure = "VaR")
-#' portES.decomp <- portRiskDecomp(fit.macro, wts, portDecomp = TRUE, risk.measure = "ES")
+#' portSd.decomp <- riskDecomp(fit.macro, wts, portDecomp = TRUE, risk = "Sd")
+#' portVaR.decomp <- riskDecomp(fit.macro, wts, portDecomp = TRUE, risk = "VaR")
+#' portES.decomp <- riskDecomp(fit.macro, wts, portDecomp = TRUE, risk = "ES")
 #' 
 #' # Fundamental Factor Model
 #' data("stocks145scores6")
@@ -81,33 +81,33 @@
 #'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
 #'               fit.method="WLS", z.score = TRUE)
 #'               
-#' decompES = portRiskDecomp(fit.cross, risk.measure = "ES") 
+#' decompES = riskDecomp(fit.cross, risk = "ES") 
 #' #get the factor contributions of risk 
-#' portES.decomp = portRiskDecomp(fit.cross, weights = wtsStocks145GmvLo, risk.measure = "ES", portDecomp = TRUE)  
+#' portES.decomp = riskDecomp(fit.cross, weights = wtsStocks145GmvLo, risk = "ES", portDecomp = TRUE)  
 #' @export
 
-portRiskDecomp <- function(object, ...){
+riskDecomp <- function(object, ...){
   # check input object validity
   if (!inherits(object, c("tsfm", "ffm"))) {
     stop("Invalid argument: Object should be of class 'tsfm', or 'ffm'.")
   }
-  UseMethod("portRiskDecomp")
+  UseMethod("riskDecomp")
 }
 
 
-#' @rdname portRiskDecomp
-#' @method portRiskDecomp tsfm
+#' @rdname riskDecomp
+#' @method riskDecomp tsfm
 #' @importFrom zoo index 
 #' @export
 
-portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp = FALSE, p=0.05, type=c("np","normal"), 
+riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0.05, type=c("np","normal"), 
                                 factor.cov, invert = FALSE, use="pairwise.complete.obs", ...) {
 
  
   
-  # Check risk.measure Type
-  if (missing(risk.measure) || !(risk.measure %in% c("Sd","VaR","ES"))) {
-    stop("Invalid or Missing arg: risk.measure must be 'Sd' or 'VaR' or 'ES' ")
+  # Check risk Type
+  if (missing(risk) || !(risk %in% c("Sd","VaR","ES"))) {
+    stop("Invalid or Missing arg: risk must be 'Sd' or 'VaR' or 'ES' ")
   }
   
   # set default for type
@@ -155,7 +155,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
   factors.xts <- object$data[,object$factor.names]
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
-  if (type=="normal" || risk.measure == "Sd") {
+  if (type=="normal" || risk == "Sd") {
     # get cov(F): K x K
     #REPLACED DIRECT FACTOR.COV CALCLUATION WITH CHECK FOR MISSING FACTOR.COV
     #     factor <- as.matrix(object$data[, object$factor.names])
@@ -189,7 +189,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
   K <- length(object$factor.names)
   idx.exceed <- list()
   
-  switch(risk.measure,
+  switch(risk,
          Sd = 
          {
            # compute factor model sd
@@ -224,7 +224,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
                 # get F.star data object
                 factor.star <- merge(factors.xts, resid.xts)
                 colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
-                switch(risk.measure, 
+                switch(risk, 
                        VaR =
                          {
                            Risk.fm <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
@@ -264,7 +264,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
                 
                 
               } else if (type=="normal") {
-                switch(risk.measure, 
+                switch(risk, 
                        VaR = 
                        {
                          # get VaR for asset i
@@ -300,7 +300,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
               if(invert){
                 Risk.fm <- -Risk.fm
               } 
-              switch(risk.measure,
+              switch(risk,
                      VaR = {out <- list(portVaR=Risk.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
                                         mVaR=mRisk, cVaR=cRisk, pcVaR=pcRisk)},
                      ES =  {out <- list(portES=Risk.fm, mES=mRisk, cES=cRisk, pcES=pcRisk)})
@@ -326,7 +326,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
                   factor.star <- merge(factors.xts, resid.xts[,i])
                   colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
                   
-                  switch(risk.measure, 
+                  switch(risk, 
                          VaR = 
                          {
                            # get VaR for asset i
@@ -365,7 +365,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
                   
                   
                 } else if (type=="normal") {
-                  switch(risk.measure, 
+                  switch(risk, 
                          VaR = 
                          {
                            # get VaR for asset i
@@ -400,7 +400,7 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
                 pcRisk[i,] <- 100* cRisk[i,] / Risk.fm[i]
               }
             
-                switch(risk.measure,
+                switch(risk,
                        VaR = {out <- list(VaR.fm=Risk.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
                                                       mVaR=mRisk, cVaR=cRisk, pcVaR=pcRisk)},
                        ES =  {out <- list(ES.fm=Risk.fm, mES=mRisk, cES=cRisk, pcES=pcRisk)})
@@ -412,17 +412,17 @@ portRiskDecomp.tsfm <- function(object, risk.measure, weights = NULL,portDecomp 
           
           
           
-#' @rdname portRiskDecomp
-#' @method portRiskDecomp ffm
+#' @rdname riskDecomp
+#' @method riskDecomp ffm
 #' @importFrom zoo index 
 #' @export
 
-portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp =FALSE, factor.cov, p=0.05, type=c("np","normal"), 
+riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, factor.cov, p=0.05, type=c("np","normal"), 
                              invert = FALSE, ...){
  
-  # Check risk.measure Type
-  if (missing(risk.measure) || !(risk.measure %in% c("Sd","VaR","ES"))) {
-    stop("Invalid or Missing arg: risk.measure must be 'Sd' or 'VaR' or 'ES' ")
+  # Check risk Type
+  if (missing(risk) || !(risk %in% c("Sd","VaR","ES"))) {
+    stop("Invalid or Missing arg: risk must be 'Sd' or 'VaR' or 'ES' ")
   }
   
   # set default for type
@@ -470,7 +470,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
   factors.xts <- object$factor.returns
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
-  if (type=="normal" || risk.measure == "Sd") {
+  if (type=="normal" || risk == "Sd") {
     # get cov(F): K x K
     if (missing(factor.cov)) {
       factor.cov <- object$factor.cov
@@ -500,7 +500,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
   N <- length(object$asset.names)
   K <- length(object$factor.names)
   idx.exceed <- list()
-  switch(risk.measure,
+  switch(risk,
          Sd = 
          {
            # compute factor model sd
@@ -536,7 +536,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
                 # get F.star data object
                 factor.star <- merge(factors.xts, resid.xts)
                 colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
-                switch(risk.measure, 
+                switch(risk, 
                        VaR =
                        {
                          Risk.fm <- quantile(R.xts, probs=p, na.rm=TRUE, ...)
@@ -576,7 +576,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
                 
                 
               } else if (type=="normal") {
-                switch(risk.measure, 
+                switch(risk, 
                        VaR = 
                        {
                          # get VaR for asset i
@@ -612,7 +612,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
               if(invert){
                 Risk.fm <- -Risk.fm
               } 
-              switch(risk.measure,
+              switch(risk,
                      VaR = {out <- list(portVaR=Risk.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
                                         mVaR=mRisk, cVaR=cRisk, pcVaR=pcRisk)},
                      ES =  {out <- list(portES=Risk.fm, mES=mRisk, cES=cRisk, pcES=pcRisk)})
@@ -641,7 +641,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
                   factor.star <- merge(factors.xts, resid.xts[,i])
                   colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
                   
-                  switch(risk.measure, 
+                  switch(risk, 
                          VaR = 
                          {
                            # get VaR for asset i
@@ -680,7 +680,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
                   
                   
                 } else if (type=="normal") {
-                  switch(risk.measure, 
+                  switch(risk, 
                          VaR = 
                          {
                            # get VaR for asset i
@@ -715,7 +715,7 @@ portRiskDecomp.ffm <- function(object, risk.measure, weights = NULL, portDecomp 
                 pcRisk[i,] <- 100* cRisk[i,] / Risk.fm[i]
               }
             
-        switch(risk.measure,
+        switch(risk,
                VaR = {out <- list(VaR.fm=Risk.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
                                   mVaR=mRisk, cVaR=cRisk, pcVaR=pcRisk)},
                ES =  {out <- list(ES.fm=Risk.fm, mES=mRisk, cES=cRisk, pcES=pcRisk)})
