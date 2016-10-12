@@ -20,7 +20,6 @@
 #' @param lwd      line width relative to the default. Default is 2.
 #' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50% larger, 0.5 is 50% smaller, etc.
 #' @param title    logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.
-#' 
 #' @param ...      potentially further arguments passed.
 #' @author Avinash Acharya and Doug Martin
 #'
