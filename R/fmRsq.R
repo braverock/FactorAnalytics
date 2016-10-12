@@ -18,6 +18,7 @@
 #'                 Else, only the mean values are printed. Default is \code{TRUE}.
 #' @param isPlot   logical. if \code{TRUE}, the time series of the output is plotted. Default is \code{TRUE}.
 #' @param lwd      line width relative to the default. Default is 2.
+#' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50% larger, 0.5 is 50% smaller, etc.
 #' @param title    logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.
 #' 
 #' @param ...      potentially further arguments passed.
@@ -60,7 +61,7 @@ fmRsq <- function(ffmObj, ...){
 #' @method fmRsq ffm
 #' @export
 #' 
-fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, isPlot =T, lwd =2, title = TRUE, ...)
+fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, isPlot =T, lwd =2,stripText.cex =1, title = TRUE, ...)
 {
   # set defaults and check input validity
   if (!inherits(ffmObj, "ffm"))
@@ -98,7 +99,7 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
         panel =  function(...){
           panel.abline(h=0,lty = 3)
           panel.xyplot(...)}
-        plt = xyplot(r2.xts,col = "blue",lwd =lwd, panel =panel, scale = list(y = list(cex=1,rot =0),x = list(cex =1)),
+        plt = xyplot(r2.xts,col = "blue",lwd =lwd, panel =panel, scale = list(y = list(cex=1,rot =0),x = list(cex =1)),par.strip.text = list(cex = stripText.cex),
                      main = title.Rsq, type = "h", ylim = c(0,(max(r2.xts)+0.05)), strip.left = strip.custom(var.name = "Rsq", style = 1, strip.names = T,strip.levels=F ))
         print(plt) 
         
@@ -131,7 +132,7 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
         panel.abline(h=0,lty = 3)
         panel.xyplot(...)}
       plt = xyplot(adj.r2.xts,col = "blue", lwd =lwd, main = title.AdjRsq, type = "h",panel = panel,
-                   scales = list(y = list(cex = 1,relation="same"),x = list(cex =1)),
+                   scales = list(y = list(cex = 1,relation="same"),x = list(cex =1)),par.strip.text = list(cex = stripText.cex),
                    strip.left = strip.custom(var.name = "AdjRsq", style = 1, strip.names = T,strip.levels=F ))
       print(plt) 
     }
@@ -146,49 +147,21 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
     if (isPlot && plt.type == 2)
     { 
       if(title) title.comb = "Factor Model R-squared Values" else title.comb = " " 
+      panel =  function(...){
+        panel.abline(h=0,lty = 3)
+        panel.xyplot(...)}
       r2.combined = merge.xts("Rsq" = r2.xts,"AdjRsq" =  adj.r2.xts)
-      tsPlotMP(0.01*r2.combined,stripLeft = TRUE, scaleType = "same",
-               color = "blue", yname = "", lwd = lwd, main = title.comb, type = "h", cex = 1.2)
+#       tsPlotMP(0.01*r2.combined,stripLeft = TRUE, scaleType = "same",
+#                color = "blue", yname = "", lwd = lwd, main = title.comb, type = "h", cex = 1.2)
+      plt = xyplot(r2.combined,col = "blue", lwd =lwd, main = title.comb, type = "h",panel = panel,
+                   scales = list(y = list(cex = 1,relation="same"),x = list(cex =1)),par.strip.text = list(cex = stripText.cex),
+                   strip.left = T, strip = F)
+      print(plt) 
       
     }
     out<- c(r2.mean, adj.r2.mean)
     ret<- list("R-Squared"= r2, "Adj.R-Squared" = adj.r2)
   }
-  # if(VIF)
-  # {
-  #   exposure.vars= ffmObj$exposure.vars
-  #   which.numeric <- sapply(ffmObj$data[,exposure.vars,drop=FALSE], is.numeric)
-  #   exposures.num <- exposure.vars[which.numeric]
-  #   if(length(exposures.num) < 2)
-  #   {
-  #     stop(" At least 2 continous variables required to find VIF")
-  #   }
-  #   
-  #   object = ffmObj$data[exposures.num]  
-  #   object <- as.matrix(object)
-  #   ncols <- dim(object)[2]
-  #   time.periods = length(ffmObj$time.periods)
-  #   vifs = matrix(0, nrow = time.periods, ncol = ncols)
-  #   for(i in 1:time.periods)
-  #   {
-  #     vifs[i,1:ncols] = sapply(seq(ncols), function(x)
-  #       1/(1 - summary(lm(object[((i-1)*n.assets+1) : (i*n.assets), x] ~ 
-  #                           object[((i-1)*n.assets+1) :(i*n.assets), -x]))$r.squared))
-  #   }
-  #   colnames(vifs) <- dimnames(object)[[2]]
-  #   vifs.xts = xts(vifs, order.by = ffmObj$time.periods)
-  #   vifs.mean = round(colMeans(vifs.xts),digits = digits)
-  #   if(isPlot)
-  #   {
-  #     if(title) title.vif = "Factor Model VIF Values" else title.vif = " " 
-  #     #Assuming the number of continous variables in exposure.vars is less than 6,layout=c(1,ncols) is defined.
-  #     tsPlotMP(0.01*vifs.xts,stripLeft = TRUE, layout = c(1,ncols), scaleType = "same",
-  #              color = "blue", yname = "", lwd = lwd, main =title.vif, type = "h")
-  #   }
-  #   vifs.xts = round(vifs.xts,digits = digits)
-  #   out<- append(out, list("Mean.VIF" = vifs.mean))
-  #   ret<- append(ret, list("VIF" = vifs.xts))
-  # }
   
   if(isPrint)
   {

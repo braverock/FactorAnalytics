@@ -14,6 +14,7 @@
 #' @param isPrint logical variable to print numeric summary or not.
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
+#' @param notch logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is ‘strong evidence’ that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
 #' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
 #' @param titleText logical varible to choose display plot title or not. Default is 'TRUE', and used only when isPlot = 'TRUE'.
@@ -61,7 +62,7 @@
 
 
 repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, scaleType = 'free',
-                         stripLeft = TRUE, layout = NULL, digits = 1, titleText = TRUE, 
+                         stripLeft = TRUE, layout = NULL, notch = FALSE, digits = 1, titleText = TRUE, 
                          which = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
@@ -166,7 +167,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                )
                ## Boxplot of factor exposures
                boxplot(100*coredata(X[,exposures.num]), col=5,
-                       notch = T, ylab = "Percentage (%)",
+                       notch = notch, ylab = "Percentage (%)",
                        main = main)
              }, 
              "3L" = {  
@@ -178,9 +179,9 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                  main1 = main2 = main3 = ''
                )
                ## Barplot of means and vols of style factor exposures, and means of sector exposures 
-               par(mfrow = layout)
-               par(mar= par()$mar + c(1,1,1,1))
-               
+                #par(mfrow = layout)
+                par(mar= par()$mar + c(1.5,1.5,1.5,1.5))
+               layout(matrix(c(1,2,3,3), 2, 2, byrow = TRUE))
                a = colMeans(X[,exposures.num])
                b = apply(X[,exposures.num],2,sd)
                c = rbind(a,b)
@@ -191,7 +192,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                barplot(b,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main2)
                barplot(d,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main3)
                
-               par(mar= par()$mar + c(-1,-1,-1,-1))
+               par(mar= par()$mar + c(-1.5,-1.5,-1.5,-1.5))
                par(mfrow = c(1,1))
                
              },

@@ -5,8 +5,8 @@
 \title{Portfolio Exposures Report}
 \usage{
 repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
-  scaleType = "free", stripLeft = TRUE, layout = NULL, digits = 1,
-  titleText = TRUE, which = NULL, ...)
+  scaleType = "free", stripLeft = TRUE, layout = NULL, notch = FALSE,
+  digits = 1, titleText = TRUE, which = NULL, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
@@ -22,6 +22,8 @@ repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 \item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'}
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'}
+
+\item{notch}{logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is <U+00E2><U+20AC><U+02DC>strong evidence<U+00E2><U+20AC><U+2122> that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.}
 
 \item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
 

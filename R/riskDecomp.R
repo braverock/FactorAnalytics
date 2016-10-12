@@ -610,7 +610,7 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
               pcRisk <- drop(100* cRisk / Risk.fm)
               
               if(invert){
-                Risk.fm <- -Risk.fm
+                Risk.fm = -Risk.fm
               } 
               switch(risk,
                      VaR = {out <- list(portVaR=Risk.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 

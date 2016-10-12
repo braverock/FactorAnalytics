@@ -127,6 +127,15 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
   sigTstats = as.matrix(rowSums(ifelse(abs(tstatsTs) > z.alpha,1,0)))
   sigTstatsTs = xts(sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
   
+  pos.sigTstats = as.matrix(rowSums(ifelse((tstatsTs) > z.alpha,1,0)))
+  pos.sigTstatsTs = xts(pos.sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
+  
+  neg.sigTstats = as.matrix(rowSums(ifelse((tstatsTs) < -z.alpha,1,0)))
+  neg.sigTstatsTs = xts(neg.sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
+  
+  combined.sigTstats = cbind(pos.sigTstatsTs, neg.sigTstatsTs, sigTstatsTs)
+  pos.neg.sigTstats = cbind(pos.sigTstatsTs, neg.sigTstatsTs)
+  
   if(isPlot)
   {
     panel =  function(...){
@@ -137,17 +146,43 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
     if(whichPlot == "all" | whichPlot == "significantTstats")
     {
       # PLOT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
+      par(mfrow = c(1,1))
+      barplot(combined.sigTstats,col = c( "green","red", "dark blue"), main = " ", beside = TRUE)
+      legend ("topright", legend = c("positive", "negative", "total"),bty = "n", fill = c("green", "red", "darkblue"))
+      if(title){ title("Number of Risk Indices with significant t-stats")}
+      
+      par(mfrow = c(2,1))
       barplot(sigTstatsTs,col = color[2], main = " ")
       if(title){ title("Number of Risk Indices with significant t-stats")}
+      
+      barplot(pos.neg.sigTstats,col = c( "green","red"), main = " ", beside = FALSE)
+      #legend ("topright", bty ="n", legend = c("positive", "negative"), fill = c("green", "red"))
+      if(title){ title("Number of Risk Indices with significant t-stats(positive and negative)")}
+      
+      par(mfrow = c(1,1))
+      
+      par(mfrow = c(2,1))
+      barplot(sigTstatsTs,col = color[2], main = " ")
+      if(title){ title("Number of Risk Indices with significant t-stats")}
+      
+      barplot(pos.neg.sigTstats,col = c( "green","red"), main = " ", beside = TRUE)
+      #legend ("topright", legend = c("positive", "negative"), fill = c("green", "red"))
+      if(title){ title("Number of Risk Indices with significant t-stats(positive and negative)")}
+      
+      par(mfrow = c(1,1))
+      
+      
     }
     if(whichPlot == "all" | whichPlot == "tStats")
     {
+      #par(mfrow= c(3,1))
       # PLOT T-STATS WITH XYPLOT
       if(title) title.tstats = "t statistic values " else title.tstats = " " 
       
       plt <- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = 1), x = list(cex = 1)),
                     layout = layout, main = title.tstats , col = color[1], lwd = lwd, strip.left = T, strip = F)
       print(plt)
+      #par(mfrow= c(1,1))
     }
   }
   out = list("tstats" =round(tstatsTs, digits), "z.alpha" =z.alpha)
