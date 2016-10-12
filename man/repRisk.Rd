@@ -58,7 +58,7 @@ abbreviation of) one of the strings "everything", "all.obs",
 "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 "pairwise.complete.obs".}
 
-\item{sliceby}{one of <U+00E2><U+20AC><U+0153>factor<U+00E2><U+20AC><U+009D> (slice/condition by factor) or <U+00E2><U+20AC><U+0153>asset<U+00E2><U+20AC><U+009D> (slice/condition by asset)
+\item{sliceby}{one of “factor” (slice/condition by factor) or “asset” (slice/condition by asset)
 Used only when isPlot = 'TRUE'}
 
 \item{isPrint}{logical variable to print numeric output or not.}

@@ -23,7 +23,7 @@ repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'}
 
-\item{notch}{logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is <U+00E2><U+20AC><U+02DC>strong evidence<U+00E2><U+20AC><U+2122> that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.}
+\item{notch}{logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is ‘strong evidence’ that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.}
 
 \item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
 
