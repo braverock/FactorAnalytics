@@ -5,8 +5,9 @@
 \title{Portfolio Exposures Report}
 \usage{
 repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
-  scaleType = "free", stripLeft = TRUE, layout = NULL, notch = FALSE,
-  digits = 1, titleText = TRUE, which = NULL, ...)
+  scaleType = "free", stripText.cex = 1, axis.cex = 1, stripLeft = TRUE,
+  layout = NULL, notch = FALSE, digits = 1, titleText = TRUE,
+  which = NULL, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
@@ -18,6 +19,10 @@ repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 \item{isPrint}{logical variable to print numeric summary or not.}
 
 \item{scaleType}{scaleType controls if use a same scale of y-axis, choose from c('same', 'free')}
+
+\item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+
+\item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 
 \item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'}
 

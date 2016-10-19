@@ -5,7 +5,7 @@
 \title{Factor Model Variance Inflaction Factor Values}
 \usage{
 vif(ffmObj, digits = 2, isPrint = T, isPlot = T, lwd = 2,
-  title = TRUE, ...)
+  stripText.cex = 1, axis.cex = 1, title = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
@@ -19,6 +19,10 @@ Else, only the mean values are printed. Default is \code{TRUE}.}
 
 \item{lwd}{line width relative to the default. Default is 2.}
 
+\item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+
+\item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+
 \item{title}{logical. This argument is mainly used for the documentation purpose when you need a plot without any title.
 If \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.}
 
@@ -31,7 +35,7 @@ If \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.}
 }
 \description{
 Calcluate and plot the Factor Model Variance Inflaction Factor Values for a fitted model.
-                 A VIF for a single explanatory variable is obtained using the time series of R-squared values obtained from 
+                 A VIF for a single explanatory variable (style factor) is obtained using the time series of R-squared values obtained from 
                  the regression of that variable against all other explanatory variables.
                  So, at least 2 explanatory variables are required in \code{exposure.vars} of fitted model to find the VIF.
 }
@@ -49,6 +53,6 @@ require(factorAnalytics)
  vif(fit,isPrint=TRUE)
 }
 \author{
-Avinash Acharya and Doug Martin
+Avinash Acharya
 }
 

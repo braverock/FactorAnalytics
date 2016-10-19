@@ -13,10 +13,10 @@
 #' equal weights will be used.
 #' @param risk one of 'Sd' (standard deviation), 'VaR' (Value-at-Risk) or 'ES' (Expected Tail 
 #' Loss or Expected Shortfall for calculating risk decompositon. Default is 'Sd'
-#' @param decomp one of 'RM' (risk measure), 'FMCR' (factor marginal contribution to risk), 
-#' 'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk). Default is 'RM'
+#' @param decomp one of 'FMCR' (factor marginal contribution to risk), 
+#' 'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk).
 #' @param digits digits of number in the resulting table. Default is NULL, in which case digtis = 3 will be
-#' used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
+#' used for decomp = ( 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
 #' isPrint = 'TRUE'
 #' @param nrowPrint a numerical value deciding number of assets/portfolio in result vector/table to print
 #' or plot  
@@ -24,12 +24,12 @@
 #' Default is "np".
 #' @param sliceby one of “factor” (slice/condition by factor) or “asset” (slice/condition by asset)
 #' Used only when isPlot = 'TRUE'  
-#' @param invert a logical variable to choose if change VaR/ES to positive number, default
-#' is False 
+#' @param invert a logical variable to change VaR/ES to positive number, default
+#' is False and will return positive values.
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
 #' @param portfolio.only logical variable to choose if to calculate portfolio only decomposition, in which case multiple risk measures are 
 #' allowed.
-#' @param isPlot logical variable to generate plot or not. isPlot = FALSE when decomp = 'RM'.
+#' @param isPlot logical variable to generate plot or not.
 #' @param isPrint logical variable to print numeric output or not.
 #' @param use an optional character string giving a method for computing factor
 #' covariances in the presence of missing values. This must be (an 
@@ -40,8 +40,6 @@
 #' optional arguments passed to \code{\link[stats]{cov}}
 #'
 #' @return A table containing 
-#' \item{decomp = 'RM'}{length-(N + 1) vector of factor model risk measure of portfolio return 
-#' as well assets return.}
 #' \item{decomp = 'FMCR'}{(N + 1) * (K + 1) matrix of marginal contributions to risk of portfolio 
 #' return as well assets return, with first row of values for the portfolio and the remaining rows for 
 #' the assets in the portfolio, with  (K + 1) columns containing values for the K risk factors and the
@@ -121,7 +119,7 @@ repRisk <- function(object, ...){
 #' @export
 
 repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"), 
-                         decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
+                         decomp = c('FPCR','FCR','FMCR' ), digits = NULL, invert = FALSE,
                          nrowPrint = 20, p=0.05, type=c("np","normal"), use="pairwise.complete.obs", 
                          sliceby = c('factor', 'asset'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
                          portfolio.only = FALSE, ...) {
@@ -143,8 +141,8 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     stop("Invalid args: risk must be 'Sd', 'VaR' or 'ES' ")
   }
   
-  if (!prod(decomp %in% c("RM", 'FMCR', 'FCR', 'FPCR'))) {
-    stop("Invalid args: decomp must be 'RM', 'FMCR', 'FCR' or 'FPCR' ")
+  if (!prod(decomp %in% c('FPCR','FCR','FMCR' ))) {
+    stop("Invalid args: decomp must be  'FMCR', 'FCR' or 'FPCR' ")
   }
   
   if(!portfolio.only){
@@ -152,13 +150,14 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       port.Sd = riskDecomp(object, weights = weights,risk = "Sd", ... )
       asset.Sd = riskDecomp(object,risk = "Sd", portDecomp =FALSE, ... )
       
-      if(decomp == "RM"){
-        isPlot = FALSE
-        port = port.Sd$portSd
-        asset = asset.Sd$Sd.fm
-        result = c(port, asset)
-        names(result)[1] = 'Portfolio'
-      } else if(decomp == "FMCR"){
+#       if(decomp == "RM"){
+#         isPlot = FALSE
+#         port = port.Sd$portSd
+#         asset = asset.Sd$Sd.fm
+#         result = c(port, asset)
+#         names(result)[1] = 'Portfolio'
+#       } else if(decomp == "FMCR"){
+      if(decomp == "FMCR"){
         port = port.Sd$mSd
         asset = asset.Sd$mSd
         result = rbind(port, asset)
@@ -186,13 +185,14 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       port.VaR = riskDecomp(object, risk = "VaR", weights = weights, p = p, type = type, invert = invert, ... )
       asset.VaR = riskDecomp(object, p = p, type = type, invert = invert, risk = "VaR", portDecomp =FALSE, ... )
       
-      if(decomp == "RM"){
-        isPlot = FALSE
-        port = port.VaR$portVaR
-        asset = asset.VaR$VaR.fm
-        result = c(port, asset)
-        names(result)[1] = 'Portfolio'
-      } else if(decomp == "FMCR"){
+#       if(decomp == "RM"){
+#         isPlot = FALSE
+#         port = port.VaR$portVaR
+#         asset = asset.VaR$VaR.fm
+#         result = c(port, asset)
+#         names(result)[1] = 'Portfolio'
+#       } else if(decomp == "FMCR"){
+      if(decomp == "FMCR"){
         port = port.VaR$mVaR
         asset = asset.VaR$mVaR
         result = rbind(port, asset)
@@ -220,13 +220,14 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       port.Es = riskDecomp(object, risk = "ES", weights = weights, p = p, type = type, invert = invert, ... )
       asset.Es = riskDecomp(object, p = p, type = type, invert = invert,risk = "ES", portDecomp =FALSE, ... )
       
-      if(decomp == "RM"){
-        isPlot = FALSE
-        port = port.Es$portES
-        asset = asset.Es$ES.fm
-        result = c(port, asset)
-        names(result)[1] = 'Portfolio'
-      } else if(decomp == "FMCR"){
+#       if(decomp == "RM"){
+#         isPlot = FALSE
+#         port = port.Es$portES
+#         asset = asset.Es$ES.fm
+#         result = c(port, asset)
+#         names(result)[1] = 'Portfolio'
+#       } else if(decomp == "FMCR"){
+      if(decomp == "FMCR"){
         port = port.Es$mES
         asset = asset.Es$mES
         result = rbind(port, asset)
@@ -313,16 +314,17 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     port.VaR = riskDecomp(object, risk = "VaR", weights = weights, p = p, type = type, invert = invert, ... )
     port.Es = riskDecomp(object, risk = "ES", weights = weights, p = p, type = type, invert = invert, ... )
     
-    if(decomp == "RM"){
-      isPlot = FALSE
-      Sd = port.Sd$portSd
-      VaR = port.VaR$portVaR
-      Es = port.Es$portES
-      
-      result = c(Sd, VaR, Es)
-      names(result) = c('Sd','VaR','ES')
-      result = result[risk]
-    } else if(decomp == "FMCR"){
+#     if(decomp == "RM"){
+#       isPlot = FALSE
+#       Sd = port.Sd$portSd
+#       VaR = port.VaR$portVaR
+#       Es = port.Es$portES
+#       
+#       result = c(Sd, VaR, Es)
+#       names(result) = c('Sd','VaR','ES')
+#       result = result[risk]
+#     } else if(decomp == "FMCR"){
+    if(decomp == "FMCR"){
       Sd = port.Sd$mSd
       VaR = port.VaR$mVaR
       Es = port.Es$mES
@@ -385,7 +387,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
 #' @export
 
 repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
-                        decomp = c("RM", 'FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
+                        decomp = c('FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
                         nrowPrint = 20, p=0.05, type=c("np","normal"), 
                         sliceby = c('factor', 'asset'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
                         portfolio.only = FALSE, ...) {
@@ -407,8 +409,8 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     stop("Invalid args: risk must be 'Sd', 'VaR' or 'ES' ")
   }
   
-  if (!prod(decomp %in% c("RM", 'FMCR', 'FCR', 'FPCR'))) {
-    stop("Invalid args: decomp must be 'RM', 'FMCR', 'FCR' or 'FPCR' ")
+  if (!prod(decomp %in% c( 'FMCR', 'FCR', 'FPCR'))) {
+    stop("Invalid args: decomp must be 'FMCR', 'FCR' or 'FPCR' ")
   }
   
   if(!portfolio.only){
@@ -416,13 +418,14 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       port.Sd = riskDecomp(object,risk = "Sd",weights = weights, ... )
       asset.Sd = riskDecomp(object,risk = "Sd", portDecomp =FALSE, ... )
       
-      if(decomp == "RM"){
-        isPlot = FALSE
-        port = port.Sd$portSd
-        asset = asset.Sd$Sd.fm
-        result = c(port, asset)
-        names(result)[1] = 'Portfolio'
-      } else if(decomp == "FMCR"){
+#       if(decomp == "RM"){
+#         isPlot = FALSE
+#         port = port.Sd$portSd
+#         asset = asset.Sd$Sd.fm
+#         result = c(port, asset)
+#         names(result)[1] = 'Portfolio'
+#       } else if(decomp == "FMCR"){
+      if(decomp == "FMCR"){
         port = port.Sd$mSd
         asset = asset.Sd$mSd
         result = rbind(port, asset)
@@ -450,13 +453,14 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       port.VaR = riskDecomp(object, risk = "VaR", weights = weights, p = p, type = type, invert = invert, ... )
       asset.VaR = riskDecomp(object,risk = "VaR", portDecomp =FALSE,  p = p, type = type, invert = invert, ... )
       
-      if(decomp == "RM"){
-        isPlot = FALSE
-        port = port.VaR$portVaR
-        asset = asset.VaR$VaR.fm
-        result = c(port, asset)
-        names(result)[1] = 'Portfolio'
-      } else if(decomp == "FMCR"){
+#       if(decomp == "RM"){
+#         isPlot = FALSE
+#         port = port.VaR$portVaR
+#         asset = asset.VaR$VaR.fm
+#         result = c(port, asset)
+#         names(result)[1] = 'Portfolio'
+#       } else if(decomp == "FMCR"){
+      if(decomp == "FMCR"){
         port = port.VaR$mVaR
         asset = asset.VaR$mVaR
         result = rbind(port, asset)
@@ -484,13 +488,14 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
       port.Es = riskDecomp(object, risk = "ES", weights = weights, p = p, type = type, invert = invert, ... )
       asset.Es = riskDecomp(object,risk = "ES", portDecomp =FALSE, p = p, type = type, invert = invert, ... )
       
-      if(decomp == "RM"){
-        isPlot = FALSE
-        port = port.Es$portES
-        asset = asset.Es$ES.fm
-        result = c(port, asset)
-        names(result)[1] = 'Portfolio'
-      } else if(decomp == "FMCR"){
+#       if(decomp == "RM"){
+#         isPlot = FALSE
+#         port = port.Es$portES
+#         asset = asset.Es$ES.fm
+#         result = c(port, asset)
+#         names(result)[1] = 'Portfolio'
+#       } else if(decomp == "FMCR"){
+      if(decomp == "FMCR"){
         port = port.Es$mES
         asset = asset.Es$mES
         result = rbind(port, asset)
@@ -577,16 +582,17 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     port.VaR = riskDecomp(object, risk ="VaR", weights = weights, p = p, type = type, invert = invert, ... )
     port.Es = riskDecomp(object,risk ="ES", weights = weights, p = p, type = type, invert = invert, ... )
     
-    if(decomp == "RM"){
-      isPlot = FALSE
-      Sd = port.Sd$portSd
-      VaR = port.VaR$portVaR
-      Es = port.Es$portES
-      
-      result = c(Sd, VaR, Es)
-      names(result) = c('Sd','VaR','ES')
-      result = result[risk]
-    } else if(decomp == "FMCR"){
+#     if(decomp == "RM"){
+#       isPlot = FALSE
+#       Sd = port.Sd$portSd
+#       VaR = port.VaR$portVaR
+#       Es = port.Es$portES
+#       
+#       result = c(Sd, VaR, Es)
+#       names(result) = c('Sd','VaR','ES')
+#       result = result[risk]
+#     } else if(decomp == "FMCR"){
+    if(decomp == "FMCR"){
       Sd = port.Sd$mSd
       VaR = port.VaR$mVaR
       Es = port.Es$mES

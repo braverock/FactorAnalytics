@@ -7,9 +7,11 @@
 #' @importFrom zoo plot.zoo
 #' @importFrom zoo as.yearmon
 #' @importFrom graphics barplot
-#' @importFrom lattice panel.abline xyplot panel.xyplot
+#' @importFrom lattice panel.abline xyplot panel.xyplot barchart
 #' @importFrom grDevices dev.off
 #' @importFrom stats vcov
+#' @importFrom reshape2 melt
+#' @importFrom HH likert
 #'  
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param isPlot   logical. If \code{FALSE} no plots are displayed.
@@ -23,6 +25,8 @@
 #' @param layout   numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in the xyplot of t-statistics. default is c(2,3).
 #' @param type     character. Type of the xyplot of t-statistics; \code{"l"} for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) vertical lines
 #'                 and \code{"b"} for both. Deafault is \code{"h"}.
+#' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
+#' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 #' @param title    logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.
 
 #' @param ...     potentially further arguments passed.
@@ -73,7 +77,7 @@ fmTstats <- function(ffmObj, ...){
 #' @method fmTstats ffm
 #' @export
 #' 
-fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all", color = c("black", "cyan"),lwd =2, digits =2, z.alpha = 1.96, layout =c(2,3),type ="h", title = TRUE, ... )
+fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all", color = c("black", "cyan"),lwd =2, digits =2, z.alpha = 1.96, layout =c(2,3),type ="h",stripText.cex =1,axis.cex=1, title = TRUE, ... )
 {
   
   # CREATE TIME SERIES OF T-STATS
@@ -127,14 +131,19 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
   sigTstats = as.matrix(rowSums(ifelse(abs(tstatsTs) > z.alpha,1,0)))
   sigTstatsTs = xts(sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
   
-  pos.sigTstats = as.matrix(rowSums(ifelse((tstatsTs) > z.alpha,1,0)))
-  pos.sigTstatsTs = xts(pos.sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
+  pos.sigTstatsTs = as.matrix(colSums(ifelse((tstatsTs) > z.alpha,1,0)))
+  #pos.sigTstatsTs = xts(pos.sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
+  neg.sigTstatsTs = as.matrix(colSums(ifelse((tstatsTs) < -z.alpha,1,0)))
+  Toal.sigTstats = as.matrix(colSums(ifelse(abs(tstatsTs) > z.alpha,1,0)))
   
-  neg.sigTstats = as.matrix(rowSums(ifelse((tstatsTs) < -z.alpha,1,0)))
-  neg.sigTstatsTs = xts(neg.sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
+  combined.sigTstats = cbind(  neg.sigTstatsTs,pos.sigTstatsTs, Toal.sigTstats)
+  colnames(combined.sigTstats) = c( "Negative", "Positive", "Total")
+  sum.significant = apply(combined.sigTstats, 2, FUN = sum)[[3]]
+  percent.sigTstats = as.data.frame((100/sum.significant)*combined.sigTstats[,-3])
+  percent.sigTstats = rbind(percent.sigTstats,"TOTAL" = colSums(percent.sigTstats))
+  percent.sigTstats$var = c(rownames(combined.sigTstats),"TOTAL")
   
-  combined.sigTstats = cbind(pos.sigTstatsTs, neg.sigTstatsTs, sigTstatsTs)
-  pos.neg.sigTstats = cbind(pos.sigTstatsTs, neg.sigTstatsTs)
+
   
   if(isPlot)
   {
@@ -145,31 +154,74 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
     }
     if(whichPlot == "all" | whichPlot == "significantTstats")
     {
-      # PLOT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
-      par(mfrow = c(1,1))
-      barplot(combined.sigTstats,col = c( "green","red", "dark blue"), main = " ", beside = TRUE)
-      legend ("topright", legend = c("positive", "negative", "total"),bty = "n", fill = c("green", "red", "darkblue"))
-      if(title){ title("Number of Risk Indices with significant t-stats")}
       
-      par(mfrow = c(2,1))
-      barplot(sigTstatsTs,col = color[2], main = " ")
-      if(title){ title("Number of Risk Indices with significant t-stats")}
+      plt = likert(var ~ ., percent.sigTstats,
+                   scales=list(y=list(cex=stripText.cex), x=list(cex=axis.cex)),
+                   positive.order=TRUE, 
+                   between=list(y=0),
+                   strip=FALSE, strip.left=FALSE,
+                   #par.strip.text=list(cex=stripText.cex, lines=3),
+                   main="significant t-stats",rightAxis=FALSE,
+                   ylab=NULL,  xlab='Toal %')
+      print(plt)
       
-      barplot(pos.neg.sigTstats,col = c( "green","red"), main = " ", beside = FALSE)
-      #legend ("topright", bty ="n", legend = c("positive", "negative"), fill = c("green", "red"))
-      if(title){ title("Number of Risk Indices with significant t-stats(positive and negative)")}
+      mydata = as.data.frame(t(combined.sigTstats))
+      mydata$id <- c("Positive", "Negative", "Total")
+      dat <- melt(mydata,id.vars = "id")
+#       p<- ggplot(dat,aes(x=factor(id), y = value)) + 
+#         facet_wrap(~variable, ncol=3) +
+#         geom_bar(aes(fill = factor(id)), stat = "identity")+coord_flip()+
+#         scale_fill_discrete(name="Type")+
+#         ylab("Number of significant t-stats")+xlab("")
+#       print(p)
+      my.settings <- list(
+        superpose.polygon=list(col=c("red", "black", "grey"), border="transparent"),
+        strip.border=list(col="black")
+      )
+      plt = barchart(~value|variable,group = (id),data=dat,par.settings = my.settings,layout = layout,
+                     main="Significant t-stats", ylab="Type", xlab="Total significance %",
+                     auto.key=list(space="right",points=FALSE, rectangles=TRUE,
+                                   title="Significant type", cex.title=1),
+                     scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black", font=2, cex = stripText.cex))
+      print(plt)
       
-      par(mfrow = c(1,1))
+      plt = barchart(value~id|variable,group = (id),data=dat,origin=0, 
+                     main="Significant t-stats", xlab="Type", ylab="Total significance %",
+                     par.settings = my.settings,layout = layout,
+                     auto.key=list(space="right",points=FALSE, rectangles=TRUE,
+                                       title="Significant type", cex.title=1),
+                     scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black", font=2, cex = stripText.cex))
+      print(plt)
       
-      par(mfrow = c(2,1))
-      barplot(sigTstatsTs,col = color[2], main = " ")
-      if(title){ title("Number of Risk Indices with significant t-stats")}
-      
-      barplot(pos.neg.sigTstats,col = c( "green","red"), main = " ", beside = TRUE)
-      #legend ("topright", legend = c("positive", "negative"), fill = c("green", "red"))
-      if(title){ title("Number of Risk Indices with significant t-stats(positive and negative)")}
-      
-      par(mfrow = c(1,1))
+#       # PLOT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
+#       par(mfrow = c(1,1))
+#       plt <- barchart(combined.sigTstats, scales = list(y = list(cex = 1), x = list(cex = 1)),
+#                       col = c("blue", "green", "red"), lwd = lwd, strip.left = F, strip = T)
+#       print(plt)
+#       
+#       barplot(t(combined.sigTstats),  col = c("green","red", "dark blue"),main = " ", beside = F, horiz = T,ylab = rownames(combined.sigTstats))
+#       legend ("topright", legend = c("positive", "negative", "total"),bty = "n", fill = c("green", "red", "darkblue"))
+#       if(title){ title("Number of Risk Indices with significant t-stats")}
+#       
+#       par(mfrow = c(2,1))
+#       barplot(sigTstatsTs,col = color[2], main = " ")
+#       if(title){ title("Number of Risk Indices with significant t-stats")}
+#       
+#       barplot(pos.neg.sigTstats,col = c( "green","red"), main = " ", beside = FALSE, horiz = T)
+#       #legend ("topright", bty ="n", legend = c("positive", "negative"), fill = c("green", "red"))
+#       if(title){ title("Number of Risk Indices with significant t-stats(positive and negative)")}
+#       
+#       par(mfrow = c(1,1))
+#       
+#       par(mfrow = c(2,1))
+#       barplot(sigTstatsTs,col = color[2], main = " ")
+#       if(title){ title("Number of Risk Indices with significant t-stats")}
+#       
+#       barplot(pos.neg.sigTstats,col = c( "green","red"), main = " ", beside = TRUE)
+#       #legend ("topright", legend = c("positive", "negative"), fill = c("green", "red"))
+#       if(title){ title("Number of Risk Indices with significant t-stats(positive and negative)")}
+#       
+#       par(mfrow = c(1,1))
       
       
     }
@@ -179,8 +231,8 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
       # PLOT T-STATS WITH XYPLOT
       if(title) title.tstats = "t statistic values " else title.tstats = " " 
       
-      plt <- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = 1), x = list(cex = 1)),
-                    layout = layout, main = title.tstats , col = color[1], lwd = lwd, strip.left = T, strip = F)
+      plt <- xyplot(tstatsTs, panel = panel, type = type, scales = list(y = list(cex = axis.cex), x = list(cex = axis.cex)),
+                    layout = layout, main = title.tstats , col = color[1], lwd = lwd, strip.left = T, strip = F,par.strip.text=list(col="black", cex = stripText.cex))
       print(plt)
       #par(mfrow= c(1,1))
     }

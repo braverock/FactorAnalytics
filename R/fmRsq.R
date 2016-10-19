@@ -19,6 +19,7 @@
 #' @param isPlot   logical. if \code{TRUE}, the time series of the output is plotted. Default is \code{TRUE}.
 #' @param lwd      line width relative to the default. Default is 2.
 #' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
+#' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 #' @param title    logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.
 #' @param ...      potentially further arguments passed.
 #' @author Avinash Acharya and Doug Martin
@@ -60,7 +61,7 @@ fmRsq <- function(ffmObj, ...){
 #' @method fmRsq ffm
 #' @export
 #' 
-fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, isPlot =T, lwd =2,stripText.cex =1, title = TRUE, ...)
+fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, isPlot =T, lwd =2,stripText.cex =1,axis.cex=1, title = TRUE, ...)
 {
   # set defaults and check input validity
   if (!inherits(ffmObj, "ffm"))
@@ -98,7 +99,7 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
         panel =  function(...){
           panel.abline(h=0,lty = 3)
           panel.xyplot(...)}
-        plt = xyplot(r2.xts,col = "blue",lwd =lwd, panel =panel, scale = list(y = list(cex=1,rot =0),x = list(cex =1)),par.strip.text = list(cex = stripText.cex),
+        plt = xyplot(r2.xts,col = "blue",lwd =lwd, panel =panel, scale = list(y = list(cex=axis.cex,rot =0),x = list(cex =axis.cex)),par.strip.text = list(cex = stripText.cex),
                      main = title.Rsq, type = "h", ylim = c(0,(max(r2.xts)+0.05)), strip.left = strip.custom(var.name = "Rsq", style = 1, strip.names = T,strip.levels=F ))
         print(plt) 
         
@@ -131,7 +132,7 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
         panel.abline(h=0,lty = 3)
         panel.xyplot(...)}
       plt = xyplot(adj.r2.xts,col = "blue", lwd =lwd, main = title.AdjRsq, type = "h",panel = panel,
-                   scales = list(y = list(cex = 1,relation="same"),x = list(cex =1)),par.strip.text = list(cex = stripText.cex),
+                   scales = list(y = list(cex = axis.cex,relation="same"),x = list(cex =axis.cex)),par.strip.text = list(cex = stripText.cex),
                    strip.left = strip.custom(var.name = "AdjRsq", style = 1, strip.names = T,strip.levels=F ))
       print(plt) 
     }
@@ -153,7 +154,7 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
 #       tsPlotMP(0.01*r2.combined,stripLeft = TRUE, scaleType = "same",
 #                color = "blue", yname = "", lwd = lwd, main = title.comb, type = "h", cex = 1.2)
       plt = xyplot(r2.combined,col = "blue", lwd =lwd, main = title.comb, type = "h",panel = panel,
-                   scales = list(y = list(cex = 1,relation="same"),x = list(cex =1)),par.strip.text = list(cex = stripText.cex),
+                   scales = list(y = list(cex = axis.cex,relation="same"),x = list(cex =axis.cex)),par.strip.text = list(cex = stripText.cex),
                    strip.left = T, strip = F)
       print(plt) 
       

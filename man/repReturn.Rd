@@ -5,8 +5,9 @@
 \title{Portfolio return decomposition report}
 \usage{
 repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
-  layout = NULL, scaleType = "free", stripLeft = TRUE, digits = 1,
-  titleText = TRUE, which = NULL, ...)
+  layout = NULL, scaleType = "free", stripLeft = TRUE,
+  stripText.cex = 1, axis.cex = 1, digits = 1, titleText = TRUE,
+  which = NULL, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}
@@ -22,6 +23,10 @@ repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
 \item{scaleType}{scaleType controls if use a same scale of y-axis, choose from c('same', 'free')}
 
 \item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'}
+
+\item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+
+\item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 
 \item{digits}{digits of printout numeric summary. Used only when isPrint = 'TRUE'}
 

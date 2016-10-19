@@ -9,14 +9,14 @@
 repRisk(object, ...)
 
 \method{repRisk}{tsfm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
-  decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
+  decomp = c("FPCR", "FCR", "FMCR"), digits = NULL, invert = FALSE,
   nrowPrint = 20, p = 0.05, type = c("np", "normal"),
   use = "pairwise.complete.obs", sliceby = c("factor", "asset"),
   isPrint = TRUE, isPlot = FALSE, layout = NULL, portfolio.only = FALSE,
   ...)
 
 \method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
-  decomp = c("RM", "FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
+  decomp = c("FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
   nrowPrint = 20, p = 0.05, type = c("np", "normal"),
   sliceby = c("factor", "asset"), isPrint = TRUE, isPlot = FALSE,
   layout = NULL, portfolio.only = FALSE, ...)
@@ -34,15 +34,15 @@ equal weights will be used.}
 \item{risk}{one of 'Sd' (standard deviation), 'VaR' (Value-at-Risk) or 'ES' (Expected Tail 
 Loss or Expected Shortfall for calculating risk decompositon. Default is 'Sd'}
 
-\item{decomp}{one of 'RM' (risk measure), 'FMCR' (factor marginal contribution to risk), 
-'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk). Default is 'RM'}
+\item{decomp}{one of 'FMCR' (factor marginal contribution to risk), 
+'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk).}
 
 \item{digits}{digits of number in the resulting table. Default is NULL, in which case digtis = 3 will be
-used for decomp = ('RM', 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
+used for decomp = ( 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
 isPrint = 'TRUE'}
 
-\item{invert}{a logical variable to choose if change VaR/ES to positive number, default
-is False}
+\item{invert}{a logical variable to change VaR/ES to positive number, default
+is False and will return positive values.}
 
 \item{nrowPrint}{a numerical value deciding number of assets/portfolio in result vector/table to print
 or plot}
@@ -63,7 +63,7 @@ Used only when isPlot = 'TRUE'}
 
 \item{isPrint}{logical variable to print numeric output or not.}
 
-\item{isPlot}{logical variable to generate plot or not. isPlot = FALSE when decomp = 'RM'.}
+\item{isPlot}{logical variable to generate plot or not.}
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
 
@@ -72,8 +72,6 @@ allowed.}
 }
 \value{
 A table containing 
-\item{decomp = 'RM'}{length-(N + 1) vector of factor model risk measure of portfolio return 
-as well assets return.}
 \item{decomp = 'FMCR'}{(N + 1) * (K + 1) matrix of marginal contributions to risk of portfolio 
 return as well assets return, with first row of values for the portfolio and the remaining rows for 
 the assets in the portfolio, with  (K + 1) columns containing values for the K risk factors and the

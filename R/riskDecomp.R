@@ -297,9 +297,14 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
               cRisk <- drop(mRisk * beta.star)
               pcRisk <- drop(100* cRisk / Risk.fm)
               
-              if(invert){
+              #Since all the Var and ES calulations result in negative values by default, Invert = False will make
+              #the values positive.
+              if(!invert){
                 Risk.fm <- -Risk.fm
-              } 
+                mRisk<- -mRisk
+                cRisk<- -cRisk
+                
+              }
               switch(risk,
                      VaR = {out <- list(portVaR=Risk.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
                                         mVaR=mRisk, cVaR=cRisk, pcVaR=pcRisk)},
@@ -398,6 +403,15 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
                 mRisk[i,] <- cf * mRisk[i,]
                 cRisk[i,] <- mRisk[i,] * beta.star[i,]
                 pcRisk[i,] <- 100* cRisk[i,] / Risk.fm[i]
+              }
+              
+              #Since all the Var and ES calulations result in negative values by default, Invert = False will make
+              #the values positive.
+              if(!invert){
+                Risk.fm <- -Risk.fm
+                mRisk<- -mRisk
+                cRisk<- -cRisk
+                
               }
             
                 switch(risk,
@@ -609,9 +623,14 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
               cRisk <- drop(mRisk * beta.star)
               pcRisk <- drop(100* cRisk / Risk.fm)
               
-              if(invert){
-                Risk.fm = -Risk.fm
-              } 
+              #Since all the Var and ES calulations result in negative values by default, Invert = False will make
+              #the values positive.
+              if(!invert){
+                Risk.fm <- -Risk.fm
+                mRisk<- -mRisk
+                cRisk<- -cRisk
+                
+              }
               switch(risk,
                      VaR = {out <- list(portVaR=Risk.fm, n.exceed=n.exceed, idx.exceed=idx.exceed, 
                                         mVaR=mRisk, cVaR=cRisk, pcVaR=pcRisk)},
@@ -713,6 +732,15 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
                 mRisk[i,] <- cf * mRisk[i,]
                 cRisk[i,] <- mRisk[i,] * beta.star[i,]
                 pcRisk[i,] <- 100* cRisk[i,] / Risk.fm[i]
+              }
+              
+              #Since all the Var and ES calulations result in negative values by default, Invert = False will make
+              #the values positive.
+              if(!invert){
+                Risk.fm <- -Risk.fm
+                mRisk<- -mRisk
+                cRisk<- -cRisk
+                
               }
             
         switch(risk,

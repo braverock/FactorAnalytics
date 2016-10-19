@@ -4,16 +4,15 @@
 \alias{tsPlotMP}
 \title{Time Series Plots}
 \usage{
-tsPlotMP(ret, add.grid = FALSE, cex = 1, layout = NULL, type = "l",
+tsPlotMP(ret, add.grid = FALSE, layout = NULL, type = "l",
   yname = "RETURNS (\%)", scaleType = "free", stripLeft = TRUE,
-  main = NULL, lwd = 1, color = "black", zeroLine = TRUE)
+  main = NULL, lwd = 1, stripText.cex = 1, axis.cex = 1,
+  color = "black", zeroLine = TRUE)
 }
 \arguments{
 \item{ret}{an time series exposure/return object}
 
 \item{add.grid}{logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')}
-
-\item{cex}{a numerical value giving the amount by which plotting text and symbols should be magnified relative to the default. Default is 1.0}
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
 
@@ -28,6 +27,10 @@ tsPlotMP(ret, add.grid = FALSE, cex = 1, layout = NULL, type = "l",
 \item{main}{Typically a character string or expression describing the main title.}
 
 \item{lwd}{The line width, a positive number, defaulting to 1}
+
+\item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+
+\item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 
 \item{color}{A specification for the default plotting color. Default is black.}
 

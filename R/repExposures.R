@@ -16,6 +16,8 @@
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
 #' @param notch logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is ‘strong evidence’ that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
+#' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
+#' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 #' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
 #' @param titleText logical varible to choose display plot title or not. Default is 'TRUE', and used only when isPlot = 'TRUE'.
 #' @param which a number to indicate the type of plot. If a subset of the plots 
@@ -62,7 +64,7 @@
 
 
 repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, scaleType = 'free',
-                         stripLeft = TRUE, layout = NULL, notch = FALSE, digits = 1, titleText = TRUE, 
+                         stripText.cex =1,axis.cex=1,stripLeft = TRUE, layout = NULL, notch = FALSE, digits = 1, titleText = TRUE, 
                          which = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
@@ -157,7 +159,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                )
                ## Time Series plot of factor exposures
                tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout, 
-                        scaleType = scaleType, ...)
+                        scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex, ...)
              }, 
              "2L" = {
                if(titleText){

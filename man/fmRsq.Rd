@@ -9,7 +9,7 @@ fmRsq(ffmObj, ...)
 
 \method{fmRsq}{ffm}(ffmObj, rsq = T, rsqAdj = F, plt.type = 2,
   digits = 2, isPrint = T, isPlot = T, lwd = 2, stripText.cex = 1,
-  title = TRUE, ...)
+  axis.cex = 1, title = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
@@ -33,6 +33,8 @@ Else, only the mean values are printed. Default is \code{TRUE}.}
 \item{lwd}{line width relative to the default. Default is 2.}
 
 \item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+
+\item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 
 \item{title}{logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.}
 }

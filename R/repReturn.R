@@ -13,6 +13,8 @@
 #' @param isPlot logical variable to generate plot or not.
 #' @param isPrint logical variable to print numeric summary or not.
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
+#' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
+#' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
 #' @param digits digits of printout numeric summary. Used only when isPrint = 'TRUE'
@@ -63,7 +65,7 @@
 
 
 repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, layout =NULL, scaleType = 'free',
-                      stripLeft = TRUE, digits = 1, titleText = TRUE, which = NULL, ...) {
+                      stripLeft = TRUE,stripText.cex =1,axis.cex=1, digits = 1, titleText = TRUE, which = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObjshould be of class'ffm'.")
@@ -193,7 +195,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                ## Time Series plot of portfolio returns decomposition
                tsPlotMP(dat[,c('PortRet','FacRet','ResidRet')], 
                         main = main, layout = c(1,3), stripLeft = stripLeft, 
-                        scaleType = scaleType, ...)
+                        scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex, ...)
                
              }, 
              "2L" = {
@@ -205,7 +207,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                ## Time Series plot of portfolio style factors returns
                tsPlotMP(dat[,c('FacRet',exposures.num,'ResidRet')], 
                         main = main, layout = c(3,3), stripLeft = stripLeft, 
-                        scaleType = scaleType, ...)
+                        scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex, ...)
                
              }, 
              "3L" = {  
@@ -217,7 +219,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
                ## Time Series plot of portfolio sector returns
                tsPlotMP(dat[,c('FacRet',exposures.char.name)], 
                         main = main, layout = c(3,4), stripLeft = stripLeft, 
-                        scaleType = scaleType, ...)
+                        scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex, ...)
                
              },
              "4L" = {  

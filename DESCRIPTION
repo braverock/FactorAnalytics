@@ -36,7 +36,9 @@ Imports:
     doSNOW,
     RCurl,
     bestglm,
-    tseries
+    tseries,
+	HH,
+	reshape2
 Suggests:
     testthat
 LazyLoad: yes
