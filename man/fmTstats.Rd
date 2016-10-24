@@ -9,8 +9,8 @@ fmTstats(ffmObj, ...)
 
 \method{fmTstats}{ffm}(ffmObj, isPlot = TRUE, isPrint = FALSE,
   whichPlot = "all", color = c("black", "cyan"), lwd = 2, digits = 2,
-  z.alpha = 1.96, layout = c(2, 3), type = "h", stripText.cex = 1,
-  axis.cex = 1, title = TRUE, ...)
+  z.alpha = 1.96, layout = c(2, 3), type = "h", scale = "free",
+  stripText.cex = 1, axis.cex = 1, title = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
@@ -21,7 +21,7 @@ fmTstats(ffmObj, ...)
 
 \item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE},}
 
-\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstats"). Default is \code{all}.}
+\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ). Default is \code{all}.}
 
 \item{color}{length 2 vector specifying the plotting color for t-stats plot and for barplot 
 respectively. default is \code{c("black", "cyan")}}
@@ -36,6 +36,8 @@ respectively. default is \code{c("black", "cyan")}}
 
 \item{type}{character. Type of the xyplot of t-statistics; \code{"l"} for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) vertical lines
 and \code{"b"} for both. Deafault is \code{"h"}.}
+
+\item{scale}{character. It determines how axis limits are calculated for each panel. Possible values are "same" , "free" (default) and "sliced".}
 
 \item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 

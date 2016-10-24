@@ -3,7 +3,7 @@
 #' @description Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
 #' @importFrom zoo as.yearmon coredata index
-#' @importFrom graphics barplot boxplot 
+#' @importFrom graphics boxplot 
 #' @importFrom stats sd
 #' @importFrom utils menu
 #' @importFrom lattice barchart
@@ -137,6 +137,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
   X = as.xts(X[,-1],order.by = X[,1])
   
   if(isPlot){
+    par(mfrow = c(1,1))
     
     which.vec <- which
     which <- which[1]
@@ -182,20 +183,34 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                )
                ## Barplot of means and vols of style factor exposures, and means of sector exposures 
                 #par(mfrow = layout)
-                par(mar= par()$mar + c(1.5,1.5,1.5,1.5))
-               layout(matrix(c(1,2,3,3), 2, 2, byrow = TRUE))
-               a = colMeans(X[,exposures.num])
-               b = apply(X[,exposures.num],2,sd)
-               c = rbind(a,b)
-               sect = as.character(unique(dat[,exposures.char]))
-               d = colMeans(X[,sect])
-               
-               barplot(a,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main1)
-               barplot(b,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main2)
-               barplot(d,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main3)
-               
-               par(mar= par()$mar + c(-1.5,-1.5,-1.5,-1.5))
-               par(mfrow = c(1,1))
+#                 par(mar= par()$mar + c(1.5,1.5,1.5,1.5))
+#                layout(matrix(c(1,2,3,3), 2, 2, byrow = TRUE))
+                 a = colMeans(X[,exposures.num])
+                 b = apply(X[,exposures.num],2,sd)
+                 c = rbind(a,b)
+                 sect = as.character(unique(dat[,exposures.char]))
+                 d = colMeans(X[,sect])
+#                
+#                barplot(a,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main1)
+#                barplot(b,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main2)
+#                barplot(d,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main3)
+#                
+#                par(mar= par()$mar + c(-1.5,-1.5,-1.5,-1.5))
+                 
+                p1 = barchart(a,las=2,col=5, cex.names = 0.8,xlab = "", ylab = "Percent (%)", main = main1, horizontal = FALSE)
+                p2 = barchart(b,las=2,col=5, cex.names = 0.8,xlab = "", ylab = "Percent (%)", main = main2, horizontal = FALSE)
+                p3 = barchart(d,las=2,col=5, cex.names = 0.8,xlab = "", ylab = "Percent (%)", main = main3, horizontal = FALSE)
+                 
+
+                
+#                 print(p1, split=c(1,1,2,2), more=TRUE)
+#                 print(p2, split=c(2,1,2,2), more=TRUE)
+#                 print(p3, position = c(.25,0,0.75,0.5), more = FALSE)
+                
+                print(p1, split=c(1,1,2,2), more=TRUE)
+                print(p2, split=c(2,1,2,2), more=TRUE)
+                print(p3, position = c(0,0,1,0.5), more = FALSE)
+                
                
              },
              invisible()       
