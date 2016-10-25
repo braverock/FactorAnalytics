@@ -174,42 +174,30 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                        main = main)
              }, 
              "3L" = {  
-               if(titleText){
-                 main1 = "Style Exposures Means"
-                 main2 = "Style Exposures Vols"
-                 main3 = "Sector Exposure Means"
-               }else(
-                 main1 = main2 = main3 = ''
-               )
+
                ## Barplot of means and vols of style factor exposures, and means of sector exposures 
-                #par(mfrow = layout)
-#                 par(mar= par()$mar + c(1.5,1.5,1.5,1.5))
-#                layout(matrix(c(1,2,3,3), 2, 2, byrow = TRUE))
-                 a = colMeans(X[,exposures.num])
-                 b = apply(X[,exposures.num],2,sd)
+
+                 a = 100*colMeans(X[,exposures.num])
+                 b = 100*apply(X[,exposures.num],2,sd)
                  c = rbind(a,b)
                  sect = as.character(unique(dat[,exposures.char]))
-                 d = colMeans(X[,sect])
-#                
-#                barplot(a,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main1)
-#                barplot(b,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main2)
-#                barplot(d,las=2,col=5, cex.names = 0.8, ylab = "Percent (%)", main = main3)
-#                
-#                par(mar= par()$mar + c(-1.5,-1.5,-1.5,-1.5))
-                 
-                p1 = barchart(a,las=2,col=5, cex.names = 0.8,xlab = "", ylab = "Percent (%)", main = main1, horizontal = FALSE)
-                p2 = barchart(b,las=2,col=5, cex.names = 0.8,xlab = "", ylab = "Percent (%)", main = main2, horizontal = FALSE)
-                p3 = barchart(d,las=2,col=5, cex.names = 0.8,xlab = "", ylab = "Percent (%)", main = main3, horizontal = FALSE)
-                 
+                 d = 100*colMeans(X[,sect])
+                
+                dat.StMean = as.data.frame(list("id" = rep("Style Exposures Mean", length(a)), "variable"= names(a), "value"= as.numeric(a)))
+                dat.StVol = as.data.frame(list("id" = rep("Style Exposures Vol", length(b)), "variable"= names(b), "value"= as.numeric(b)))
+                dat.SecMean = as.data.frame(list("id" = rep("Sector Exposures Mean", length(d)), "variable"= names(d), "value"= as.numeric(d)))
+                
 
+                plt1 = barchart(value~(variable)|id,group = (id),data=dat.StMean,stack =TRUE,layout = layout,col = "blue",ylab = "Percentage (%)",
+                               scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
+                plt2 = barchart(value~(variable)|id,group = (id),data=dat.StVol,stack =TRUE,layout = layout,col = "blue",ylab = "Percentage (%)",
+                                scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
+                plt3 = barchart(value~(variable)|id,group = (id),data=dat.SecMean,stack =TRUE,layout = layout,col = "blue",ylab = "Percentage (%)",
+                                scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex), strip.left = F)
                 
-#                 print(p1, split=c(1,1,2,2), more=TRUE)
-#                 print(p2, split=c(2,1,2,2), more=TRUE)
-#                 print(p3, position = c(.25,0,0.75,0.5), more = FALSE)
-                
-                print(p1, split=c(1,1,2,2), more=TRUE)
-                print(p2, split=c(2,1,2,2), more=TRUE)
-                print(p3, position = c(0,0,1,0.5), more = FALSE)
+                print(plt1, split=c(1,1,2,2), more=TRUE)
+                print(plt2, split=c(2,1,2,2), more=TRUE)
+                print(plt3, position = c(.25,0,0.75,0.5), more = FALSE)
                 
                
              },

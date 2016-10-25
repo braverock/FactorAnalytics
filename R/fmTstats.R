@@ -15,7 +15,8 @@
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param isPlot   logical. If \code{FALSE} no plots are displayed.
 #' @param isPrint  logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE}, 
-#' @param whichPlot string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ). Default is \code{all}.
+#' @param whichPlot string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ).
+#'                   Three variants of significantTstats stand for vertical, horizontal and likert barplots. Default is \code{all} plotting t-stats and significant t-stats with vertical bars.
 #' @param color  length 2 vector specifying the plotting color for t-stats plot and for barplot 
 #'                 respectively. default is \code{c("black", "cyan")}
 #' @param lwd      line width relative to the default. default is 2.
@@ -152,7 +153,7 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
       panel.abline(h=-z.alpha,lty = 3, col = "red")
       panel.xyplot(...)
     }
-    if(whichPlot == "all" | whichPlot == "significantTstatsLikert")
+    if(whichPlot == "significantTstatsLikert")
     {
       
         plt = likert(var ~ ., percent.sigTstats,
@@ -165,7 +166,7 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
                      ylab=NULL,  xlab='Total significance %')
         print(plt)
     }
-    if(whichPlot == "all" | whichPlot == "significantTstatsH")
+    if(whichPlot == "significantTstatsH")
     {
         combined.sigTstatsH = combined.sigTstats[,c(3,1,2)]
         mydata = as.data.frame(t(combined.sigTstatsH))

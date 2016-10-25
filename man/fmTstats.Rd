@@ -21,7 +21,8 @@ fmTstats(ffmObj, ...)
 
 \item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE},}
 
-\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ). Default is \code{all}.}
+\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ).
+Three variants of significantTstats stand for vertical, horizontal and likert barplots. Default is \code{all} plotting t-stats and significant t-stats with vertical bars.}
 
 \item{color}{length 2 vector specifying the plotting color for t-stats plot and for barplot 
 respectively. default is \code{c("black", "cyan")}}
