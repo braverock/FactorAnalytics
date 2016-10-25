@@ -123,7 +123,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     
     dat <- ffmObj$data[ffmObj$data[,ffmObj$date.var]==ffmObj$time.periods[i], ]
     beta <- as.matrix(dat[,exposures.num])
-    rownames(beta) <- asset.names
+    dimnames(beta) <- list(asset.names, exposures.num)
     beta = cbind(beta,B)
     if(ncol(ffmObj$beta) > ncol(beta)){
       beta = cbind(rep(1,nrow(beta)),beta)
@@ -182,10 +182,21 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                  c = rbind(a,b)
                  sect = as.character(unique(dat[,exposures.char]))
                  d = 100*colMeans(X[,sect])
-                
-                dat.StMean = as.data.frame(list("id" = rep("Style Exposures Mean", length(a)), "variable"= names(a), "value"= as.numeric(a)))
-                dat.StVol = as.data.frame(list("id" = rep("Style Exposures Vol", length(b)), "variable"= names(b), "value"= as.numeric(b)))
-                dat.SecMean = as.data.frame(list("id" = rep("Sector Exposures Mean", length(d)), "variable"= names(d), "value"= as.numeric(d)))
+                if(length(exposures.num)>1)
+                {
+                  main1 = "Style Exposures Means"
+                  main2 = "Style Exposures Volatilities"
+                  main3 = "Sector Exposures Means"
+                }
+                 else if(length(exposures.num)==1)
+                 {
+                   main1 = "Style Exposures Mean"
+                   main2 = "Style Exposures Volatility"
+                   main3 = "Sector Exposures Means"
+                 }
+                dat.StMean = as.data.frame(list("id" = rep(main1, length(a)), "variable"= names(a), "value"= as.numeric(a)))
+                dat.StVol = as.data.frame(list("id" = rep(main2, length(b)), "variable"= names(b), "value"= as.numeric(b)))
+                dat.SecMean = as.data.frame(list("id" = rep(main3, length(d)), "variable"= names(d), "value"= as.numeric(d)))
                 
 
                 plt1 = barchart(value~(variable)|id,group = (id),data=dat.StMean,stack =TRUE,layout = layout,col = "blue",ylab = "Percentage (%)",
