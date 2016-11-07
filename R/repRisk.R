@@ -27,6 +27,8 @@
 #' @param invert a logical variable to change VaR/ES to positive number, default
 #' is False and will return positive values.
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
+#' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
+#' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 #' @param portfolio.only logical variable to choose if to calculate portfolio only decomposition, in which case multiple risk measures are 
 #' allowed.
 #' @param isPlot logical variable to generate plot or not.
@@ -122,7 +124,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
                          decomp = c('FPCR','FCR','FMCR' ), digits = NULL, invert = FALSE,
                          nrowPrint = 20, p=0.05, type=c("np","normal"), use="pairwise.complete.obs", 
                          sliceby = c('factor', 'asset'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
-                         portfolio.only = FALSE, ...) {
+                         stripText.cex =1,axis.cex=1,portfolio.only = FALSE, ...) {
   
   # set default for type
   type = type[1]
@@ -273,7 +275,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         }
         
         print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout,
-                       ylab = '', xlab = '', as.table = TRUE))
+                       scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black", cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
         
       }else if(sliceby == 'asset'){
         result = head(result, nrowPrint)
@@ -289,7 +291,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         }
         
         print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout, 
-                       ylab = '', xlab = '', as.table = TRUE))
+                       scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black", cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
       }
     }
     
@@ -390,7 +392,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
                         decomp = c('FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
                         nrowPrint = 20, p=0.05, type=c("np","normal"), 
                         sliceby = c('factor', 'asset'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
-                        portfolio.only = FALSE, ...) {
+                        stripText.cex =1,axis.cex=1,portfolio.only = FALSE, ...) {
   
   # set default for type
   type = type[1]
@@ -541,7 +543,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         }
         
         print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout,
-                       ylab = '', xlab = '', as.table = TRUE))
+                       scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black", cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
         
       }else if(sliceby == 'asset'){
         result = head(result, nrowPrint)
@@ -557,7 +559,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         }
         
         print(barchart(result[rev(rownames(result)),], groups = FALSE, main = paste(decomp,"of", risk),layout = layout, 
-                       ylab = '', xlab = '', as.table = TRUE))
+                       scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black", cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
       }
     }
     

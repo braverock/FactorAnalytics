@@ -12,14 +12,15 @@ repRisk(object, ...)
   decomp = c("FPCR", "FCR", "FMCR"), digits = NULL, invert = FALSE,
   nrowPrint = 20, p = 0.05, type = c("np", "normal"),
   use = "pairwise.complete.obs", sliceby = c("factor", "asset"),
-  isPrint = TRUE, isPlot = FALSE, layout = NULL, portfolio.only = FALSE,
-  ...)
+  isPrint = TRUE, isPlot = FALSE, layout = NULL, stripText.cex = 1,
+  axis.cex = 1, portfolio.only = FALSE, ...)
 
 \method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
   nrowPrint = 20, p = 0.05, type = c("np", "normal"),
   sliceby = c("factor", "asset"), isPrint = TRUE, isPlot = FALSE,
-  layout = NULL, portfolio.only = FALSE, ...)
+  layout = NULL, stripText.cex = 1, axis.cex = 1,
+  portfolio.only = FALSE, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -66,6 +67,10 @@ Used only when isPlot = 'TRUE'}
 \item{isPlot}{logical variable to generate plot or not.}
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
+
+\item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+
+\item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 
 \item{portfolio.only}{logical variable to choose if to calculate portfolio only decomposition, in which case multiple risk measures are 
 allowed.}

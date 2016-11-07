@@ -14,6 +14,7 @@
 #' @param isPrint logical variable to print numeric summary or not.
 #' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
+#' @param color  character specifying the plotting color for all the plots
 #' @param notch logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is ‘strong evidence’ that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
 #' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
@@ -64,7 +65,7 @@
 
 
 repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, scaleType = 'free',
-                         stripText.cex =1,axis.cex=1,stripLeft = TRUE, layout = NULL, notch = FALSE, digits = 1, titleText = TRUE, 
+                         stripText.cex =1,axis.cex=1,stripLeft = TRUE, layout = NULL, color = "blue",notch = FALSE, digits = 1, titleText = TRUE, 
                          which = NULL, ...) {
   
   if (!inherits(ffmObj, "ffm")) {
@@ -159,7 +160,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                  main = ''
                )
                ## Time Series plot of factor exposures
-               tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout, 
+               tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout,color = color,
                         scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex, ...)
              }, 
              "2L" = {
@@ -169,7 +170,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                  main = ''
                )
                ## Boxplot of factor exposures
-               boxplot(100*coredata(X[,exposures.num]), col=5,
+               boxplot(100*coredata(X[,exposures.num]), col=color,
                        notch = notch, ylab = "Percentage (%)",
                        main = main)
              }, 
@@ -199,11 +200,11 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                 dat.SecMean = as.data.frame(list("id" = rep(main3, length(d)), "variable"= names(d), "value"= as.numeric(d)))
                 
 
-                plt1 = barchart(value~(variable)|id,group = (id),data=dat.StMean,stack =TRUE,layout = layout,col = "blue",ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt1 = barchart(value~(variable)|id,group = (id),data=dat.StMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt2 = barchart(value~(variable)|id,group = (id),data=dat.StVol,stack =TRUE,layout = layout,col = "blue",ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt2 = barchart(value~(variable)|id,group = (id),data=dat.StVol,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt3 = barchart(value~(variable)|id,group = (id),data=dat.SecMean,stack =TRUE,layout = layout,col = "blue",ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt3 = barchart(value~(variable)|id,group = (id),data=dat.SecMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex), strip.left = F)
                 
                 print(plt1, split=c(1,1,2,2), more=TRUE)
