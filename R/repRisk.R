@@ -5,7 +5,7 @@
 #' return of a portfolio based on Euler's theorem, given the fitted factor model.
 #' 
 #' @importFrom lattice barchart
-#' 
+#' @importFrom reshape2 melt
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param p tail probability for calculation. Default is 0.05.
 #' @param weights a vector of weights of the assets in the portfolio, names of 
@@ -420,7 +420,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   riskReport = function(object,X,mul.port)
   {
     
-    
+   if(mul.port) weights = weights[[X]]
     # set default for type
     type = type[1]
     sliceby = sliceby[1]
@@ -641,15 +641,47 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         output = list(decomp = result)
         names(output) = paste('Portfolio',decomp, Type, sep = ' ')
         
-        return(output)
       }
-      
+#       if(isPlot & !mul.port){
+#         result = rev(result)
+#         result.mat = matrix(result, ncol =1)
+#         rownames(result.mat) = names(result)
+#         print(barchart(result.mat, groups = FALSE, main = list(paste(decomp,"of", risk, switch(mul.port, "1" = paste("for port", X), "")), cex = axis.cex),layout = layout,
+#                        scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),strip=F,ylab = '', xlab = '', as.table = TRUE))
+#         
+#       }
+      return(output)
     }
     
   }
   if(inherits(object, "list"))
   {
+    #check for the lenght of weights
+    if(length(weights) != length(object)) stop("Error: Number of portfolios and weights do not match")
     output.list<- lapply(X = 1:length(object), FUN = function(X){riskReport(object[[X]],X,mul.port = TRUE)})
+    if(isPlot && portfolio.only)
+      {
+      for(i in 1:length(risk)){
+        if(length(risk)>1){
+        output1 = lapply(X = 1:length(output.list),function(X) output.list[[X]][[1]][i,])
+        result.mat=  matrix(unlist(output1), ncol = length(output1))
+        colnames(result.mat) = unlist(lapply(X=1:length(object), function(X) paste("Portfolio",X)))
+        rownames(result.mat) = names(output1[[1]])
+        }
+        else{
+          result.mat=  matrix(unlist(output.list), ncol = length(output.list))
+          colnames(result.mat) = unlist(lapply(X=1:length(object), function(X) paste("Portfolio",X)))
+          rownames(result.mat) = names(output.list[[1]][[1]])
+        }
+        #Remove Total
+        result.mat = result.mat[-1,]
+        newdata = melt(t(result.mat), id.vars = as.factor(colnames(result.mat)))
+        print(barchart(value~Var1|Var2, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio Risk Comparison- ",risk[i],decomp), cex = axis.cex),layout = layout,
+                       scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
+      
+#         barchart(value~Var1|Var2, data = newdata, stack = TRUE, origin =0, scales = list(y = list(cex = axis.cex)),par.settings = my.settings,
+#                  par.strip.text=list(col="black", cex = stripText.cex), group = Var1,auto.key=list(space="right",points=FALSE, rectangles=TRUE,title="", cex.title=stripText.cex))
+       }}
   } 
   else
     output.list<- riskReport(object,1, mul.port = FALSE)
