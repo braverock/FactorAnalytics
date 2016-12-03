@@ -4,7 +4,7 @@
 \alias{assetDecomp}
 \title{Decompose portfolio risk into individual asset contributions and provide tabular report}
 \usage{
-assetDecomp(object, rm, weights, p)
+assetDecomp(object, rm, weights, p, type = "np")
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -15,6 +15,8 @@ assetDecomp(object, rm, weights, p)
 equal weights will be used.}
 
 \item{p}{tail probability for calculation. Default is 0.05.}
+
+\item{type}{one of "np" (non-parametric) or "normal". Default is "np".}
 
 \item{...}{other optional arguments}
 }

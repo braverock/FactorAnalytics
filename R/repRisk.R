@@ -642,14 +642,38 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         names(output) = paste('Portfolio',decomp, Type, sep = ' ')
         
       }
-#       if(isPlot & !mul.port){
+      if(isPlot & !mul.port){
 #         result = rev(result)
 #         result.mat = matrix(result, ncol =1)
 #         rownames(result.mat) = names(result)
 #         print(barchart(result.mat, groups = FALSE, main = list(paste(decomp,"of", risk, switch(mul.port, "1" = paste("for port", X), "")), cex = axis.cex),layout = layout,
 #                        scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),strip=F,ylab = '', xlab = '', as.table = TRUE))
-#         
-#       }
+#       
+        # single portfolio with multiple risks
+        if(class(result) == "matrix")
+        {
+          result = output[[1]]
+          result.mat = result[,-1]
+          newdata = melt((result.mat), id.vars = as.factor(rownames(result.mat)))
+          print(barchart(value~Var1|Var2, data = newdata,stack = TRUE, origin =0,main = list(paste("Portfolio", decomp, "Comparison" ), cex = axis.cex),layout = layout,
+                         scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
+          
+          print(barchart(value~Var2|Var1, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio", decomp, "Comparison V2" ), cex = axis.cex),layout = layout,
+                         scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
+          
+        }
+        else 
+        {
+          result = result[-1]
+          result.mat = matrix(result, ncol =1)
+          rownames(result.mat) = names(result)
+          colnames(result.mat) = risk
+        print(barchart(result.mat,stack = TRUE,groups = FALSE, main = list(paste("Portfolio", risk, "Decomposition- ",decomp ), cex = axis.cex),layout = layout,
+                         horizontal = FALSE, scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = T))
+          
+        }
+        
+      }
       return(output)
     }
     
@@ -661,31 +685,39 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
     output.list<- lapply(X = 1:length(object), FUN = function(X){riskReport(object[[X]],X,mul.port = TRUE)})
     if(isPlot && portfolio.only)
       {
-      for(i in 1:length(risk)){
         if(length(risk)>1){
-        output1 = lapply(X = 1:length(output.list),function(X) output.list[[X]][[1]][i,])
-        result.mat=  matrix(unlist(output1), ncol = length(output1))
-        colnames(result.mat) = unlist(lapply(X=1:length(object), function(X) paste("Portfolio",X)))
-        rownames(result.mat) = names(output1[[1]])
+#         output1 = lapply(X = 1:length(output.list),function(X) output.list[[X]][[1]][i,])
+#         result.mat=  matrix(unlist(output1), ncol = length(output1))
+#         colnames(result.mat) = unlist(lapply(X=1:length(object), function(X) paste("Portfolio",X)))
+#         rownames(result.mat) = names(output1[[1]])
+          result = unlist(output.list, recursive = FALSE, use.names = FALSE)
+          result.mat = matrix(unlist(result), ncol = length(result))
+          rownames(result.mat) = rep(unlist(dimnames(result[[1]])[2]), 1, each = length(risk))
+          colnames(result.mat) = unlist(lapply(X=1:length(object), function(X) paste("P",X)))
+          risk.type = rep(risk, 0.5*nrow(result.mat))
+          #result.mat = cbind(result.mat, Risk = factor(risk.type))
+          result.mat = result.mat[-c(1:length(risk)),]
+          newdata = melt(t(result.mat), id.vars = as.factor(colnames(result.mat)))
+          newdata$risk = factor(rep(risk, ))
+          print(barchart(value~Var1|Var2*risk, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio Risk Comparison- ", decomp), cex = axis.cex),layout = layout,
+                         scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
         }
         else{
           result.mat=  matrix(unlist(output.list), ncol = length(output.list))
           colnames(result.mat) = unlist(lapply(X=1:length(object), function(X) paste("Portfolio",X)))
           rownames(result.mat) = names(output.list[[1]][[1]])
-        }
         #Remove Total
         result.mat = result.mat[-1,]
         newdata = melt(t(result.mat), id.vars = as.factor(colnames(result.mat)))
-        print(barchart(value~Var1|Var2, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio Risk Comparison- ",risk[i],decomp), cex = axis.cex),layout = layout,
+        print(barchart(value~Var1|Var2, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio Risk Comparison- ",risk,decomp), cex = axis.cex),layout = layout,
                        scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
-      
 #         barchart(value~Var1|Var2, data = newdata, stack = TRUE, origin =0, scales = list(y = list(cex = axis.cex)),par.settings = my.settings,
 #                  par.strip.text=list(col="black", cex = stripText.cex), group = Var1,auto.key=list(space="right",points=FALSE, rectangles=TRUE,title="", cex.title=stripText.cex))
        }}
   } 
   else
     output.list<- riskReport(object,1, mul.port = FALSE)
-  
+    print("Test RepRisk")
   return(output.list)
   
 }
