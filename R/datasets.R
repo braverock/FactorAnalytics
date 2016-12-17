@@ -92,3 +92,19 @@ NULL
 #' @source TBA
 #' @usage data("managers.ffm")
 NULL
+
+#' @name mktUS
+#' @title US Market Returns
+#' @description Monthly returns including all distributions, on a value-weighted market portfolio of NYSE/AMEX/NASDAQ 
+#' @docType data
+#' @source WRDS
+#' @usage data("mktUS")
+NULL
+
+#' @name mktSP
+#' @title S&P 500 Returns
+#' @description S&P 500 return from Yahoo
+#' @docType data
+#' @source Yahoo
+#' @usage data("mktSP")
+NULL

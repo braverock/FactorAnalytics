@@ -50,7 +50,7 @@ ES.decomp = assetDecomp(fit, weights, rm = "ES", p = 0.05, type = "normal")
 Avinash Acharya
 }
 \references{
-Epperlein and Smillie (2006) "Cracking VAR with Kernels," Risk.net
+Epperlein and Smillie (2006) "Cracking VAR with Kernels" Risk.net
 }
 \seealso{
 \code{\link{riskDecomp}}

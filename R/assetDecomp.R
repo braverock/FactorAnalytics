@@ -18,7 +18,7 @@
 #' 
 #' @author Avinash Acharya
 #' @references 
-#' Epperlein and Smillie (2006) "Cracking VAR with Kernels," Risk.net
+#' Epperlein and Smillie (2006) "Cracking VAR with Kernels" Risk.net
 #' 
 #' @seealso \code{\link{riskDecomp}}
 #' for the Risk Decomposition function based on factors in the fitted model.
