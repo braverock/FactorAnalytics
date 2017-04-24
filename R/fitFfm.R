@@ -234,20 +234,20 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     stop("Invalid args: Sector + Country model without Market(Interecept) is currenlty not handled")
   }
   if (length(exposures.char) > 1)
-  {
+  { #Model with Sector, Country and Intercept
     model.MSCI = TRUE
   }
   if (length(exposures.char) == 0)
-  {
+  { 
     model.styleOnly = TRUE
   }
   if(lagExposures)
   {
     data <- data[order(data[,date.var]),]
+    #Get the style exposures except for the last time period
+    dataExpoLagged <- data[1:((TP-1)*N), exposures.num]
     #Remove data corresponding to the first time period
     data.lagged <- data[-(1:N),]
-    #Get the style exposures except for the last time period
-    dataExpoLagged <- data[1:((TP-1)*N), exposures.num] 
     #Replace style expo with lagged expo
     data.lagged[,exposures.num] <- dataExpoLagged
     data <- data.lagged
@@ -330,7 +330,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         }
       }
       w[,1] = resid.var
-      data<- cbind(data, W = as.numeric(w))
+      data<- cbind(data, W = 1/as.numeric(w))
       }
       else
       {
