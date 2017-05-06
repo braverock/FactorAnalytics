@@ -159,9 +159,9 @@
 
 
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
-                   weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
-                   rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE,
-                   lagExposures=FALSE, resid.EWMA = FALSE, lambda = 0.9, ...) {
+                       weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
+                       rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE,
+                       lagExposures=FALSE, resid.EWMA = FALSE, lambda = 0.9, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
@@ -234,11 +234,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     stop("Invalid args: Sector + Country model without Market(Interecept) is currenlty not handled")
   }
   if (length(exposures.char) > 1)
-  { #Model with Sector, Country and Intercept
+  { #Model has both Sector and Country along wit Intercept
     model.MSCI = TRUE
   }
   if (length(exposures.char) == 0)
-  { 
+  {
     model.styleOnly = TRUE
   }
   if(lagExposures)
@@ -251,10 +251,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #Replace style expo with lagged expo
     data.lagged[,exposures.num] <- dataExpoLagged
     data <- data.lagged
+    #Update the time period length
     time.periods <- unique(data[[date.var]])
     TP <- length(time.periods)
   }
-  
   
   # convert numeric exposures to z-scores
   if (z.score) {
@@ -272,12 +272,15 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       data[[i]] <- unlist(std.expo.num)
     }
   }
+  
   if(!model.MSCI)
   {
     # determine factor model formula to be passed to lm or lmRob
     fm.formula <- paste(ret.var, "~", paste(exposure.vars, collapse="+"))
     if (length(exposures.char))
     {
+      #Remove Intercept as it introduces rank deficiency in the exposure matrix.
+      #Implemetation with Intercept is handled later, using a Restriction matrix to remove the rank deficiency. 
       fm.formula <- paste(fm.formula, "- 1")
       data[, exposures.char] <- as.factor(data[,exposures.char])
       contrasts.list <- lapply(seq(length(exposures.char)), function(i) 
@@ -293,10 +296,45 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     # convert the pasted expression into a formula object
     fm.formula <- as.formula(fm.formula)
   }
-  # estimate factor returns using LS or Robust regression
-  # returns a list of the fitted lm or lmRob objects for each time period
-  if ((addIntercept == FALSE || model.styleOnly ==TRUE) && model.MSCI == FALSE)
+  if (addIntercept == TRUE && model.MSCI == FALSE && model.styleOnly ==FALSE)
   {
+    #formula to extract beta of Sec or Country
+    formula.expochar = as.formula(paste(ret.var, "~", exposures.char, "-1"))
+    factor.names <- c("Market",
+                      paste(levels(data[,exposures.char]),sep=" "), exposures.num)
+    beta.expochar <- model.matrix(formula.expochar, data=data)
+    rownames(beta.expochar) <- rep(asset.names, length(time.periods))
+    
+    #Beta for the whole model (generally without intercept)
+    beta <- model.matrix(fm.formula, data=data)
+    rownames(beta) <- rep(asset.names, length(time.periods))
+    #Define beta.star as Beta of the whole model with Intercept/Market represtend by col of ones
+    beta.star <- cbind("Market" = rep(1, nrow(beta.expochar)), beta.expochar)
+    if(length(exposures.num) > 0){
+      beta.style<- matrix(beta[,exposures.num], ncol = length(exposures.num))
+      colnames(beta.style) = exposures.num
+      #Define Beta for Style factors
+      B.style =beta.style[((TP-1)*N+1) : (TP*N), ]}
+    #Number of factors
+    K <- dim(beta.star)[2]
+    #Define Restriction matrix 
+    R_matrix = rbind(diag(K-1), c(0,rep(-1,K-2)))
+    #Define B.Mod = X*R
+    B.mod = (beta.star[1:N, ]) %*% R_matrix 
+    #Formula for Markt+Sec/Country Model
+    fmSI.formula = as.formula(paste(ret.var, "~", "B.mod+", paste(exposures.num, collapse="+"),"-1" ))                 
+  }
+  
+  if(model.MSCI == FALSE)
+  {
+    #Perform regression using fm.formula without any restriction matrix, if WLS/WRob is the 
+    #fit.method when addIntercept =TRUE. Else use fmSI.formula. 
+    if (!(grepl("W",fit.method)) && addIntercept==TRUE && !model.styleOnly){
+      fm.formula = fmSI.formula
+      contrasts.list = NULL}
+    
+    # estimate factor returns using LS or Robust regression
+    # returns a list of the fitted lm or lmRob objects for each time period
     if (grepl("LS",fit.method)) 
     {
       reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lm, 
@@ -309,6 +347,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
                      formula=fm.formula, contrasts=contrasts.list, 
                      mxr=200, mxf=200, mxs=200, na.action=na.fail)
     }
+    
     # compute residual variance for all assets for weighted regression
     if (grepl("W",fit.method)) {
       if (rob.stats) {
@@ -318,7 +357,6 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       }
       if(resid.EWMA)
       { res = sapply(reg.list, residuals)
-      #weights<- lapply(seq(1:N), function(x){resid.var[1]+(1-lambda)*(res)})
       w<-matrix(0,N,TP)
       for(i in 1:N)
       {
@@ -341,6 +379,9 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     # estimate factor returns using WLS or weighted-Robust regression
     # returns a list of the fitted lm or lmRob objects for each time period
     if (fit.method=="WLS") {
+      if(addIntercept  && !model.styleOnly){
+        fm.formula = fmSI.formula
+        contrasts.list = NULL}
       reg.list <- by(data=data, INDICES=data[[date.var]], 
                      FUN=function(x) {
                        lm(data=x, formula=fm.formula, contrasts=contrasts.list, 
@@ -354,9 +395,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
                              mxr=200, mxf=200, mxs=200)
                      })
     }
-    
-    ## Compute or Extract objects to be returned
-    
+  }
+  
+  ## Compute or Extract objects to be returned
+  if ((addIntercept == FALSE || model.styleOnly ==TRUE) && model.MSCI == FALSE)
+  {
     # number of factors including Market and dummy variables
     if (length(exposures.char)) {
       factor.names <- c(exposures.num, 
@@ -369,8 +412,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     # exposure matrix B or beta for the last time period - N x K
     beta <- model.matrix(fm.formula, data=subset(data, DATE==time.periods[TP]))
     rownames(beta) <- asset.names
+    #Shorten the Sector/Country names
     colnames(beta) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta))
-    #Remove SECTOR/COUNTRY from the coef names.
+    #colnames(beta) = gsub(paste(exposures.char), "", colnames(beta))
+    #Remove SECTOR/COUNTRY to shorten the coef names.
     if (length(exposures.char) >0 )
     { 
       reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) = gsub("COUNTRY|SECTOR|GICS.", "",names(reg.list[[x]]$coefficients) ) ;reg.list[[x]]})
@@ -380,8 +425,6 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients)[1] = "Alpha";reg.list[[x]]})
       names(reg.list) = as.character(unique(data[[date.var]]))
     }
-    
-    
     
     # time series of factor returns = estimated coefficients in each period
     factor.returns <- sapply(reg.list, function(x) {
@@ -430,11 +473,9 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         resid.cov <- diag(resid.var)
       }
     }
-    
-    
-    # return covariance estimated by the factor model
+    # return covariance estimated by the factor model 
+    #(here beta corresponds to the exposure of last time period,TP)
     return.cov <-  beta %*% factor.cov %*% t(beta) + resid.cov
-    
     
     if(addIntercept) colnames(beta)[1] = "Alpha"
     beta = beta[, colnames(factor.returns)]
@@ -443,72 +484,19 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   #If Market+Sector/Country is required
   else if (addIntercept == TRUE && model.MSCI == FALSE && model.styleOnly ==FALSE)
   {
-    formula.expochar = as.formula(paste(ret.var, "~", exposures.char, "-1"))
-    factor.names <- c("Market",
-                      paste(levels(data[,exposures.char]),sep=" "), exposures.num)
-    beta <- model.matrix(fm.formula, data=data)
-    rownames(beta) <- rep(asset.names, length(time.periods))
-    
-    beta.expochar <- model.matrix(formula.expochar, data=data)
-    rownames(beta.expochar) <- rep(asset.names, length(time.periods))
-    
-    beta.star <- cbind("Market" = rep(1, nrow(beta.expochar)), beta.expochar)
-    if(length(exposures.num) > 0){
-      beta.style<- matrix(beta[,exposures.num], ncol = length(exposures.num))
-      colnames(beta.style) = exposures.num}
-    
-    asset.names <- unique(data[[asset.var]])
-    N <- length(asset.names)
-    
-    #Define Retrun matrix 
-    ret.matrix = matrix(data[[ret.var]],nrow = N)
-    #Initial regression to get residual variances. 
-    reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lm, 
-                   formula=fm.formula, na.action=na.fail)
-    resid.var <- apply(sapply(reg.list, residuals), 1, var)
-    #V Inverse Matrix of resid variances
-    resid.var.inv = diag(resid.var^-1) 
-    # V^0.5 Inverse matrix
-    resid.sd.inv = sqrt(resid.var.inv) 
-    #K is with the Market
-    K <- dim(beta.star)[2]
-    #Define Restriction matrix 
-    R_matrix = rbind(diag(K-1), c(0,rep(-1,K-2)))
-    # Modify return matrix to get r~ as in Menchero Equation A6
-    ret_star = resid.sd.inv %*% ret.matrix 
-    #Y matrix as in Eq.A6
-    row.names(ret_star) = asset.names
-    colnames(ret_star) = as.character(time.periods)
-    #ret_star = checkData(t(ret_star))
-    
-    reg.list<- list()
-    
-    for(i in 1:length(time.periods))
-    {
-      B.mod = (beta.star[((i-1)*N+1) : (i*N), ]) %*% R_matrix  #Y = X*R
-      #Find g as in Eq.A7
-      if(length(exposures.num) > 0)
-      {
-        B.style =beta.style[((i-1)*N+1) : (i*N), ]
-        reg.list[[i]] = lm(matrix((ret.matrix [,i]), nrow =N) ~ B.mod + B.style-1, weights = diag(resid.sd.inv))
-        
-      }
-      else
-        reg.list[[i]] = lm(matrix((ret.matrix [,i]), nrow =N) ~ B.mod - 1, weights = diag(resid.sd.inv))
-    }
-    
+    #Rename regression coefs
     reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) =  paste("g", seq(1:length(reg.list[[x]]$coefficients)), sep = "");reg.list[[x]]})
     names(reg.list) = as.character(unique(data[[date.var]]))
-    
+    #Extract g coef
     g = sapply(reg.list, function(x) coef(x))
-    
+    #factor returns = restriction matrix * g coefficients
     factor.returns  = R_matrix %*% g[1:(K-1), ]
     if(length(exposures.num) > 0)
       factor.returns = rbind(factor.returns, g[K:nrow(g), ])
-    rownames(factor.returns) <- factor.names
+    rownames(factor.returns) = factor.names
     colnames(factor.returns) = as.character(unique(data[[date.var]]))
+    #Extract resid
     residuals = sapply(reg.list, residuals)
-    if(length(exposures.num) > 0) {g = g[c(1,K:nrow(g),2:(K-1)),]}
     colnames(residuals) = as.character(unique(data[[date.var]]))
     row.names(residuals) = asset.names
     # Create a T x N xts object of residuals
@@ -516,13 +504,14 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     r2<- sapply(reg.list, function(x) summary(x)$r.squared)
     names(r2) = as.character(unique(data[[date.var]]))
     factor.returns <- checkData(t(factor.returns)) # T x K
+    #Rearrange g,factor return to Mkt- Style Factor - Sec/Country order
+    if(length(exposures.num) > 0) {g = g[c(1,K:nrow(g),2:(K-1)),]}
     factor.names<- c("Market", exposures.num,
                      paste(levels(data[,exposures.char]),sep=" "))
-    #Re-order the columns mkt-style-sector/country
     factor.returns = factor.returns[, factor.names]
     #Fac Covarinace
     factor.cov <-covClassic(coredata(factor.returns), distance=FALSE, 
-               na.action=na.omit)$cov
+                            na.action=na.omit)$cov
     g.cov <- cov(t(g))
     #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
@@ -533,19 +522,16 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       beta.combine = cbind(beta.star, beta.style)
       beta.stms = cbind(B.mod[,1], B.style, B.mod[,-1])
     }else
-      {
-        beta.combine = beta.star
-        beta.stms = B.mod
-      }
-      
+    {
+      beta.combine = beta.star
+      beta.stms = B.mod
+    }
+    
     colnames(beta.combine) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta.combine))
     beta.combine = beta.combine[, factor.names]
     return.cov <-  beta.stms %*% g.cov %*% t(beta.stms) + resid.cov
-    #Exposure matrix 
+    #Exposure matrix for the last time period
     beta = beta.combine[((TP-1)*N+1):(TP*N), 1:ncol(beta.combine)]
-    
-    
-    #factor.cov = factor.cov[factor.names, factor.names]
     
     #Restriction matrix
     restriction.mat = R_matrix
@@ -568,6 +554,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     
     # convert the pasted expression into a formula object
     fm.formula <- as.formula(fm.formula)
+    #Extract model beta, expo.char beta and expo.num betas
     beta <- model.matrix(fm.formula, data=data)
     beta.ind <- model.matrix(formula.ind, data=data)
     beta.cty <- model.matrix(formula.cty, data=data)
@@ -603,18 +590,13 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     
     reg.list<- list()
     
-    for(i in 1:length(time.periods))
-    {
-      B.mod = ( beta.mic[((i-1)*N+1) : (i*N), ]) %*% rMic  #Y = X*R
-      #Find g as in Eq.A7
-      if(length(exposures.num) > 0)
-      {
-        B.style = beta.style[((i-1)*N+1) : (i*N), ]
-        reg.list[[i]] = lm(returns[,i] ~ B.mod + B.style -1)
-      }
-      else
-        reg.list[[i]] = lm(returns[,i] ~ B.mod-1)
-    }
+    B.mod = (beta.mic[1:N, ]) %*% rMic  #Y = X*R
+    B.style = beta.style[((TP-1)*N+1) : (TP*N), ]
+    fmMSCI.formula = as.formula(paste(ret.var, "~", "B.mod+", paste(exposures.num, collapse="+"),"-1" ))                 
+    reg.list <- by(data=data, INDICES=data[[date.var]], 
+                   FUN=function(x) {lm(data=x, formula=fmMSCI.formula, 
+                                       na.action=na.fail)})
+    
     reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) =  paste("g", seq(1:length(reg.list[[x]]$coefficients)), sep = "");reg.list[[x]]})
     names(reg.list) = as.character(unique(data[[date.var]]))
     g = sapply(reg.list, function(x) coef(x))
@@ -727,6 +709,3 @@ fitted.ffm <- function(object, ...) {
 residuals.ffm <- function(object, ...) {
   return(object$residuals)
 }
-
-
-
