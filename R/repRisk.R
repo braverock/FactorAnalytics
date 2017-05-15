@@ -717,7 +717,6 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   } 
   else
     output.list<- riskReport(object,1, mul.port = FALSE)
-    print("Test RepRisk")
   return(output.list)
   
 }

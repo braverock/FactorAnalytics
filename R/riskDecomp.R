@@ -150,8 +150,8 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
     resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
   }
   
-  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals" 
-  # factor returns and residuals data
+  colnames(beta.star)[dim(beta.star)[2]] <- "Resid" 
+  # factor returns and Resid data
   factors.xts <- object$data[,object$factor.names]
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
@@ -172,12 +172,12 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Resid")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Resid")
     
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    names(MU) <- c(colnames(factor.cov),"Residuals")
+    names(MU) <- c(colnames(factor.cov),"Resid")
     
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
@@ -223,7 +223,7 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
               if (type=="np") { 
                 # get F.star data object
                 factor.star <- merge(factors.xts, resid.xts)
-                colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
+                colnames(factor.star)[dim(factor.star)[2]] <- "Resid"
                 switch(risk, 
                        VaR =
                          {
@@ -320,7 +320,7 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
               n.exceed <- rep(NA, N)
               names(n.exceed) = names(Risk.fm) = object$asset.names
               rownames(mRisk)=rownames(cRisk)=rownames(pcRisk)=object$asset.names
-              colnames(mRisk)=colnames(cRisk)=colnames(pcRisk)=c(object$factor.names,"Residuals")
+              colnames(mRisk)=colnames(cRisk)=colnames(pcRisk)=c(object$factor.names,"Resid")
               
               for (i in object$asset.names) {
                 # return data for asset i
@@ -329,7 +329,7 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
                 if (type=="np") {
                   # get F.star data object
                   factor.star <- merge(factors.xts, resid.xts[,i])
-                  colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
+                  colnames(factor.star)[dim(factor.star)[2]] <- "Resid"
                   
                   switch(risk, 
                          VaR = 
@@ -479,7 +479,7 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
     resid.xts <- as.xts(t(t(residuals(object))/sqrt(object$resid.var)))
   }
   
-  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals" 
+  colnames(beta.star)[dim(beta.star)[2]] <- "Resid" 
   # factor returns and residuals data
   factors.xts <- object$factor.returns
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
@@ -498,12 +498,12 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
     K <- ncol(object$beta)
     factor.star.cov <- diag(K+1)
     factor.star.cov[1:K, 1:K] <- factor.cov
-    colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
-    rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+    colnames(factor.star.cov) <- c(colnames(factor.cov),"Resid")
+    rownames(factor.star.cov) <- c(colnames(factor.cov),"Resid")
     
     # factor expected returns
     MU <- c(colMeans(factors.xts, na.rm=TRUE), 0)
-    names(MU) <- c(colnames(factor.cov),"Residuals")
+    names(MU) <- c(colnames(factor.cov),"Resid")
     
     # SIGMA*Beta to compute normal mVaR
     SIGB <-  beta.star %*% factor.star.cov
@@ -549,7 +549,7 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
                 index(factors.xts) <- index(resid.xts)
                 # get F.star data object
                 factor.star <- merge(factors.xts, resid.xts)
-                colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
+                colnames(factor.star)[dim(factor.star)[2]] <- "Resid"
                 switch(risk, 
                        VaR =
                        {
@@ -646,7 +646,7 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
               n.exceed <- rep(NA, N)
               names(n.exceed) = names(Risk.fm) = object$asset.names
               rownames(mRisk)=rownames(cRisk)=rownames(pcRisk)=object$asset.names
-              colnames(mRisk)=colnames(cRisk)=colnames(pcRisk)=c(object$factor.names,"Residuals")
+              colnames(mRisk)=colnames(cRisk)=colnames(pcRisk)=c(object$factor.names,"Resid")
               
               for (i in object$asset.names) {
                 # return data for asset i
@@ -658,7 +658,7 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
                   time(factors.xts) <- time(resid.xts[,i])
                   # get F.star data object
                   factor.star <- merge(factors.xts, resid.xts[,i])
-                  colnames(factor.star)[dim(factor.star)[2]] <- "Residuals"
+                  colnames(factor.star)[dim(factor.star)[2]] <- "Resid"
                   
                   switch(risk, 
                          VaR = 
