@@ -1,6 +1,6 @@
 #' @title Portfolio Exposures Report
 #' 
-#' @description Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
+#' @description Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, 'ffm' object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
 #' @importFrom zoo as.yearmon coredata index
 #' @importFrom graphics boxplot 
@@ -12,10 +12,10 @@
 #' @param weights a vector of weights of the assets in the portfolio. Default is NULL.
 #' @param isPlot logical variable to generate plot or not.
 #' @param isPrint logical variable to print numeric summary or not.
-#' @param stripLeft logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
+#' @param stripLeft logical variable to choose the position of strip, 'TRUE' for drawing strips on the left of each panel, 'FALSE' for drawing strips on the top of each panel. Used only when isPlot = 'TRUE'
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display. Used only when isPlot = 'TRUE'
 #' @param color  character specifying the plotting color for all the plots
-#' @param notch logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is ‘strong evidence’ that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.
+#' @param notch logical. if notch is \code{TRUE}, a notch is drawn in each side of the boxes. If the notches of two plots do not overlap this is strong evidence that the two medians differ (Chambers et al, 1983, p. 62).Default values is \code{FALSE}.
 #' @param scaleType scaleType controls if use a same scale of y-axis, choose from c('same', 'free')
 #' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 #' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
@@ -28,12 +28,13 @@
 #' 1 = Time series plot of style factor exposures, \cr
 #' 2 = Boxplot of style factor exposures, \cr
 #' 3 = Barplot of means and vols of style factor exposures, and means of sector exposures (which have no vol). \cr \cr
+#' @param type character. type of lattice plot when which=1; 'l' denotes a line, 'p' denotes a point, and 'b' and 'o' both denote both together.deafault is 'b'.
 #' @param ... other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses 
 #' 
 #' @return  
 #' A K x 2 matrix containing mean and standard deviation of K factors
 #' 
-#' @author Douglas Martin, Lingjie Yi
+#' @author Douglas Martin, Lingjie Yi, Avinash
 #' @examples 
 #'
 #' #Load fundamental and return data 
@@ -59,14 +60,13 @@
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
 #'              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
-#'              which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue', 
-#'              layout = c(1,3))
+#'              which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue')
 #' @export
 
 
 repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, scaleType = 'free',
                          stripText.cex =1,axis.cex=1,stripLeft = TRUE, layout = NULL, color = "blue",notch = FALSE, digits = 1, titleText = TRUE, 
-                         which = NULL, ...) {
+                         which = NULL,type="b", ...) {
   
   if (!inherits(ffmObj, "ffm")) {
     stop("Invalid argument: ffmObj should be of class'ffm'.")
@@ -161,7 +161,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                )
                ## Time Series plot of factor exposures
                tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout,color = color,
-                        scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex, ...)
+                        scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex,type=type, ...)
              }, 
              "2L" = {
                if(titleText){
@@ -195,16 +195,16 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                    main2 = "Style Exposures Volatility"
                    main3 = "Sector Exposures Means"
                  }
-                dat.StMean = as.data.frame(list("id" = rep(main1, length(a)), "variable"= names(a), "value"= as.numeric(a)))
-                dat.StVol = as.data.frame(list("id" = rep(main2, length(b)), "variable"= names(b), "value"= as.numeric(b)))
-                dat.SecMean = as.data.frame(list("id" = rep(main3, length(d)), "variable"= names(d), "value"= as.numeric(d)))
+                dat.StMean = as.data.frame(list("ids" = rep(main1, length(a)), "variable"= names(a), "value"= as.numeric(a)))
+                dat.StVol = as.data.frame(list("ids" = rep(main2, length(b)), "variable"= names(b), "value"= as.numeric(b)))
+                dat.SecMean = as.data.frame(list("ids" = rep(main3, length(d)), "variable"= names(d), "value"= as.numeric(d)))
                 
 
-                plt1 = barchart(value~(variable)|id,group = (id),data=dat.StMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt1 = barchart(value~(variable)|ids,group = (ids),data=dat.StMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt2 = barchart(value~(variable)|id,group = (id),data=dat.StVol,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt2 = barchart(value~(variable)|ids,group = (ids),data=dat.StVol,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt3 = barchart(value~(variable)|id,group = (id),data=dat.SecMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt3 = barchart(value~(variable)|ids,group = (ids),data=dat.SecMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex), strip.left = F)
                 
                 print(plt1, split=c(1,1,2,2), more=TRUE)
