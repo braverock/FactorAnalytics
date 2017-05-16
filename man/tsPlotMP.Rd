@@ -16,13 +16,13 @@ tsPlotMP(ret, add.grid = FALSE, layout = NULL, type = "l",
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
 
-\item{type}{character. type of the plot; "l" denotes a line, "p" denotes a point, and "b" and "o" both denote both together.deafault is "l".}
+\item{type}{character. type of the plot; 'l' denotes a line, 'p' denotes a point, and 'b' and 'o' both denote both together.deafault is 'l'.}
 
 \item{yname}{character or espression giving label(s) for the y-axis}
 
 \item{scaleType}{scaleType controls if use a same scale of y-axis, choose from c('same', 'free')}
 
-\item{stripLeft}{logical variable to choose the position of strip, "TRUE" for drawing strips on the left of each panel, "FALSE" for drawing strips on the top of each panel}
+\item{stripLeft}{logical variable to choose the position of strip, 'TRUE' for drawing strips on the left of each panel, 'FALSE' for drawing strips on the top of each panel}
 
 \item{main}{Typically a character string or expression describing the main title.}
 
