@@ -161,7 +161,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                )
                ## Time Series plot of factor exposures
                tsPlotMP(X[,exposures.num], main = main, stripLeft = stripLeft, layout = layout,color = color,
-                        scaleType = scaleType, axis.cex = axis.cex, stripText.cex =stripText.cex,type=type, ...)
+                        scaleType = scaleType, axis.cex = axis.cex, yname = "Percentage (%)", stripText.cex =stripText.cex,type=type, ...)
              }, 
              "2L" = {
                if(titleText){

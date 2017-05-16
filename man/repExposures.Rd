@@ -82,5 +82,5 @@ repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE,
              which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue')
 }
 \author{
-Douglas Martin, Lingjie Yi
+Douglas Martin, Lingjie Yi, Avinash
 }
