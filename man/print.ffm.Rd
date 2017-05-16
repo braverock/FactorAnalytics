@@ -31,10 +31,9 @@ fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
 print(fit)
 
 }
-\author{
-Yi-An Chen and Sangeetha Srinivasan
-}
 \seealso{
 \code{\link{fitFfm}}, \code{\link{summary.ffm}}
 }
-
+\author{
+Yi-An Chen and Sangeetha Srinivasan
+}

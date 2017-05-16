@@ -85,4 +85,3 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
 \author{
 Avinash Acharya and Doug Martin
 }
-

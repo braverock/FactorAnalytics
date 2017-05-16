@@ -2,8 +2,8 @@
 % Please edit documentation in R/portVolDecomp.R
 \name{portVolDecomp}
 \alias{portVolDecomp}
-\alias{portVolDecomp.ffm}
 \alias{portVolDecomp.tsfm}
+\alias{portVolDecomp.ffm}
 \title{Decompose portfolio variance risk into factor/residual risk}
 \usage{
 portVolDecomp(object, ...)
@@ -69,9 +69,6 @@ decomp = portVolDecomp(fit.cross)
 decomp             
  
 }
-\author{
-Douglas Martin, Lingjie Yi
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
@@ -80,4 +77,6 @@ for the different factor model fitting functions.
 \code{\link{portVaRDecomp}} for portfolio factor model VaR decomposition.
 \code{\link{portEsDecomp}} for portfolio factor model ES decomposition.
 }
-
+\author{
+Douglas Martin, Lingjie Yi
+}

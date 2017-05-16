@@ -2,9 +2,9 @@
 % Please edit documentation in R/fmSdDecomp.R
 \name{fmSdDecomp}
 \alias{fmSdDecomp}
-\alias{fmSdDecomp.ffm}
-\alias{fmSdDecomp.sfm}
 \alias{fmSdDecomp.tsfm}
+\alias{fmSdDecomp.sfm}
+\alias{fmSdDecomp.ffm}
 \title{Decompose standard deviation into individual factor contributions}
 \usage{
 fmSdDecomp(object, ...)
@@ -74,9 +74,6 @@ decomp <- fmSdDecomp(sfm.pca.fit)
 decomp$pcSd
  
 }
-\author{
-Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
-}
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
 The Journal of Risk, 5(2), 1-18.
@@ -96,4 +93,6 @@ for the different factor model fitting functions.
 \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 \code{\link{fmEsDecomp}} for factor model ES decomposition.
 }
-
+\author{
+Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+}

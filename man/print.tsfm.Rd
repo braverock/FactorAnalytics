@@ -27,10 +27,9 @@ fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 print(fit)
 
 }
-\author{
-Yi-An Chen and Sangeetha Srinivasan
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{summary.tsfm}}
 }
-
+\author{
+Yi-An Chen and Sangeetha Srinivasan
+}

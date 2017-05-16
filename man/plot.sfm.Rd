@@ -140,9 +140,6 @@ plot(fit.apca, which=6)
 plot(fit.apca, plot.single=TRUE, asset.name="AFL", which=13)
 
 }
-\author{
-Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
-}
 \seealso{
 \code{\link{fitSfm}}, \code{\link{residuals.sfm}}, 
 \code{\link{fitted.sfm}}, \code{\link{fmCov.sfm}} and 
@@ -166,4 +163,6 @@ G(3,9,10,11) - \code{\link[lattice]{barchart}},
 G(6) - \code{\link[PerformanceAnalytics]{chart.Correlation}} and
 G(7,8,13) - \code{\link[corrplot]{corrplot.mixed}}.
 }
-
+\author{
+Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
+}

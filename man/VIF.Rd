@@ -55,4 +55,3 @@ require(factorAnalytics)
 \author{
 Avinash Acharya
 }
-

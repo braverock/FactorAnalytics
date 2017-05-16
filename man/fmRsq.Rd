@@ -68,4 +68,3 @@ require(factorAnalytics)
 \author{
 Avinash Acharya and Doug Martin
 }
-

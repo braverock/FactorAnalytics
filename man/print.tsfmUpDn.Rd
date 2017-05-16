@@ -28,10 +28,9 @@ fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR
 print(fitUpDn)
 
 }
-\author{
-Yi-An Chen and Sangeetha Srinivasan
-}
 \seealso{
 \code{\link{fitTsfmUpDn}}, \code{\link{summary.tsfmUpDn}}
 }
-
+\author{
+Yi-An Chen and Sangeetha Srinivasan
+}

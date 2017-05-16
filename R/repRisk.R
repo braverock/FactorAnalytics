@@ -22,7 +22,7 @@
 #' or plot  
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR & Es. 
 #' Default is "np".
-#' @param sliceby one of “factor” (slice/condition by factor) or “asset” (slice/condition by asset)
+#' @param sliceby one of 'factor' (slice or condition by factor) or 'asset' (slice or condition by asset)
 #' Used only when isPlot = 'TRUE'  
 #' @param invert a logical variable to change VaR/ES to positive number, default
 #' is False and will return positive values.

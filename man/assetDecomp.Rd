@@ -46,9 +46,6 @@ ES.decomp = assetDecomp(fit, weights, rm = "ES", p = 0.05)
 VaR.decomp = assetDecomp(fit, weights, rm = "VaR", p = 0.05, type = "normal")
 ES.decomp = assetDecomp(fit, weights, rm = "ES", p = 0.05, type = "normal") 
 }
-\author{
-Avinash Acharya
-}
 \references{
 Epperlein and Smillie (2006) "Cracking VAR with Kernels" Risk.net
 }
@@ -56,4 +53,6 @@ Epperlein and Smillie (2006) "Cracking VAR with Kernels" Risk.net
 \code{\link{riskDecomp}}
 for the Risk Decomposition function based on factors in the fitted model.
 }
-
+\author{
+Avinash Acharya
+}

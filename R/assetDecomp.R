@@ -2,7 +2,7 @@
 #' 
 #' @description Compute the asset contributions to Sd, VaR and ES of returns based on Euler's theorem
 #' 
-#' @importFrom stats cov resid qnorm
+#' @importFrom stats cov resid qnorm dnorm
 #' @importFrom xts xts  
 #' 
 #' 

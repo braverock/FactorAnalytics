@@ -57,4 +57,3 @@ tsPlotMP(ret, stripLeft = FALSE, main = 'Time Series Plot')
 \author{
 Douglas Martin, Lingjie Yi
 }
-

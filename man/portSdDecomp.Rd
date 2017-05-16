@@ -2,8 +2,8 @@
 % Please edit documentation in R/portSdDecomp.R
 \name{portSdDecomp}
 \alias{portSdDecomp}
-\alias{portSdDecomp.ffm}
 \alias{portSdDecomp.tsfm}
+\alias{portSdDecomp.ffm}
 \title{Decompose portfolio standard deviation into individual factor contributions}
 \usage{
 portSdDecomp(object, ...)
@@ -97,9 +97,6 @@ decomp$cSd
 portSdDecomp(fit.cross, wtsStocks145GmvLo)               
  
 }
-\author{
-Douglas Martin, Lingjie Yi
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
@@ -107,4 +104,6 @@ for the different factor model fitting functions.
 \code{\link{portVaRDecomp}} for portfolio factor model VaR decomposition.
 \code{\link{portEsDecomp}} for portfolio factor model ES decomposition.
 }
-
+\author{
+Douglas Martin, Lingjie Yi
+}

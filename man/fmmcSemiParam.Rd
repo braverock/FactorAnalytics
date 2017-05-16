@@ -107,9 +107,6 @@ fmmc.returns.ffm <- fmmcSemiParam(factor.ret=fit.ffm$factor.returns,
                                    resid.dist = "empirical", boot.method = "block")
 
 }
-\author{
-Eric Zivot, Yi-An Chen, Sangeetha Srinivasan.
-}
 \references{
 Jiang, Y. (2009). Factor model Monte Carlo methods for general 
 fund-of-funds portfolio management. University of Washington.
@@ -117,4 +114,6 @@ fund-of-funds portfolio management. University of Washington.
 \seealso{
 http://gradworks.umi.com/33/77/3377280.html
 }
-
+\author{
+Eric Zivot, Yi-An Chen, Sangeetha Srinivasan.
+}

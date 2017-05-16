@@ -2,8 +2,8 @@
 % Please edit documentation in R/repRisk.R
 \name{repRisk}
 \alias{repRisk}
-\alias{repRisk.ffm}
 \alias{repRisk.tsfm}
+\alias{repRisk.ffm}
 \title{Decompose portfolio risk into individual factor contributions and provide tabular report}
 \usage{
 repRisk(object, ...)
@@ -59,7 +59,7 @@ abbreviation of) one of the strings "everything", "all.obs",
 "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 "pairwise.complete.obs".}
 
-\item{sliceby}{one of “factor” (slice/condition by factor) or “asset” (slice/condition by asset)
+\item{sliceby}{one of 'factor' (slice or condition by factor) or 'asset' (slice or condition by asset)
 Used only when isPlot = 'TRUE'}
 
 \item{isPrint}{logical variable to print numeric output or not.}
@@ -138,11 +138,10 @@ repRisk(fit.cross, wtsStocks145GmvLo, risk = c("VaR", "ES"), decomp = 'FPCR',
 repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
         isPrint = FALSE, nrowPrint = 15, isPlot = TRUE, layout = c(4,2))  
 }
-\author{
-Douglas Martin, Lingjie Yi
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
 }
-
+\author{
+Douglas Martin, Lingjie Yi
+}

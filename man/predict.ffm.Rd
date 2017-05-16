@@ -52,11 +52,10 @@ newdata$LOG.MARKETCAP <- rnorm(nrow(newdata))
 pred.fund <- predict(fit, newdata)
 
 }
-\author{
-Sangeetha Srinivasan
-}
 \seealso{
 \code{\link{fitFfm}}, \code{\link{summary.ffm}}, 
 \code{\link[stats]{predict.lm}}, \code{\link[robust]{predict.lmRob}}
 }
-
+\author{
+Sangeetha Srinivasan
+}

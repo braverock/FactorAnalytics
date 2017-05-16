@@ -2,9 +2,9 @@
 % Please edit documentation in R/fmCov.R
 \name{fmCov}
 \alias{fmCov}
-\alias{fmCov.ffm}
-\alias{fmCov.sfm}
 \alias{fmCov.tsfm}
+\alias{fmCov.sfm}
+\alias{fmCov.ffm}
 \title{Covariance Matrix for assets' returns from fitted factor model.}
 \usage{
 fmCov(object, ...)
@@ -76,9 +76,6 @@ fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
 fmCov(fit2)
 
 }
-\author{
-Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.
-}
 \references{
 Zivot, E., & Jia-hui, W. A. N. G. (2006). Modeling Financial Time 
 Series with S-Plus Springer-Verlag.
@@ -89,4 +86,6 @@ Series with S-Plus Springer-Verlag.
 \code{\link[stats]{cov}} for more details on arguments \code{use} and 
 \code{method}.
 }
-
+\author{
+Eric Zivot, Yi-An Chen and Sangeetha Srinivasan.
+}

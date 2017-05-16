@@ -13,4 +13,3 @@ data("managers.ffm")
 \description{
 Hypothetical Alternative Asset Manager and Benchmark Data for Time Series Factor Model Fit
 }
-

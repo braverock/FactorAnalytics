@@ -13,4 +13,3 @@ data("mktUS")
 \description{
 Monthly returns including all distributions, on a value-weighted market portfolio of NYSE/AMEX/NASDAQ
 }
-

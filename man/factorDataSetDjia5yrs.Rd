@@ -18,4 +18,3 @@ Contains returns for 30 DJIA stocks spanned across 9 Sectors -ENERGY, COSTAP, IN
               The 9 Sectors correspond to Energy, ConsumerStaples, Industrials, Materials, Financials,
               InformationTechnology, HealthCare, ConsumerDiscretionary and Telecommunications respectively.
 }
-

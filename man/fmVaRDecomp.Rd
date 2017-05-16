@@ -2,9 +2,9 @@
 % Please edit documentation in R/fmVaRDecomp.R
 \name{fmVaRDecomp}
 \alias{fmVaRDecomp}
-\alias{fmVaRDecomp.ffm}
-\alias{fmVaRDecomp.sfm}
 \alias{fmVaRDecomp.tsfm}
+\alias{fmVaRDecomp.sfm}
+\alias{fmVaRDecomp.ffm}
 \title{Decompose VaR into individual factor contributions}
 \usage{
 fmVaRDecomp(object, ...)
@@ -93,9 +93,6 @@ VaR.decomp <- fmVaRDecomp(fit, type="normal")
 VaR.decomp$cVaR
 
 }
-\author{
-Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
-}
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
 The Journal of Risk, 5(2), 1-18.
@@ -114,4 +111,6 @@ for the different factor model fitting functions.
 \code{\link{fmSdDecomp}} for factor model SD decomposition.
 \code{\link{fmEsDecomp}} for factor model ES decomposition.
 }
-
+\author{
+Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+}

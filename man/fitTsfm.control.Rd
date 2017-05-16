@@ -170,9 +170,6 @@ fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                method="exhaustive", nvmin=2)
 
 }
-\author{
-Sangeetha Srinivasan
-}
 \references{
 Efron, B., Hastie, T., Johnstone, I., & Tibshirani, R. (2004). Least angle 
 regression. The Annals of statistics, 32(2), 407-499.
@@ -183,4 +180,6 @@ regression. The Annals of statistics, 32(2), 407-499.
 \code{\link[leaps]{regsubsets}}, \code{\link[lars]{lars}} and 
 \code{\link[lars]{cv.lars}}
 }
-
+\author{
+Sangeetha Srinivasan
+}

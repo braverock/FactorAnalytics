@@ -3,10 +3,12 @@
 #' @description Compute the factor contributions to Sd, VaR and ES of returns based on Euler's theorem, given 
 #' the fitted factor model. 
 #' 
-#' @importFrom stats quantile residuals cov resid qnorm
 #' @importFrom xts as.xts  
 #' @importFrom zoo as.Date index 
-#' 
+#' @importFrom graphics abline legend lines mtext panel.smooth rug
+#' @importFrom stats cor cov2cor density dnorm formula hatvalues lag pnorm printCoefmat 
+#' rnorm t.test time quantile residuals cov resid qnorm
+#' @importFrom utils stack
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param risk one of "Sd" (Standard Deviation) or "VaR" (Value at Risk) or "ES" (Expected Shortfall)

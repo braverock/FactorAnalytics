@@ -14,4 +14,3 @@ data("wtsStocks145Gmv")
 Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6) 
              for a global minimum variance portfolio starting from Jan 1990 to Dec 2014.
 }
-

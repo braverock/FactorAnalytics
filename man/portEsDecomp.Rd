@@ -2,8 +2,8 @@
 % Please edit documentation in R/portEsDecomp.R
 \name{portEsDecomp}
 \alias{portEsDecomp}
-\alias{portEsDecomp.ffm}
 \alias{portEsDecomp.tsfm}
+\alias{portEsDecomp.ffm}
 \title{Decompose portfolio ES into individual factor contributions}
 \usage{
 portEsDecomp(object, ...)
@@ -109,9 +109,6 @@ decomp = portEsDecomp(fit.cross)
 decomp$cES
 portEsDecomp(fit.cross, weights = wtsStocks145GmvLo)  
 }
-\author{
-Douglas Martin, Lingjie Yi
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
@@ -119,4 +116,6 @@ for the different factor model fitting functions.
 \code{\link{portSdDecomp}} for factor model Sd decomposition.
 \code{\link{portVaRDecomp}} for factor model VaR decomposition.
 }
-
+\author{
+Douglas Martin, Lingjie Yi
+}

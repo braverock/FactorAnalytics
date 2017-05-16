@@ -94,9 +94,6 @@ fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR
  summary(fitUpDn$Dn)
 
 }
-\author{
-Yi-An Chen.
-}
 \references{
 Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 
 performance measurement and benchmarking. McGraw Hill Professional.
@@ -110,4 +107,6 @@ The \code{tsfmUpDn} methods for generic functions:
 The original time series function \code{\link{fitTsfm}} and its generic functions
  application.
 }
-
+\author{
+Yi-An Chen.
+}

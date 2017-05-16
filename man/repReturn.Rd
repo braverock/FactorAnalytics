@@ -81,4 +81,3 @@ repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE,
 \author{
 Douglas Martin, Lingjie Yi
 }
-

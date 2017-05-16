@@ -19,4 +19,3 @@ Contains returns for 145 stocks starting from Jan 1990 to Dec 2014 spanned acros
              InformationTechnology, HealthCare, ConsumerDiscretionary,
              Utilities and Telecommunications respectively.
 }
-

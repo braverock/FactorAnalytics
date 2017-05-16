@@ -13,4 +13,3 @@ data("mktSP")
 \description{
 S&P 500 return from Yahoo
 }
-

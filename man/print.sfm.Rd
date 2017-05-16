@@ -26,10 +26,9 @@ fit <- fitSfm(r.M, k=2)
 print(fit)
 
 }
-\author{
-Yi-An Chen and Sangeetha Srinivasan
-}
 \seealso{
 \code{\link{fitSfm}}, \code{\link{summary.sfm}}
 }
-
+\author{
+Yi-An Chen and Sangeetha Srinivasan
+}

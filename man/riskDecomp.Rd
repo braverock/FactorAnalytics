@@ -2,8 +2,8 @@
 % Please edit documentation in R/riskDecomp.R
 \name{riskDecomp}
 \alias{riskDecomp}
-\alias{riskDecomp.ffm}
 \alias{riskDecomp.tsfm}
+\alias{riskDecomp.ffm}
 \title{Decompose Risk into individual factor contributions}
 \usage{
 riskDecomp(object, ...)
@@ -99,9 +99,6 @@ decompES = riskDecomp(fit.cross, risk = "ES")
 #get the factor contributions of risk 
 portES.decomp = riskDecomp(fit.cross, weights = wtsStocks145GmvLo, risk = "ES", portDecomp = TRUE)  
 }
-\author{
-Eric Zivot, Yi-An Chen, Sangeetha Srinivasan, Lingjie Yi and Avinash Acharya
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
@@ -109,4 +106,6 @@ for the different factor model fitting functions.
 \code{\link{portSdDecomp}} for factor model Sd decomposition.
 \code{\link{portVaRDecomp}} for factor model VaR decomposition.
 }
-
+\author{
+Eric Zivot, Yi-An Chen, Sangeetha Srinivasan, Lingjie Yi and Avinash Acharya
+}

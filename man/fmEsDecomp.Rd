@@ -2,9 +2,9 @@
 % Please edit documentation in R/fmEsDecomp.R
 \name{fmEsDecomp}
 \alias{fmEsDecomp}
-\alias{fmEsDecomp.ffm}
-\alias{fmEsDecomp.sfm}
 \alias{fmEsDecomp.tsfm}
+\alias{fmEsDecomp.sfm}
+\alias{fmEsDecomp.ffm}
 \title{Decompose ES into individual factor contributions}
 \usage{
 fmEsDecomp(object, ...)
@@ -91,9 +91,6 @@ ES.decomp <- fmEsDecomp(fit, type="normal")
 head(ES.decomp$cES)
 
 }
-\author{
-Eric Zviot, Sangeetha Srinivasan and Yi-An Chen
-}
 \references{
 Epperlein, E., & Smillie, A. (2006). Portfolio risk analysis Cracking VAR 
 with kernels. RISK-LONDON-RISK MAGAZINE LIMITED-, 19(8), 70.
@@ -115,4 +112,6 @@ for the different factor model fitting functions.
 \code{\link{fmSdDecomp}} for factor model SD decomposition.
 \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 }
-
+\author{
+Eric Zviot, Sangeetha Srinivasan and Yi-An Chen
+}
