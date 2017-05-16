@@ -7,7 +7,7 @@ The factorAnalytics package contains fitting and analysis methods for the three 
 
 This repository was created as a part of Google Summer of Code(GSoC) 2016, to add new functionalities and extend the existing functions to the factorAnalytics package forked from R-forge. 
 
-Detailed information on newly added functionality and use can be found by reading the **[ffm vignette]("https://github.com/AvinashAcharya/factorAnalytics/blob/master/vignettes/ffmVignette-GSoC 2016.pdf")**
+Detailed information on newly added functionality and use can be found by reading the **[ffm vignette](https://github.com/AvinashAcharya/factorAnalytics/blob/master/vignettes/ffmVignette-GSoC-2016.pdf)**
 
 Installation
 ------------
