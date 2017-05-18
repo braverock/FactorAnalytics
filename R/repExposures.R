@@ -32,7 +32,7 @@
 #' @param ... other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses 
 #' 
 #' @return  
-#' A K x 2 matrix containing mean and standard deviation of K factors
+#' A list containing mean and standard deviation of all the factors
 #' 
 #' @author Douglas Martin, Lingjie Yi, Avinash
 #' @examples 
@@ -176,7 +176,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
              }, 
              "3L" = {  
 
-               ## Barplot of means and vols of style factor exposures, and means of sector exposures 
+               ## Barplot of means and vols of style factor exposures, and of sector exposures 
 
                  a = 100*colMeans(X[,exposures.num])
                  b = 100*apply(X[,exposures.num],2,sd)
@@ -187,13 +187,13 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                 {
                   main1 = "Style Exposures Means"
                   main2 = "Style Exposures Volatilities"
-                  main3 = "Sector Exposures Means"
+                  main3 = "Sector Exposures"
                 }
                  else if(length(exposures.num)==1)
                  {
                    main1 = "Style Exposures Mean"
                    main2 = "Style Exposures Volatility"
-                   main3 = "Sector Exposures Means"
+                   main3 = "Sector Exposures"
                  }
                 dat.StMean = as.data.frame(list("ids" = rep(main1, length(a)), "variable"= names(a), "value"= as.numeric(a)))
                 dat.StVol = as.data.frame(list("ids" = rep(main2, length(b)), "variable"= names(b), "value"= as.numeric(b)))
@@ -231,10 +231,16 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     # tabular report 
     avg = apply(X, 2, mean) * 100
     vol = apply(X, 2, sd) * 100
-    stats.sum = cbind(avg, vol)
-    colnames(stats.sum) = c('Mean','Volatility')
-    
-    ret = round(stats.sum, digits)
+    avg = round(avg, digits)
+    vol = round(vol, digits)
+    style.expo = cbind(avg[exposures.num], vol[exposures.num])
+    colnames(style.expo) = c('Mean','Volatility')
+    ret = list("Style.Exposures" = style.expo)
+    if(!(is.null(exposures.char))){
+      sec.expo = avg[!(names(avg) %in% exposures.num)]
+      sec.expo = as.data.frame(sec.expo, optional = T)
+      ret = list("Style.Exposures" = style.expo, "Sec.Exposures" = sec.expo)
+    }
     
     return(ret)   
   }

@@ -18,8 +18,8 @@ repRisk(object, ...)
 \method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
   decomp = c("FMCR", "FCR", "FPCR"), digits = NULL, invert = FALSE,
   nrowPrint = 20, p = 0.05, type = c("np", "normal"),
-  sliceby = c("factor", "asset"), isPrint = TRUE, isPlot = FALSE,
-  layout = NULL, stripText.cex = 1, axis.cex = 1,
+  sliceby = c("factor", "asset", "riskType"), isPrint = TRUE,
+  isPlot = FALSE, layout = NULL, stripText.cex = 1, axis.cex = 1,
   portfolio.only = FALSE, ...)
 }
 \arguments{
@@ -59,7 +59,7 @@ abbreviation of) one of the strings "everything", "all.obs",
 "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
 "pairwise.complete.obs".}
 
-\item{sliceby}{one of 'factor' (slice or condition by factor) or 'asset' (slice or condition by asset)
+\item{sliceby}{one of 'factor' (slice/condition by factor) or 'asset' (slice/condition by asset) or 'riskType'
 Used only when isPlot = 'TRUE'}
 
 \item{isPrint}{logical variable to print numeric output or not.}

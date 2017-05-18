@@ -49,7 +49,7 @@ For plots of a group of assets: \cr
 \item{...}{other graphics parameters available in tsPlotMP(time series plot only) can be passed in through the ellipses}
 }
 \value{
-A K x 2 matrix containing mean and standard deviation of K factors
+A list containing mean and standard deviation of all the factors
 }
 \description{
 Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, 'ffm' object, and portfolio weight as inputs and generates numeric summary and plot visualization.

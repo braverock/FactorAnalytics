@@ -22,7 +22,7 @@
 #' or plot  
 #' @param type one of "np" (non-parametric) or "normal" for calculating VaR & Es. 
 #' Default is "np".
-#' @param sliceby one of 'factor' (slice or condition by factor) or 'asset' (slice or condition by asset)
+#' @param sliceby one of 'factor' (slice/condition by factor) or 'asset' (slice/condition by asset) or 'riskType'
 #' Used only when isPlot = 'TRUE'  
 #' @param invert a logical variable to change VaR/ES to positive number, default
 #' is False and will return positive values.
@@ -415,7 +415,7 @@ repRisk.tsfm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
 repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
                         decomp = c('FMCR', 'FCR', 'FPCR'), digits = NULL, invert = FALSE,
                         nrowPrint = 20, p=0.05, type=c("np","normal"), 
-                        sliceby = c('factor', 'asset'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
+                        sliceby = c('factor', 'asset', 'riskType'), isPrint = TRUE, isPlot = FALSE, layout =NULL,
                         stripText.cex =1,axis.cex=1,portfolio.only = FALSE, ...) {
   riskReport = function(object,X,mul.port)
   {
@@ -643,24 +643,20 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         
       }
       if(isPlot & !mul.port){
-#         result = rev(result)
-#         result.mat = matrix(result, ncol =1)
-#         rownames(result.mat) = names(result)
-#         print(barchart(result.mat, groups = FALSE, main = list(paste(decomp,"of", risk, switch(mul.port, "1" = paste("for port", X), "")), cex = axis.cex),layout = layout,
-#                        scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),strip=F,ylab = '', xlab = '', as.table = TRUE))
-#       
+   
         # single portfolio with multiple risks
         if(class(result) == "matrix")
         {
           result = output[[1]]
           result.mat = result[,-1]
           newdata = melt((result.mat), id.vars = as.factor(rownames(result.mat)))
+          if(sliceby == "riskType"){
+            print(barchart(value~Var2|Var1, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio", decomp, "Comparison" ), cex = axis.cex),layout = layout,
+                           scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex,rot=90)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
+          }else{
           print(barchart(value~Var1|Var2, data = newdata,stack = TRUE, origin =0,main = list(paste("Portfolio", decomp, "Comparison" ), cex = axis.cex),layout = layout,
                          scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
-          
-          print(barchart(value~Var2|Var1, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio", decomp, "Comparison V2" ), cex = axis.cex),layout = layout,
-                         scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex,rot=90)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
-          
+          }
         }
         else 
         {
