@@ -24,4 +24,4 @@ install_github("avinashacharya/factorAnalytics")
 R/Finance 2017
 ------------
 
-Click [here](https://www.dropbox.com/s/jv809g196iyqo0k/FFM%20Talk%20Rcode%20R-finance2017.R?dl=0) for the R script used in Prof. Douglas Martin's "Fundamental Factor Models in FactorAnalytics" Pre-Conference Seminar.
+[R Script](https://www.dropbox.com/s/jv809g196iyqo0k/FFM%20Talk%20Rcode%20R-finance2017.R?dl=0) and [slides] (https://www.dropbox.com/s/gh4y8a6e9bcxwnv/ffmTalk%20RinFinance%202017.pdf?dl=0) used in Prof. Douglas Martin's "Fundamental Factor Models in FactorAnalytics" Pre-Conference Seminar.

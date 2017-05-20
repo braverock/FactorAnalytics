@@ -591,7 +591,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     reg.list<- list()
     
     B.mod = (beta.mic[1:N, ]) %*% rMic  #Y = X*R
-    B.style = beta.style[((TP-1)*N+1) : (TP*N), ]
+    if(length(exposures.num) > 0){
+    B.style = beta.style[((TP-1)*N+1) : (TP*N), ]}
     fmMSCI.formula = as.formula(paste(ret.var, "~", "B.mod+", paste(exposures.num, collapse="+"),"-1" ))                 
     reg.list <- by(data=data, INDICES=data[[date.var]], 
                    FUN=function(x) {lm(data=x, formula=fmMSCI.formula, 
