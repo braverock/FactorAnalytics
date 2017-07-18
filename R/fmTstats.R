@@ -4,7 +4,7 @@
 #'  Calculate and plot the time series of the t-statistic values and the
 #'  number of risk indices with significant t-stats for a fundamentally fit object.
 #' @importFrom xts xts
-#' @importFrom zoo plot.zoo
+#' @importFrom zoo plot.zoo coredata
 #' @importFrom zoo as.yearmon
 #' @importFrom lattice panel.abline xyplot panel.xyplot barchart
 #' @importFrom grDevices dev.off
@@ -116,26 +116,27 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
       std.errors = cbind(std.errors,stdErr.sty)
       std.errors = std.errors[, colnames(ffmObj$factor.returns)]
     }
-    #colnames(std.errors) = colnames(ffmObj$factor.returns)
-    tstatsTs = ffmObj$factor.returns/std.errors
+    #tstatsTs = ffmObj$factor.returns/std.errors
+    tstats = coredata(ffmObj$factor.returns/std.errors)
     
   }else
   { tstats = lapply(seq(time.periods), function(a) summary(ffmObj)$sum.list[[a]]$coefficients[,3])
   secNames = names(tstats[[1]])
   tstats = matrix(unlist(tstats), byrow = TRUE, nrow = time.periods)
   colnames(tstats)=secNames
-  tstatsTs = xts(tstats,order.by=as.yearmon(names(ffmObj$r2)))
+  #tstatsTs = xts(tstats,order.by=as.yearmon(names(ffmObj$r2)))
   }
   
-  
+  tstatsTs = xts(tstats,order.by=as.yearmon(names(ffmObj$r2)))
   # COUNT NUMBER OF RISK INDICES WITH SIGNIFICANT T-STATS EACH MONTH
-  sigTstats = as.matrix(rowSums(ifelse(abs(tstatsTs) > z.alpha,1,0)))
+  #(Modified code using xts obj in ifelse to bypass bug in xts package v0.10)
+  sigTstats = as.matrix(rowSums(ifelse(abs(tstats) > z.alpha,1,0)))
   sigTstatsTs = xts(sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
   
-  pos.sigTstatsTs = as.matrix(colSums(ifelse((tstatsTs) > z.alpha,1,0)))
+  pos.sigTstatsTs = as.matrix(colSums(ifelse((tstats) > z.alpha,1,0)))
   #pos.sigTstatsTs = xts(pos.sigTstats,order.by=as.yearmon(names(ffmObj$r2)))
-  neg.sigTstatsTs = as.matrix(colSums(ifelse((tstatsTs) < -z.alpha,1,0)))
-  Toal.sigTstats = as.matrix(colSums(ifelse(abs(tstatsTs) > z.alpha,1,0)))
+  neg.sigTstatsTs = as.matrix(colSums(ifelse((tstats) < -z.alpha,1,0)))
+  Toal.sigTstats = as.matrix(colSums(ifelse(abs(tstats) > z.alpha,1,0)))
   
   combined.sigTstats = cbind(  neg.sigTstatsTs,pos.sigTstatsTs, Toal.sigTstats)
   colnames(combined.sigTstats) = c( "Negative", "Positive", "Total")
