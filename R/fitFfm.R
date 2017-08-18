@@ -68,7 +68,7 @@
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},
 #' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{TRUE},
 #' @param resid.EWMA logical; If \code{TRUE}, the residual variances are computed using EWMA and these would be used as weights for "WLS" or "W-Rob". Deafault is \code{FALSE},
-#' @param resid.cov.type character. Valid only when resid.EWMA is \code{TRUE}. If it is equal to EWMA, the last period EWMA residuals are used as residual covraiances. Defualt is NA indicating that the cov matrix is computed using historical residuals.
+#' @param resid.cov.type character. Valid only when resid.EWMA is \code{TRUE}. If it is equal to EWMA, the last period EWMA residuals are used as residual covraiances. Defualt is "hist" indicating that the cov matrix is computed using historical residuals.
 #' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
 #' @param ... potentially further arguments passed.
 #' 
@@ -162,7 +162,7 @@
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                        weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
                        rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE,
-                       lagExposures=TRUE, resid.EWMA = FALSE, resid.cov.type = NA, lambda = 0.9, ...) {
+                       lagExposures=TRUE, resid.EWMA = FALSE, resid.cov.type = "hist", lambda = 0.9, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
