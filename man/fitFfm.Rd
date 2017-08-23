@@ -10,7 +10,7 @@
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
   full.resid.cov = FALSE, z.score = FALSE, addIntercept = FALSE,
-  lagExposures = TRUE, resid.EWMA = FALSE, resid.cov.type = "hist",
+  lagExposures = TRUE, weights.type = NA, resid.cov.type = "hist",
   lambda = 0.9, ...)
 
 \method{coef}{ffm}(object, ...)
@@ -56,9 +56,10 @@ z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.}
 
 \item{lagExposures}{logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{TRUE},}
 
-\item{resid.EWMA}{logical; If \code{TRUE}, the residual variances are computed using EWMA and these would be used as weights for "WLS" or "W-Rob". Deafault is \code{FALSE},}
+\item{weights.type}{character; Only valid when fit.method is set to WLS or W-Rob. The residual variances used as weights in the weighted regression are estimated  using classic EWMA, robust EWMA or GARCH. Valid values are \code{NA}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.
+Deafault is \code{NA} where the inverse of residual sample variances are used as weights.}
 
-\item{resid.cov.type}{character. Valid only when resid.EWMA is \code{TRUE}. If it is equal to EWMA, the last period EWMA residuals are used as residual covraiances. Defualt is "hist" indicating that the cov matrix is computed using historical residuals.}
+\item{resid.cov.type}{character. Valid only when weights.type is non-NA. The last period EWMA residuals are used as residual covraiances. Defualt is "hist" indicating that the cov matrix is computed using historical residuals.}
 
 \item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
 
