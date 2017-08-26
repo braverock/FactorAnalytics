@@ -38,7 +38,10 @@ Imports:
     bestglm,
     tseries,
 	HH,
-	reshape2
+	reshape2,
+	rugarch
+Remotes:
+	bitbucket::alexiosg/rugarch
 Suggests:
     testthat
 LazyLoad: yes

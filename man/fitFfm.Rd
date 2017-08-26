@@ -10,8 +10,7 @@
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
   full.resid.cov = FALSE, z.score = FALSE, addIntercept = FALSE,
-  lagExposures = TRUE, weights.type = NA, resid.cov.type = "hist",
-  lambda = 0.9, ...)
+  lagExposures = TRUE, weights.type = NA, lambda = 0.9, ...)
 
 \method{coef}{ffm}(object, ...)
 
@@ -58,8 +57,6 @@ z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.}
 
 \item{weights.type}{character; Only valid when fit.method is set to WLS or W-Rob. The residual variances used as weights in the weighted regression are estimated  using classic EWMA, robust EWMA or GARCH. Valid values are \code{NA}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.
 Deafault is \code{NA} where the inverse of residual sample variances are used as weights.}
-
-\item{resid.cov.type}{character. Valid only when weights.type is non-NA. The last period EWMA residuals are used as residual covraiances. Defualt is "hist" indicating that the cov matrix is computed using historical residuals.}
 
 \item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
 
@@ -123,6 +120,11 @@ Estimation method "LS" corresponds to ordinary least squares using
 of the residual variances from LS regression as weights (feasible GLS). 
 Similarly, "W-Rob" is weighted robust regression.
 
+The weights to be used in "WLS" or "W-Rob" can be set using 
+\code{weights.type} argument which computes the residual variances in the following ways - 
+sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of the residual variances
+ are used as the weights.
+ 
 Standardizing style factor exposures: The exposures can be standardized into
 z-scores using regular or robust (see \code{rob.stats}) measures of location 
 and scale. Further, \code{weight.var}, a variable such as market-cap, can be 
@@ -137,6 +139,8 @@ robust estimate of the factor covariance/correlation matrix, and,
 of univariate scale for residuals during "WLS" or "W-Rob" regressions. When 
 standardizing style exposures, the \code{\link[stats]{median}} and 
 \code{\link[stats]{mad}} are used for location and scale respectively.
+When \code{weights.type} is non-NA, the residual covariance is the 
+diagonal matrix of the estimated residual variances in last time period.
 
 
 The original function was designed by Doug Martin and initially implemented
