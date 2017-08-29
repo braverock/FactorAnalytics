@@ -15,9 +15,10 @@
 #' Similarly, "W-Rob" is weighted robust regression.
 #' 
 #' The weights to be used in "WLS" or "W-Rob" can be set using 
-#' \code{weights.type} argument which computes the residual variances in the following ways - 
-#' sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of the residual variances
-#'  are used as the weights.
+#' \code{resid.scaleType} argument which computes the residual variances in the following ways - 
+#' sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
+#'  are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GACRH(1,1) 
+#'  omega = 0.09, alpha = 0.1, and beta = 0.81 is used as mentioned in Martin & Ding (2017).
 #'  
 #' Standardizing style factor exposures: The exposures can be standardized into
 #' z-scores using regular or robust (see \code{rob.stats}) measures of location 
@@ -33,7 +34,7 @@
 #' of univariate scale for residuals during "WLS" or "W-Rob" regressions. When 
 #' standardizing style exposures, the \code{\link[stats]{median}} and 
 #' \code{\link[stats]{mad}} are used for location and scale respectively.
-#' When \code{weights.type} is non-NA, the residual covariance is equal to the 
+#' When \code{resid.scaleType} is EWMA or GARCH, the residual covariance is equal to the 
 #' diagonal matrix of the estimated residual variances in last time period.
 #' 
 #' 
@@ -75,8 +76,9 @@
 #' z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},
 #' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{TRUE},
-#' @param weights.type character; Only valid when fit.method is set to WLS or W-Rob. The residual variances used as weights in the weighted regression are estimated  using classic EWMA, robust EWMA or GARCH. Valid values are \code{NA}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.
-#' Deafault is \code{NA} where the inverse of residual sample variances are used as weights.
+#' @param resid.scaleType character; Only valid when fit.method is set to WLS or W-Rob. The residual variances used as weights in 
+#' the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, \code{GARCH}, \code{fixedEWMA}, or \code{fixedGARCH}.
+#' Deafault is \code{stdDev} where the inverse of residual sample variances are used as weights.
 #' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
 #' @param ... potentially further arguments passed.
 #' 
@@ -170,7 +172,7 @@
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                        weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
                        rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE,
-                       lagExposures=TRUE, weights.type = NA, lambda = 0.9, ...) {
+                       lagExposures=TRUE, resid.scaleType = "stdDev", lambda = 0.9, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
@@ -210,8 +212,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (!is.logical(z.score) || length(z.score) != 1) {
     stop("Invalid args: control parameter 'z.score' must be logical")
   }
-  if (!is.na(weights.type) && !(fit.method %in% c("WLS","W-Rob"))) {
-    stop("Invalid args: weights.type must be used with WLS or W-Rob")
+  if ((resid.scaleType != "stdDev") && !(fit.method %in% c("WLS","W-Rob"))) {
+    stop("Invalid args: resid.scaleType must be used with WLS or W-Rob")
   }
   # initialize to avoid R CMD check's NOTE: no visible binding for global var
   DATE=NULL 
@@ -367,11 +369,13 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         resid.var <- apply(sapply(reg.list, residuals), 1, var)
       }
       #Compute cross-sectional weights using EWMA or GARCH
-      if(!is.na(weights.type))
+      if((resid.scaleType != "stdDev"))
       { #Extract Residuals
         res = sapply(reg.list, residuals)
         
-        if(weights.type == "EWMA" || weights.type == "robEWMA"){
+        if(grepl("EWMA", resid.scaleType)){
+          #If fixedEWMA, use lambda = 0.9.Else use the user fed value of lambda.
+          if(resid.scaleType == "fixedEWMA") lambda = 0.9
           w<-matrix(0,N,TP)
           for(i in 1:N)
           {
@@ -380,21 +384,39 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
             {
               #ifelse conditon is used to check if robust EWMA weights has to be calculated.
               #The rejection threshold a=2.5 is used as mentioned in eq 6.6 of Martin (2005)
-              w[i,j] = var_tminus1 + ((1-lambda)*(res[i,j]^2-var_tminus1)) * ifelse(weights.type == "robEWMA", ifelse(abs(res[i,j] <= 2.5 * sqrt(var_tminus1)), 1, 0), 1)
+              w[i,j] = var_tminus1 + ((1-lambda)*(res[i,j]^2-var_tminus1)) * ifelse(resid.scaleType == "robEWMA", ifelse(abs(res[i,j] <= 2.5 * sqrt(var_tminus1)), 1, 0), 1)
               var_tminus1 = w[i,j]
             }
           }
           w[,1] = resid.var
         }
         #GARCH(1,1)
-        else if(weights.type == "GARCH") {
+        else if(resid.scaleType == "GARCH") {
           garch.spec = ugarchspec(variance.model=list(model="sGARCH", garchOrder=c(1,1)), 
                                   mean.model=list(armaOrder=c(0,0), include.mean = FALSE),  
                                   distribution.model="norm")
           garch.weights = sapply(X = 1:nrow(res), FUN = function(X){(ugarchfit(garch.spec,res[X,]))@fit$var})
           w = t(garch.weights)
         
-      }
+        }
+        else if(resid.scaleType == "fixedGARCH") {
+          #Below parameters are based on Martin & Ding (2017)
+          alpha = 0.1
+          beta = 0.81
+          w<-matrix(0,N,TP)
+          for(i in 1:N)
+          {
+            #Use sample variance as the initial variance
+            w[,1] = resid.var
+            var_tminus1 = as.numeric(resid.var[i])
+            for(j in 2:TP)
+            {
+              w[i,j] = resid.var[i] * (1 - alpha - beta) + alpha * res[i,j-1]^2 + beta * var_tminus1
+              var_tminus1 = w[i,j]
+            }
+          }
+
+        }
       data<- cbind(data, W = 1/as.numeric(w))
       }
       else
@@ -487,8 +509,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       if (full.resid.cov) {
         resid.cov <- covOGK(coredata(residuals), sigmamu=scaleTau2, n.iter=1)$cov
       } else {
-        #if weights.type is not NA, use the most recent residual var as the diagonal cov-var of residuals
-        if(!is.na(weights.type)){
+        #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
+        if((resid.scaleType != "stdDev")){
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
         }
@@ -503,8 +525,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         resid.cov <- covClassic(coredata(residuals), distance=FALSE, 
                                 na.action=na.omit)$cov
       } else {
-        #if weights.type is not NA, use the most recent residual var as the diagonal cov-var of residuals
-        if(!is.na(weights.type)){
+        #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
+        if((resid.scaleType != "stdDev")){
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
         }
@@ -555,8 +577,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
     names(resid.var) <- asset.names
-    #if weights.type is not NA, use the most recent residual var as the diagonal cov-var of residuals
-    if(!is.na(weights.type)){
+    #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
+    if((resid.scaleType != "stdDev")){
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
     }
@@ -650,11 +672,13 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         resid.var <- apply(sapply(reg.list, residuals), 1, var)
       }
       #Compute cross-sectional weights using EWMA or GARCH
-      if(!is.na(weights.type))
+      if(resid.scaleType != "stdDev")
       { #Extract Residuals
         res = sapply(reg.list, residuals)
         
-        if(weights.type == "EWMA" || weights.type == "robEWMA"){
+        if(grepl("EWMA", resid.scaleType)){
+          #If fixedEWMA, use lambda = 0.9.Else use the user fed value of lambda.
+          if(resid.scaleType == "fixedEWMA") lambda = 0.9
           w<-matrix(0,N,TP)
           for(i in 1:N)
           {
@@ -663,19 +687,37 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
             {
               #ifelse conditon is used to check if robust EWMA weights has to be calculated.
               #The rejection threshold a=2.5 is used as mentioned in eq 6.6 of Martin (2005)
-              w[i,j] = var_tminus1 + ((1-lambda)*(res[i,j]^2-var_tminus1)) * ifelse(weights.type == "robEWMA", ifelse(abs(res[i,j] <= 2.5 * sqrt(var_tminus1)), 1, 0), 1)
+              w[i,j] = var_tminus1 + ((1-lambda)*(res[i,j]^2-var_tminus1)) * ifelse(resid.scaleType == "robEWMA", ifelse(abs(res[i,j] <= 2.5 * sqrt(var_tminus1)), 1, 0), 1)
               var_tminus1 = w[i,j]
             }
           }
           w[,1] = resid.var
         }
         #GARCH(1,1)
-        else if(weights.type == "GARCH") {
+        else if(resid.scaleType == "GARCH") {
           garch.spec = ugarchspec(variance.model=list(model="sGARCH", garchOrder=c(1,1)), 
                                   mean.model=list(armaOrder=c(0,0), include.mean = FALSE),  
                                   distribution.model="norm")
           garch.weights = sapply(X = 1:nrow(res), FUN = function(X){(ugarchfit(garch.spec,res[X,]))@fit$var})
           w = t(garch.weights)
+          
+        }
+        else if(resid.scaleType == "fixedGARCH") {
+          #Below parameters are based on Martin & Ding (2017)
+          alpha = 0.1
+          beta = 0.81
+          w<-matrix(0,N,TP)
+          for(i in 1:N)
+          {
+            #Use sample variance as the initial variance
+            w[,1] = resid.var
+            var_tminus1 = as.numeric(resid.var[i])
+            for(j in 2:TP)
+            {
+              w[i,j] = resid.var[i] * (1 - alpha - beta) + alpha * res[i,j-1]^2 + beta * var_tminus1
+              var_tminus1 = w[i,j]
+            }
+          }
           
         }
         data<- cbind(data, W = 1/as.numeric(w))
@@ -719,8 +761,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
     names(resid.var) <- asset.names
-    #if weights.type is not NA, use the most recent residual var as the diagonal cov-var of residuals
-    if(!is.na(weights.type)){
+    #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
+    if((resid.scaleType != "stdDev")){
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
     }
