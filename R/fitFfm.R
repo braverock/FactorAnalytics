@@ -106,7 +106,7 @@
 #' \item{return.cov}{N x N return covariance estimated by the factor model, 
 #' using the factor exposures from the last time period.}
 #' \item{restriction.mat}{The restriction matrix used in the computation of f=Rg.}
-#' \item{resid.var}{length-N vector of residual variances.}
+#' \item{resid.var}{N x T matrix of estimated residual variances. It will be a length-N vector of sample residual variances when \code{resid.scaleType} is set to \code{stdDev} }
 #' \item{call}{the matched function call.}
 #' \item{data}{data frame object as input.}
 #' \item{date.var}{date.var as input}
