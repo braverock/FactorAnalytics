@@ -17,7 +17,7 @@
 #' The weights to be used in "WLS" or "W-Rob" can be set using 
 #' \code{resid.scaleType} argument which computes the residual variances in the following ways - 
 #' sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
-#'  are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GACRH(1,1) 
+#'  are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GARCH(1,1) 
 #'  omega = 0.09, alpha = 0.1, and beta = 0.81 is used as mentioned in Martin & Ding (2017).
 #'  
 #' Standardizing style factor exposures: The exposures can be standardized into
@@ -73,12 +73,12 @@
 #' matrix is estimated. Otherwise, a diagonal residual covariance matrix is 
 #' estimated. Default is \code{FALSE}.
 #' @param z.score logical; If \code{TRUE}, style exposures will be converted to 
-#' z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.
-#' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},
-#' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{TRUE},
-#' @param resid.scaleType character; Only valid when fit.method is set to WLS or W-Rob. The residual variances used as weights in 
-#' the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, \code{GARCH}, \code{fixedEWMA}, or \code{fixedGARCH}.
-#' Deafault is \code{stdDev} where the inverse of residual sample variances are used as weights.
+#' z-scores; weights given by \code{weight.var}. Default is \code{TRUE}.
+#' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Default is \code{FALSE},
+#' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Default is \code{TRUE},
+#' @param resid.scaleType character; Only valid when fit.method is set to WLS or W-Rob. The weights used in 
+#' the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, \code{GARCH}, \code{fixEWMA}, or \code{fixGARCH}.
+#' Default is \code{stdDev} where the inverse of residual sample variances are used as the weights.
 #' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
 #' @param ... potentially further arguments passed.
 #' 
@@ -171,7 +171,7 @@
 
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                        weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
-                       rob.stats=FALSE, full.resid.cov=FALSE, z.score=FALSE,addIntercept = FALSE,
+                       rob.stats=FALSE, full.resid.cov=FALSE, z.score=TRUE,addIntercept = FALSE,
                        lagExposures=TRUE, resid.scaleType = "stdDev", lambda = 0.9, ...) {
   
   # record the call as an element to be returned
@@ -211,6 +211,9 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   }
   if (!is.logical(z.score) || length(z.score) != 1) {
     stop("Invalid args: control parameter 'z.score' must be logical")
+  }
+  if (!(resid.scaleType %in% c("stdDev","EWMA","robEWMA","fixEWMA", "GARCH", "fixGARCH"))) {
+    stop("Invalid args: resid.scaleType must be 'stdDev','EWMA','robEWMA','fixEWMA', 'GARCH' or 'fixGARCH'")
   }
   if ((resid.scaleType != "stdDev") && !(fit.method %in% c("WLS","W-Rob"))) {
     stop("Invalid args: resid.scaleType must be used with WLS or W-Rob")
@@ -374,8 +377,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         res = sapply(reg.list, residuals)
         
         if(grepl("EWMA", resid.scaleType)){
-          #If fixedEWMA, use lambda = 0.9.Else use the user fed value of lambda.
-          if(resid.scaleType == "fixedEWMA") lambda = 0.9
+          #If fixEWMA, use lambda = 0.9.Else use the user fed value of lambda.
+          if(resid.scaleType == "fixEWMA") lambda = 0.9
           w<-matrix(0,N,TP)
           for(i in 1:N)
           {
@@ -399,7 +402,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           w = t(garch.weights)
         
         }
-        else if(resid.scaleType == "fixedGARCH") {
+        else if(resid.scaleType == "fixGARCH") {
           #Below parameters are based on Martin & Ding (2017)
           alpha = 0.1
           beta = 0.81
@@ -513,6 +516,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         if((resid.scaleType != "stdDev")){
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
+          # update resid.var with the timeseries of estimated resid variances
+          resid.var = w
         }
         else
           resid.cov <- diag(resid.var)
@@ -529,6 +534,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         if((resid.scaleType != "stdDev")){
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
+          # update resid.var with the timeseries of estimated resid variances
+          resid.var = w
         }
         else
           resid.cov <- diag(resid.var)
@@ -577,10 +584,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
     names(resid.var) <- asset.names
-    #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
+    # if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
     if((resid.scaleType != "stdDev")){
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
+      # update resid.var with the timeseries of estimated resid variances
+      resid.var = w
     }
     else
       resid.cov <- diag(resid.var)
@@ -677,8 +686,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         res = sapply(reg.list, residuals)
         
         if(grepl("EWMA", resid.scaleType)){
-          #If fixedEWMA, use lambda = 0.9.Else use the user fed value of lambda.
-          if(resid.scaleType == "fixedEWMA") lambda = 0.9
+          #If fixEWMA, use lambda = 0.9.Else use the user fed value of lambda.
+          if(resid.scaleType == "fixEWMA") lambda = 0.9
           w<-matrix(0,N,TP)
           for(i in 1:N)
           {
@@ -702,7 +711,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           w = t(garch.weights)
           
         }
-        else if(resid.scaleType == "fixedGARCH") {
+        else if(resid.scaleType == "fixGARCH") {
           #Below parameters are based on Martin & Ding (2017)
           alpha = 0.1
           beta = 0.81
@@ -765,6 +774,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     if((resid.scaleType != "stdDev")){
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
+      # update resid.var with the timeseries of estimated resid variances
+      resid.var = w
     }
     else
       resid.cov <- diag(resid.var)
@@ -784,7 +795,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     restriction.mat = rMic
   }
   
-  
+
+
   # create list of return values.
   result <- list(factor.fit=reg.list, beta=beta, factor.returns=factor.returns, 
                  residuals=residuals, r2=r2, factor.cov=factor.cov, g.cov = g.cov,

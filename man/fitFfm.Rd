@@ -9,7 +9,7 @@
 \usage{
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
-  full.resid.cov = FALSE, z.score = FALSE, addIntercept = FALSE,
+  full.resid.cov = FALSE, z.score = TRUE, addIntercept = FALSE,
   lagExposures = TRUE, resid.scaleType = "stdDev", lambda = 0.9, ...)
 
 \method{coef}{ffm}(object, ...)
@@ -49,15 +49,15 @@ matrix is estimated. Otherwise, a diagonal residual covariance matrix is
 estimated. Default is \code{FALSE}.}
 
 \item{z.score}{logical; If \code{TRUE}, style exposures will be converted to 
-z-scores; weights given by \code{weight.var}. Default is \code{FALSE}.}
+z-scores; weights given by \code{weight.var}. Default is \code{TRUE}.}
 
-\item{addIntercept}{logical; If \code{TRUE}, intercept is added in the exposure matrix. Deafault is \code{FALSE},}
+\item{addIntercept}{logical; If \code{TRUE}, intercept is added in the exposure matrix. Default is \code{FALSE},}
 
-\item{lagExposures}{logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Deafault is \code{TRUE},}
+\item{lagExposures}{logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Default is \code{TRUE},}
 
-\item{resid.scaleType}{character; Only valid when fit.method is set to WLS or W-Rob. The residual variances used as weights in 
-the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, \code{GARCH}, \code{fixedEWMA}, or \code{fixedGARCH}.
-Deafault is \code{stdDev} where the inverse of residual sample variances are used as weights.}
+\item{resid.scaleType}{character; Only valid when fit.method is set to WLS or W-Rob. The weights used in 
+the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, \code{GARCH}, \code{fixEWMA}, or \code{fixGARCH}.
+Default is \code{stdDev} where the inverse of residual sample variances are used as the weights.}
 
 \item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
 
@@ -124,7 +124,7 @@ Similarly, "W-Rob" is weighted robust regression.
 The weights to be used in "WLS" or "W-Rob" can be set using 
 \code{resid.scaleType} argument which computes the residual variances in the following ways - 
 sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
- are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GACRH(1,1) 
+ are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GARCH(1,1) 
  omega = 0.09, alpha = 0.1, and beta = 0.81 is used as mentioned in Martin & Ding (2017).
  
 Standardizing style factor exposures: The exposures can be standardized into
