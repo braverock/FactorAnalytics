@@ -122,7 +122,7 @@ of the residual variances from LS regression as weights (feasible GLS).
 Similarly, "W-Rob" is weighted robust regression.
 
 The weights to be used in "WLS" or "W-Rob" can be set using 
-\code{resid.scaleType} argument which computes the residual variances in the following ways - 
+\code{resid.scaleType} argument which computes the residual variances in one of the following ways - 
 sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
  are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GARCH(1,1) 
  omega = 0.09, alpha = 0.1, and beta = 0.81 is used as mentioned in Martin & Ding (2017).

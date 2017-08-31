@@ -15,7 +15,7 @@
 #' Similarly, "W-Rob" is weighted robust regression.
 #' 
 #' The weights to be used in "WLS" or "W-Rob" can be set using 
-#' \code{resid.scaleType} argument which computes the residual variances in the following ways - 
+#' \code{resid.scaleType} argument which computes the residual variances in one of the following ways - 
 #' sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
 #'  are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GARCH(1,1) 
 #'  omega = 0.09, alpha = 0.1, and beta = 0.81 is used as mentioned in Martin & Ding (2017).
@@ -517,7 +517,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
           # update resid.var with the timeseries of estimated resid variances
-          resid.var = w
+          resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
         }
         else
           resid.cov <- diag(resid.var)
@@ -535,7 +535,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
           # update resid.var with the timeseries of estimated resid variances
-          resid.var = w
+          resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
         }
         else
           resid.cov <- diag(resid.var)
@@ -589,7 +589,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
       # update resid.var with the timeseries of estimated resid variances
-      resid.var = w
+      resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
     }
     else
       resid.cov <- diag(resid.var)
@@ -775,7 +775,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
       # update resid.var with the timeseries of estimated resid variances
-      resid.var = w
+      resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
     }
     else
       resid.cov <- diag(resid.var)
