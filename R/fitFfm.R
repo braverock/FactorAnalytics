@@ -17,8 +17,10 @@
 #' The weights to be used in "WLS" or "W-Rob" can be set using 
 #' \code{resid.scaleType} argument which computes the residual variances in one of the following ways - 
 #' sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
-#'  are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GARCH(1,1) 
-#'  omega = 0.09, alpha = 0.1, and beta = 0.81 is used as mentioned in Martin & Ding (2017).
+#'  are used as the weights. For EWMA model, lambda = 0.9 is used as default and for GARCH(1,1) 
+#'  omega = 0.09, alpha = 0.1, and beta = 0.81 are used as default as mentioned in Martin & Ding (2017).
+#'  These default parameters can be changed using the arguments \code{lambda}, \code{GARCH.params} for EWMA and GARCH respectively.
+#'  To compute GARCH parameters via MLE, set \code{GARCH.MLE} to \code{TRUE}. 
 #'  
 #' Standardizing style factor exposures: The exposures can be standardized into
 #' z-scores using regular or robust (see \code{rob.stats}) measures of location 
@@ -77,9 +79,12 @@
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Default is \code{FALSE},
 #' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Default is \code{TRUE},
 #' @param resid.scaleType character; Only valid when fit.method is set to WLS or W-Rob. The weights used in 
-#' the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, \code{GARCH}, \code{fixEWMA}, or \code{fixGARCH}.
+#' the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.
 #' Default is \code{stdDev} where the inverse of residual sample variances are used as the weights.
 #' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
+#' @param GARCH.params list containing GARCH parameters omega, alpha, and beta. Default values are 0.09, 0.1, 0.81 respectively.
+#' Valid only when \code{GARCH.MLE} is set to \code{FALSE}.
+#' @param GARCH.MLE logical. When set to \code{TRUE}, GARCH parameters are computed using Maximum Liklihood Estimation. Default is \code{FALSE}
 #' @param ... potentially further arguments passed.
 #' 
 #' @return \code{fitFfm} returns an object of class \code{"ffm"} for which 
@@ -172,7 +177,8 @@
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                        weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
                        rob.stats=FALSE, full.resid.cov=FALSE, z.score=TRUE,addIntercept = FALSE,
-                       lagExposures=TRUE, resid.scaleType = "stdDev", lambda = 0.9, ...) {
+                       lagExposures=TRUE, resid.scaleType = "stdDev", 
+                       lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81), GARCH.MLE = FALSE, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
@@ -212,11 +218,14 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (!is.logical(z.score) || length(z.score) != 1) {
     stop("Invalid args: control parameter 'z.score' must be logical")
   }
-  if (!(resid.scaleType %in% c("stdDev","EWMA","robEWMA","fixEWMA", "GARCH", "fixGARCH"))) {
-    stop("Invalid args: resid.scaleType must be 'stdDev','EWMA','robEWMA','fixEWMA', 'GARCH' or 'fixGARCH'")
+  if (!(resid.scaleType %in% c("stdDev","EWMA","robEWMA", "GARCH"))) {
+    stop("Invalid args: resid.scaleType must be 'stdDev','EWMA','robEWMA', or 'GARCH'")
   }
   if ((resid.scaleType != "stdDev") && !(fit.method %in% c("WLS","W-Rob"))) {
     stop("Invalid args: resid.scaleType must be used with WLS or W-Rob")
+  }
+  if (!is.list(GARCH.params)) {
+    stop("Invalid args: parameter 'GARCH.params' must be a list")
   }
   # initialize to avoid R CMD check's NOTE: no visible binding for global var
   DATE=NULL 
@@ -377,8 +386,6 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         res = sapply(reg.list, residuals)
         
         if(grepl("EWMA", resid.scaleType)){
-          #If fixEWMA, use lambda = 0.9.Else use the user fed value of lambda.
-          if(resid.scaleType == "fixEWMA") lambda = 0.9
           w<-matrix(0,N,TP)
           for(i in 1:N)
           {
@@ -395,17 +402,20 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         }
         #GARCH(1,1)
         else if(resid.scaleType == "GARCH") {
+          #Compute parameters using MLE
+          if(GARCH.MLE){
           garch.spec = ugarchspec(variance.model=list(model="sGARCH", garchOrder=c(1,1)), 
                                   mean.model=list(armaOrder=c(0,0), include.mean = FALSE),  
                                   distribution.model="norm")
           garch.weights = sapply(X = 1:nrow(res), FUN = function(X){(ugarchfit(garch.spec,res[X,]))@fit$var})
           w = t(garch.weights)
-        
-        }
-        else if(resid.scaleType == "fixGARCH") {
-          #Below parameters are based on Martin & Ding (2017)
-          alpha = 0.1
-          beta = 0.81
+          }
+          
+        else {
+          # use fixed parameters
+          # default values of omega, Alpha and beta are based on Martin and Ding (2017)
+          alpha = ifelse(!exists("alpha", where = GARCH.params), 0.1, GARCH.params$alpha)
+          beta =  ifelse(!exists("beta", where = GARCH.params), 0.81, GARCH.params$beta )
           w<-matrix(0,N,TP)
           for(i in 1:N)
           {
@@ -420,6 +430,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           }
 
         }
+          }
       data<- cbind(data, W = 1/as.numeric(w))
       }
       else
@@ -681,13 +692,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         resid.var <- apply(sapply(reg.list, residuals), 1, var)
       }
       #Compute cross-sectional weights using EWMA or GARCH
-      if(resid.scaleType != "stdDev")
+      if((resid.scaleType != "stdDev"))
       { #Extract Residuals
         res = sapply(reg.list, residuals)
         
         if(grepl("EWMA", resid.scaleType)){
-          #If fixEWMA, use lambda = 0.9.Else use the user fed value of lambda.
-          if(resid.scaleType == "fixEWMA") lambda = 0.9
           w<-matrix(0,N,TP)
           for(i in 1:N)
           {
@@ -704,30 +713,34 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         }
         #GARCH(1,1)
         else if(resid.scaleType == "GARCH") {
-          garch.spec = ugarchspec(variance.model=list(model="sGARCH", garchOrder=c(1,1)), 
-                                  mean.model=list(armaOrder=c(0,0), include.mean = FALSE),  
-                                  distribution.model="norm")
-          garch.weights = sapply(X = 1:nrow(res), FUN = function(X){(ugarchfit(garch.spec,res[X,]))@fit$var})
-          w = t(garch.weights)
-          
-        }
-        else if(resid.scaleType == "fixGARCH") {
-          #Below parameters are based on Martin & Ding (2017)
-          alpha = 0.1
-          beta = 0.81
-          w<-matrix(0,N,TP)
-          for(i in 1:N)
-          {
-            #Use sample variance as the initial variance
-            w[,1] = resid.var
-            var_tminus1 = as.numeric(resid.var[i])
-            for(j in 2:TP)
-            {
-              w[i,j] = resid.var[i] * (1 - alpha - beta) + alpha * res[i,j-1]^2 + beta * var_tminus1
-              var_tminus1 = w[i,j]
-            }
+          #Compute parameters using MLE
+          if(GARCH.MLE){
+            garch.spec = ugarchspec(variance.model=list(model="sGARCH", garchOrder=c(1,1)), 
+                                    mean.model=list(armaOrder=c(0,0), include.mean = FALSE),  
+                                    distribution.model="norm")
+            garch.weights = sapply(X = 1:nrow(res), FUN = function(X){(ugarchfit(garch.spec,res[X,]))@fit$var})
+            w = t(garch.weights)
           }
           
+          else {
+            # use fixed parameters
+            # default values of omega, Alpha and beta are based on Martin and Ding (2017)
+            alpha = ifelse(!exists("alpha", where = GARCH.params), 0.1, GARCH.params$alpha)
+            beta =  ifelse(!exists("beta", where = GARCH.params), 0.81, GARCH.params$beta )
+            w<-matrix(0,N,TP)
+            for(i in 1:N)
+            {
+              #Use sample variance as the initial variance
+              w[,1] = resid.var
+              var_tminus1 = as.numeric(resid.var[i])
+              for(j in 2:TP)
+              {
+                w[i,j] = resid.var[i] * (1 - alpha - beta) + alpha * res[i,j-1]^2 + beta * var_tminus1
+                var_tminus1 = w[i,j]
+              }
+            }
+            
+          }
         }
         data<- cbind(data, W = 1/as.numeric(w))
       }

@@ -10,7 +10,9 @@
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
   full.resid.cov = FALSE, z.score = TRUE, addIntercept = FALSE,
-  lagExposures = TRUE, resid.scaleType = "stdDev", lambda = 0.9, ...)
+  lagExposures = TRUE, resid.scaleType = "stdDev", lambda = 0.9,
+  GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
+  GARCH.MLE = FALSE, ...)
 
 \method{coef}{ffm}(object, ...)
 
@@ -56,10 +58,15 @@ z-scores; weights given by \code{weight.var}. Default is \code{TRUE}.}
 \item{lagExposures}{logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Default is \code{TRUE},}
 
 \item{resid.scaleType}{character; Only valid when fit.method is set to WLS or W-Rob. The weights used in 
-the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, \code{GARCH}, \code{fixEWMA}, or \code{fixGARCH}.
+the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.
 Default is \code{stdDev} where the inverse of residual sample variances are used as the weights.}
 
 \item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
+
+\item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta. Default values are 0.09, 0.1, 0.81 respectively.
+Valid only when \code{GARCH.MLE} is set to \code{FALSE}.}
+
+\item{GARCH.MLE}{logical. When set to \code{TRUE}, GARCH parameters are computed using Maximum Liklihood Estimation. Default is \code{FALSE}}
 
 \item{...}{potentially further arguments passed.}
 
@@ -124,8 +131,10 @@ Similarly, "W-Rob" is weighted robust regression.
 The weights to be used in "WLS" or "W-Rob" can be set using 
 \code{resid.scaleType} argument which computes the residual variances in one of the following ways - 
 sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
- are used as the weights. For a fixed EWMA, lambda = 0.9 is used and for fixed GARCH(1,1) 
- omega = 0.09, alpha = 0.1, and beta = 0.81 is used as mentioned in Martin & Ding (2017).
+ are used as the weights. For EWMA model, lambda = 0.9 is used as default and for GARCH(1,1) 
+ omega = 0.09, alpha = 0.1, and beta = 0.81 are used as default as mentioned in Martin & Ding (2017).
+ These default parameters can be changed using the arguments \code{lambda}, \code{GARCH.params} for EWMA and GARCH respectively.
+ To compute GARCH parameters via MLE, set \code{GARCH.MLE} to \code{TRUE}. 
  
 Standardizing style factor exposures: The exposures can be standardized into
 z-scores using regular or robust (see \code{rob.stats}) measures of location 
