@@ -126,7 +126,7 @@
 #' Where N is the number of assets, K is the number of factors (including the 
 #' intercept or dummy variables) and T is the number of unique time periods.
 #'
-#' @author Sangeetha Srinivasan, Guy Yollin,  Yi-An Chen and Avinash Acharya
+#' @author Sangeetha Srinivasan, Guy Yollin,  Yi-An Chen, Avinash Acharya and Chindhanai Uthaisaad
 #'
 #' @references
 #' Menchero, J. (2010). The Characteristics of Factor Portfolios. Journal of
@@ -134,6 +134,8 @@
 #'
 #' Grinold, R. C., & Kahn, R. N. (2000). Active portfolio management (Second
 #' Ed.). New York: McGraw-Hill.
+#' 
+#' Ding, Z. and Martin, R. D. (2016). “The Fundamental Law of Active Management Redux”, SSRN 2730434.
 #'
 #' 
 #' And, the following extractor functions: \code{\link[stats]{coef}}, 
