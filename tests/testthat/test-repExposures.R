@@ -12,7 +12,7 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
 fit <- fitFfm(data = dat, 
               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121","EP"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = "csScore")
+              fit.method="WLS", z.score = "crossSection")
 
 #generating statistic
 expect_equal(is.list(repExposures(fit, isPlot = FALSE, digits = 4)), TRUE) 
