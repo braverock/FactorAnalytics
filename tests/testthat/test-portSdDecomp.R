@@ -34,7 +34,7 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
 fit.cross <- fitFfm(data = dat, 
               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121","EP"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = TRUE)
+              fit.method="WLS", z.score = "crossSection")
 
 #generating statistic
 expect_equal(is.list(portSdDecomp(fit.cross, wtsStocks145GmvLo)), TRUE) 

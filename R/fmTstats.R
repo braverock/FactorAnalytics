@@ -44,7 +44,7 @@
 #'#Fit a Ffm with style factors only
 #'  require(factorAnalytics)
 #'  fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
-#'              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS",z.score = TRUE)
+#'              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS",z.score = "crossSection")
 #'
 #'#Compute time series of t-stats and number of significant t-stats 
 #'  stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), z.alpha =1.96)
