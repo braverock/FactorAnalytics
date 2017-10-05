@@ -32,7 +32,7 @@
 #' # fit a fundamental factor model
 #'exposure.vars <- c("P2B", "MKTCAP")
 #'fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'                 date.var="DATE", exposure.vars=exposure.vars,z.score = TRUE )
+#'                 date.var="DATE", exposure.vars=exposure.vars, z.score = "csScore")
 #'                 
 #'#non-parametric 
 #'weights = wtsDjiaGmvLo               

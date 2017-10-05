@@ -9,10 +9,12 @@
 \usage{
 fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   fit.method = c("LS", "WLS", "Rob", "W-Rob"), rob.stats = FALSE,
-  full.resid.cov = FALSE, z.score = TRUE, addIntercept = FALSE,
-  lagExposures = TRUE, resid.scaleType = "stdDev", lambda = 0.9,
-  GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
-  GARCH.MLE = FALSE, ...)
+  full.resid.cov = FALSE, z.score = c("none", "crossSection", "timeSeries"),
+  addIntercept = FALSE, lagExposures = TRUE, resid.scaleType = "stdDev",
+  lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
+  GARCH.MLE = FALSE, stdReturn = FALSE, fullPeriod = FALSE,
+  windowLength = 60, analysis = c("none", "ISM", "NEW"),
+  targetedVol = 0.06, ...)
 
 \method{coef}{ffm}(object, ...)
 
@@ -186,6 +188,40 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
  
  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
+         
+# The use of new features from FLAM          
+data("mktSP")
+data("factorDataSetDjia")
+factorDataSetDjia <- factorDataSetDjia[order(factorDataSetDjia[, "DATE"]), ]
+# Extract asset names from data
+asset.names <- unique(factorDataSetDjia[["TICKER"]])
+N_stocks <- length(asset.names)
+time.periods <- unique(factorDataSetDjia[["DATE"]])
+N_TP <- length(time.periods)
+bmkReturn <- mktSP[index(mktSP) \%in\% time.periods, ]
+
+totReturns = matrix(factorDataSetDjia[["RETURN"]], nrow = N_stocks)[1:N_stocks, ]
+rownames(totReturns) = asset.names
+
+# Compute residual returns from CAPM----
+residReturns <- totReturns
+beta_i <- c()
+for (i in 1:N_stocks) {
+  beta_i[i] <- c(cov(totReturns[i, ] , bmkReturn) / var(bmkReturn))
+  residReturns[i, ] <- totReturns[i, ] - beta_i[i] * bmkReturn
+}
+
+modData <- cbind(factorDataSetDjia, "RESIDRETURN" = as.vector(residReturns))
+sizeFfm <- fitFfm(modData, asset.var = "TICKER", ret.var = "RESIDRETURN",
+                  exposure.vars = c("SIZE"), addIntercept = TRUE, stdReturn = FALSE,
+                  z.score = "crossSection", date.var = "DATE", lagExposures = TRUE, 
+                  analysis = "ISM")
+                  
+p2bFfm <- fitFfm(modData, asset.var = "TICKER", ret.var = "RESIDRETURN",
+                 exposure.vars = c("P2B"), addIntercept = TRUE, stdReturn = TRUE,
+                 z.score = "timeSeries", date.var = "DATE", lagExposures = TRUE, 
+                 analysis = "NEW")
+
 }
 \references{
 Menchero, J. (2010). The Characteristics of Factor Portfolios. Journal of
@@ -193,6 +229,8 @@ Performance Measurement, 15(1), 52-62.
 
 Grinold, R. C., & Kahn, R. N. (2000). Active portfolio management (Second
 Ed.). New York: McGraw-Hill.
+
+Ding, Z. and Martin, R. D. (2016). “The Fundamental Law of Active Management Redux”, SSRN 2730434.
 
 
 And, the following extractor functions: \code{\link[stats]{coef}}, 
@@ -203,5 +241,5 @@ and \code{\link{fmEsDecomp}}.
 \code{\link{paFm}} for Performance Attribution.
 }
 \author{
-Sangeetha Srinivasan, Guy Yollin,  Yi-An Chen and Avinash Acharya
+Sangeetha Srinivasan, Guy Yollin,  Yi-An Chen, Avinash Acharya and Chindhanai Uthaisaad
 }

@@ -1,6 +1,6 @@
 #' @title  Factor Model Variance Inflaction Factor Values
 #'
-#' @description Calcluate and plot the Factor Model Variance Inflaction Factor Values for a fitted model.
+#' @description Calculate and plot the Factor Model Variance Inflaction Factor Values for a fitted model.
 #'                  A VIF for a single explanatory variable (style factor) is obtained using the time series of R-squared values obtained from 
 #'                  the regression of that variable against all other explanatory variables.
 #'                  So, at least 2 explanatory variables are required in \code{exposure.vars} of fitted model to find the VIF.
