@@ -826,12 +826,13 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   result <- list(factor.fit=reg.list, beta=beta, factor.returns=factor.returns, 
                  residuals=residuals, r2=r2, factor.cov=factor.cov, g.cov = g.cov,
                  resid.cov=resid.cov, return.cov=return.cov, restriction.mat=restriction.mat,
-                 resid.var=resid.var, call=this.call, 
+                 resid.var=resid.var, call=this.call,
                  data=data, date.var=date.var, ret.var=ret.var, 
                  asset.var=asset.var, exposure.vars=exposure.vars, 
                  weight.var=weight.var, fit.method=fit.method, 
-                 asset.names=asset.names, factor.names=factor.names,
-                 time.periods=time.periods)
+                 asset.names=asset.names, factor.names=factor.names, activeReturns = activeReturns,
+                 time.periods=time.periods, condAlpha = condAlpha, 
+                 condOmega = condOmega, IR = c(IR_In, IR_Out, SE_N))
   
   class(result) <- "ffm"
   return(result)
