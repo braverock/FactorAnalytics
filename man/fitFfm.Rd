@@ -52,8 +52,8 @@ Details). Default is \code{FALSE}.}
 matrix is estimated. Otherwise, a diagonal residual covariance matrix is 
 estimated. Default is \code{FALSE}.}
 
-\item{z.score}{logical; If \code{TRUE}, style exposures will be converted to 
-z-scores; weights given by \code{weight.var}. Default is \code{TRUE}.}
+\item{z.score}{method for exposure standardization; one of "none", "crossSection", or "timeSeries".
+Default is \code{"none"}.}
 
 \item{addIntercept}{logical; If \code{TRUE}, intercept is added in the exposure matrix. Default is \code{FALSE},}
 
@@ -67,8 +67,6 @@ Default is \code{stdDev} where the inverse of residual sample variances are used
 
 \item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta. Default values are 0.09, 0.1, 0.81 respectively.
 Valid only when \code{GARCH.MLE} is set to \code{FALSE}.}
-
-\item{GARCH.MLE}{logical. When set to \code{TRUE}, GARCH parameters are computed using Maximum Liklihood Estimation. Default is \code{FALSE}}
 
 \item{stdReturn}{logical; If \code{TRUE}, the returns will be standardized using GARCH(1,1) volatilities. Default is \code{FALSE}}
 
@@ -86,8 +84,6 @@ or "NEW". Default is "none".}
 
 \item{object}{a fit object of class \code{ffm} which is returned by 
 \code{fitFfm}}
-
-\item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
 }
 \value{
 \code{fitFfm} returns an object of class \code{"ffm"} for which 

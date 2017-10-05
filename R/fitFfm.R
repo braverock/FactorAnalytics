@@ -74,8 +74,8 @@
 #' @param full.resid.cov logical; If \code{TRUE}, a full residual covariance 
 #' matrix is estimated. Otherwise, a diagonal residual covariance matrix is 
 #' estimated. Default is \code{FALSE}.
-#' @param z.score logical; If \code{TRUE}, style exposures will be converted to 
-#' z-scores; weights given by \code{weight.var}. Default is \code{TRUE}.
+#' @param z.score method for exposure standardization; one of "none", "crossSection", or "timeSeries".
+#' Default is \code{"none"}.
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Default is \code{FALSE},
 #' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Default is \code{TRUE},
 #' @param resid.scaleType character; Only valid when fit.method is set to WLS or W-Rob. The weights used in 
@@ -84,8 +84,6 @@
 #' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
 #' @param GARCH.params list containing GARCH parameters omega, alpha, and beta. Default values are 0.09, 0.1, 0.81 respectively.
 #' Valid only when \code{GARCH.MLE} is set to \code{FALSE}.
-#' @param GARCH.MLE logical. When set to \code{TRUE}, GARCH parameters are computed using Maximum Liklihood Estimation. Default is \code{FALSE}
-#' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
 #' @param analysis method used in the analysis of fundamental law of active management; one of "none", "ISM", 
 #' or "NEW". Default is "none".
 #' @param stdReturn logical; If \code{TRUE}, the returns will be standardized using GARCH(1,1) volatilities. Default is \code{FALSE}
@@ -362,7 +360,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       w <- rep(1, nrow(data))
     }
     # Calculate z-scores looping through all numeric exposures
-    if (grepl(z.score, "csScore")) {
+    if (grepl(z.score, "crossSection")) {
       for (i in exposures.num) {
         std.expo.num <- by(data = data, INDICES = data[[date.var]], FUN = zScore,
                            i = i, w = w, rob.stats = rob.stats, z.score = z.score, 
@@ -911,7 +909,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
 # rob.stats is a logical argument to compute robust location and scale
 
 zScore <- function(x, i, w, rob.stats, z.score, asset.names) {
-  if (grepl(z.score, "csScore")) {
+  if (grepl(z.score, "crossSection")) {
     if (rob.stats) {
       x_bar <- median(w * x[[i]])
       (x[[i]] - x_bar)/mad(x[[i]], center = x_bar)
