@@ -885,6 +885,102 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     restriction.mat = rMic
   }
   
+  # Initialization
+  EX <- length(exposures.num)
+  
+  if (lagExposures) {
+    TP <- TP + 1
+  }
+  
+  if (fullPeriod) {
+    windowPeriods <- 2    # Train all but the last time period
+  } else {
+    windowPeriods <- TP - (windowLength - 1)
+  }
+  
+  # FLAM
+  if (EX == 1) {
+    # Single factor model
+    
+    stdExposures <- matrix(data[[exposures.num]], nrow = N)[1:N, ]
+    if (grepl(analysis, "ISM")) {
+      
+      # ISM model
+      condAlpha <- matrix(0, ncol = windowPeriods, nrow = N)
+      condOmega <- vector(length = windowPeriods, "list")
+      
+      for (t in 1:windowPeriods) {
+        sigmaIC <- sd(factor.returns[t:(t + 58), 2])
+        condAlpha[, t] <- apply(rawReturns[, t:(t + 59)], 1, mean)
+        resid.var <- apply(coredata(residuals[t:(t + 58), ]), 2, var, na.rm=T)
+        resid.cov <- diag(resid.var)
+        condOmega[[t]] <- sigmaIC ^ 2 * (stdExposures[, t + 58] %*% t(stdExposures[, t + 58])) + resid.cov 
+      }
+      
+      # Optimal active weights and in-sample IR
+      activeWeights <- matrix(0, ncol = windowPeriods, nrow = N)
+      sigma_A <- targetedVol
+      
+      for (t in 1:windowPeriods) {
+        kappa <- (t(condAlpha[, t]) %*% solve(condOmega[[t]]) %*% rep(1, N)) / (rep(1, N) %*% solve(condOmega[[t]]) %*% rep(1, N))
+        activeWeights[, t] <- sigma_A * (solve(condOmega[[t]]) %*% as.matrix(condAlpha[, t] - kappa * rep(1, N))) / c(sqrt(t(as.matrix(condAlpha[, t])) %*% solve(condOmega[[t]]) %*% (condAlpha[, t] - kappa * rep(1, N))))
+      }
+      
+      condMean <- apply(activeWeights * condAlpha, 2, sum)
+      portIR <- condMean / sigma_A
+      IR_In <- mean(portIR)
+      
+      # Out-of-sample IR
+      activeReturns <- apply(activeWeights[, 1:(windowPeriods-1)] * rawReturns[, 61:(windowPeriods + 59)], 2, sum)
+      IR_Out <- sqrt(12) * mean(activeReturns) / sd(activeReturns)
+      SE_N <- 1 / sqrt(length(activeReturns)) * sqrt(1 + 0.25 * (kurtosis(activeReturns) + 2) * IR_Out ^ 2 - skewness(activeReturns) * IR_Out)
+      
+      
+    } else if (grepl(analysis, "NEW")) {
+      
+      # NEW model
+      # Set the factor returns in each period 
+      IC <- c()
+      for (t in 1:windowPeriods) {
+        IC[t] <- mean(factor.returns[t:(t + 58), 2])
+      }
+      sigmaIC <- sd(IC)
+      condAlpha <- matrix(0, ncol = windowPeriods, nrow = N)
+      condOmega <- vector(length = windowPeriods, "list")
+      for (t in 1:windowPeriods) {
+        condAlpha[, t] <- mean(IC) * (diag(sigmaGarch[, t + 59]) %*% stdExposures[, t + 58])
+        sigma_eps <- sqrt(1 - mean(IC) ^ 2 - sigmaIC ^ 2)
+        condOmega[[t]] <- diag(sigmaGarch[, t + 59]) %*% (sigmaIC ^ 2 * (stdExposures[, t + 58] %*% t(stdExposures[, t + 58])) + sigma_eps^2 * diag(nrow = N)) %*% diag(sigmaGarch[, t + 59])
+      }
+      # Optimal active weights and in-sample IR
+      activeWeights <- matrix(0, ncol = windowPeriods, nrow = N)
+      sigma_A <- targetedVol
+      
+      for (t in 1:windowPeriods) {
+        kappa <- (t(condAlpha[, t]) %*% solve(condOmega[[t]]) %*% rep(1, N)) / (rep(1, N) %*% solve(condOmega[[t]]) %*% rep(1, N))
+        activeWeights[, t] <- sigma_A * (solve(condOmega[[t]]) %*% as.matrix(condAlpha[, t] - kappa * rep(1, N))) / c(sqrt(t(as.matrix(condAlpha[, t])) %*% solve(condOmega[[t]]) %*% (condAlpha[, t] - kappa * rep(1, N))))
+      }
+      
+      condMean <- apply(activeWeights * condAlpha, 2, sum)
+      portIR <- condMean / sigma_A
+      IR_In <- mean(portIR)
+      
+      # Out-of-sample IR
+      activeReturns <- apply(activeWeights[, 1:(windowPeriods-1)] * rawReturns[, 61:(windowPeriods + 59)], 2, sum)
+      IR_Out <- sqrt(12) * mean(activeReturns) / sd(activeReturns)
+      SE_N <- 1 / sqrt(length(activeReturns)) * sqrt(1 + 0.25 * (kurtosis(activeReturns) + 2) * IR_Out ^ 2 - skewness(activeReturns) * IR_Out)
+      
+    } else {
+      condAlpha <- condOmega <- IR_In <- IR_Out <- SE_N <- NULL
+    }
+    
+  } else {
+    
+    # Multi-factor model (To be implemented)
+    # Set the standardized exposures from above
+    condAlpha <- condOmega <- IR_In <- IR_Out <- SE_N <- NULL
+    
+  }
 
 
   # create list of return values.
