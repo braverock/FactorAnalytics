@@ -50,7 +50,7 @@
 #' @importFrom stats lm as.formula coef contr.treatment fitted mad median model.matrix
 #'             na.exclude na.fail na.omit var 
 #' @importFrom robustbase scaleTau2 covOGK
-#' @importFrom PerformanceAnalytics checkData
+#' @importFrom PerformanceAnalytics checkData skewness kurtosis
 #' @importFrom robust covRob covClassic lmRob
 #' @importFrom rugarch ugarchspec ugarchfit
 #'
