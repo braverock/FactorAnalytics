@@ -287,6 +287,20 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   # extract asset names from data
   asset.names <- unique(data[[asset.var]])
   N <- length(asset.names)
+  rawReturns <- matrix(data[[ret.var]], nrow = N)
+  
+  # Standardize the returns if stdReturn = TRUE
+  if (stdReturn) {
+    sdReturns <- apply(rawReturns, 2, sd)
+    sigmaGarch <- rawReturns
+    for (i in 1:N) {
+      ts <- rawReturns[i, ] ^ 2
+      var_past_2 <- 0
+      sigmaGarch[i, ] <- sapply(ts, function(x) var_past_2 <<- (1 - 0.10 - 0.81) * sdReturns[i] ^ 2 + 0.10 * x + 0.81 * var_past_2)
+    }
+    sigmaGarch <- sqrt(sigmaGarch)
+    data[[ret.var]] <- as.vector(rawReturns / sigmaGarch)
+  }
   
   # check number & type of exposure; convert character exposures to dummy vars
   which.numeric <- sapply(data[,exposure.vars,drop=FALSE], is.numeric)
