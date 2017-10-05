@@ -177,10 +177,12 @@
 
 
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
-                       weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
-                       rob.stats=FALSE, full.resid.cov=FALSE, z.score=TRUE,addIntercept = FALSE,
-                       lagExposures=TRUE, resid.scaleType = "stdDev", 
-                       lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81), GARCH.MLE = FALSE, ...) {
+                   weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
+                   rob.stats=FALSE, full.resid.cov=FALSE, z.score=TRUE,addIntercept = FALSE,
+                   lagExposures=TRUE, resid.scaleType = "stdDev", 
+                   lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81), 
+                   GARCH.MLE = FALSE, stdReturn = FALSE, fullPeriod = FALSE, windowLength = 60,
+                   analysis = c("none", "ISM", "NEW"), targetedVol = 0.06, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
