@@ -170,7 +170,40 @@
 #'  
 #'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
-
+#'          
+#' # The use of new features from FLAM          
+#' data("mktSP")
+#' data("factorDataSetDjia")
+#' factorDataSetDjia <- factorDataSetDjia[order(factorDataSetDjia[, "DATE"]), ]
+#' # Extract asset names from data
+#' asset.names <- unique(factorDataSetDjia[["TICKER"]])
+#' N_stocks <- length(asset.names)
+#' time.periods <- unique(factorDataSetDjia[["DATE"]])
+#' N_TP <- length(time.periods)
+#' bmkReturn <- mktSP[index(mktSP) %in% time.periods, ]
+#' 
+#' totReturns = matrix(factorDataSetDjia[["RETURN"]], nrow = N_stocks)[1:N_stocks, ]
+#' rownames(totReturns) = asset.names
+#' 
+#' # Compute residual returns from CAPM----
+#' residReturns <- totReturns
+#' beta_i <- c()
+#' for (i in 1:N_stocks) {
+#'   beta_i[i] <- c(cov(totReturns[i, ] , bmkReturn) / var(bmkReturn))
+#'   residReturns[i, ] <- totReturns[i, ] - beta_i[i] * bmkReturn
+#' }
+#' 
+#' modData <- cbind(factorDataSetDjia, "RESIDRETURN" = as.vector(residReturns))
+#' sizeFfm <- fitFfm(modData, asset.var = "TICKER", ret.var = "RESIDRETURN",
+#'                   exposure.vars = c("SIZE"), addIntercept = TRUE, stdReturn = FALSE,
+#'                   z.score = "crossSection", date.var = "DATE", lagExposures = TRUE, 
+#'                   analysis = "ISM")
+#'                   
+#' p2bFfm <- fitFfm(modData, asset.var = "TICKER", ret.var = "RESIDRETURN",
+#'                  exposure.vars = c("P2B"), addIntercept = TRUE, stdReturn = TRUE,
+#'                  z.score = "timeSeries", date.var = "DATE", lagExposures = TRUE, 
+#'                  analysis = "NEW")
+#' 
 #' @export
 
 
