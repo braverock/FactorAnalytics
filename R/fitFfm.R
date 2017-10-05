@@ -275,7 +275,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   }
   z.score = z.score[1]
   if (!(z.score %in% c("none", "crossSection", "timeSeries")) || length(z.score) != 1) {
-    stop("Invalid args: control parameter 'z.score' must be either csScore or tsScore")
+    stop("Invalid args: control parameter 'z.score' must be either crossSection or timeSeries")
   }
   analysis = analysis[1]
   if (!(analysis %in% c("none", "ISM", "NEW")) || length(z.score) != 1) {
@@ -885,6 +885,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     restriction.mat = rMic
   }
   
+  activeReturns <- NULL
   # Initialization
   EX <- length(exposures.num)
   
