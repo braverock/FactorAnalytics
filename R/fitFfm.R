@@ -85,6 +85,14 @@
 #' @param GARCH.params list containing GARCH parameters omega, alpha, and beta. Default values are 0.09, 0.1, 0.81 respectively.
 #' Valid only when \code{GARCH.MLE} is set to \code{FALSE}.
 #' @param GARCH.MLE logical. When set to \code{TRUE}, GARCH parameters are computed using Maximum Liklihood Estimation. Default is \code{FALSE}
+#' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
+#' @param analysis method used in the analysis of fundamental law of active management; one of "none", "ISM", 
+#' or "NEW". Default is "none".
+#' @param stdReturn logical; If \code{TRUE}, the returns will be standardized using GARCH(1,1) volatilities. Default is \code{FALSE}
+#' @param fullPeriod logical; If \code{TRUE}, the fundamental law of active management will apply to all but the last 
+#' time period. Default is \code{FALSE}
+#' @param windowLength integer; the number of months used as a window length in the FLAM analysis. Default is 60 (5 years).
+#' @param targetedVol numeric; the targeted portfolio volatility in the analysis. Default is 0.06.
 #' @param ... potentially further arguments passed.
 #' 
 #' @return \code{fitFfm} returns an object of class \code{"ffm"} for which 
@@ -125,6 +133,11 @@
 #' \item{time.periods}{length-T vector of dates.}
 #' Where N is the number of assets, K is the number of factors (including the 
 #' intercept or dummy variables) and T is the number of unique time periods.
+#' \item{condAlpha}{length-windowLength the conditional mean of the portfolio returns in each moving window.}
+#' \item{condOmega}{length-windowLength list of the conditional covariance matrices of the portfolio returns in each moving window.}
+#' \item{IR}{the vector of in-sample IR, out-f-sample IR, and the standard error of the out-of-sample IR.}
+#' Where N is the number of assets, K is the number of factors (including the 
+#' intercept or dummy variables) and T is the number of unique time periods.
 #'
 #' @author Sangeetha Srinivasan, Guy Yollin,  Yi-An Chen, Avinash Acharya and Chindhanai Uthaisaad
 #'
@@ -135,7 +148,7 @@
 #' Grinold, R. C., & Kahn, R. N. (2000). Active portfolio management (Second
 #' Ed.). New York: McGraw-Hill.
 #' 
-#' Ding, Z. and Martin, R. D. (2016). “The Fundamental Law of Active Management Redux”, SSRN 2730434.
+#' Ding, Z. and Martin, R. D. (2016). "The Fundamental Law of Active Management Redux", SSRN 2730434.
 #'
 #' 
 #' And, the following extractor functions: \code{\link[stats]{coef}}, 

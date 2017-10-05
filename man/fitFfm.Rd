@@ -70,10 +70,24 @@ Valid only when \code{GARCH.MLE} is set to \code{FALSE}.}
 
 \item{GARCH.MLE}{logical. When set to \code{TRUE}, GARCH parameters are computed using Maximum Liklihood Estimation. Default is \code{FALSE}}
 
+\item{stdReturn}{logical; If \code{TRUE}, the returns will be standardized using GARCH(1,1) volatilities. Default is \code{FALSE}}
+
+\item{fullPeriod}{logical; If \code{TRUE}, the fundamental law of active management will apply to all but the last 
+time period. Default is \code{FALSE}}
+
+\item{windowLength}{integer; the number of months used as a window length in the FLAM analysis. Default is 60 (5 years).}
+
+\item{analysis}{method used in the analysis of fundamental law of active management; one of "none", "ISM", 
+or "NEW". Default is "none".}
+
+\item{targetedVol}{numeric; the targeted portfolio volatility in the analysis. Default is 0.06.}
+
 \item{...}{potentially further arguments passed.}
 
 \item{object}{a fit object of class \code{ffm} which is returned by 
 \code{fitFfm}}
+
+\item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
 }
 \value{
 \code{fitFfm} returns an object of class \code{"ffm"} for which 
@@ -112,6 +126,11 @@ using the factor exposures from the last time period.}
 \item{asset.names}{length-N vector of asset names.}
 \item{factor.names}{length-K vector of factor.names.}
 \item{time.periods}{length-T vector of dates.}
+Where N is the number of assets, K is the number of factors (including the 
+intercept or dummy variables) and T is the number of unique time periods.
+\item{condAlpha}{length-windowLength the conditional mean of the portfolio returns in each moving window.}
+\item{condOmega}{length-windowLength list of the conditional covariance matrices of the portfolio returns in each moving window.}
+\item{IR}{the vector of in-sample IR, out-f-sample IR, and the standard error of the out-of-sample IR.}
 Where N is the number of assets, K is the number of factors (including the 
 intercept or dummy variables) and T is the number of unique time periods.
 }
@@ -230,7 +249,7 @@ Performance Measurement, 15(1), 52-62.
 Grinold, R. C., & Kahn, R. N. (2000). Active portfolio management (Second
 Ed.). New York: McGraw-Hill.
 
-Ding, Z. and Martin, R. D. (2016). “The Fundamental Law of Active Management Redux”, SSRN 2730434.
+Ding, Z. and Martin, R. D. (2016). "The Fundamental Law of Active Management Redux", SSRN 2730434.
 
 
 And, the following extractor functions: \code{\link[stats]{coef}}, 
