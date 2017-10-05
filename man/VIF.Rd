@@ -34,7 +34,7 @@ If \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.}
                         The time series of the output values are also printed if \code{isPrint} is \code{TRUE}
 }
 \description{
-Calcluate and plot the Factor Model Variance Inflaction Factor Values for a fitted model.
+Calculate and plot the Factor Model Variance Inflaction Factor Values for a fitted model.
                  A VIF for a single explanatory variable (style factor) is obtained using the time series of R-squared values obtained from 
                  the regression of that variable against all other explanatory variables.
                  So, at least 2 explanatory variables are required in \code{exposure.vars} of fitted model to find the VIF.
