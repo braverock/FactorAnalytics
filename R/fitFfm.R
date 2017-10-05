@@ -252,9 +252,6 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (!is.logical(full.resid.cov) || length(full.resid.cov) != 1) {
     stop("Invalid args: control parameter 'full.resid.cov' must be logical")
   }
-  if (!is.logical(z.score) || length(z.score) != 1) {
-    stop("Invalid args: control parameter 'z.score' must be logical")
-  }
   if (!(resid.scaleType %in% c("stdDev","EWMA","robEWMA", "GARCH"))) {
     stop("Invalid args: resid.scaleType must be 'stdDev','EWMA','robEWMA', or 'GARCH'")
   }
@@ -264,6 +261,18 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (!is.list(GARCH.params)) {
     stop("Invalid args: parameter 'GARCH.params' must be a list")
   }
+  if (!is.logical(stdReturn) || !is.logical(fullPeriod)) {
+    stop("Invalid args: stdReturn and fullPeriod must be either 'TRUE' or 'FALSE' ") 
+  }
+  z.score = z.score[1]
+  if (!(z.score %in% c("none", "crossSection", "timeSeries")) || length(z.score) != 1) {
+    stop("Invalid args: control parameter 'z.score' must be either csScore or tsScore")
+  }
+  analysis = analysis[1]
+  if (!(analysis %in% c("none", "ISM", "NEW")) || length(z.score) != 1) {
+    stop("Invalid args: control parameter 'analysis' must be either ISM or NEW")
+  }
+  
   # initialize to avoid R CMD check's NOTE: no visible binding for global var
   DATE=NULL 
   W=NULL
