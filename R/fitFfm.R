@@ -285,20 +285,28 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     TP <- length(time.periods)
   }
   
-  # convert numeric exposures to z-scores
-  if (z.score) {
+  # Convert numeric exposures to z-scores
+  if (!grepl(z.score, "none")) {
     if (!is.null(weight.var)) {
-      # weight exposures within each period using weight.var
+      # Weight exposures within each period using weight.var
       w <- unlist(by(data=data, INDICES=data[[date.var]], 
                      function(x) x[[weight.var]]/sum(x[[weight.var]])))
     } else {
       w <- rep(1, nrow(data))
     }
-    # calculate z-scores looping through all numeric exposures
-    for (i in exposures.num) {
-      std.expo.num <- by(data=data, INDICES=data[[date.var]], FUN=zScore,
-                         i=i, w=w, rob.stats=rob.stats)
-      data[[i]] <- unlist(std.expo.num)
+    # Calculate z-scores looping through all numeric exposures
+    if (grepl(z.score, "csScore")) {
+      for (i in exposures.num) {
+        std.expo.num <- by(data = data, INDICES = data[[date.var]], FUN = zScore,
+                           i = i, w = w, rob.stats = rob.stats, z.score = z.score, 
+                           asset.names = asset.names)
+        data[[i]] <- unlist(std.expo.num)
+      }
+    } else {
+      for (i in exposures.num) {
+        data[[i]] <- zScore(x = data, i = i, w = w, rob.stats = rob.stats, 
+                            z.score = z.score, asset.names = asset.names)
+      }
     }
   }
   
