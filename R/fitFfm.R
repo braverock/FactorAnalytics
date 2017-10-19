@@ -911,11 +911,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       condOmega <- vector(length = windowPeriods, "list")
       
       for (t in 1:windowPeriods) {
-        sigmaIC <- sd(factor.returns[t:(t + 58), 2])
-        condAlpha[, t] <- apply(rawReturns[, t:(t + 59)], 1, mean)
-        resid.var <- apply(coredata(residuals[t:(t + 58), ]), 2, var, na.rm=T)
+        sigmaIC <- sd(factor.returns[t:(t + windowLength - 2), 2])
+        condAlpha[, t] <- apply(rawReturns[, t:(t + windowLength - 1)], 1, mean)
+        resid.var <- apply(coredata(residuals[t:(t + windowLength - 2), ]), 2, var, na.rm=T)
         resid.cov <- diag(resid.var)
-        condOmega[[t]] <- sigmaIC ^ 2 * (stdExposures[, t + 58] %*% t(stdExposures[, t + 58])) + resid.cov 
+        condOmega[[t]] <- sigmaIC ^ 2 * (stdExposures[, t + windowLength - 2] %*% t(stdExposures[, t + windowLength - 2])) + resid.cov 
       }
       
       # Optimal active weights and in-sample IR
@@ -929,10 +929,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       
       condMean <- apply(activeWeights * condAlpha, 2, sum)
       portIR <- condMean / sigma_A
-      IR_In <- mean(portIR)
+      IR_In <- sqrt(12) * mean(portIR)
       
       # Out-of-sample IR
-      activeReturns <- apply(activeWeights[, 1:(windowPeriods-1)] * rawReturns[, 61:(windowPeriods + 59)], 2, sum)
+      activeReturns <- apply(activeWeights[, 1:(windowPeriods-1)] * rawReturns[, (windowLength + 1):(windowPeriods + windowLength - 1)], 2, sum)
       IR_Out <- sqrt(12) * mean(activeReturns) / sd(activeReturns)
       SE_N <- 1 / sqrt(length(activeReturns)) * sqrt(1 + 0.25 * (kurtosis(activeReturns) + 2) * IR_Out ^ 2 - skewness(activeReturns) * IR_Out)
       
@@ -943,15 +943,15 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       # Set the factor returns in each period 
       IC <- c()
       for (t in 1:windowPeriods) {
-        IC[t] <- mean(factor.returns[t:(t + 58), 2])
+        IC[t] <- mean(factor.returns[t:(t + windowLength - 2), 2])
       }
       sigmaIC <- sd(IC)
       condAlpha <- matrix(0, ncol = windowPeriods, nrow = N)
       condOmega <- vector(length = windowPeriods, "list")
       for (t in 1:windowPeriods) {
-        condAlpha[, t] <- mean(IC) * (diag(sigmaGarch[, t + 59]) %*% stdExposures[, t + 58])
+        condAlpha[, t] <- mean(IC) * (diag(sigmaGarch[, t + windowLength - 1]) %*% stdExposures[, t + windowLength - 2])
         sigma_eps <- sqrt(1 - mean(IC) ^ 2 - sigmaIC ^ 2)
-        condOmega[[t]] <- diag(sigmaGarch[, t + 59]) %*% (sigmaIC ^ 2 * (stdExposures[, t + 58] %*% t(stdExposures[, t + 58])) + sigma_eps^2 * diag(nrow = N)) %*% diag(sigmaGarch[, t + 59])
+        condOmega[[t]] <- diag(sigmaGarch[, t + windowLength - 1]) %*% (sigmaIC ^ 2 * (stdExposures[, t + windowLength - 2] %*% t(stdExposures[, t + windowLength - 2])) + sigma_eps^2 * diag(nrow = N)) %*% diag(sigmaGarch[, t + windowLength - 1])
       }
       # Optimal active weights and in-sample IR
       activeWeights <- matrix(0, ncol = windowPeriods, nrow = N)
@@ -964,7 +964,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       
       condMean <- apply(activeWeights * condAlpha, 2, sum)
       portIR <- condMean / sigma_A
-      IR_In <- mean(portIR)
+      IR_In <- sqrt(12) * mean(portIR)
       
       # Out-of-sample IR
       activeReturns <- apply(activeWeights[, 1:(windowPeriods-1)] * rawReturns[, 61:(windowPeriods + 59)], 2, sum)
