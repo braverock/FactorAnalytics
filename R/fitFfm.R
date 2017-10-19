@@ -1027,6 +1027,9 @@ zScore <- function(x, i, w, rob.stats, z.score, asset.names) {
       ts <- (exposures[j, ] - meanExp[j]) ^ 2
       var_past_2 <- sigmaExp[j] ^ 2
       sigmaEWMA[j, ] <- sapply(ts, function(x) var_past_2 <<- 0.10 * x + 0.90 * var_past_2)
+      if (sigmaEWMA[j, ] == 0) {
+        sigmaEWMA[j, ] <- 1
+      }
     }
     as.vector((exposures -  meanExp) / sqrt(sigmaEWMA))
   }
