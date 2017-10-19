@@ -309,7 +309,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   # Standardize the returns if stdReturn = TRUE
   if (stdReturn) {
-    sdReturns <- apply(rawReturns, 2, sd)
+    sdReturns <- apply(rawReturns, 1, sd)
     sigmaGarch <- rawReturns
     for (i in 1:N) {
       ts <- rawReturns[i, ] ^ 2
