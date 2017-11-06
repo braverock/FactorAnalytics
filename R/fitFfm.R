@@ -190,7 +190,7 @@
 #' asset.names <- unique(factorDataSetDjia[["TICKER"]])
 #' N_stocks <- length(asset.names)
 #' time.periods <- unique(factorDataSetDjia[["DATE"]])
-#' N_TP <- length(time.periods)
+#' TP <- length(time.periods)
 #' bmkReturn <- mktSP[index(mktSP) %in% time.periods, ]
 #' 
 #' totReturns = matrix(factorDataSetDjia[["RETURN"]], nrow = N_stocks)[1:N_stocks, ]
@@ -223,8 +223,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
                    rob.stats=FALSE, full.resid.cov=FALSE, z.score = c("none", "crossSection", "timeSeries"), 
                    addIntercept = FALSE, lagExposures=TRUE, resid.scaleType = "stdDev", 
                    lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81), 
-                   GARCH.MLE = FALSE, stdReturn = FALSE, fullPeriod = FALSE, windowLength = 60,
-                   analysis = c("none", "ISM", "NEW"), targetedVol = 0.06, ...) {
+                   GARCH.MLE = FALSE, stdReturn = FALSE, analysis = c("none", "ISM", "NEW"), 
+                   targetedVol = 0.06, ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
@@ -270,8 +270,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (!is.list(GARCH.params)) {
     stop("Invalid args: parameter 'GARCH.params' must be a list")
   }
-  if (!is.logical(stdReturn) || !is.logical(fullPeriod)) {
-    stop("Invalid args: stdReturn and fullPeriod must be either 'TRUE' or 'FALSE' ") 
+  if (!is.logical(stdReturn)) {
+    stop("Invalid args: stdReturn must be either 'TRUE' or 'FALSE' ") 
   }
   z.score = z.score[1]
   if (!(z.score %in% c("none", "crossSection", "timeSeries")) || length(z.score) != 1) {
@@ -319,6 +319,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     sigmaGarch <- sqrt(sigmaGarch)
     data[[ret.var]] <- as.vector(rawReturns / sigmaGarch)
   }
+  stdReturns <- matrix(data[[ret.var]], nrow = N)
   
   # check number & type of exposure; convert character exposures to dummy vars
   which.numeric <- sapply(data[,exposure.vars,drop=FALSE], is.numeric)
@@ -335,6 +336,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   {
     model.styleOnly = TRUE
   }
+  
   if(lagExposures)
   {
     data <- data[order(data[,date.var]),]
@@ -885,91 +887,67 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     restriction.mat = rMic
   }
   
-  activeReturns <- NULL
   # Initialization
   EX <- length(exposures.num)
   
-  if (lagExposures) {
-    TP <- TP + 1
-  }
-  
-  if (fullPeriod) {
-    windowPeriods <- 2    # Train all but the last time period
-  } else {
-    windowPeriods <- TP - (windowLength - 1)
-  }
-  
   # FLAM
   if (EX == 1) {
-    # Single factor model
     
-    stdExposures <- matrix(data[[exposures.num]], nrow = N)[1:N, ]
+    # Standardized exposure matrix (lagged)
+    stdExposures <- matrix(data[[exposures.num]], nrow = N)
+    
+    # ISM model
     if (grepl(analysis, "ISM")) {
       
-      # ISM model
-      condAlpha <- matrix(0, ncol = windowPeriods, nrow = N)
-      condOmega <- vector(length = windowPeriods, "list")
-      
-      for (t in 1:windowPeriods) {
-        sigmaIC <- sd(factor.returns[t:(t + windowLength - 2), 2])
-        condAlpha[, t] <- apply(rawReturns[, t:(t + windowLength - 1)], 1, mean)
-        resid.var <- apply(coredata(residuals[t:(t + windowLength - 2), ]), 2, var, na.rm=T)
-        resid.cov <- diag(resid.var)
-        condOmega[[t]] <- sigmaIC ^ 2 * (stdExposures[, t + windowLength - 2] %*% t(stdExposures[, t + windowLength - 2])) + resid.cov 
+      # Information coefficient in each time period is the correlation between the raw returns 
+      # and the cross-sectional standardized returns
+      IC <- c()
+      for (t in 1:TP) {
+        IC[t] <- cor(rawReturns[, t + 1], stdExposures[, t])
       }
+      meanIC <- mean(IC)
+      sigmaIC <- sd(IC)
+      IR_GK <- meanIC * sqrt(N)
+      IR_inf <- meanIC / sigmaIC
+      IR_N <- meanIC / sqrt((1 - meanIC^2 - sigmaIC^2) / N + sigmaIC ^ 2)
       
-      # Optimal active weights and in-sample IR
-      activeWeights <- matrix(0, ncol = windowPeriods, nrow = N)
+      # Compute the conditional mean forecast and the conditional forecast error covariance used in 
+      # the optimization (TBD)
+      condAlpha <- meanIC * stdExposures[, TP]
+      condOmega <- sigmaIC ^ 2 * (stdExposures[, TP] %*% t(stdExposures[, TP])) + diag(resid.var)
+      
+      # Compute optimal active weights using formula
       sigma_A <- targetedVol
-      
-      for (t in 1:windowPeriods) {
-        kappa <- (t(condAlpha[, t]) %*% solve(condOmega[[t]]) %*% rep(1, N)) / (rep(1, N) %*% solve(condOmega[[t]]) %*% rep(1, N))
-        activeWeights[, t] <- sigma_A * (solve(condOmega[[t]]) %*% as.matrix(condAlpha[, t] - kappa * rep(1, N))) / c(sqrt(t(as.matrix(condAlpha[, t])) %*% solve(condOmega[[t]]) %*% (condAlpha[, t] - kappa * rep(1, N))))
-      }
-      
-      condMean <- apply(activeWeights * condAlpha, 2, sum)
-      portIR <- condMean / sigma_A
-      IR_In <- sqrt(12) * mean(portIR)
-      
-      # Out-of-sample IR
-      activeReturns <- apply(activeWeights[, 1:(windowPeriods-1)] * rawReturns[, (windowLength + 1):(windowPeriods + windowLength - 1)], 2, sum)
-      IR_Out <- sqrt(12) * mean(activeReturns) / sd(activeReturns)
-      SE_N <- 1 / sqrt(length(activeReturns)) * sqrt(1 + 0.25 * (kurtosis(activeReturns) + 2) * IR_Out ^ 2 - skewness(activeReturns) * IR_Out)
+      kappa <- (t(condAlpha) %*% solve(condOmega) %*% rep(1, N)) / (rep(1, N) %*% solve(condOmega) %*% rep(1, N))
+      activeWeights <- sigma_A * (solve(condOmega) %*% as.matrix(condAlpha - kappa * rep(1, N))) / c(sqrt(t(as.matrix(condAlpha)) %*% solve(condOmega) %*% (condAlpha - kappa * rep(1, N))))
+      activeReturns <- t(activeWeights) %*% rawReturns[, TP + 1]
       
       
     } else if (grepl(analysis, "NEW")) {
       
-      # NEW model
-      # Set the factor returns in each period 
+      # Information coefficient is the correlation between the standardized returns 
+      # and the standardized exposures
       IC <- c()
-      for (t in 1:windowPeriods) {
-        IC[t] <- mean(factor.returns[t:(t + windowLength - 2), 2])
+      for (t in 1:TP) {
+        IC[t] <- cor(stdReturns[, t + 1], stdExposures[, t])
       }
+      meanIC <- mean(IC)
       sigmaIC <- sd(IC)
-      condAlpha <- matrix(0, ncol = windowPeriods, nrow = N)
-      condOmega <- vector(length = windowPeriods, "list")
-      for (t in 1:windowPeriods) {
-        condAlpha[, t] <- mean(IC) * (diag(sigmaGarch[, t + windowLength - 1]) %*% stdExposures[, t + windowLength - 2])
-        sigma_eps <- sqrt(1 - mean(IC) ^ 2 - sigmaIC ^ 2)
-        condOmega[[t]] <- diag(sigmaGarch[, t + windowLength - 1]) %*% (sigmaIC ^ 2 * (stdExposures[, t + windowLength - 2] %*% t(stdExposures[, t + windowLength - 2])) + sigma_eps^2 * diag(nrow = N)) %*% diag(sigmaGarch[, t + windowLength - 1])
-      }
-      # Optimal active weights and in-sample IR
-      activeWeights <- matrix(0, ncol = windowPeriods, nrow = N)
+      IR_GK <- meanIC * sqrt(N)
+      IR_inf <- meanIC / sigmaIC
+      IR_N <- meanIC / sqrt((1 - meanIC^2 - sigmaIC^2) / N + sigmaIC ^ 2)
+      
+      # Compute the conditional mean forecast and the conditional forecast error covariance 
+      # at the end of the period
+      condAlpha <- meanIC * as.vector(diag(sigmaGarch[, TP + 1]) %*% stdExposures[, TP])
+      condOmega <- diag(sigmaGarch[, TP + 1]) %*% (sigmaIC^2 * (stdExposures[, TP] %*% t(stdExposures[, TP])) + diag((1 - meanIC^2 - sigmaIC^2), nrow = N, ncol = N)) %*% diag(sigmaGarch[, TP + 1])
+  
+      
+      # Compute optimal active weights using formula
       sigma_A <- targetedVol
-      
-      for (t in 1:windowPeriods) {
-        kappa <- (t(condAlpha[, t]) %*% solve(condOmega[[t]]) %*% rep(1, N)) / (rep(1, N) %*% solve(condOmega[[t]]) %*% rep(1, N))
-        activeWeights[, t] <- sigma_A * (solve(condOmega[[t]]) %*% as.matrix(condAlpha[, t] - kappa * rep(1, N))) / c(sqrt(t(as.matrix(condAlpha[, t])) %*% solve(condOmega[[t]]) %*% (condAlpha[, t] - kappa * rep(1, N))))
-      }
-      
-      condMean <- apply(activeWeights * condAlpha, 2, sum)
-      portIR <- condMean / sigma_A
-      IR_In <- sqrt(12) * mean(portIR)
-      
-      # Out-of-sample IR
-      activeReturns <- apply(activeWeights[, 1:(windowPeriods-1)] * rawReturns[, 61:(windowPeriods + 59)], 2, sum)
-      IR_Out <- sqrt(12) * mean(activeReturns) / sd(activeReturns)
-      SE_N <- 1 / sqrt(length(activeReturns)) * sqrt(1 + 0.25 * (kurtosis(activeReturns) + 2) * IR_Out ^ 2 - skewness(activeReturns) * IR_Out)
+      kappa <- (t(condAlpha) %*% solve(condOmega) %*% rep(1, N)) / (rep(1, N) %*% solve(condOmega) %*% rep(1, N))
+      activeWeights <- sigma_A * (solve(condOmega) %*% as.matrix(condAlpha - kappa * rep(1, N))) / c(sqrt(t(as.matrix(condAlpha)) %*% solve(condOmega) %*% (condAlpha - kappa * rep(1, N))))
+      activeReturns <- t(activeWeights) %*% stdReturns[, TP + 1]
       
     } else {
       condAlpha <- condOmega <- IR_In <- IR_Out <- SE_N <- NULL
@@ -978,7 +956,6 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   } else {
     
     # Multi-factor model (To be implemented)
-    # Set the standardized exposures from above
     condAlpha <- condOmega <- IR_In <- IR_Out <- SE_N <- NULL
     
   }
@@ -992,9 +969,9 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
                  data=data, date.var=date.var, ret.var=ret.var, 
                  asset.var=asset.var, exposure.vars=exposure.vars, 
                  weight.var=weight.var, fit.method=fit.method, 
-                 asset.names=asset.names, factor.names=factor.names, activeReturns = activeReturns,
-                 time.periods=time.periods, condAlpha = condAlpha, 
-                 condOmega = condOmega, IR = c(IR_In, IR_Out, SE_N))
+                 asset.names=asset.names, factor.names=factor.names, 
+                 activeWeights = activeWeights, activeReturns = activeReturns,
+                 IR = c(IR_GK, IR_inf, IR_N))
   
   class(result) <- "ffm"
   return(result)
@@ -1027,7 +1004,7 @@ zScore <- function(x, i, w, rob.stats, z.score, asset.names) {
       ts <- (exposures[j, ] - meanExp[j]) ^ 2
       var_past_2 <- sigmaExp[j] ^ 2
       sigmaEWMA[j, ] <- sapply(ts, function(x) var_past_2 <<- 0.10 * x + 0.90 * var_past_2)
-      if (sigmaEWMA[j, ] == 0) {
+      if (any(sigmaEWMA[j, ] == 0)) {
         sigmaEWMA[j, ] <- 1
       }
     }
