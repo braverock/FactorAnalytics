@@ -126,3 +126,11 @@ NULL
 #' @source TBA
 #' @usage data("RussellData")
 NULL
+
+#' @name riskFreeRate
+#' @title Risk-free rates
+#' @description 10 year US Bond yields
+#' @docType data
+#' @source TBA
+#' @usage data("riskFreeRate")
+NULL

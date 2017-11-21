@@ -12,9 +12,8 @@ fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
   full.resid.cov = FALSE, z.score = c("none", "crossSection", "timeSeries"),
   addIntercept = FALSE, lagExposures = TRUE, resid.scaleType = "stdDev",
   lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
-  GARCH.MLE = FALSE, stdReturn = FALSE, fullPeriod = FALSE,
-  windowLength = 60, analysis = c("none", "ISM", "NEW"),
-  targetedVol = 0.06, ...)
+  GARCH.MLE = FALSE, stdReturn = FALSE, analysis = c("none", "ISM",
+  "NEW"), targetedVol = 0.06, ...)
 
 \method{coef}{ffm}(object, ...)
 
@@ -70,11 +69,6 @@ Valid only when \code{GARCH.MLE} is set to \code{FALSE}.}
 
 \item{stdReturn}{logical; If \code{TRUE}, the returns will be standardized using GARCH(1,1) volatilities. Default is \code{FALSE}}
 
-\item{fullPeriod}{logical; If \code{TRUE}, the fundamental law of active management will apply to all but the last 
-time period. Default is \code{FALSE}}
-
-\item{windowLength}{integer; the number of months used as a window length in the FLAM analysis. Default is 60 (5 years).}
-
 \item{analysis}{method used in the analysis of fundamental law of active management; one of "none", "ISM", 
 or "NEW". Default is "none".}
 
@@ -124,9 +118,9 @@ using the factor exposures from the last time period.}
 \item{time.periods}{length-T vector of dates.}
 Where N is the number of assets, K is the number of factors (including the 
 intercept or dummy variables) and T is the number of unique time periods.
-\item{condAlpha}{length-windowLength the conditional mean of the portfolio returns in each moving window.}
-\item{condOmega}{length-windowLength list of the conditional covariance matrices of the portfolio returns in each moving window.}
-\item{IR}{the vector of in-sample IR, out-f-sample IR, and the standard error of the out-of-sample IR.}
+\item{activeWeights}{active weights obtaining from the fundamental law of active management}
+\item{activeReturns}{active returns corresponding to the active weights}
+\item{IR}{the vector of Granold-K, asymptotic IR, and finite-sample IR.}
 Where N is the number of assets, K is the number of factors (including the 
 intercept or dummy variables) and T is the number of unique time periods.
 }
@@ -204,39 +198,6 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
          
-# The use of new features from FLAM          
-data("mktSP")
-data("factorDataSetDjia")
-factorDataSetDjia <- factorDataSetDjia[order(factorDataSetDjia[, "DATE"]), ]
-# Extract asset names from data
-asset.names <- unique(factorDataSetDjia[["TICKER"]])
-N_stocks <- length(asset.names)
-time.periods <- unique(factorDataSetDjia[["DATE"]])
-N_TP <- length(time.periods)
-bmkReturn <- mktSP[index(mktSP) \%in\% time.periods, ]
-
-totReturns = matrix(factorDataSetDjia[["RETURN"]], nrow = N_stocks)[1:N_stocks, ]
-rownames(totReturns) = asset.names
-
-# Compute residual returns from CAPM----
-residReturns <- totReturns
-beta_i <- c()
-for (i in 1:N_stocks) {
-  beta_i[i] <- c(cov(totReturns[i, ] , bmkReturn) / var(bmkReturn))
-  residReturns[i, ] <- totReturns[i, ] - beta_i[i] * bmkReturn
-}
-
-modData <- cbind(factorDataSetDjia, "RESIDRETURN" = as.vector(residReturns))
-sizeFfm <- fitFfm(modData, asset.var = "TICKER", ret.var = "RESIDRETURN",
-                  exposure.vars = c("SIZE"), addIntercept = TRUE, stdReturn = FALSE,
-                  z.score = "crossSection", date.var = "DATE", lagExposures = TRUE, 
-                  analysis = "ISM")
-                  
-p2bFfm <- fitFfm(modData, asset.var = "TICKER", ret.var = "RESIDRETURN",
-                 exposure.vars = c("P2B"), addIntercept = TRUE, stdReturn = TRUE,
-                 z.score = "timeSeries", date.var = "DATE", lagExposures = TRUE, 
-                 analysis = "NEW")
-
 }
 \references{
 Menchero, J. (2010). The Characteristics of Factor Portfolios. Journal of
