@@ -49,7 +49,7 @@ assetDecomp = function(object, weights=NULL, rm, p, type = c("np", "normal"))
 {
   type = type[1]
   n.assets = length(object$asset.names)
-  returns = matrix(object$data[,"RETURN"], n.assets,length(object$time.periods))
+  returns = matrix(object$data[,"RETURN"], n.assets, length(object$time.periods))
   returns = xts(t(returns), order.by =unique(object$data[,"DATE"] ))
   if(is.null(weights)) {weights = matrix(rep(1/n.assets, n.assets), ncol = 1)}
   else weights = matrix(weights, ncol = 1)
