@@ -197,7 +197,7 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
  
  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
-         
+
 }
 \references{
 Menchero, J. (2010). The Characteristics of Factor Portfolios. Journal of

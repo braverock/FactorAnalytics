@@ -178,7 +178,7 @@
 #'  
 #'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
-#'          
+#' 
 #' @export
 
 
