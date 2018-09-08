@@ -2,32 +2,42 @@
 % Please edit documentation in R/fmEsDecomp.R
 \name{fmEsDecomp}
 \alias{fmEsDecomp}
-\alias{fmEsDecomp.sfm}
 \alias{fmEsDecomp.tsfm}
+\alias{fmEsDecomp.sfm}
+\alias{fmEsDecomp.ffm}
 \title{Decompose ES into individual factor contributions}
 \usage{
 fmEsDecomp(object, ...)
 
-\method{fmEsDecomp}{tsfm}(object, p = 0.95, type = c("np", "normal"), ...)
+\method{fmEsDecomp}{tsfm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 
-\method{fmEsDecomp}{sfm}(object, p = 0.95, type = c("np", "normal"), ...)
+\method{fmEsDecomp}{sfm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
+
+\method{fmEsDecomp}{ffm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
 
 \item{...}{other optional arguments passed to \code{\link[stats]{quantile}}.}
 
-\item{p}{confidence level for calculation. Default is 0.95.}
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
+
+\item{p}{tail probability for calculation. Default is 0.05.}
 
 \item{type}{one of "np" (non-parametric) or "normal" for calculating VaR. 
 Default is "np".}
+
+\item{use}{method for computing covariances in the presence of missing 
+values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or 
+"pairwise.complete.obs". Default is "pairwise.complete.obs".}
 }
 \value{
 A list containing 
 \item{ES.fm}{length-N vector of factor model ES of N-asset returns.}
-\item{n.exceed}{length-N vector of number of observations beyond VaR for 
-each asset.}
-\item{idx.exceed}{list of numeric vector of index values of exceedances.}
 \item{mES}{N x (K+1) matrix of marginal contributions to VaR.}
 \item{cES}{N x (K+1) matrix of component contributions to VaR.}
 \item{pcES}{N x (K+1) matrix of percentage component contributions to VaR.}
@@ -52,10 +62,13 @@ where, summation is across the \code{K} factors and the residual,
 contributions to \code{ES} respectively. The marginal contribution to ES is
 defined as the expected value of \code{F.star}, conditional on the loss 
 being less than or equal to \code{VaR.fm}. This is estimated as a sample 
-average of the observations in that data window.
+average of the observations in that data window. 
+
+Refer to Eric Zivot's slides (referenced) for formulas pertaining to the 
+calculation of Normal ES (adapted from a portfolio context to factor models).
 }
 \examples{
-# Time Series Factor Model
+#' # Time Series Factor Model
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]), data=managers)
@@ -66,12 +79,17 @@ ES.decomp$cES
 # Statistical Factor Model
 data(StockReturns)
 sfm.pca.fit <- fitSfm(r.M, k=2)
-ES.decomp <- fmEsDecomp(sfm.pca.fit)
+ES.decomp <- fmEsDecomp(sfm.pca.fit, type="normal")
 ES.decomp$cES
 
-}
-\author{
-Eric Zviot, Sangeetha Srinivasan and Yi-An Chen
+# Fundamental Factor Model
+data(Stock.df)
+exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
+fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+              date.var="DATE", exposure.vars=exposure.vars)
+ES.decomp <- fmEsDecomp(fit, type="normal")
+head(ES.decomp$cES)
+
 }
 \references{
 Epperlein, E., & Smillie, A. (2006). Portfolio risk analysis Cracking VAR 
@@ -94,4 +112,6 @@ for the different factor model fitting functions.
 \code{\link{fmSdDecomp}} for factor model SD decomposition.
 \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 }
-
+\author{
+Eric Zviot, Sangeetha Srinivasan and Yi-An Chen
+}

@@ -83,9 +83,6 @@ summary(fit)
 fitted(fit)
 
 }
-\author{
-Yi-An Chen.
-}
 \references{
 Scholes, M. and Williams, J. T. (1977). Estimating betas from non-synchronous
 data, Journal of Financial Economics, vol. 5, 1977, pp. 309-327
@@ -94,4 +91,6 @@ data, Journal of Financial Economics, vol. 5, 1977, pp. 309-327
 The original time series function \code{\link{fitTsfm}} and its generic functions
  application.
 }
-
+\author{
+Yi-An Chen.
+}

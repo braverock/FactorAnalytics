@@ -141,9 +141,6 @@ plot(fit.macro, which=6)
 plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=13)
 
 }
-\author{
-Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{residuals.tsfm}}, 
 \code{\link{fitted.tsfm}}, \code{\link{fmCov.tsfm}} and 
@@ -165,4 +162,6 @@ G(1,2,4,5,9,10,11) - \code{\link[lattice]{barchart}},
 G(6) - \code{\link[PerformanceAnalytics]{chart.Correlation}} and
 G(7,8) - \code{\link[corrplot]{corrplot.mixed}}.
 }
-
+\author{
+Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
+}

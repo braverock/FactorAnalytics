@@ -39,9 +39,6 @@ fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]),
 fm.attr <- paFm(fit)
 
 }
-\author{
-Yi-An Chen and Sangeetha Srinivasan
-}
 \references{
 Grinold, R. and Kahn, R. (1999) Active Portfolio Management: A 
 Quantitative Approach for Producing Superior Returns and Controlling Risk. 
@@ -55,4 +52,6 @@ The \code{pafm} methods for generic functions:
 \code{\link{plot.pafm}}, \code{\link{print.pafm}} and 
 \code{\link{summary.pafm}}.
 }
-
+\author{
+Yi-An Chen and Sangeetha Srinivasan
+}

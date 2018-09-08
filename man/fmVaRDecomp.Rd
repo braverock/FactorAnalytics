@@ -2,36 +2,38 @@
 % Please edit documentation in R/fmVaRDecomp.R
 \name{fmVaRDecomp}
 \alias{fmVaRDecomp}
-\alias{fmVaRDecomp.ffm}
-\alias{fmVaRDecomp.sfm}
 \alias{fmVaRDecomp.tsfm}
+\alias{fmVaRDecomp.sfm}
+\alias{fmVaRDecomp.ffm}
 \title{Decompose VaR into individual factor contributions}
 \usage{
 fmVaRDecomp(object, ...)
 
-\method{fmVaRDecomp}{tsfm}(object, p = 0.95, type = c("np", "normal"),
-  use = "pairwise.complete.obs", ...)
+\method{fmVaRDecomp}{tsfm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 
-\method{fmVaRDecomp}{sfm}(object, p = 0.95, type = c("np", "normal"),
-  use = "pairwise.complete.obs", ...)
+\method{fmVaRDecomp}{sfm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 
-\method{fmVaRDecomp}{ffm}(object, p = 0.95, type = c("np", "normal"), ...)
+\method{fmVaRDecomp}{ffm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
 
 \item{...}{other optional arguments passed to \code{\link[stats]{quantile}}.}
 
-\item{p}{confidence level for calculation. Default is 0.95.}
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
+
+\item{p}{tail probability for calculation. Default is 0.05.}
 
 \item{type}{one of "np" (non-parametric) or "normal" for calculating VaR. 
 Default is "np".}
 
-\item{use}{an optional character string giving a method for computing factor
-covariances in the presence of missing values. This must be (an 
-abbreviation of) one of the strings "everything", "all.obs", 
-"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
-"pairwise.complete.obs".}
+\item{use}{method for computing covariances in the presence of missing 
+values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or 
+"pairwise.complete.obs". Default is "pairwise.complete.obs".}
 }
 \value{
 A list containing 
@@ -62,14 +64,16 @@ where, summation is across the \code{K} factors and the residual,
 contributions to \code{VaR} respectively. The marginal contribution to VaR 
 is defined as the expectation of \code{F.star}, conditional on the loss 
 being equal to \code{VaR.fm}. This is approximated as described in 
-Epperlein & Smillie (2006); a triangular smoothing kernel is used here.
+Epperlein & Smillie (2006); a triangular smoothing kernel is used here. 
+
+Refer to Eric Zivot's slides (referenced) for formulas pertaining to the 
+calculation of Normal VaR (adapted from a portfolio context to factor models)
 }
 \examples{
 # Time Series Factor Model
 data(managers)
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]), data=managers)
-
 VaR.decomp <- fmVaRDecomp(fit.macro)
 # get the component contributions
 VaR.decomp$cVaR
@@ -77,12 +81,17 @@ VaR.decomp$cVaR
 # Statistical Factor Model
 data(StockReturns)
 sfm.pca.fit <- fitSfm(r.M, k=2)
-VaR.decomp <- fmVaRDecomp(sfm.pca.fit)
+VaR.decomp <- fmVaRDecomp(sfm.pca.fit, type="normal")
 VaR.decomp$cVaR
 
-}
-\author{
-Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
+# Fundamental Factor Model
+data(Stock.df)
+exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
+fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
+              date.var="DATE", exposure.vars=exposure.vars)
+VaR.decomp <- fmVaRDecomp(fit, type="normal")
+VaR.decomp$cVaR
+
 }
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
@@ -102,4 +111,6 @@ for the different factor model fitting functions.
 \code{\link{fmSdDecomp}} for factor model SD decomposition.
 \code{\link{fmEsDecomp}} for factor model ES decomposition.
 }
-
+\author{
+Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+}

@@ -57,4 +57,3 @@ plot(fm.attr, plot.single=TRUE, fundName="HAM1")
 \author{
 Yi-An Chen.
 }
-

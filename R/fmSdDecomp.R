@@ -19,11 +19,11 @@
 #' \code{mSd = cov(F.star)beta.star / Sd.fm}
 #' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
-#' @param use an optional character string giving a method for computing 
-#' covariances in the presence of missing values. This must be (an 
-#' abbreviation of) one of the strings "everything", "all.obs", 
-#' "complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
-#' "pairwise.complete.obs".
+#' @param factor.cov optional user specified factor covariance matrix with 
+#' named columns; defaults to the sample covariance matrix.
+#' @param use method for computing covariances in the presence of missing 
+#' values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or 
+#' "pairwise.complete.obs". Default is "pairwise.complete.obs".
 #' @param ... optional arguments passed to \code{\link[stats]{cov}}.
 #' 
 #' @return A list containing 
@@ -33,7 +33,7 @@
 #' \item{pcSd}{N x (K+1) matrix of percentage component contributions to SD.}
 #' Where, \code{K} is the number of factors and N is the number of assets.
 #' 
-#' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
+#' @author Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
 #' 
 #' @references 
 #' Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
@@ -95,24 +95,32 @@ fmSdDecomp <- function(object, ...){
 #' @method fmSdDecomp tsfm
 #' @export
 
-fmSdDecomp.tsfm <- function(object, use="pairwise.complete.obs", ...) {
+fmSdDecomp.tsfm <- function(object, factor.cov, 
+                            use="pairwise.complete.obs", ...) {
   
   # get beta.star: N x (K+1)
   beta <- object$beta
   beta[is.na(beta)] <- 0
   beta.star <- as.matrix(cbind(beta, object$resid.sd))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # get cov(F): K x K
   factor <- as.matrix(object$data[, object$factor.names])
-  factor.cov = cov(factor, use=use, ...)
+  if (missing(factor.cov)) {
+    factor.cov = cov(factor, use=use, ...) 
+  } else {
+    if (!identical(dim(factor.cov), as.integer(c(ncol(factor), ncol(factor))))) {
+      stop("Dimensions of user specified factor covariance matrix are not 
+           compatible with the number of factors in the fitTsfm object")
+    }
+  }
   
   # get cov(F.star): (K+1) x (K+1)
   K <- ncol(object$beta)
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
   # compute factor model sd; a vector of length N
   Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))
@@ -132,24 +140,32 @@ fmSdDecomp.tsfm <- function(object, use="pairwise.complete.obs", ...) {
 #' @method fmSdDecomp sfm
 #' @export
 
-fmSdDecomp.sfm <- function(object, use="pairwise.complete.obs", ...) {
+fmSdDecomp.sfm <- function(object, factor.cov,
+                           use="pairwise.complete.obs", ...) {
   
   # get beta.star: N x (K+1)
   beta <- object$loadings
   beta[is.na(beta)] <- 0
   beta.star <- as.matrix(cbind(beta, object$resid.sd))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # get cov(F): K x K
   factor <- as.matrix(object$factors)
-  factor.cov = cov(factor, use=use, ...)
+  if (missing(factor.cov)) {
+    factor.cov = cov(factor, use=use, ...) 
+  } else {
+    if (!identical(dim(factor.cov), as.integer(c(ncol(factor), ncol(factor))))) {
+      stop("Dimensions of user specified factor covariance matrix are not 
+           compatible with the number of factors in the fitSfm object")
+    }
+  }
   
   # get cov(F.star): (K+1) x (K+1)
   K <- object$k
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
   # compute factor model sd; a vector of length N
   Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))
@@ -169,22 +185,30 @@ fmSdDecomp.sfm <- function(object, use="pairwise.complete.obs", ...) {
 #' @method fmSdDecomp ffm
 #' @export
 
-fmSdDecomp.ffm <- function(object, ...) {
+fmSdDecomp.ffm <- function(object, factor.cov, ...) {
   
   # get beta.star: N x (K+1)
   beta <- object$beta
   beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
-  colnames(beta.star)[dim(beta.star)[2]] <- "residual"
+  colnames(beta.star)[dim(beta.star)[2]] <- "Residuals"
   
   # get cov(F): K x K
-  factor.cov = object$factor.cov
+  if (missing(factor.cov)) {
+    factor.cov = object$factor.cov
+  } else {
+    if (!identical(dim(factor.cov), dim(object$factor.cov))) {
+      stop("Dimensions of user specified factor covariance matrix are not 
+           compatible with the number of factors (including dummies) in the 
+           fitFfm object")
+    }
+  }
   
   # get cov(F.star): (K+1) x (K+1)
   K <- ncol(object$beta)
   factor.star.cov <- diag(K+1)
   factor.star.cov[1:K, 1:K] <- factor.cov
-  colnames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
-  rownames(factor.star.cov) <- c(colnames(factor.cov),"residuals")
+  colnames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
+  rownames(factor.star.cov) <- c(colnames(factor.cov),"Residuals")
   
   # compute factor model sd; a vector of length N
   Sd.fm <- sqrt(rowSums(beta.star %*% factor.star.cov * beta.star))

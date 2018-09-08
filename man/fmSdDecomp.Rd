@@ -2,29 +2,32 @@
 % Please edit documentation in R/fmSdDecomp.R
 \name{fmSdDecomp}
 \alias{fmSdDecomp}
-\alias{fmSdDecomp.ffm}
-\alias{fmSdDecomp.sfm}
 \alias{fmSdDecomp.tsfm}
+\alias{fmSdDecomp.sfm}
+\alias{fmSdDecomp.ffm}
 \title{Decompose standard deviation into individual factor contributions}
 \usage{
 fmSdDecomp(object, ...)
 
-\method{fmSdDecomp}{tsfm}(object, use = "pairwise.complete.obs", ...)
+\method{fmSdDecomp}{tsfm}(object, factor.cov, use = "pairwise.complete.obs",
+  ...)
 
-\method{fmSdDecomp}{sfm}(object, use = "pairwise.complete.obs", ...)
+\method{fmSdDecomp}{sfm}(object, factor.cov, use = "pairwise.complete.obs",
+  ...)
 
-\method{fmSdDecomp}{ffm}(object, ...)
+\method{fmSdDecomp}{ffm}(object, factor.cov, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
 
 \item{...}{optional arguments passed to \code{\link[stats]{cov}}.}
 
-\item{use}{an optional character string giving a method for computing 
-covariances in the presence of missing values. This must be (an 
-abbreviation of) one of the strings "everything", "all.obs", 
-"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
-"pairwise.complete.obs".}
+\item{factor.cov}{optional user specified factor covariance matrix with 
+named columns; defaults to the sample covariance matrix.}
+
+\item{use}{method for computing covariances in the presence of missing 
+values; one of "everything", "all.obs", "complete.obs", "na.or.complete", or 
+"pairwise.complete.obs". Default is "pairwise.complete.obs".}
 }
 \value{
 A list containing 
@@ -71,9 +74,6 @@ decomp <- fmSdDecomp(sfm.pca.fit)
 decomp$pcSd
  
 }
-\author{
-Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
-}
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
 The Journal of Risk, 5(2), 1-18.
@@ -93,4 +93,6 @@ for the different factor model fitting functions.
 \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 \code{\link{fmEsDecomp}} for factor model ES decomposition.
 }
-
+\author{
+Eric Zivot, Yi-An Chen and Sangeetha Srinivasan
+}

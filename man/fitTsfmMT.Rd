@@ -80,9 +80,6 @@ fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), mkt.name="SP500.TR",
 summary(fit)
 
 }
-\author{
-Yi-An Chen, Sangeetha Srinivasan.
-}
 \references{
 Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 
 performance measurement and benchmarking. McGraw Hill Professional. pp.127-133
@@ -98,4 +95,6 @@ Harvard business review, 44(4), 131-136.
 The original time series factor model fitting function \code{\link{fitTsfm}} 
 and related methods.
 }
-
+\author{
+Yi-An Chen, Sangeetha Srinivasan.
+}

@@ -33,10 +33,9 @@ rownames(newdata) <- rownames(fit$data)
 pred.fit2 <- predict(fit, newdata, interval="confidence")
 
 }
-\author{
-Yi-An Chen and Sangeetha Srinivasan
-}
 \seealso{
 \code{\link{fitSfm}}, \code{\link{summary.sfm}}
 }
-
+\author{
+Yi-An Chen and Sangeetha Srinivasan
+}

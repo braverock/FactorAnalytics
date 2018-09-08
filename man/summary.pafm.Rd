@@ -32,4 +32,3 @@ summary(fm.attr)
 \author{
 Yi-An Chen.
 }
-

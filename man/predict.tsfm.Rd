@@ -39,10 +39,9 @@ rownames(newdata) <- rownames(fit$data)
 pred.fit2 <- predict(fit, newdata, interval="confidence")
 
 }
-\author{
-Yi-An Chen and Sangeetha Srinivasan
-}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{summary.tsfm}}
 }
-
+\author{
+Yi-An Chen and Sangeetha Srinivasan
+}

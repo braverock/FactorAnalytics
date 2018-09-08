@@ -73,10 +73,9 @@ The \code{plot.tsfm} can be applied.
  
                                                                                                                                      
 }
-\author{
-Yi-An Chen
-}
 \seealso{
 \code{\link{fitTsfmUpDn}}
 }
-
+\author{
+Yi-An Chen
+}
