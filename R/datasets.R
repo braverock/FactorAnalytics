@@ -1,5 +1,5 @@
 #' @name factorDataSPGMI
-#' @title Fundamental factor scores from S&P Global
+#' @title Fundamental factor scores from S&P Global Market Intelligence
 #' @description S&P Global Market Intelligence has kindly provided firm fundamentals data
 #' referred to as scores or alpha factors for educational use in the open source factorAnalytics
 #' R package. The data is contained in the R data frame object factorDataSPGMI

@@ -3,7 +3,7 @@
 \docType{data}
 \name{factorDataSPGMI}
 \alias{factorDataSPGMI}
-\title{Fundamental factor scores from S&P Global}
+\title{Fundamental factor scores from S&P Global Market Intelligence}
 \source{
 S&P Global Market Intelligence
 }
