@@ -4,11 +4,11 @@
 The factorAnalytics package contains fitting and analysis methods for the three main types of factor models used in conjunction with portfolio construction, optimization and risk management, namely fundamental factor models, time series factor models and statistical factor models. The purpose of this project is to add key improvements to the package that will make it its basic features and capabilities close to those of commercial portfolio optimization and risk management products.
 
 ------------
-Fundamental Factor Scores
+Fundamental Factor Scores from S&P Global Market Intelligence
 ------------
 S&P Global Market Intelligence has kindly provided firm fundamentals data
 referred to as “scores” or “alpha factors” for educational use in the open source factorAnalytics
-R package. The data is contained in the R multivariate time series object “factorDataSPGMI”
+R package. The data is contained in the R data frame object “factorDataSPGMI”
 consisting of the following cross-section of scores for approximately 300 stocks from 1990 to
 2015: AccrualRatioCF, AnnVol12M, Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style,
 LogMktCap, PM12M1M, ROE. This data greatly facilitates the educational value to users of the
