@@ -2,8 +2,8 @@ Package: factorAnalytics
 Type: Package
 Title: Factor Analytics
 Version: 2.0.33
-Date: 2018-11-07
-Author: Eric Zivot, Doug Martin, Sangeetha Srinivasan, Yi-An Chen, Lingjie Yi and Avinash Acharya
+Date: 2018-11-08
+Author: Eric Zivot, Doug Martin, Sangeetha Srinivasan, Avinash Acharya, Yi-An Chen, and Lingjie Yi 
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
 Description: Linear factor model fitting for asset returns (three major types-
     time series, fundamental and statistical factor models); related risk
