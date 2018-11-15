@@ -178,9 +178,11 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   m1 <- match(c("weights","model","x","y","qr"), 
               names(control), 0L)
   lm.args <- control[m1, drop=TRUE]
-  m2 <-  match(c("weights","model","x","y","nrep","efficiency","mxr","mxf",
-                 "mxs","trace"), names(control), 0L)
-  lmRob.args <- control[m2, drop=TRUE]
+  
+  m2 <-  match(names(as.list(args(lmrobdet.control))), names(control), 0L)
+  
+  lmrobdetMM.args <- do.call(lmrobdet.control,control[m2, drop=TRUE])
+  
   m3 <-  match(c("scope","scale","direction","trace","steps","k"), 
                names(control), 0L)
   step.args <- control[m3, drop=TRUE]
@@ -219,13 +221,13 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   # returns a list of the fitted factor model for all assets
   if (variable.selection == "none") {
     reg.list <- NoVariableSelection(dat.xts, asset.names, factor.names, 
-                                    fit.method, lm.args, lmRob.args, decay)
+                                    fit.method, lm.args, lmrobdetMM.args, decay)
   } else if (variable.selection == "stepwise") {
     reg.list <- SelectStepwise(dat.xts, asset.names, factor.names, fit.method, 
-                               lm.args, lmRob.args, step.args, decay)
+                               lm.args, lmrobdetMM.args, step.args, decay)
   } else if (variable.selection == "subsets") {
     reg.list <- SelectAllSubsets(dat.xts, asset.names, factor.names, fit.method, 
-                                 lm.args, lmRob.args, regsubsets.args, 
+                                 lm.args, lmrobdetMM.args, regsubsets.args, 
                                  nvmin, decay)
   } else if (variable.selection == "lars") {
     result.lars <- SelectLars(dat.xts, asset.names, factor.names, lars.args, 
@@ -270,7 +272,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
 ### method variable.selection = "none"
 #
 NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
-                                lm.args, lmRob.args, decay){
+                                lm.args, lmrobdetMM.args, decay){
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
@@ -279,7 +281,7 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
-    # formula to pass to lm or lmRob
+    # formula to pass to lm or lmrobdetMM
     fm.formula <- as.formula(paste(i," ~ ."))
     
     # fit based on time series regression method chosen
@@ -289,7 +291,7 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "Robust") {
-      reg.list[[i]] <- do.call("lmRob", c(list(fm.formula,data=quote(reg.xts)),lmRob.args))
+      reg.list[[i]] <- do.call("lmrobdetMM", c(list(fm.formula,data=quote(reg.xts),control=lmrobdetMM.args)))
     } 
   } 
   reg.list  
@@ -299,7 +301,7 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
 ### method variable.selection = "stepwise"
 #
 SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method, 
-                           lm.args, lmRob.args, step.args, decay) {
+                           lm.args, lmrobdetMM.args, step.args, decay) {
   # initialize list object to hold the fitted objects
   reg.list <- list()
   
@@ -308,7 +310,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
-    # formula to pass to lm or lmRob
+    # formula to pass to lm or lmrobdetMM
     fm.formula <- as.formula(paste(i," ~ ."))
     
     # fit based on time series regression method chosen
@@ -320,8 +322,8 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.fit <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
       reg.list[[i]] <- do.call("step", c(list(lm.fit),step.args))
     } else if (fit.method == "Robust") {
-      lmRob.fit <- do.call("lmRob", c(list(fm.formula,data=quote(reg.xts)),lmRob.args))
-      reg.list[[i]] <- do.call("step.lmRob", c(list(lmRob.fit),step.args))
+		lmrobdetMM.fit <- do.call("lmrobdetMM", c(list(fm.formula,data=quote(reg.xts),control=lmrobdetMM.args)))
+      reg.list[[i]] <- do.call("step.lmrobdetMM", c(list(lmrobdetMM.fit),step.args))
     } 
   }
   reg.list

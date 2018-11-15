@@ -5,9 +5,9 @@
 \title{Portfolio Exposures Report}
 \usage{
 repExposures(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
-  scaleType = "free", stripText.cex = 1, axis.cex = 1, stripLeft = TRUE,
-  layout = NULL, color = "blue", notch = FALSE, digits = 1,
-  titleText = TRUE, which = NULL, type = "b", ...)
+  scaleType = "free", stripText.cex = 1, axis.cex = 1,
+  stripLeft = TRUE, layout = NULL, color = "blue", notch = FALSE,
+  digits = 1, titleText = TRUE, which = NULL, type = "b", ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}

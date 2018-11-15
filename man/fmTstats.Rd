@@ -8,9 +8,10 @@
 fmTstats(ffmObj, ...)
 
 \method{fmTstats}{ffm}(ffmObj, isPlot = TRUE, isPrint = FALSE,
-  whichPlot = "all", color = c("black", "cyan"), lwd = 2, digits = 2,
-  z.alpha = 1.96, layout = c(2, 3), type = "h", scale = "free",
-  stripText.cex = 1, axis.cex = 1, title = TRUE, ...)
+  whichPlot = "all", color = c("black", "cyan"), lwd = 2,
+  digits = 2, z.alpha = 1.96, layout = c(2, 3), type = "h",
+  scale = "free", stripText.cex = 1, axis.cex = 1, title = TRUE,
+  ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}

@@ -6,9 +6,6 @@
 \alias{pCornishFisher}
 \alias{qCornishFisher}
 \alias{rCornishFisher}
-\alias{pCornishFisher}
-\alias{qCornishFisher}
-\alias{rCornishFisher}
 \title{Cornish-Fisher expansion}
 \usage{
 dCornishFisher(x, n, skew, ekurt)

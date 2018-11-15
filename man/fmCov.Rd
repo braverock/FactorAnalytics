@@ -9,7 +9,8 @@
 \usage{
 fmCov(object, ...)
 
-\method{fmCov}{tsfm}(object, factor.cov, use = "pairwise.complete.obs", ...)
+\method{fmCov}{tsfm}(object, factor.cov, use = "pairwise.complete.obs",
+  ...)
 
 \method{fmCov}{sfm}(object, use = "pairwise.complete.obs", ...)
 

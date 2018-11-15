@@ -5,10 +5,17 @@
 \title{List of control parameters for \code{fitTsfm}}
 \usage{
 fitTsfm.control(decay = 0.95, weights, model = TRUE, x = FALSE,
-  y = FALSE, qr = TRUE, nrep = NULL, efficiency = 0.9, mxr = 50,
-  mxf = 50, mxs = 50, scope, scale, direction, trace = FALSE,
-  steps = 1000, k = 2, nvmin = 1, nvmax = 8, force.in = NULL,
-  force.out = NULL, method, really.big = FALSE, type, normalize = TRUE,
+  y = FALSE, qr = TRUE, nrep = NULL, bb = 0.5, efficiency = 0.9,
+  family = "bisquare", compute.rd = FALSE, corr.b = TRUE,
+  split.type = "f", initial = "S", max.it = 100,
+  refine.tol = 1e-07, rel.tol = 1e-07, refine.PY = 10,
+  solve.tol = 1e-07, trace.lev = 0, psc_keep = 0.5,
+  resid_keep_method = "threshold", resid_keep_thresh = 2,
+  resid_keep_prop = 0.2, py_maxit = 20, py_eps = 1e-05,
+  mscale_maxit = 50, mscale_tol = 1e-06, mscale_rho_fun = "bisquare",
+  mts = 1000, scope, scale, direction, steps = 1000, k = 2,
+  nvmin = 1, nvmax = 8, force.in = NULL, force.out = NULL, method,
+  really.big = FALSE, type, normalize = TRUE,
   eps = .Machine$double.eps, max.steps, plot.it = FALSE,
   lars.criterion = "Cp", K = 10)
 }
@@ -32,17 +39,64 @@ are returned.}
 \code{fit.method="Robust"}. If the data set is small and "Exhaustive" 
 resampling is being used, the value of \code{nrep} is ignored.}
 
-\item{efficiency}{the asymptotic efficiency of the final estimate for 
-\code{fit.method="Robust"}. Default is 0.9.}
+\item{bb}{tuning constant (between 0 and 1/2) for the M-scale used to compute the initial S-estimator. It
+determines the robustness (breakdown point) of the resulting MM-estimator, which is
+\code{bb}. Defaults to 0.5.}
 
-\item{mxr}{the maximum number of iterations in the refinement step. Default 
-is 50.}
+\item{efficiency}{desired asymptotic efficiency of the final regression M-estimator. Defaults to 0.85.}
 
-\item{mxf}{the maximum number of iterations for computing final coefficient 
-estimates. Default is 50.}
+\item{family}{string specifying the name of the family of loss function to be used (current valid
+options are "bisquare", "optimal" and "modopt"). Incomplete entries will be matched to
+the current valid options.}
 
-\item{mxs}{the maximum number of iterations for computing scale estimate. 
-Default is 50.}
+\item{compute.rd}{logical value indicating whether robust leverage distances need to be computed.}
+
+\item{corr.b}{logical value indicating whether a finite-sample correction should be applied
+to the M-scale parameter \code{bb}.}
+
+\item{split.type}{determines how categorical and continuous variables are split. See
+\code{\link[robustbase]{splitFrame}}.}
+
+\item{initial}{string specifying the initial value for the M-step of the MM-estimator. Valid
+options are \code{'S'}, for an S-estimator and \code{'MS'} for an M-S estimator which is
+appropriate when there are categorical explanatory variables in the model.}
+
+\item{max.it}{maximum number of IRWLS iterations for the MM-estimator}
+
+\item{refine.tol}{relative convergence tolerance for the S-estimator}
+
+\item{rel.tol}{relative convergence tolerance for the IRWLS iterations for the MM-estimator}
+
+\item{refine.PY}{number of refinement steps for the Pen~a-Yohai candidates}
+
+\item{solve.tol}{relative tolerance for inversion}
+
+\item{trace.lev}{positive values (increasingly) provide details on the progress of the MM-algorithm}
+
+\item{psc_keep}{For \code{pyinit}, proportion of observations to remove based on PSCs. The effective proportion of removed
+observations is adjusted according to the sample size to be \code{prosac*(1-p/n)}. See \code{\link{pyinit}}.}
+
+\item{resid_keep_method}{For \code{pyinit}, how to clean the data based on large residuals. If
+\code{"threshold"}, all observations with scaled residuals larger than \code{C.res} will
+be removed, if \code{"proportion"}, observations with the largest \code{prop} residuals will
+be removed. See \code{\link{pyinit}}.}
+
+\item{resid_keep_thresh}{See parameter \code{resid_keep_method} above. See \code{\link{pyinit}}.}
+
+\item{resid_keep_prop}{See parameter \code{resid_keep_method} above. See \code{\link{pyinit}}.}
+
+\item{py_maxit}{Maximum number of iterations. See \code{\link{pyinit}}.}
+
+\item{py_eps}{Relative tolerance for convergence.  See \code{\link{pyinit}}.}
+
+\item{mscale_maxit}{Maximum number of iterations for the M-scale algorithm. See \code{\link{pyinit}}.}
+
+\item{mscale_tol}{Convergence tolerance for the M-scale algorithm. See \code{\link{pyinit}}.}
+
+\item{mscale_rho_fun}{String indicating the loss function used for the M-scale. See \code{\link{pyinit}}.}
+
+\item{mts}{maximum number of subsamples. Un-used, but passed (unnecessarily) to the function
+that performs M-iterations (lmrob..M..fit), so set here.}
 
 \item{scope}{defines the range of models examined in the \code{"stepwise"} 
 search. This should be either a single formula, or a list containing 
@@ -51,17 +105,11 @@ components \code{upper} and \code{lower}, both formulae. See
 
 \item{scale}{optional parameter for \code{variable.selection="stepwise"}. 
 The argument is passed to \code{\link[stats]{step}} or 
-\code{\link[robust]{step.lmRob}} as appropriate.}
+\code{\link[RobStatTM]{step.lmrobdetMM}} as appropriate.}
 
 \item{direction}{the mode of \code{"stepwise"} search, can be one of "both", 
 "backward", or "forward", with a default of "both". If the \code{scope} 
 argument is missing the default for \code{direction} is "backward".}
-
-\item{trace}{If positive (or, not \code{FALSE}), info is printed during the 
-running of \code{\link[robust]{lmRob}}, \code{\link[stats]{step}}, 
-\code{\link[robust]{step.lmRob}}, \code{\link[lars]{lars}} or 
-\code{\link[lars]{cv.lars}} as relevant. Larger values may give more 
-detailed information. Default is \code{FALSE}.}
 
 \item{steps}{the maximum number of steps to be considered for 
 \code{"stepwise"}. Default is 1000 (essentially as many as required). It is 
@@ -120,6 +168,21 @@ Default is \code{FALSE}.}
 
 \item{K}{number of folds for computing the K-fold cross-validated mean 
 squared prediction error for \code{"lars"}. Default is 10.}
+
+\item{tuning.chi}{tuning constant for the function used to compute the M-scale
+used for the initial S-estimator. If missing, it is computed inside \code{lmrobdet.control} to match
+the value of \code{bb} according to the family of rho functions specified in \code{family}.}
+
+\item{tuning.psi}{tuning parameters for the regression M-estimator computed with a rho function
+as specified with argument \code{family}. If missing, it is computed inside \code{lmrobdet.control} to match
+the value of \code{efficiency} according to the family of rho functions specified in \code{family}.
+Appropriate values for \code{tuning.psi} for a given desired efficiency for Gaussian errors
+can be constructed using the functions \link{bisquare}, \link{modopt} and \link{optimal}.}
+
+\item{trace}{If positive (or, not \code{FALSE}), info is printed during the 
+running of  \code{\link[stats]{step}}, \code{\link[lars]{lars}} or 
+\code{\link[lars]{cv.lars}} as relevant. Larger values may give more 
+detailed information. Default is \code{FALSE}.}
 }
 \value{
 A list of the above components. This is only meant to be used by 
@@ -134,7 +197,7 @@ default values. This function is meant for internal use only!!
 This control function is used to process optional arguments passed 
 via \code{...} to \code{fitTsfm}. These arguments are validated and defaults
 are set if necessary before being passed internally to one of the following
-functions: \code{\link[stats]{lm}}, \code{\link[robust]{lmRob}}, 
+functions: \code{\link[stats]{lm}}, \code{\link[RobStatTM]{lmrobdetMM}}, 
 \code{\link[stats]{step}}, \code{\link[leaps]{regsubsets}}, 
 \code{\link[lars]{lars}} and \code{\link[lars]{cv.lars}}. See their 
 respective help files for more details. The arguments to each of these 
@@ -176,7 +239,7 @@ regression. The Annals of statistics, 32(2), 407-499.
 }
 \seealso{
 \code{\link{fitTsfm}}, \code{\link[stats]{lm}}, 
-\code{\link[robust]{lmRob}}, \code{\link[stats]{step}}, 
+\code{\link[RobStatTM]{lmrobdetMM}}, \code{\link[stats]{step}}, 
 \code{\link[leaps]{regsubsets}}, \code{\link[lars]{lars}} and 
 \code{\link[lars]{cv.lars}}
 }

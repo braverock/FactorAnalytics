@@ -4,10 +4,11 @@
 \alias{plot.sfm}
 \title{Plots from a fitted statistical factor model}
 \usage{
-\method{plot}{sfm}(x, which = NULL, f.sub = 1:2, a.sub = 1:6, n.top = 3,
-  plot.single = FALSE, asset.name, colorset = c("royalblue", "dimgray",
-  "olivedrab", "firebrick", "goldenrod", "mediumorchid", "deepskyblue",
-  "chocolate", "darkslategray"), legend.loc = "topleft", las = 1, lwd = 2,
+\method{plot}{sfm}(x, which = NULL, f.sub = 1:2, a.sub = 1:6,
+  n.top = 3, plot.single = FALSE, asset.name,
+  colorset = c("royalblue", "dimgray", "olivedrab", "firebrick",
+  "goldenrod", "mediumorchid", "deepskyblue", "chocolate",
+  "darkslategray"), legend.loc = "topleft", las = 1, lwd = 2,
   maxlag = 15, eig.max = 0.9, cum.var = TRUE, ...)
 }
 \arguments{

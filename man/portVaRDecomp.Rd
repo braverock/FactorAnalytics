@@ -8,12 +8,12 @@
 \usage{
 portVaRDecomp(object, ...)
 
-\method{portVaRDecomp}{tsfm}(object, weights = NULL, factor.cov, p = 0.05,
-  type = c("np", "normal"), invert = FALSE, use = "pairwise.complete.obs",
-  ...)
+\method{portVaRDecomp}{tsfm}(object, weights = NULL, factor.cov,
+  p = 0.05, type = c("np", "normal"), invert = FALSE,
+  use = "pairwise.complete.obs", ...)
 
-\method{portVaRDecomp}{ffm}(object, weights = NULL, factor.cov, p = 0.05,
-  type = c("np", "normal"), invert = FALSE, ...)
+\method{portVaRDecomp}{ffm}(object, weights = NULL, factor.cov,
+  p = 0.05, type = c("np", "normal"), invert = FALSE, ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
