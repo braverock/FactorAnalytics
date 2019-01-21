@@ -1,4 +1,4 @@
-Package: factorAnalytics
+Package: FactorAnalytics
 Type: Package
 Title: Factor Analytics
 Version: 2.0.33
@@ -42,6 +42,7 @@ Imports:
 	rugarch
 Remotes:
 	bitbucket::alexiosg/rugarch
+	git::https://github.com/msalibian/RobStatTM.git
 Suggests:
     testthat
 LazyLoad: yes
