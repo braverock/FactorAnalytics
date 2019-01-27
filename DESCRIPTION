@@ -42,6 +42,7 @@ Imports:
 	rugarch
 Remotes:
 	bitbucket::alexiosg/rugarch
+	github::msalibian/RobStatTM
 Suggests:
     testthat
 LazyLoad: yes
