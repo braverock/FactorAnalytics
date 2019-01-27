@@ -41,8 +41,8 @@ Imports:
 	reshape2,
 	rugarch
 Remotes:
-	bitbucket::alexiosg/rugarch,
-	github::msalibian/RobStatTM
+	msalibian/RobStatTM,
+	bitbucket::alexiosg/rugarch
 Suggests:
     testthat
 LazyLoad: yes
