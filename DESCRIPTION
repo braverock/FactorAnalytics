@@ -47,5 +47,4 @@ Suggests:
     testthat
 LazyLoad: yes
 LazyDataCompression: xz
-URL: http://r-forge.r-project.org/projects/returnanalytics/
 RoxygenNote: 6.1.1
