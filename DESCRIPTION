@@ -41,7 +41,7 @@ Imports:
 	reshape2,
 	rugarch
 Remotes:
-	bitbucket::alexiosg/rugarch
+	bitbucket::alexiosg/rugarch,
 	github::msalibian/RobStatTM
 Suggests:
     testthat
