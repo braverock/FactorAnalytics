@@ -23,7 +23,7 @@ To get started, you can install the package from github using `devtools`.
 
 ``` r
 library(devtools)
-install_github("braverock/factorAnalytics")
+install_github("braverock/FactorAnalytics")
 ```
 
 ------------
