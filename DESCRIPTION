@@ -1,7 +1,7 @@
 Package: FactorAnalytics
 Type: Package
 Title: Factor Analytics
-Version: 2.0.33
+Version: 2.0.34
 Date: 2018-11-08
 Author: Eric Zivot, Doug Martin, Sangeetha Srinivasan, Avinash Acharya, Yi-An Chen, Mido Shammaa, and Lingjie Yi 
 Maintainer: Sangeetha Srinivasan <sangee@uw.edu>
@@ -15,7 +15,7 @@ License: GPL-2
 Depends:
     R (>= 3.0.0),
     foreach (>= 1.4),
-	xts (>= 0.9),
+	  xts (>= 0.9),
     rrcov (>= 1.3)
 Imports:
     PerformanceAnalytics(>= 1.4),
@@ -37,9 +37,10 @@ Imports:
     RCurl,
     bestglm,
     tseries,
-	HH,
-	reshape2,
-	rugarch
+    data.table,
+	  HH,
+	  reshape2,
+	  rugarch
 Remotes:
 	msalibian/RobStatTM,
 	bitbucket::alexiosg/rugarch

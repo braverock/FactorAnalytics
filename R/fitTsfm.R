@@ -179,7 +179,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
               names(control), 0L)
   lm.args <- control[m1, drop=TRUE]
   
-  m2 <-  match(names(as.list(args(lmrobdet.control))), names(control), 0L)
+  m2 <-  match(names(as.list(args(lmrobdet.control ))), names(control), 0L)
   
   lmrobdetMM.args <- do.call(lmrobdet.control,control[m2, drop=TRUE])
   
