@@ -146,7 +146,7 @@
 #'                    factor.names=colnames(managers[,(7:9)]), 
 #'                    rf.name="US.3m.TR", data=managers, 
 #'                    variable.selection="lars", lars.criterion="cv") 
-#' 
+#' @importFrom RobStatTM lmrobdet.control
 #' @export
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 

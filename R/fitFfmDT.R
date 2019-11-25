@@ -283,10 +283,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
 }
 
 
-
-#' standardizeReturns
-#' 
-#' @title 
+#' @title standardizeReturns
 #'
 #' @description Standardize the returns using GARCH(1,1) volatilities.
 #' @param specObj  is a ffmSpec object
