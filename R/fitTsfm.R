@@ -291,6 +291,7 @@ NoVariableSelection <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "Robust") {
+	  require(RobStatTM)
       reg.list[[i]] <- do.call("lmrobdetMM", c(list(fm.formula,data=quote(reg.xts),control=lmrobdetMM.args)))
     } 
   } 
@@ -322,6 +323,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.fit <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
       reg.list[[i]] <- do.call("step", c(list(lm.fit),step.args))
     } else if (fit.method == "Robust") {
+		require(RobStatTM)
 		lmrobdetMM.fit <- do.call("lmrobdetMM", c(list(fm.formula,data=quote(reg.xts),control=lmrobdetMM.args)))
       reg.list[[i]] <- do.call("step.lmrobdetMM", c(list(lmrobdetMM.fit),step.args))
     } 
@@ -373,6 +375,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
       reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "Robust") {
+	  require(RobStatTM)
       reg.list[[i]] <- do.call("lmRob", c(list(fm.formula,data=quote(reg.xts)),lmRob.args))
     } 
   }
