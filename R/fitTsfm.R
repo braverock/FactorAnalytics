@@ -335,7 +335,7 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
 ### method variable.selection = "subsets"
 #
 SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method, 
-                             lm.args, lmRob.args, regsubsets.args, nvmin, 
+                             lm.args, lmrobdetMM.args, regsubsets.args, nvmin, 
                              decay) {
   
   # initialize list object to hold the fitted objects
@@ -346,7 +346,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     # completely remove NA cases
     reg.xts <- na.omit(dat.xts[, c(i, factor.names)])
     
-    # formula to pass to lm or lmRob
+    # formula to pass to lm or lmrobdetMM
     fm.formula <- as.formula(paste(i," ~ ."))
     
     if (fit.method=="DLS" && !"weights" %in% names(regsubsets.args)) {
@@ -376,7 +376,7 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
       reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
     } else if (fit.method == "Robust") {
 	  require(RobStatTM)
-      reg.list[[i]] <- do.call("lmRob", c(list(fm.formula,data=quote(reg.xts)),lmRob.args))
+      reg.list[[i]] <- do.call("lmrobdetMM", c(list(fm.formula,data=quote(reg.xts)),lmrobdetMM.args))
     } 
   }
   reg.list

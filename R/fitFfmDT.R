@@ -352,14 +352,14 @@ standardizeReturns <- function(specObj, GARCH.params = list(omega = 0.09, alpha 
 #' \item{id}{length-N vector of asset id's for each date.}
 #' \item{reg.list}{list of fitted objects that estimate factor returns in each 
 #' time period. Each fitted object is of class \code{lm} if 
-#' \code{fit.method="LS" or "WLS"}, or, class \code{lmRob} if 
+#' \code{fit.method="LS" or "WLS"}, or, class \code{lmrobdetMM} if 
 #' \code{fit.method="Rob" or "W-Rob"}.}
 #' The second betasDT is object of class \code{"data.table"} is a list containing the following 
 #' components:
 #' \item{DATE}{length-T vector of dates.}
 #' \item{R_matrix}{The K+1 by K restriction matrix where K is the number of categorical variables for each date.}
 #' 
-#' @importFrom robust lmRob 
+#' @importFrom robust lmrobdetMM 
 #' @import data.table
 #' @export
 #' 
@@ -384,7 +384,7 @@ fitFfmDT <- function(ffMSpecObj,
   d_ <- eval(ffMSpecObj$date.var)
   
   # SET UP of FORMULAS ----
-  # determine factor model formula to be passed to lm or lmRob
+  # determine factor model formula to be passed to lm or lmrobdetMM
   fm.formula <- paste(ffMSpecObj$yVar, "~", paste(ffMSpecObj$exposure.vars, collapse="+"))
   
   
@@ -463,7 +463,7 @@ fitFfmDT <- function(ffMSpecObj,
   # Perform Regressions ---- 
   
   # estimate factor returns using LS or Robust regression ---- 
-  # returns a list of the fitted lm or lmRob objects for each time period
+  # returns a list of the fitted lm or lmrobdetMM objects for each time period
   if (grepl("LS",fit.method)) {
     
     reg.listDT <- betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]), 
@@ -473,10 +473,10 @@ fitFfmDT <- function(ffMSpecObj,
   }else if (grepl("ROB",fit.method)) {
     
     reg.listDT <- betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
-                                           reg.list = .(lmRob(formula = fm.formula, 
+                                           reg.list = .(lmrobdetMM(formula = fm.formula, 
                                                               data = toRegress[[1]], 
-                                                              mxr=200, mxf=200, mxs=200,
-                                                              na.action=na.fail))), by = d_]
+                                                              na.action=na.fail,
+															  control = lmrobdet.control()))), by = d_]
     
     
   }
@@ -490,7 +490,7 @@ fitFfmDT <- function(ffMSpecObj,
                                                           SecondStepRegression = SecondStepRegression, resid.scaleType = resid.scaleType,
                                                           lambda = lambda, GARCH.params = GARCH.params, GARCH.MLE = GARCH.MLE)
     # estimate factor returns using WLS or weighted-Robust regression
-    # returns a list of the fitted lm or lmRob objects for each time period
+    # returns a list of the fitted lm or lmrobdetMM objects for each time period
     # w <- SecondStepRegression[, c(d_, a_, "W"), with = F] # needed for the residual variances
     # w$W <- 1/w$W
     if (fit.method=="WLS") {
@@ -500,8 +500,12 @@ fitFfmDT <- function(ffMSpecObj,
       
     } else if (fit.method=="W-Rob") {
       reg.listDT <- SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
-                                          .(reg.list = .(lmRob(formula = fm.formula, data = .SD, weights = W,
-                                                               na.action=na.fail, mxr=200, mxf=200, mxs=200)))
+                                          .(reg.list = .(lmrobdetMM(
+																  formula = fm.formula, 
+																  data = .SD, 
+																  weights = W,
+																  na.action=na.fail, 
+																  control = lmrobdet.control())))
                                           , by = d_]
       
       
