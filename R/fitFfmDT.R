@@ -367,7 +367,7 @@ fitFfmDT <- function(ffMSpecObj,
                      fit.method=c("LS","WLS","Rob","W-Rob"),
                      resid.scaleType = c("StdDev","EWMA","RobustEWMA", "GARCH"),
                      lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
-                     GARCH.MLE = FALSE, ...){
+                     GARCH.MLE = FALSE, lmrobdet.control.para.list = lmrobdet.control(), ...){
   
   
   fit.method = toupper(fit.method[1])
@@ -472,11 +472,13 @@ fitFfmDT <- function(ffMSpecObj,
     
   }else if (grepl("ROB",fit.method)) {
     
+	   
+	  
     reg.listDT <- betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
                                            reg.list = .(lmrobdetMM(formula = fm.formula, 
                                                               data = toRegress[[1]], 
                                                               na.action=na.fail,
-															  control = lmrobdet.control()))), by = d_]
+															  control =  lmrobdet.control.para.list))), by = d_]
     
     
   }
@@ -505,7 +507,7 @@ fitFfmDT <- function(ffMSpecObj,
 																  data = .SD, 
 																  weights = W,
 																  na.action=na.fail, 
-																  control = lmrobdet.control())))
+																  control =  lmrobdet.control.para.list)))
                                           , by = d_]
       
       
