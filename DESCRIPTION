@@ -38,10 +38,10 @@ Imports:
     bestglm,
     tseries,
     data.table,
-	  HH,
-	  reshape2,
-	  rugarch,
-	  RobStatTM
+	HH,
+	reshape2,
+	rugarch,
+	RobStatTM
 Remotes:
 	bitbucket::alexiosg/rugarch
 Suggests:

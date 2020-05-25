@@ -468,7 +468,7 @@ fitFfmDT <- function(ffMSpecObj,
     
     reg.listDT <- betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]), 
                                            reg.list = .(lm(formula = fm.formula, data = toRegress[[1]], 
-                                                           na.action=na.fail))), by = d_]
+                                                           na.action=na.omit))), by = d_]
     
   }else if (grepl("ROB",fit.method)) {
     
@@ -477,7 +477,7 @@ fitFfmDT <- function(ffMSpecObj,
     reg.listDT <- betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
                                            reg.list = .(lmrobdetMM(formula = fm.formula, 
                                                               data = toRegress[[1]], 
-                                                              na.action=na.fail,
+                                                              na.action = na.omit,
 															  control =  lmrobdet.control.para.list))), by = d_]
     
     
@@ -497,7 +497,7 @@ fitFfmDT <- function(ffMSpecObj,
     # w$W <- 1/w$W
     if (fit.method=="WLS") {
       reg.listDT <- SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
-                                          .(reg.list = .(lm(formula = fm.formula, data = .SD, weights = W, na.action=na.fail)))
+                                          .(reg.list = .(lm(formula = fm.formula, data = .SD, weights = W, na.action = na.omit)))
                                           , by = d_]
       
     } else if (fit.method=="W-Rob") {
@@ -506,7 +506,7 @@ fitFfmDT <- function(ffMSpecObj,
 																  formula = fm.formula, 
 																  data = .SD, 
 																  weights = W,
-																  na.action=na.fail, 
+																  na.action = na.omit, 
 																  control =  lmrobdet.control.para.list)))
                                           , by = d_]
       
@@ -600,7 +600,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     
     if (full.resid.cov) {
       resid.cov <- covClassic(coredata(residuals1), distance=FALSE, 
-                              na.action=na.omit)$cov
+                              na.action = na.omit)$cov
     } else {
       resid.cov <- diag(resid.var)
     }
@@ -730,15 +730,15 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   if (specObj$rob.stats) {
     if (kappa(na.exclude(coredata(factor.returns))) < 1e+10) {
       factor.cov <- covRob(coredata(factor.returns), estim="pairwiseGK", 
-                           distance=FALSE, na.action=na.omit)$cov
+                           distance=FALSE, na.action = na.omit)$cov
     } else {
       cat("Covariance matrix of factor returns is singular.\n")
       factor.cov <- covRob(coredata(factor.returns), distance=FALSE, 
-                           na.action=na.omit)$cov
+                           na.action = na.omit)$cov
     }
   } else {
     factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
-                             na.action=na.omit)$cov
+                             na.action = na.omit)$cov
   }
   
     # return Covariance ----

@@ -149,3 +149,100 @@ NULL
 #' @source TBA
 #' @usage data("riskFreeRate")
 NULL
+
+
+
+#' @name stocksCRSP
+#' @title CRSP stocks data
+#' @description stocksCRSP
+#' @docType data
+#' @source TBA
+#' @usage data("stocksCRSP")
+NULL
+
+#' @name stocksCRSPscoresSPGMI
+#' @title cleaned SPGMI and CRSP data
+#' @description cleaned 300 stocks' 12 factor scores that merged with CRSP data
+#' @docType data
+#' @source TBA
+#' @usage data("stocksCRSPscoresSPGMI")
+NULL
+
+#' @name stocksCRSPscoresSPGMIraw
+#' @title raw SPGMI and CRSP data
+#' @description raw 300 stocks' 12 factor scores that merged with CRSP data
+#' @docType data
+#' @source TBA
+#' @usage data("stocksCRSPscoresSPGMIraw")
+NULL
+
+#' @name scoresSPGMI
+#' @title cleaned SPGMI data
+#' @description cleaned 300 stocks' 12 factor scores data
+#' @docType data
+#' @source TBA
+#' @usage data("scoresSPGMI")
+NULL
+
+#' @name scoresSPGMIraw
+#' @title raw SPGMI data
+#' @description raw 300 stocks' 12 factor scores data
+#' @docType data
+#' @source TBA
+#' @usage data("scoresSPGMIraw")
+NULL
+
+#' @name scoresSPGMIraw
+#' @title raw SPGMI data
+#' @description raw 300 stocks' 12 factor scores data
+#' @docType data
+#' @source TBA
+#' @usage data("scoresSPGMIraw")
+NULL
+
+
+#' @name stocksWithFactorsData300
+#' @title 300 stocks with factors
+#' @description the dataset has been replaced with stocksCRSPscoresSPGM
+#' @docType data
+#' @source TBA
+#' @usage data("stocksWithFactorsData300")
+NULL
+
+#' @name stocksWithFactorsData300_old
+#' @title 300 stocks with factors
+#' @description the dataset has been replaced with stocksCRSPscoresSPGM
+#' @docType data
+#' @source TBA
+#' @usage data("stocksWithFactorsData300_old")
+NULL
+
+
+#' @name spxAnnual
+#' @title S&P 500 annual return 
+#' @description S&P 500 annual return, with year end price and totla return
+#' @docType data
+#' @source TBA
+#' @usage data("spxAnnual")
+NULL
+
+#' @name brkAnnual
+#' @title Berkshire Hathaway annual return 
+#' @description Berkshire Hathaway annual return, with year end price and totla return
+#' @docType data
+#' @source TBA
+#' @usage data("brkAnnual")
+NULL
+
+#' @name brkMonthlyBloomberg
+#' @title Berkshire Hathaway montly return 
+#' @description Berkshire Hathaway montly return
+#' @docType data
+#' @source Bloomberg
+#' @usage data("brkMonthlyBloomberg")
+NULL
+
+
+
+
+
