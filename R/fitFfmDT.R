@@ -1,5 +1,5 @@
 
-#' @title Specifies the elements of a fundamental factor model 
+#' @title Specifies the elements of a fundamental factor model
 #'
 #' @description Factor models have a few parameters that describe how the fitting is 
 #' done.  This function summarizes them and returns a spec object for 

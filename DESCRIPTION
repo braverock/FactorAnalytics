@@ -1,7 +1,7 @@
 Package: FactorAnalytics
 Type: Package
 Title: Factor Analytics
-Version: 2.0.35
+Version: 2.0.36
 Date: 2018-11-08
 Author: Eric Zivot, Doug Martin, Sangeetha Srinivasan, Avinash Acharya, Yi-An Chen, Mido Shammaa, and Lingjie Yi 
 Maintainer: Mahmoud Shammaa <mahmoud.shammaa@gmail.com>
