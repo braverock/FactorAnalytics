@@ -220,7 +220,7 @@ NULL
 
 #' @name spxAnnual
 #' @title S&P 500 annual return 
-#' @description S&P 500 annual return, with year end price and totla return
+#' @description S&P 500 annual return, with year end price and total return
 #' @docType data
 #' @source TBA
 #' @usage data("spxAnnual")
@@ -228,7 +228,7 @@ NULL
 
 #' @name brkAnnual
 #' @title Berkshire Hathaway annual return 
-#' @description Berkshire Hathaway annual return, with year end price and totla return
+#' @description Berkshire Hathaway annual return, with year end price and total return
 #' @docType data
 #' @source TBA
 #' @usage data("brkAnnual")
