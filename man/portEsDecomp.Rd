@@ -8,12 +8,25 @@
 \usage{
 portEsDecomp(object, ...)
 
-\method{portEsDecomp}{tsfm}(object, weights = NULL, p = 0.05,
-  type = c("np", "normal"), invert = FALSE,
-  use = "pairwise.complete.obs", ...)
+\method{portEsDecomp}{tsfm}(
+  object,
+  weights = NULL,
+  p = 0.05,
+  type = c("np", "normal"),
+  invert = FALSE,
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{portEsDecomp}{ffm}(object, weights = NULL, factor.cov,
-  p = 0.05, type = c("np", "normal"), invert = FALSE, ...)
+\method{portEsDecomp}{ffm}(
+  object,
+  weights = NULL,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  invert = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}

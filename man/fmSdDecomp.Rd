@@ -9,11 +9,9 @@
 \usage{
 fmSdDecomp(object, ...)
 
-\method{fmSdDecomp}{tsfm}(object, factor.cov,
-  use = "pairwise.complete.obs", ...)
+\method{fmSdDecomp}{tsfm}(object, factor.cov, use = "pairwise.complete.obs", ...)
 
-\method{fmSdDecomp}{sfm}(object, factor.cov,
-  use = "pairwise.complete.obs", ...)
+\method{fmSdDecomp}{sfm}(object, factor.cov, use = "pairwise.complete.obs", ...)
 
 \method{fmSdDecomp}{ffm}(object, factor.cov, ...)
 }

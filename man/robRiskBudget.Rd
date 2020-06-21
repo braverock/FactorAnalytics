@@ -4,12 +4,26 @@
 \alias{robRiskBudget}
 \title{Simple and Robust Risk Budgeting with Expected Shortfall}
 \usage{
-robRiskBudget(returns = NULL, rf = 0, ER = NULL, IR = NULL,
-  TE = NULL, corMat = NULL, ES = NULL, ESMethod = c("modified",
-  "gaussian", "historical"), corMatMethod = c("auto", "mcd",
-  "pairwiseQC", "pairwiseGK"), targetVol = 0.02, shrink = FALSE,
-  avgCor = FALSE, p = 0.95, lower = 0, upper = 1, K = 100,
-  maxit = 50, tol = 1e-05)
+robRiskBudget(
+  returns = NULL,
+  rf = 0,
+  ER = NULL,
+  IR = NULL,
+  TE = NULL,
+  corMat = NULL,
+  ES = NULL,
+  ESMethod = c("modified", "gaussian", "historical"),
+  corMatMethod = c("auto", "mcd", "pairwiseQC", "pairwiseGK"),
+  targetVol = 0.02,
+  shrink = FALSE,
+  avgCor = FALSE,
+  p = 0.95,
+  lower = 0,
+  upper = 1,
+  K = 100,
+  maxit = 50,
+  tol = 1e-05
+)
 }
 \arguments{
 \item{returns}{A matrix with a time series of returns for each asset / strategy}

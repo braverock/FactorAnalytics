@@ -4,8 +4,17 @@
 \alias{vif}
 \title{Factor Model Variance Inflaction Factor Values}
 \usage{
-vif(ffmObj, digits = 2, isPrint = T, isPlot = T, lwd = 2,
-  stripText.cex = 1, axis.cex = 1, title = TRUE, ...)
+vif(
+  ffmObj,
+  digits = 2,
+  isPrint = T,
+  isPlot = T,
+  lwd = 2,
+  stripText.cex = 1,
+  axis.cex = 1,
+  title = TRUE,
+  ...
+)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
