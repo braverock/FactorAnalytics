@@ -473,14 +473,20 @@ fitFfmDT <- function(ffMSpecObj,
   }else if (grepl("ROB",fit.method)) {
     
 	   
-	  
+	tryCatch(
     reg.listDT <- betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
                                            reg.list = .(lmrobdetMM(formula = fm.formula, 
                                                               data = toRegress[[1]], 
                                                               na.action = na.omit,
-															  control =  lmrobdet.control.para.list))), by = d_]
-    
-    
+															  control =  lmrobdet.control.para.list))), by = d_], 
+							  error = function(e) {
+								  message(" lmrobdetMM failed with error: ",e, "revert to lmrob")},
+							  finally = 
+				  betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
+								  reg.list = .(lmrob(formula = fm.formula, 
+												  data = toRegress[[1]], 
+												  mxr=200, mxf=200, mxs=200,
+												  na.action=na.fail))), by = d_])
   }
   # second pass weighted regressions ----
   if (grepl("W",fit.method)) {
@@ -501,14 +507,30 @@ fitFfmDT <- function(ffMSpecObj,
                                           , by = d_]
       
     } else if (fit.method=="W-Rob") {
-      reg.listDT <- SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
+		
+
+      reg.listDT <- 
+			  
+			  tryCatch(
+					  SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
                                           .(reg.list = .(lmrobdetMM(
 																  formula = fm.formula, 
 																  data = .SD, 
 																  weights = W,
 																  na.action = na.omit, 
 																  control =  lmrobdet.control.para.list)))
-                                          , by = d_]
+                                          , by = d_],
+								  error = function(e) {
+									  message(" lmrobdetMM failed with error: ",e, "revert to lmrob")},
+								  finally =  SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
+										  .(reg.list = .(lmrob(
+																  formula = fm.formula, 
+																  data = .SD, 
+																  weights = W,
+																  na.action = na.omit, 
+																  mxr=200, 
+																  mxf=200, 
+																  mxs=200)))									  , by = d_])
       
       
     }
