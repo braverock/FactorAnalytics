@@ -359,7 +359,7 @@ standardizeReturns <- function(specObj, GARCH.params = list(omega = 0.09, alpha 
 #' \item{DATE}{length-T vector of dates.}
 #' \item{R_matrix}{The K+1 by K restriction matrix where K is the number of categorical variables for each date.}
 #' 
-#' @importFrom robust lmrobdetMM 
+#' @importFrom RobStatTM lmrobdetMM 
 #' @import data.table
 #' @export
 #' 
@@ -480,10 +480,10 @@ fitFfmDT <- function(ffMSpecObj,
                                                               na.action = na.omit,
 															  control =  lmrobdet.control.para.list))), by = d_], 
 							  error = function(e) {
-								  message(" lmrobdetMM failed with error: ",e, "revert to lmrob")},
+								  message(" lmrobdetMM failed with error: ",e, "revert to lmRob")},
 							  finally = 
 				  betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
-								  reg.list = .(lmrob(formula = fm.formula, 
+								  reg.list = .(lmRob(formula = fm.formula, 
 												  data = toRegress[[1]], 
 												  mxr=200, mxf=200, mxs=200,
 												  na.action=na.fail))), by = d_])
@@ -521,9 +521,9 @@ fitFfmDT <- function(ffMSpecObj,
 																  control =  lmrobdet.control.para.list)))
                                           , by = d_],
 								  error = function(e) {
-									  message(" lmrobdetMM failed with error: ",e, "revert to lmrob")},
+									  message(" lmrobdetMM failed with error: ",e, "revert to lmRob")},
 								  finally =  SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
-										  .(reg.list = .(lmrob(
+										  .(reg.list = .(lmRob(
 																  formula = fm.formula, 
 																  data = .SD, 
 																  weights = W,

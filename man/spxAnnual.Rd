@@ -11,5 +11,5 @@ TBA
 data("spxAnnual")
 }
 \description{
-S&P 500 annual return, with year end price and totla return
+S&P 500 annual return, with year end price and total return
 }

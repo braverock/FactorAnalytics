@@ -11,5 +11,5 @@ TBA
 data("brkAnnual")
 }
 \description{
-Berkshire Hathaway annual return, with year end price and totla return
+Berkshire Hathaway annual return, with year end price and total return
 }
