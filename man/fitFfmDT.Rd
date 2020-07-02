@@ -45,5 +45,5 @@ components:
 \item{R_matrix}{The K+1 by K restriction matrix where K is the number of categorical variables for each date.}
 }
 \description{
-This funciton fits a fundamental factor model
+This function fits a fundamental factor model
 }

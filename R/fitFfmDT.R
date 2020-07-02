@@ -337,7 +337,7 @@ standardizeReturns <- function(specObj, GARCH.params = list(omega = 0.09, alpha 
 
 #'
 #' @title fitFfmDT
-#' @description This funciton fits a fundamental factor model 
+#' @description This function fits a fundamental factor model 
 #' @param ffMSpecObj a specFFm object
 #' @param fit.method method for estimating factor returns; one of "LS", "WLS" 
 #' "ROB" or "W-ROB". See details. Default is "LS".
