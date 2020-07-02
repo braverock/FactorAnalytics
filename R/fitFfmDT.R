@@ -473,20 +473,11 @@ fitFfmDT <- function(ffMSpecObj,
   }else if (grepl("ROB",fit.method)) {
     
 	   
-	tryCatch(
     reg.listDT <- betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
                                            reg.list = .(lmrobdetMM(formula = fm.formula, 
                                                               data = toRegress[[1]], 
                                                               na.action = na.omit,
-															  control =  lmrobdet.control.para.list))), by = d_], 
-							  error = function(e) {
-								  message(" lmrobdetMM failed with error: ",e, "revert to lmRob")},
-							  finally = 
-				  betasDT[which(!idxNA), .(id = .(toRegress[[1]][[a_]]),
-								  reg.list = .(lmRob(formula = fm.formula, 
-												  data = toRegress[[1]], 
-												  mxr=200, mxf=200, mxs=200,
-												  na.action=na.fail))), by = d_])
+															  control =  lmrobdet.control.para.list))), by = d_]
   }
   # second pass weighted regressions ----
   if (grepl("W",fit.method)) {
@@ -510,8 +501,6 @@ fitFfmDT <- function(ffMSpecObj,
 		
 
       reg.listDT <- 
-			  
-			  tryCatch(
 					  SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
                                           .(reg.list = .(lmrobdetMM(
 																  formula = fm.formula, 
@@ -519,19 +508,7 @@ fitFfmDT <- function(ffMSpecObj,
 																  weights = W,
 																  na.action = na.omit, 
 																  control =  lmrobdet.control.para.list)))
-                                          , by = d_],
-								  error = function(e) {
-									  message(" lmrobdetMM failed with error: ",e, "revert to lmRob")},
-								  finally =  SecondStepRegression[ complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]) ,
-										  .(reg.list = .(lmRob(
-																  formula = fm.formula, 
-																  data = .SD, 
-																  weights = W,
-																  na.action = na.omit, 
-																  mxr=200, 
-																  mxf=200, 
-																  mxs=200)))									  , by = d_])
-      
+                                          , by = d_]
       
     }
     assetInfo <- SecondStepRegression[complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]),
