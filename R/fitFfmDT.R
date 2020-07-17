@@ -981,7 +981,7 @@ convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj) {
   ffmObj$data <- copy(SpecObj$dataDT)
   setkeyv(ffmObj$data, c(SpecObj$date.var, SpecObj$asset.var))  # to match the order
   # expected in reporting functions
-  
+  ffmObj$data = data.frame(ffmObj$data)
   
   # fit
   ffmObj$time.periods <- time.periods
