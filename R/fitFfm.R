@@ -562,7 +562,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         factor.cov <- covRob(coredata(factor.returns), distance=FALSE, 
                              na.action=na.omit)$cov
       }
-      resid.var <- apply(coredata(residuals), 2, scaleTau2, na.rm=T)^2
+      resid.var <- apply(coredata(residuals), 2, scaleTau2)^2
       if (full.resid.cov) {
         resid.cov <- covOGK(coredata(residuals), sigmamu=scaleTau2, n.iter=1)$cov
       } else {

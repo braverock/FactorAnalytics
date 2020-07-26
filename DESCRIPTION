@@ -15,7 +15,7 @@ License: GPL-2
 Depends:
     R (>= 3.0.0),
     foreach (>= 1.4),
-	  xts (>= 0.9),
+	xts (>= 0.9),
     rrcov (>= 1.3)
 Imports:
     PerformanceAnalytics(>= 1.4),

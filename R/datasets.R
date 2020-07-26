@@ -243,6 +243,13 @@ NULL
 NULL
 
 
-
+#' @name managers
+#' @title Hypothetical Alternative Asset Manager and Benchmark Data
+#' @description This dataset and it's documentation have been duplicated from  \link[PerformanceAnalytics]{managers}} in the \code{PerformanceAnalytics} package. \code{managers} is used in the examples and vignette of the \code{factorAnalytics} package. 
+#' A xts object that contains columns of monthly returns for six hypothetical asset managers (HAM1 through HAM6), the EDHEC Long-Short Equity hedge fund index, the S\&P 500 total returns, and total return series for the US Treasury 10-year bond and 3-month bill. Monthly returns for all series end in December 2006 and begin at different periods starting from January 1996. Note that all the EDHEC indices are available in \code{\link{edhec}}.
+#' @docType data
+#' @source TBA
+#' @usage data("managers")
+NULL
 
 

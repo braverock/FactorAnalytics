@@ -535,7 +535,7 @@ fitFfmDT <- function(ffMSpecObj,
 #' @param fitResults output from fitFMDT
 #' @param full.resid.cov an option to calculate the full residual covariance or not
 #' @return a structure of class ffm holding all the information
-#' @import data.table
+#' @import data.table robust
 #' @export
 #' 
 extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
@@ -588,7 +588,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   # residual covariances----
   if (specObj$rob.stats) {
     
-    resid.var <- apply(coredata(residuals1), 2, scaleTau2, na.rm=T)^2
+    resid.var <- apply(coredata(residuals1), 2, scaleTau2)^2
     if (full.resid.cov) {
       resid.cov <- covOGK(coredata(residuals1), sigmamu=scaleTau2, n.iter=1)$cov
     } else {
@@ -768,6 +768,10 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 }
 
 
+
+
+#' @title calcFLAM
+#' @description function to calculate fundamental law of active management
 #' @param analysis method used in the analysis of fundamental law of active management; one of "none", "ISM", 
 #' or "NEW". Default is "none".
 #' @param targetedVol numeric; the targeted portfolio volatility in the analysis. Default is 0.06.
@@ -957,6 +961,14 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
 
 # S3 methods ----
 # function to convert to current class # mido to change to retroFit
+
+
+#' Function to convert to current class # mido to change to retroFit
+#'
+#' @param SpecObj an object as the output from specFfm function
+#' @param FitObj an object as the output from fitFfmDT function 
+#' @param RegStatsObj an object as the output from extractRegressionStats function 
+#' @export convert.ffmSpec
 convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj) {
   
   asset.names <- unique(SpecObj$dataDT[[SpecObj$asset.var]])
