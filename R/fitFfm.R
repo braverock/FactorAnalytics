@@ -178,7 +178,7 @@
 #'  
 #'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
 #'                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
-#' 
+#' @import robust
 #' @export
 
 
@@ -676,7 +676,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       for(i in exposures.char)
       {
         data[, i] <- as.factor(data[,i])
-        if (grepl("SECTOR",i)) 
+        if (grepl("SECTOR",toupper(i))) 
           formula.ind = as.formula(paste(ret.var, "~", i, "-1"))
         else formula.cty = as.formula(paste(ret.var, "~", i, "-1"))
       }
@@ -785,18 +785,34 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
             
           }
         }
-        data<- cbind(data, W = 1/as.numeric(w))
+        data$W =  1/as.numeric(w)
       }
       else
       {
-        data <- cbind(data, W=1/resid.var)
+		data$W =  1/as.numeric(resid.var)
       }
       
       reg.list <- by(data=data, INDICES=data[[date.var]], 
                      FUN=function(x) {lm(data=x, formula=fmMSCI.formula, weights = W,
                                          na.action=na.fail)})
     }
-    
+
+	
+	datai = data[data$Date=="2020-04-30",]
+#	
+
+save(datai,file='datai.RData')
+save(B.mod,file="Bmod.RData")
+	lm(data=datai, formula='securityReturn ~ B.mod + -1', weights = W,
+			na.action=na.fail)
+
+	
+	
+	
+	
+	#	
+	
+	
     reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) =  paste("g", seq(1:length(reg.list[[x]]$coefficients)), sep = "");reg.list[[x]]})
     names(reg.list) = as.character(unique(data[[date.var]]))
     g = sapply(reg.list, function(x) coef(x))
