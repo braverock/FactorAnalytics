@@ -840,7 +840,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       beta.combine = cbind(beta.mic, beta.style)
     }else 
       beta.combine = beta.mic
-    colnames(beta.combine) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta.combine))
+    colnames(beta.combine) = gsub(paste(exposures.char,collapse="|"), "", colnames(beta.combine))
     beta.combine = beta.combine[, factor.names]
     return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:K] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:K]) + resid.cov
     #Exposure matrix 
