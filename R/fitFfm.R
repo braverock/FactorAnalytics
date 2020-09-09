@@ -290,8 +290,15 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
   if ((length(exposures.char) >1) && !addIntercept) {
-    stop("Invalid args: Sector + Country model without Market(Interecept) is currenlty not handled")
+    stop("Invalid args: two categorical factor model without Market(Interecept) is currenlty not handled")
   }
+  
+  if (length(exposures.char) > 2)
+  {
+	  stop("Invalid args: currently only support two or less categorical factors")
+	    
+  }
+  
   if (length(exposures.char) > 1)
   { #Model has both Sector and Country along wit Intercept
     model.MSCI = TRUE
