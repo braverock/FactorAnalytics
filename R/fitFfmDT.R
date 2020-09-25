@@ -469,16 +469,13 @@ fitFfmDT <- function(ffMSpecObj,
     if (length(ffMSpecObj$exposures.char)) {
       fm.formula <- paste(fm.formula, "- 1")
       ffMSpecObj$dataDT[ ,  (ffMSpecObj$exposures.char) := lapply(.SD, as.factor), .SDcols = ffMSpecObj$exposures.char]
-      for(i in ffMSpecObj$exposures.char)
-      {
-        if (grepl("SECTOR",i)){
-          formula.ind = as.formula(paste(ffMSpecObj$yVar, "~", i, "-1"))
-        }
 
-        else{
-          formula.cty = as.formula(paste(ffMSpecObj$yVar, "~", i, "-1"))
-        }
-      }
+	  formulaL = list()
+	  
+	  for(i in ffMSpecObj$exposures.char)
+	  {
+		  formulaL[[i]] = as.formula(paste(ffMSpecObj$yVar, "~", i, "-1"))
+	  }
     }
 
     # convert the pasted expression into a formula object
@@ -490,16 +487,16 @@ fitFfmDT <- function(ffMSpecObj,
     ffMSpecObj$dataDT <- ffMSpecObj$dataDT[complete.cases(ffMSpecObj$dataDT[, .SD, .SDcols = sdcols])]
     betasDT <- ffMSpecObj$dataDT[, .(toRegress = .(.SD),
                                      beta = .(model.matrix(fm.formula, .SD)),
-                                     beta.ind = .(model.matrix(formula.ind, .SD)),
-                                     beta.cty = .(model.matrix(formula.cty, .SD))),
+                                     beta1 = .(model.matrix(formulaL[[1]], .SD)),
+                                     beta2 = .(model.matrix(formulaL[[2]], .SD))),
                                  .SDcols = sdcols, by = d_]
-    betasDT[ , beta.mic := .(.(cbind("Market" = rep(1, nrow(beta.ind[[1]])), beta.ind[[1]], beta.cty[[1]]))), by = d_]
+    betasDT[ , beta.mic := .(.(cbind("Market" = rep(1, nrow(beta1[[1]])), beta1[[1]], beta2[[1]]))), by = d_]
 # for now we are skipping over adding a style... lines 692/693
 
 
-    betasDT[, K1 := .(dim(beta.ind[[1]])[2]), by = d_]
+    betasDT[, K1 := .(dim(beta1[[1]])[2]), by = d_]
 
-    betasDT[, K2 := .(dim(beta.cty[[1]])[2]), by = d_]
+    betasDT[, K2 := .(dim(beta2[[1]])[2]), by = d_]
 
     # we need to create a restriction matrix
     #Define Restriction matrix

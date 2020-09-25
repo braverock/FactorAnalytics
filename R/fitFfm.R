@@ -744,7 +744,6 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     #Find weights for WLS regression
     if (grepl("W",fit.method)) {
 		
-		
 		# check the data to make sure at least 2 assets for each factor combination
 		freq = eval(parse(text=paste0('data.table(data)[,list(nAsset=length(unique(get(asset.var)))),by=list(',paste(exposures.char,collapse=","),')]')))		
 		
