@@ -22,7 +22,6 @@ Imports:
     zoo,
     corrplot,
     robustbase,
-    robust,
     leaps,
     lars,
     strucchange,
@@ -42,8 +41,6 @@ Imports:
 	reshape2,
 	rugarch,
 	RobStatTM
-Remotes:
-	bitbucket::alexiosg/rugarch
 Suggests:
     testthat
 LazyLoad: yes
