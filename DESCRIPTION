@@ -1,4 +1,4 @@
-Package: FactorAnalytics
+Package: FactoAnalytics
 Type: Package
 Title: Factor Analytics
 Version: 2.0.40
@@ -9,8 +9,15 @@ Description: Linear factor model fitting for asset returns (three major types-
     time series, fundamental and statistical factor models); related risk
     (volatility, VaR and ES) and performance attribution (factor-contributed vs
     idiosyncratic returns); tabular displays of risk and performance reports;
-    factor model Monte Carlo, single and multiple imputation methods for simulating returns and backfilling unequal histories.
-	S&P GLOBAL MARKET INTELLIGENCE has kindly provided firm fundamentals data referred to as scores or alpha factors for educational use in the open source factorAnalytics R package. The data is contained in the R dataframe object factorDataSPGMI	consisting of the following cross-section of scores for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M, Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style,	LogMktCap, PM12M1M, ROE. This data greatly facilitates the educational value to users of the fundamental factor model in factorAnalytics. The package developers wish to thank S&P Global Market Intelligence for contributing this data to the factorAnalytics package.
+    factor model Monte Carlo, single and multiple imputation methods for simulating 
+    returns and backfilling unequal histories.
+  	S&P GLOBAL MARKET INTELLIGENCE has kindly provided firm fundamentals data 
+  	referred to as scores or alpha factors for educational use in the open source 
+  	FactoAnalytics R package. The data is contained in the R dataframe object 
+  	factorDataSPGMI	consisting of the following cross-section of scores for 
+  	approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M, Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style,	LogMktCap, PM12M1M, ROE. 
+  	This data greatly facilitates the educational value to users of the fundamental factor model in FactoAnalytics. 
+  	The package developers wish to thank S&P Global Market Intelligence for contributing this data to the FactoAnalytics package.
 License: GPL-2
 Depends:
     R (>= 3.0.0),
@@ -45,5 +52,5 @@ Suggests:
     testthat
 LazyLoad: yes
 LazyDataCompression: xz
-URL: http://r-forge.r-project.org/projects/returnanalytics/
+URL: https://github.com/braverock/FactorAnalytics
 RoxygenNote: 7.1.0
