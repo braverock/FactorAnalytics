@@ -3,7 +3,7 @@ require(testthat)
 test_that("fitTsfm is as expected", {
   
   fpath <- system.file("extdata", "timeSeriesReturns.csv", 
-                       package="factorAnalytics")
+                       package="FactorAnalytics")
   returns.z <- read.zoo(file=fpath, header=TRUE, sep=",", as.is=TRUE,
                         FUN=as.yearmon)
   returns.z <- window(returns.z, start="2008-01-01", end="2012-12-31")  

@@ -54,7 +54,7 @@ Calculate and plot the Factor Model Variance Inflaction Factor Values for a fitt
  data("factorDataSetDjia5Yrs")
 
 #Fit a Ffm
-require(factorAnalytics)
+require(FactorAnalytics)
  fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"))
 

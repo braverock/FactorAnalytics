@@ -4,7 +4,7 @@
 \alias{.fmmc.default.args}
 \title{Functions to compute estimates and thier standard errors using fmmc
 
-Control default arguments. Usually for factorAnalytics.}
+Control default arguments. Usually for FactorAnalytics.}
 \usage{
 .fmmc.default.args(...)
 }
@@ -14,7 +14,7 @@ Control default arguments. Usually for factorAnalytics.}
 \description{
 Functions to compute estimates and thier standard errors using fmmc
 
-Control default arguments. Usually for factorAnalytics.
+Control default arguments. Usually for FactorAnalytics.
 }
 \details{
 This method takes in the additional arguments list and checks if parameters
@@ -22,5 +22,5 @@ are set. Then it defaults values if they are unset. Currently it controls the
 fit.method(default: OLS) and variable.selection(default: subsets). If 
 variable.selection is set to values other than subsets/none then it will
 default to subsets. 
-arguments for factorAnalytics
+arguments for FactorAnalytics
 }

@@ -11,7 +11,7 @@
 
 \item{factors}{matrix of factor returns}
 
-\item{...}{allows passing paramters to factorAnalytics.}
+\item{...}{allows passing paramters to FactorAnalytics.}
 }
 \description{
 Worker function that acts between the fmmc procedure and calling method.

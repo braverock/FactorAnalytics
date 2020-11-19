@@ -63,7 +63,7 @@ Calcluate and plot the Factor Model R-Squared, Adjusted R-Squared for a portfoli
  data("factorDataSetDjia5Yrs")
 
 #Fit a Ffm
-require(factorAnalytics)
+require(FactorAnalytics)
  fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
               date.var="DATE", exposure.vars="SECTOR")
 
