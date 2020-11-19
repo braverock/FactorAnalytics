@@ -19,7 +19,7 @@
 #' are not covered by the GPL.  Use of the data in derivative works is not
 #' permitted without the express written permission of CRSP.
 #'
-#' The package developers with to thank S&P Global Markets and the Center for
+#' The package developers wish to thank S&P Global Markets and the Center for
 #' Research in Security Prices for the generous inclusion of this data in
 #' FactorAnalytics. This data greatly facilitates the research and educational
 #' purpose of FactorAnalytics and allows users of the package to work with a
