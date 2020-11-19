@@ -1,12 +1,13 @@
 #' @name FactorAnalytics-package
 #' @aliases FactorAnalytics-package FactorAnalytics
 #'
-#' @description The FactosAnalytics package contains Linear factor model fitting
-#' for asset returns (three major types: time series, fundamental and statistical
-#' factor models); related risk (volatility, VaR and ES) and performance
-#' attribution (factor-contributed vs idiosyncratic returns); tabular displays
-#' of risk and performance reports; factor model Monte Carlo, single and multiple
-#' imputation methods for simulating returns and backfilling unequal histories.
+#' @description The FactorAnalytics package contains fitting and analysis
+#' methods for the three main types of factor models used in conjunction with
+#' portfolio construction, optimization and risk management, namely
+#' fundamental factor models, time series factor models and statistical factor
+#' models. The purpose of this project is to add key improvements to the
+#' package that will make it its basic features and capabilities close to
+#' those of commercial portfolio optimization and risk management products.
 #'
 #' @section CRSP data included in FactorAnalytics
 #'
@@ -24,6 +25,22 @@
 #' purpose of FactorAnalytics and allows users of the package to work with a
 #' large dataset that while not independently economically meaningful, is still
 #' large enough to demonstrate model construction of real models.
+#'
+#' @section Fundamental Factor Scores from S&P Global Market Intelligence
+#'
+#' S&P Global Market Intelligence has kindly provided firm fundamentals data
+#' referred to as “scores” or “alpha factors” for educational use in the open
+#' source FactorAnalytics R package. The data is contained in the R data frame
+#' object “factorDataSPGMI” consisting of the following cross-section of scores
+#' for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
+#' Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
+#' This data greatly facilitates the educational value to users of the
+#' fundamental factor model in FactorAnalytics. The package developers wish to
+#' thank S&P Global Market Intelligence for contributing this data to the
+#' FactorAnalytics package. The S&P-contributed datasets are not covered by the
+#' GPL.  Use of the data in derivative works is not permitted without the express
+#' written permission of Standard and Poor Global Markets.
+#'
 #' @docType package
 NULL
 
