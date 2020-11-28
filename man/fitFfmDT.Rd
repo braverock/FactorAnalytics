@@ -18,7 +18,7 @@ fitFfmDT(
 \arguments{
 \item{ffMSpecObj}{a specFFm object}
 
-\item{fit.method}{method for estimating factor returns; one of "LS", "WLS" 
+\item{fit.method}{method for estimating factor returns; one of "LS", "WLS"
 "ROB" or "W-ROB". See details. Default is "LS".}
 
 \item{resid.scaleType}{one of 4 choices "StdDev","EWMA","RobustEWMA", "GARCH"}
@@ -31,15 +31,15 @@ fitFfmDT(
 }
 \value{
 \code{fitFfm} returns a list with two object of class \code{"data.table"}
-The first reg.listDT is object of class \code{"data.table"} is a list containing the following 
+The first reg.listDT is object of class \code{"data.table"} is a list containing the following
 components:
 \item{DATE}{length-T vector of dates.}
 \item{id}{length-N vector of asset id's for each date.}
-\item{reg.list}{list of fitted objects that estimate factor returns in each 
-time period. Each fitted object is of class \code{lm} if 
-\code{fit.method="LS" or "WLS"}, or, class \code{lmrobdetMM} if 
+\item{reg.list}{list of fitted objects that estimate factor returns in each
+time period. Each fitted object is of class \code{lm} if
+\code{fit.method="LS" or "WLS"}, or, class \code{lmrobdetMM} if
 \code{fit.method="Rob" or "W-Rob"}.}
-The second betasDT is object of class \code{"data.table"} is a list containing the following 
+The second betasDT is object of class \code{"data.table"} is a list containing the following
 components:
 \item{DATE}{length-T vector of dates.}
 \item{R_matrix}{The K+1 by K restriction matrix where K is the number of categorical variables for each date.}

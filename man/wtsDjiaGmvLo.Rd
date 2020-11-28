@@ -11,6 +11,6 @@ TBA
 data("wtsDjiaGmvLo")
 }
 \description{
-Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs) 
+Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs)
              for a long-only global minimum variance portfolio starting from Jan 2008 to Dec 2012.
 }

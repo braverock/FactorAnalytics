@@ -7,6 +7,6 @@
 convert(x, ...)
 }
 \description{
-function to convert the new ffm spec object to ffm object to make it 
+function to convert the new ffm spec object to ffm object to make it
 easier in plotting and reporting
 }

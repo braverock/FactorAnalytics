@@ -14,7 +14,7 @@ calcFLAM(
 )
 }
 \arguments{
-\item{analysis}{method used in the analysis of fundamental law of active management; one of "none", "ISM", 
+\item{analysis}{method used in the analysis of fundamental law of active management; one of "none", "ISM",
 or "NEW". Default is "none".}
 
 \item{targetedVol}{numeric; the targeted portfolio volatility in the analysis. Default is 0.06.}

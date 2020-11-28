@@ -12,9 +12,9 @@ data("stocks145scores6")
 }
 \description{
 Contains returns for 145 stocks starting from Jan 1990 to Dec 2014 spanned across 10 Sectors-
-             ENERGY, COSTAP, INDUS,T MATRLS, FINS, INFOTK, HEALTH, CODISC, UTILS and TELCOM 
+             ENERGY, COSTAP, INDUS,T MATRLS, FINS, INFOTK, HEALTH, CODISC, UTILS and TELCOM
              along with 6 factors: ROE, BP, MOM121, SIZE, VOL121, EP
-  
+
              The 10 Sectors correspond to Energy, ConsumerStaples, Industrials, Materials, Financials,
              InformationTechnology, HealthCare, ConsumerDiscretionary,
              Utilities and Telecommunications respectively.

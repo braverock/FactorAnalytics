@@ -5,7 +5,7 @@
 \alias{scoresSPGMI}
 \title{cleaned SPGMI data}
 \source{
-TBA
+S&P Global Market Intelligence
 }
 \usage{
 data("scoresSPGMI")

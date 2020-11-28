@@ -13,11 +13,11 @@ standardizeExposures(
 \arguments{
 \item{specObj}{is a ffmSpec object,}
 
-\item{Std.Type}{method for exposure standardization; one of "none", 
+\item{Std.Type}{method for exposure standardization; one of "none",
 "CrossSection", or "TimeSeries".
 Default is \code{"none"}.}
 
-\item{lambda}{lambda value to be used for the EWMA estimation of residual variances. 
+\item{lambda}{lambda value to be used for the EWMA estimation of residual variances.
 Default is 0.9}
 }
 \value{

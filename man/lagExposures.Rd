@@ -13,6 +13,6 @@ lagExposures(specObj)
 specObj an ffm spec Object that has been lagged
 }
 \description{
-Function lag the style exposures in the exposure matrix 
+Function lag the style exposures in the exposure matrix
  by one time period.
 }

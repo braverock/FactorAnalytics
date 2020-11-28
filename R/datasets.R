@@ -1,4 +1,5 @@
 #' @name FactorAnalytics-package
+#' @title FactorAnalytics
 #' @aliases FactorAnalytics-package FactorAnalytics
 #'
 #' @description The FactorAnalytics package contains fitting and analysis
@@ -9,7 +10,7 @@
 #' package that will make it its basic features and capabilities close to
 #' those of commercial portfolio optimization and risk management products.
 #'
-#' @section CRSP data included in FactorAnalytics
+#' @section CRSP data included in FactorAnalytics:
 #'
 #' FactorAnalytics contains data contributed by the Center for
 #' Research in Security Prices at the University of Chicago's Booth School of
@@ -26,12 +27,12 @@
 #' large dataset that while not independently economically meaningful, is still
 #' large enough to demonstrate model construction of real models.
 #'
-#' @section Fundamental Factor Scores from S&P Global Market Intelligence
+#' @section Fundamental Factor Scores from S&P Global Market Intelligence:
 #'
 #' S&P Global Market Intelligence has kindly provided firm fundamentals data
-#' referred to as â€œscoresâ€� or â€œalpha factorsâ€� for educational use in the open
+#' referred to as “scores” or “alpha factors” for educational use in the open
 #' source FactorAnalytics R package. The data is contained in the R data frame
-#' object â€œfactorDataSPGMIâ€� consisting of the following cross-section of scores
+#' object “factorDataSPGMI” consisting of the following cross-section of scores
 #' for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
 #' Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
 #' This data greatly facilitates the educational value to users of the
@@ -59,7 +60,7 @@ NULL
 #' @usage data("factorDataSPGMI")
 NULL
 
-#' @name factorDataSetDjia
+#' @name factorDataSetDjia14Yrs
 #' @title DJIA stocks Compustat factors 14yrs
 #' @description Contains returns for 30 DJIA stocks spanned across 9 Sectors -ENERGY, COSTAP, INDUS,T MATRLS,
 #'               FINS, INFOTK, HEALTH, CODISC, and TELCOM stocks along with 4 factor data (MKTCAP, ENTVAL, P2B, EV2S, SIZE)
@@ -138,38 +139,6 @@ NULL
 #' @usage data("wtsStocks145GmvLo")
 NULL
 
-#' @name managers
-#' @title time-series data
-#' @description Hypothetical Alternative Asset Manager and Benchmark Data for Time Series Factor Model Fit
-#' @docType data
-#' @source TBA
-#' @usage data("managers")
-NULL
-
-#' @name managers.ffm
-#' @title managers data for ffm
-#' @description Hypothetical Alternative Asset Manager and Benchmark Data for Time Series Factor Model Fit
-#' @docType data
-#' @source TBA
-#' @usage data("managers.ffm")
-NULL
-
-#' @name mktUS
-#' @title US Market Returns
-#' @description Monthly returns including all distributions, on a value-weighted market portfolio of NYSE/AMEX/NASDAQ
-#' @docType data
-#' @source WRDS
-#' @usage data("mktUS")
-NULL
-
-#' @name mktSP
-#' @title S&P 500 Returns
-#' @description S&P 500 return from Yahoo
-#' @docType data
-#' @source Yahoo
-#' @usage data("mktSP")
-NULL
-
 #' @name RussellData
 #' @title Russell data
 #' @description 16 Russell data
@@ -177,16 +146,6 @@ NULL
 #' @source TBA
 #' @usage data("RussellData")
 NULL
-
-#' @name riskFreeRate
-#' @title Risk-free rates
-#' @description 10 year US Bond yields
-#' @docType data
-#' @source TBA
-#' @usage data("riskFreeRate")
-NULL
-
-
 
 #' @name stocksCRSP
 #' @title CRSP stocks data
@@ -245,47 +204,6 @@ NULL
 #' @usage data("stocksWithFactorsData300")
 NULL
 
-#' @name stocksWithFactorsData300_old
-#' @title 300 stocks with factors
-#' @description the dataset has been replaced with stocksCRSPscoresSPGM
-#' @docType data
-#' @source TBA
-#' @usage data("stocksWithFactorsData300_old")
-NULL
 
-
-#' @name spxAnnual
-#' @title S&P 500 annual return
-#' @description S&P 500 annual return, with year end price and total return
-#' @docType data
-#' @source TBA
-#' @usage data("spxAnnual")
-NULL
-
-#' @name brkAnnual
-#' @title Berkshire Hathaway annual return
-#' @description Berkshire Hathaway annual return, with year end price and total return
-#' @docType data
-#' @source TBA
-#' @usage data("brkAnnual")
-NULL
-
-#' @name brkMonthlyBloomberg
-#' @title Berkshire Hathaway montly return
-#' @description Berkshire Hathaway montly return
-#' @docType data
-#' @source Bloomberg
-#' @usage data("brkMonthlyBloomberg")
-NULL
-
-
-#' @name managers
-#' @title Hypothetical Alternative Asset Manager and Benchmark Data
-#' @description This dataset and it's documentation have been duplicated from  \link[PerformanceAnalytics]{managers}} in the \code{PerformanceAnalytics} package. \code{managers} is used in the examples and vignette of the \code{FactorAnalytics} package.
-#' A xts object that contains columns of monthly returns for six hypothetical asset managers (HAM1 through HAM6), the EDHEC Long-Short Equity hedge fund index, the S\&P 500 total returns, and total return series for the US Treasury 10-year bond and 3-month bill. Monthly returns for all series end in December 2006 and begin at different periods starting from January 1996. Note that all the EDHEC indices are available in \code{\link{edhec}}.
-#' @docType data
-#' @source TBA
-#' @usage data("managers")
-NULL
 
 

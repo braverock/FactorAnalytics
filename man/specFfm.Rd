@@ -20,29 +20,29 @@ specFfm(
 
 \item{ret.var}{character; name of the variable for asset returns.}
 
-\item{date.var}{character; name of the variable containing the dates 
+\item{date.var}{character; name of the variable containing the dates
 coercible to class \code{Date}.}
 
-\item{exposure.vars}{vector; names of the variables containing the 
+\item{exposure.vars}{vector; names of the variables containing the
 fundamental factor exposures.}
 
-\item{weight.var}{character; name of the variable containing the weights 
-used when standarizing style factor exposures. Default is \code{NULL}. See 
+\item{weight.var}{character; name of the variable containing the weights
+used when standarizing style factor exposures. Default is \code{NULL}. See
 Details.}
 
 \item{addIntercept}{logical; If \code{TRUE}, intercept is added in
 the exposure matrix. Default is \code{FALSE},}
 
-\item{rob.stats}{logical; If \code{TRUE}, robust estimates of covariance, 
-correlation, location and univariate scale are computed as appropriate (see 
+\item{rob.stats}{logical; If \code{TRUE}, robust estimates of covariance,
+correlation, location and univariate scale are computed as appropriate (see
 Details). Default is \code{FALSE}.}
 }
 \description{
-Factor models have a few parameters that describe how the fitting is 
-done.  This function summarizes them and returns a spec object for 
+Factor models have a few parameters that describe how the fitting is
+done.  This function summarizes them and returns a spec object for
 cross-sectional regressions.  It also preps the data. An object of class \code{"ffmSpec"}
 is returned.
-#' @param data data.frame of the balanced panel data containing the variables 
-\code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and 
+#' @param data data.frame of the balanced panel data containing the variables
+\code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
 optionally, \code{weight.var}.
 }
