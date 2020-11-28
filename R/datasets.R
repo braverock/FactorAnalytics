@@ -29,9 +29,9 @@
 #' @section Fundamental Factor Scores from S&P Global Market Intelligence
 #'
 #' S&P Global Market Intelligence has kindly provided firm fundamentals data
-#' referred to as “scores” or “alpha factors” for educational use in the open
+#' referred to as â€œscoresâ€� or â€œalpha factorsâ€� for educational use in the open
 #' source FactorAnalytics R package. The data is contained in the R data frame
-#' object “factorDataSPGMI” consisting of the following cross-section of scores
+#' object â€œfactorDataSPGMIâ€� consisting of the following cross-section of scores
 #' for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
 #' Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
 #' This data greatly facilitates the educational value to users of the
@@ -168,16 +168,6 @@ NULL
 #' @docType data
 #' @source Yahoo
 #' @usage data("mktSP")
-NULL
-
-#' @name cusumData
-#' @title Parvest and Russell2500
-#' @description Data in the example is an xts object containing two monthly returns in each column.
-#'              The first column is the fund returns and the second column is the
-#'              benchmark returns. The data is from Jan 2005 to Dec 2003.
-#' @docType data
-#' @source TBA
-#' @usage data("cusumData")
 NULL
 
 #' @name RussellData
