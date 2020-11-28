@@ -216,7 +216,7 @@ NULL
 #' @title cleaned SPGMI data
 #' @description cleaned 300 stocks' 12 factor scores data
 #' @docType data
-#' @source TBA
+#' @source S&P Global Market Intelligence
 #' @usage data("scoresSPGMI")
 NULL
 
