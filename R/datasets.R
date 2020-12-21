@@ -30,9 +30,9 @@
 #' @section Fundamental Factor Scores from S&P Global Market Intelligence:
 #'
 #' S&P Global Market Intelligence has kindly provided firm fundamentals data
-#' referred to as “scores” or “alpha factors” for educational use in the open
+#' referred to as â€œscoresâ€� or â€œalpha factorsâ€� for educational use in the open
 #' source FactorAnalytics R package. The data is contained in the R data frame
-#' object “factorDataSPGMI” consisting of the following cross-section of scores
+#' object â€œfactorDataSPGMIâ€� consisting of the following cross-section of scores
 #' for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
 #' Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
 #' This data greatly facilitates the educational value to users of the
@@ -43,21 +43,6 @@
 #' written permission of Standard and Poor Global Markets.
 #'
 #' @docType package
-NULL
-
-#' @name factorDataSPGMI
-#' @title Fundamental factor scores from S&P Global Market Intelligence
-#' @description S&P Global Market Intelligence has kindly provided firm fundamentals data
-#' referred to as scores or alpha factors for educational use in the open source FactorAnalytics
-#' R package. The data is contained in the R data frame object factorDataSPGMI
-#' consisting of the following cross-section of scores for approximately 300 stocks from 1990 to
-#' 2015: AccrualRatioCF, AnnVol12M, Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style,
-#' LogMktCap, PM12M1M, ROE. This data greatly facilitates the educational value to users of the
-#' fundamental factor model in FactorAnalytics. The package developers wish to thank S&P Global
-#' Market Intelligence for contributing this data to the FactorAnalytics package.
-#' @docType data
-#' @source S&P Global Market Intelligence
-#' @usage data("factorDataSPGMI")
 NULL
 
 #' @name factorDataSetDjia14Yrs
@@ -86,67 +71,6 @@ NULL
 #' @usage data("factorDataSetDjia5Yrs")
 NULL
 
-#' @name stocks145scores6
-#' @title CRSP stocks Capital IQ scores
-#' @description Contains returns for 145 stocks starting from Jan 1990 to Dec 2014 spanned across 10 Sectors-
-#'              ENERGY, COSTAP, INDUS,T MATRLS, FINS, INFOTK, HEALTH, CODISC, UTILS and TELCOM
-#'              along with 6 factors: ROE, BP, MOM121, SIZE, VOL121, EP
-#'
-#'              The 10 Sectors correspond to Energy, ConsumerStaples, Industrials, Materials, Financials,
-#'              InformationTechnology, HealthCare, ConsumerDiscretionary,
-#'              Utilities and Telecommunications respectively.
-#'
-#' @docType data
-#' @source TBA
-#' @usage data("stocks145scores6")
-#'
-#'
-NULL
-
-#' @name wtsDjiaGmv
-#' @title DJIA GMV portfolio weights
-#' @description Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs)
-#'              for a global minimum variance portfolio starting from Jan 2008 to Dec 2012.
-#' @docType data
-#' @source TBA
-#' @usage data("wtsDjiaGmv")
-NULL
-
-#' @name wtsDjiaGmvLo
-#' @title DJIA GMV long-only portfolio weights
-#' @description Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs)
-#'              for a long-only global minimum variance portfolio starting from Jan 2008 to Dec 2012.
-#' @docType data
-#' @source TBA
-#' @usage data("wtsDjiaGmvLo")
-NULL
-
-#' @name wtsStocks145Gmv
-#' @title CRSP 145 stocks GMV portfolio weights
-#' @description Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6)
-#'              for a global minimum variance portfolio starting from Jan 1990 to Dec 2014.
-#' @docType data
-#' @source TBA
-#' @usage data("wtsStocks145Gmv")
-NULL
-
-#' @name wtsStocks145GmvLo
-#' @title CRSP 145 stocks GMV long-only weights
-#' @description Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6)
-#'              for a long-only global minimum variance portfolio starting from Jan 1990 to Dec 2014.
-#' @docType data
-#' @source TBA
-#' @usage data("wtsStocks145GmvLo")
-NULL
-
-#' @name RussellData
-#' @title Russell data
-#' @description 16 Russell data
-#' @docType data
-#' @source TBA
-#' @usage data("RussellData")
-NULL
-
 #' @name stocksCRSP
 #' @title CRSP stocks data
 #' @description stocksCRSP
@@ -155,21 +79,6 @@ NULL
 #' @usage data("stocksCRSP")
 NULL
 
-#' @name stocksCRSPscoresSPGMI
-#' @title cleaned SPGMI and CRSP data
-#' @description cleaned 300 stocks' 12 factor scores that merged with CRSP data
-#' @docType data
-#' @source TBA
-#' @usage data("stocksCRSPscoresSPGMI")
-NULL
-
-#' @name stocksCRSPscoresSPGMIraw
-#' @title raw SPGMI and CRSP data
-#' @description raw 300 stocks' 12 factor scores that merged with CRSP data
-#' @docType data
-#' @source TBA
-#' @usage data("stocksCRSPscoresSPGMIraw")
-NULL
 
 #' @name scoresSPGMI
 #' @title cleaned SPGMI data
@@ -179,31 +88,26 @@ NULL
 #' @usage data("scoresSPGMI")
 NULL
 
-#' @name scoresSPGMIraw
-#' @title raw SPGMI data
-#' @description raw 300 stocks' 12 factor scores data
+#' @name TresauryYields
+#' @title Tresaury Yields
+#' @description
 #' @docType data
-#' @source TBA
-#' @usage data("scoresSPGMIraw")
+#' @source 
+#' @usage data("TresauryYields")
 NULL
 
-#' @name scoresSPGMIraw
-#' @title raw SPGMI data
-#' @description raw 300 stocks' 12 factor scores data
+#' @name Stocks.df
+#' @title Stocks.df
+#' @description
 #' @docType data
-#' @source TBA
-#' @usage data("scoresSPGMIraw")
+#' @source 
+#' @usage data("Stocks.df")
 NULL
 
-
-#' @name stocksWithFactorsData300
-#' @title 300 stocks with factors
-#' @description the dataset has been replaced with stocksCRSPscoresSPGM
+#' @name StockReturns
+#' @title StockReturns
+#' @description
 #' @docType data
-#' @source TBA
-#' @usage data("stocksWithFactorsData300")
+#' @source 
+#' @usage data("StockReturns")
 NULL
-
-
-
-
