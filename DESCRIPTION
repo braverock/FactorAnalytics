@@ -53,4 +53,4 @@ Suggests:
 LazyLoad: yes
 LazyDataCompression: xz
 URL: https://github.com/braverock/FactorAnalytics
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

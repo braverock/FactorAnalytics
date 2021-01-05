@@ -3,7 +3,9 @@
 #' @author Kirk Li.
 #' 
 #' @examples
-#' data = mergeSPGMICRSP()
+#' data(stocksCRSP)
+#' data(scoresSPGMI)
+#' dataSPGMICRSP = mergeSPGMICRSP()
 #' @export   
 #' 
 

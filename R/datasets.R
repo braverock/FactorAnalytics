@@ -1,3 +1,9 @@
+# TODO: Add comment
+# 
+# Author: kirk li
+###############################################################################
+
+
 #' @name FactorAnalytics-package
 #' @title FactorAnalytics
 #' @aliases FactorAnalytics-package FactorAnalytics
@@ -30,9 +36,9 @@
 #' @section Fundamental Factor Scores from S&P Global Market Intelligence:
 #'
 #' S&P Global Market Intelligence has kindly provided firm fundamentals data
-#' referred to as â€œscoresâ€� or â€œalpha factorsâ€� for educational use in the open
+#' referred to as �scores� or �alpha factors� for educational use in the open
 #' source FactorAnalytics R package. The data is contained in the R data frame
-#' object â€œfactorDataSPGMIâ€� consisting of the following cross-section of scores
+#' object �factorDataSPGMI� consisting of the following cross-section of scores
 #' for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
 #' Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
 #' This data greatly facilitates the educational value to users of the
@@ -90,7 +96,7 @@ NULL
 
 #' @name TresauryYields
 #' @title Tresaury Yields
-#' @description
+#' @description TBA
 #' @docType data
 #' @source 
 #' @usage data("TresauryYields")
@@ -98,16 +104,38 @@ NULL
 
 #' @name Stocks.df
 #' @title Stocks.df
-#' @description
+#' @description TBA
 #' @docType data
 #' @source 
 #' @usage data("Stocks.df")
 NULL
 
 #' @name StockReturns
-#' @title StockReturns
+#' @title Stock Return Data
 #' @description
+#' \code{r.M}: A "data.frame" object with monthly returns (ranging from January 1978 to December 1987) for 15 assets whose names are given in the 'Details'.
+#' \code{r.W}: A "data.frame" object with weekly returns (ranging from January 8, 1997 to June 28, 2000) for 1618 U.S. stocks.
+#' @details 
+#'   The 15 assets in \code{r.M} are as follows:
+#'   CITCRP monthly returns of Citicorp.  
+#'   CONED monthly returns of Consolidated Edison.  
+#'   CONTIL monthly returns of Continental Illinois.  
+#'   DATGEN monthly returns of Data General.  
+#'   DEC monthly returns of Digital Equipment Company. 
+#'   DELTA monthly returns of Delta Airlines.  
+#'   GENMIL monthly returns of General Mills.  
+#'   GERBER monthly returns of Gerber.  
+#'   IBM monthly returns of International Business Machines.  
+#'   MARKET a value-weighted composite monthly returns based on transactions from the New York Stock Exchange and the American Exchange.  
+#'   MOBIL monthly returns of Mobile.  
+#'   PANAM monthly returns of Pan American Airways.  
+#'   PSNH monthly returns of Public Service of New Hampshire.  
+#'   TANDY monthly returns of Tandy.  
+#'   TEXACO monthly returns of Texaco.  
+#'   WEYER monthly returns of Weyerhauser.  
+#'   RKFREE monthly returns on 30-day U.S. Treasury bills.
 #' @docType data
-#' @source 
+#' @source   S+FinMetrics Berndt.dat & folio.dat
+#' @references Berndt, E. R. (1991). The practice of econometrics: classic and contemporary. Reading, MA: Addison-Wesley.
 #' @usage data("StockReturns")
 NULL

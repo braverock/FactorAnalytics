@@ -37,9 +37,9 @@ large enough to demonstrate model construction of real models.
 
 
 S&P Global Market Intelligence has kindly provided firm fundamentals data
-referred to as “scores” or “alpha factors” for educational use in the open
+referred to as 㤼㸳scores㤼㸴 or 㤼㸳alpha factors㤼㸴 for educational use in the open
 source FactorAnalytics R package. The data is contained in the R data frame
-object “factorDataSPGMI” consisting of the following cross-section of scores
+object 㤼㸳factorDataSPGMI㤼㸴 consisting of the following cross-section of scores
 for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
 Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
 This data greatly facilitates the educational value to users of the
