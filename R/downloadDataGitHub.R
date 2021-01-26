@@ -1,4 +1,4 @@
-#' download CRSP dataset from github
+#' download FA dataset from github
 #'
 #' @author Kirk Li.
 #' @param filename stockCRSPdaily, stockCRSPweekly, stockCRSPmonthly
@@ -7,9 +7,9 @@
 #' @export
 #'
 #' @examples
-#' readCRSPdataGithub("stockCRSPweekly")
+#' readGithubFAdata("stockCRSPweekly")
 #' 
-readCRSPdataGithub <- function(filename = ''){
+readGithubFAdata <- function(filename = ''){
 
 	file_url <- paste0("https://github.com/braverock/FactorAnalytics/blob/master/data_nonpackage/",filename,".rda?raw=True")
 	load(url(file_url))
