@@ -1088,7 +1088,8 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
 #' @param SpecObj an object as the output from specFfm function
 #' @param FitObj an object as the output from fitFfmDT function
 #' @param RegStatsObj an object as the output from extractRegressionStats function
-#' @export convert.ffmSpec
+#' @method convert ffmSpec
+#' @export
 convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj) {
 
   asset.names <- names(RegStatsObj$residuals) # unique(SpecObj$dataDT[[SpecObj$asset.var]])
@@ -1148,7 +1149,8 @@ convert <- function(x,...) {
 
 
 
-
+#' @method print ffmSpec
+#' @export
 print.ffmSpec <- function(SpecObj){
   a_ <- SpecObj$asset.var
   r_ <- SpecObj$ret.var
