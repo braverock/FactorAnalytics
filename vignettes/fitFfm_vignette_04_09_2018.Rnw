@@ -20,6 +20,7 @@
 % \VignetteIndexEntry{Fitting a fundamental factor model with 'fitFfm' in factorAnalytics}
 %\VignetteEngine{knitr::knitr}
 
+% The latest version of the \verb"FactorAnalytics" package used in this vignette is hosted in the publicly available GitHub repository https://github.com/sangeeuw/factorAnalytics. There are plans for further updates to the package before its moved back to R-Forge and released on CRAN later this year.
 \begin{document}
 
 <<include=FALSE>>=
@@ -27,12 +28,12 @@ library(knitr)
 opts_chunk$set(concordance=TRUE)
 @
 
-\title{Fitting Fundamental Factor Models: factorAnalytics vignette}
+\title{Fitting Fundamental Factor Models: FactorAnalytics vignette}
 \author{Sangeetha Srinivasan}
 \maketitle
 
 \begin{abstract}
-The purpose of this vignette is to demonstrate the use of \code{fitFfm} and related control, analysis and plot functions in the \code{factorAnalytics} package.
+The purpose of this vignette is to demonstrate the use of \code{fitFfm} and related control, analysis and plot functions in the \code{FactorAnalytics} package.
 \end{abstract}
 
 \tableofcontents
@@ -43,17 +44,15 @@ The purpose of this vignette is to demonstrate the use of \code{fitFfm} and rela
 
 \subsection{Load Package}
 
-The latest version of the \verb"factorAnalytics" package used in this vignette is hosted in the publicly available GitHub repository https://github.com/sangeeuw/factorAnalytics. There are plans for further updates to the package before its moved back to R-Forge and released on CRAN later this year.
 
 The package can be installed from GitHub using \verb"devtools" as follows.
 <<eval=FALSE>>=
-library(devtools)
-install_github("sangeeuw/factorAnalytics")
+install("FactorAnalytics")
 @
 
 <<message=FALSE, warning=FALSE>>=
 # load the package and its dependencies
-library(factorAnalytics)
+library(FactorAnalytics)
 options(digits=3)
 @
 
@@ -103,7 +102,7 @@ The following examples primarily use the \code{Stock.df} dataset. It contains fu
 The following queries help understand key aspects of the dataset:
 <<>>=
 # load the dataset into the environment
-data(Stock.df)
+data(Stocks.df)
 # get a list of the variable names
 colnames(stock)
 # time period covered in the data

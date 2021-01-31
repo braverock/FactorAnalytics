@@ -617,7 +617,8 @@ fitFfmDT <- function(ffMSpecObj,
 #' @param fitResults output from fitFMDT
 #' @param full.resid.cov an option to calculate the full residual covariance or not
 #' @return a structure of class ffm holding all the information
-#' @import data.table robust
+#' @importFrom robust covRob
+#' @import data.table
 #' @export
 #'
 extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){

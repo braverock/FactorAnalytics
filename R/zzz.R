@@ -4,7 +4,7 @@
 #' @import rrcov
 
 #' @importFrom PerformanceAnalytics checkData Return.cumulative 
-#' @importFrom robust lmRob step.lmRob covRob covClassic
+#' @importFrom robust covRob lmRob step.lmRob covClassic
 #' @importFrom leaps regsubsets
 #' @importFrom lars lars cv.lars
 #' @importFrom lmtest coeftest.default

@@ -47,6 +47,7 @@ Imports:
 	HH,
 	reshape2,
 	rugarch,
+	robust,
 	RobStatTM
 Suggests:
     testthat
