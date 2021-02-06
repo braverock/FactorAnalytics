@@ -3,3 +3,7 @@
 .RData
 /.project
 /.gitignore
+/desktop.ini
+*\.zip
+*\.Rproj
+/.settings/

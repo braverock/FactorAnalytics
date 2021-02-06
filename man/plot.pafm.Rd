@@ -4,9 +4,16 @@
 \alias{plot.pafm}
 \title{plot \code{"pafm"} object}
 \usage{
-\method{plot}{pafm}(x, which.plot = c("none", "1L", "2L", "3L"),
-  max.show = 6, date = NULL, plot.single = FALSE, fundName,
-  which.plot.single = c("none", "1L", "2L", "3L"), ...)
+\method{plot}{pafm}(
+  x,
+  which.plot = c("none", "1L", "2L", "3L"),
+  max.show = 6,
+  date = NULL,
+  plot.single = FALSE,
+  fundName,
+  which.plot.single = c("none", "1L", "2L", "3L"),
+  ...
+)
 }
 \arguments{
 \item{x}{object of class \code{"pafm"} created by

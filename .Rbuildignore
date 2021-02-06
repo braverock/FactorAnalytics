@@ -1,2 +1,14 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^.git$
+^.*\.xlsx
+^.*\.zip
+sandbox
+\.travis\.yml
+^.*_cache$
+^.*_files$
+^.*\.bak$
+^.*\.sav$
+^README\.Rmd$
+^\.vimrc
+^codecov\.yml$

@@ -7,11 +7,23 @@
 \usage{
 fmTstats(ffmObj, ...)
 
-\method{fmTstats}{ffm}(ffmObj, isPlot = TRUE, isPrint = FALSE,
-  whichPlot = "all", color = c("black", "cyan"), lwd = 2,
-  digits = 2, z.alpha = 1.96, layout = c(2, 3), type = "h",
-  scale = "free", stripText.cex = 1, axis.cex = 1, title = TRUE,
-  ...)
+\method{fmTstats}{ffm}(
+  ffmObj,
+  isPlot = TRUE,
+  isPrint = FALSE,
+  whichPlot = "all",
+  color = c("black", "cyan"),
+  lwd = 2,
+  digits = 2,
+  z.alpha = 1.96,
+  layout = c(2, 3),
+  type = "h",
+  scale = "free",
+  stripText.cex = 1,
+  axis.cex = 1,
+  title = TRUE,
+  ...
+)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
@@ -61,7 +73,7 @@ Calculate and plot the time series of the t-statistic values and the
  data("factorDataSetDjia5Yrs")
 
 #Fit a Ffm with style factors only
- require(factorAnalytics)
+ require(FactorAnalytics)
  fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
              date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS",z.score = "crossSection")
 

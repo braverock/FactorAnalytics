@@ -29,6 +29,7 @@
 #' budgets in a way that allows the process to convergence in a few (usually two) iterations
 #'
 #' @importFrom PerformanceAnalytics ES
+#' @importFrom robust covRob
 #' @importFrom zoo coredata
 #'
 #' @param returns A matrix with a time series of returns for each asset / strategy

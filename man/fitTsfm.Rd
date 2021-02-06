@@ -7,10 +7,17 @@
 \alias{residuals.tsfm}
 \title{Fit a time series factor model using time series regression}
 \usage{
-fitTsfm(asset.names, factor.names, mkt.name = NULL, rf.name = NULL,
-  data = data, fit.method = c("LS", "DLS", "Robust"),
+fitTsfm(
+  asset.names,
+  factor.names,
+  mkt.name = NULL,
+  rf.name = NULL,
+  data = data,
+  fit.method = c("LS", "DLS", "Robust"),
   variable.selection = c("none", "stepwise", "subsets", "lars"),
-  control = fitTsfm.control(...), ...)
+  control = fitTsfm.control(...),
+  ...
+)
 
 \method{coef}{tsfm}(object, ...)
 
@@ -154,7 +161,6 @@ fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                    factor.names=colnames(managers[,(7:9)]), 
                    rf.name="US.3m.TR", data=managers, 
                    variable.selection="lars", lars.criterion="cv") 
-
 }
 \references{
 Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 

@@ -293,8 +293,15 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
   if ((length(exposures.char) >1) && !addIntercept) {
-    stop("Invalid args: Sector + Country model without Market(Interecept) is currenlty not handled")
+    stop("Invalid args: two categorical factor model without Market(Interecept) is currenlty not handled")
   }
+  
+  if (length(exposures.char) > 2)
+  {
+	  stop("Invalid args: currently supports up to two categorical variables")
+	    
+  }
+  
   if (length(exposures.char) > 1)
   { #Model has both Sector and Country along wit Intercept
     model.MSCI = TRUE
@@ -522,12 +529,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     beta <- model.matrix(fm.formula, data=subset(data, data[[date.var]]==time.periods[TP]))
     rownames(beta) <- asset.names
     #Shorten the Sector/Country names
-    colnames(beta) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta))
+    colnames(beta) = gsub(paste(exposures.char,collapse="|"), "", colnames(beta))
     #colnames(beta) = gsub(paste(exposures.char), "", colnames(beta))
     #Remove SECTOR/COUNTRY to shorten the coef names.
     if (length(exposures.char) >0 )
     { 
-      reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) = gsub("COUNTRY|SECTOR|GICS.", "",names(reg.list[[x]]$coefficients) ) ;reg.list[[x]]})
+      reg.list= lapply(seq(1:TP), function(x){ names(reg.list[[x]]$coefficients) = gsub(paste(exposures.char,collapse="|"), "",names(reg.list[[x]]$coefficients) ) ;reg.list[[x]]})
       names(reg.list) = as.character(unique(data[[date.var]]))
     }else if(model.styleOnly && addIntercept)
     {
@@ -565,7 +572,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
         factor.cov <- covRob(coredata(factor.returns), distance=FALSE, 
                              na.action=na.omit)$cov
       }
-      resid.var <- apply(coredata(residuals), 2, scaleTau2, na.rm=T)^2
+      resid.var <- apply(coredata(residuals), 2, scaleTau2)^2
       if (full.resid.cov) {
         resid.cov <- covOGK(coredata(residuals), sigmamu=scaleTau2, n.iter=1)$cov
       } else {
@@ -660,7 +667,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       beta.stms = B.mod
     }
     
-    colnames(beta.combine) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta.combine))
+    colnames(beta.combine) = gsub(paste(exposures.char,collapse="|"), "", colnames(beta.combine))
     beta.combine = beta.combine[, factor.names]
     return.cov <-  beta.stms %*% g.cov %*% t(beta.stms) + resid.cov
     #Exposure matrix for the last time period
@@ -676,12 +683,15 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     fm.formula <- paste(ret.var, "~", paste(exposure.vars, collapse="+"))
     if (length(exposures.char)) {
       fm.formula <- paste(fm.formula, "- 1")
+	  
+	  formulaL = list()
       for(i in exposures.char)
       {
         data[, i] <- as.factor(data[,i])
-        if (grepl("SECTOR",i)) 
-          formula.ind = as.formula(paste(ret.var, "~", i, "-1"))
-        else formula.cty = as.formula(paste(ret.var, "~", i, "-1"))
+#        if (grepl("SECTOR",i)) 
+#          formula.ind = as.formula(paste(ret.var, "~", i, "-1"))
+#        else 
+		formulaL[[i]] = as.formula(paste(ret.var, "~", i, "-1"))
       }
     }
     
@@ -689,29 +699,31 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     fm.formula <- as.formula(fm.formula)
     #Extract model beta, expo.char beta and expo.num betas
     beta <- model.matrix(fm.formula, data=data)
-    beta.ind <- model.matrix(formula.ind, data=data)
-    beta.cty <- model.matrix(formula.cty, data=data)
-    beta.mic <- cbind("Market" = rep(1, nrow(beta.ind)), beta.ind, beta.cty)
+    beta1 <- model.matrix(formulaL[[1]], data=data)
+    beta2 <- model.matrix(formulaL[[2]], data=data)
+    beta.mic <- cbind("Market" = rep(1, nrow(beta1)), beta1, beta2)
     if(length(exposures.num) > 0)
-      beta.style<- beta[,exposures.num]
+      beta.style<- beta[,exposures.num,drop=FALSE]
     
-    fac.names.indcty = lapply(seq(exposures.char), function(x)
+    fac.names = lapply(seq(exposures.char), function(x)
       paste(levels(data[,exposures.char[x]]),sep=""))
-    if(grepl("SECTOR", exposures.char[1])){
-      factor.names <- c("Market",unlist(fac.names.indcty),
+
+
+#    if(grepl("SECTOR", exposures.char[1])){
+      factor.names <- c("Market",unlist(fac.names),
                         exposures.num)
-    }else{
-      factor.names <- c("Market", unlist((fac.names.indcty)[2]),unlist((fac.names.indcty)[1]),
-                        exposures.num)
-    }
+#    }else{
+#      factor.names <- c("Market", unlist((fac.names.indcty)[2]),unlist((fac.names.indcty)[1]),
+#                        exposures.num)
+#    }
     rownames(beta.mic) <- rep(asset.names, TP)
     asset.names <- unique(data[[asset.var]])
     N <- length(asset.names)
     #Define Retrun matrix 
     returns = matrix(data[[ret.var]],nrow = N)
     K <- length(factor.names)
-    K1<- dim(beta.ind)[2]
-    K2<- dim(beta.cty)[2]
+    K1<- dim(beta1)[2]
+    K2<- dim(beta2)[2]
     #Define Restriction matrix 
     rMic<-  rbind( cbind(diag(K1), matrix(0, nrow = K1, ncol = K2-1)), 
                    c(c(0,rep(-1, K1-1)), rep(0, K2-1)),
@@ -725,13 +737,25 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     
     B.mod = (beta.mic[1:N, ]) %*% rMic  #Y = X*R
     if(length(exposures.num) > 0){
-    B.style = beta.style[((TP-1)*N+1) : (TP*N), ]}
+    B.style = beta.style[((TP-1)*N+1) : (TP*N),,drop=FALSE]
+
+}
     fmMSCI.formula = as.formula(paste(ret.var, "~", "B.mod+", paste(exposures.num, collapse="+"),"-1" ))                 
     reg.list <- by(data=data, INDICES=data[[date.var]], 
                    FUN=function(x) {lm(data=x, formula=fmMSCI.formula, 
                                        na.action=na.fail)})
     #Find weights for WLS regression
     if (grepl("W",fit.method)) {
+		
+		# check the data to make sure at least 2 assets for each factor combination
+		freq = eval(parse(text=paste0('data.table(data)[,list(nAsset=length(unique(get(asset.var)))),by=list(',paste(exposures.char,collapse=","),')]')))		
+		
+		if(any(freq$nAsset==1)){
+			warning('Invalid data: The above factor combinations contain only 1 asset, and weighted fitting may fail. \n Consider removing these assets, change the factor, or choose non-weighted fitting.')
+			print(freq[nAsset==1])}
+		
+		
+		
       if (rob.stats) {
         resid.var <- apply(sapply(reg.list, residuals), 1, scaleTau2)^2
       } else {
@@ -843,7 +867,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       beta.combine = cbind(beta.mic, beta.style)
     }else 
       beta.combine = beta.mic
-    colnames(beta.combine) = gsub("COUNTRY|SECTOR|GICS.", "", colnames(beta.combine))
+    colnames(beta.combine) = gsub(paste(exposures.char,collapse="|"), "", colnames(beta.combine))
     beta.combine = beta.combine[, factor.names]
     return.cov <-  beta.combine[((TP-1)*N+1):(TP*N), 1:K] %*% factor.cov %*% t( beta.combine[((TP-1)*N+1):(TP*N), 1:K]) + resid.cov
     #Exposure matrix 

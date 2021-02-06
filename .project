@@ -15,11 +15,17 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.statet.docmlet.resourceProjects.TexBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>de.walware.statet.base.StatetNature</nature>
 		<nature>de.walware.statet.r.RNature</nature>
 		<nature>org.eclipse.statet.ide.resourceProjects.Statet</nature>
 		<nature>org.eclipse.statet.r.resourceProjects.R</nature>
+		<nature>org.eclipse.statet.docmlet.resourceProjects.Tex</nature>
 	</natures>
 </projectDescription>

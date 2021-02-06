@@ -8,12 +8,25 @@
 \usage{
 portEsDecomp(object, ...)
 
-\method{portEsDecomp}{tsfm}(object, weights = NULL, p = 0.05,
-  type = c("np", "normal"), invert = FALSE,
-  use = "pairwise.complete.obs", ...)
+\method{portEsDecomp}{tsfm}(
+  object,
+  weights = NULL,
+  p = 0.05,
+  type = c("np", "normal"),
+  invert = FALSE,
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{portEsDecomp}{ffm}(object, weights = NULL, factor.cov,
-  p = 0.05, type = c("np", "normal"), invert = FALSE, ...)
+\method{portEsDecomp}{ffm}(
+  object,
+  weights = NULL,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  invert = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -74,7 +87,7 @@ average of the observations in that data window.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)
 ES.decomp <- portEsDecomp(fit.macro,invert = TRUE)

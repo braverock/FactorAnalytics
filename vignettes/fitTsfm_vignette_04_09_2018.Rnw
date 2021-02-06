@@ -1,0 +1,555 @@
+\documentclass[a4paper]{article}
+
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{FA.bib}
+
+\usepackage{Rd}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{verbatim}
+\usepackage{graphicx, color, framed, alltt}
+\usepackage[latin1]{inputenc}
+\usepackage{url}
+\let\proglang=\textsf
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\baselinestretch}{1.5}
+\setlength{\textwidth}{15cm} \setlength{\textheight}{22cm} \topmargin-1cm \evensidemargin0.5cm \oddsidemargin0.5cm
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+
+
+% \VignetteIndexEntry{Fitting a time series factor model with 'fitTsfm' in factorAnalytics}
+%\VignetteEngine{knitr::knitr}
+
+\begin{document}
+
+<<include=FALSE>>=
+library(knitr)
+knitr::opts_knit$set(concordance=TRUE)
+@
+
+\title{Fitting Time Series Factor Models: FactorAnalytics vignette}
+\author{Sangeetha Srinivasan}
+\maketitle
+
+\begin{abstract}
+The purpose of this vignette is to demonstrate the use of \code{fitTsfm} and related control, analysis and plot functions in the \code{factorAnalytics} package.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+\newpage
+\section{Overview}
+
+\subsection{Load Package}
+
+% The latest version of the \verb"FactorAnalytics" package used in this vignette is hosted in the publicly available GitHub repository https://github.com/sangeeuw/factorAnalytics. There are plans for further updates to the package before its moved back to R-Forge and released on CRAN later this year.
+
+@
+<<message=FALSE, warning=FALSE>>=
+# load the package and its dependencies
+library(FactorAnalytics)
+library(PerformanceAnalytics)
+data(managers, package = "PerformanceAnalytics")
+options(digits=3)
+@
+
+\subsection{Summary of related functions}
+Here's a list of the functions and methods demonstrated in this vignette:
+
+\begin{itemize}
+
+\item \verb"fitTsfm(asset.names, factor.names, data, fit.method, variable.selection, ...)": Fits a time series (a.k.a. macroeconomic) factor model for one or more asset returns or excess returns using time series regression. Least squares (LS), discounted least squares (DLS) and robust regression fitting are possible. Variable selection methods include "stepwise", "subsets" and "lars". An object of class "tsfm" containing the fitted objects, estimated coefficients, R-squared and residual volatility is returned.
+
+\item \verb"coef(object, ...)": Returns a data.frame containing the coefficients (intercept and factor betas) for all assets fit by the "tsfm" object.
+
+\item \verb"fitted(object, ...)": Returns an "xts" data object of fitted asset returns from the factor model for all assets.
+
+\item \verb"residuals(object, ...)": Returns an "xts" data object of residuals from the fitted factor model for all assets.
+
+\item \verb"fmCov(object, use, ...)": Returns the \code{N x N} symmetric covariance matrix for asset returns based on the fitted factor model. \code{"use"} specifies how missing values are to be handled.
+
+\item \verb"fmSdDecomp(object, factor.cov, use, ...)": Returns a list containing the standard deviation of asset returns based on the fitted factor model and the estimated marginal, component and percentage component factor contributions. \code{factor.cov} allows for user-specified factor covariance matrix; defaults to the sample covariance of historical factor returns. \code{"use"} specifies how missing values are to be handled.
+
+\item \verb"fmVaRDecomp(object, factor.cov, p, type, use, ...)": Returns a list containing the value-at-risk (VaR) for asset returns based on the fitted factor model and the estimated marginal, component and percentage component factor contributions. \code{factor.cov} allows for user-specified factor covariance matrix; defaults to the sample covariance of historical factor returns. \code{type} specifies if VaR computation should be non-parametric (sample quantile) or based on a Normal distribution. And, \code{"p"} specifies the confidence level.
+
+\item \verb"fmEsDecomp(object, factor.cov, p, type, use, ...)": Returns a list containing the expected shortfall (ES) for asset returns based on the fitted factor model and the estimated marginal, component and percentage component factor contributions. \code{factor.cov} allows for user-specified factor covariance matrix; defaults to the sample covariance of historical factor returns. \code{type} specifies if VaR computation should be non-parametric (sample quantile) or based on a Normal distribution. And, \code{"p"} specifies the confidence level.
+
+\item \verb"plot(x)": The \code{plot} method for class "tsfm" can be used for plotting factor model characteristics of a group of assets (default) or an individual asset. The user can select the type of plot either from the menu prompt or directly via argument \code{which}. In case multiple plots are needed, the menu is repeated after each plot (enter 0 to exit). User can also input a numeric vector of plot options via \code{which}.
+
+\item \verb"predict(object, newdata, ...)": The \code{predict} method for class "tsfm" returns a vector or matrix of predicted values for a new data sample or simulated values.
+
+\item \verb"summary(object, se.type, ...)": The \code{summary} method for class "tsfm" returns an object of class \code{"summary.tsfm"} containing the summaries of the fitted "lm", "lmRob" or "lars" objects and the chosen type (HC/HAC) of standard errors and t-statistics to display. Printing the factor model summary object outputs the call, coefficients (with standard errors and t-statistics), r-squared and residual volatility (under the homo-skedasticity assumption) for all assets.
+
+\end{itemize}
+
+\subsection{Data}
+
+The following examples primarily use the \code{managers} dataset from the \verb"PerformanceAnalytics" package. It's an "xts" data object with 132 observations on 10 variables; frequency is monthly.
+<<>>=
+data(managers)
+colnames(managers)
+range(index(managers))
+@
+
+In the examples below, the monthly returns for the six hypothetical asset managers (HAM1 through HAM6) will be the explained asset returns. Columns 7 through 9, composed of the EDHEC Long-Short Equity hedge fund index, the S\&P 500 total returns, and the total return series for the US Treasury 10-year bond will serve as explanatory factors. The last column (US 3-month T-bill) can be considered as the risk free rate. The series have unequal histories in this sample and \code{fitTsfm} removes asset-wise incomplete cases (asset's return data combined with respective factors' return data) before fitting a factor model.
+<<>>=
+asset.names <- colnames(managers[,1:6])
+factor.names <- colnames(managers[,7:9])
+mkt.name <- "SP500.TR"
+rf.name <- "US.3m.TR"
+@
+
+Typically, factor models are fit using excess returns. If the asset and factor returns are not in excess return form, \code{rf.name} can be specified to convert returns into excess returns. Similarly, market returns can be specified via \code{mkt.name} to add market-timing factors to the factor model.
+
+The \verb"CommonFactors" dataset in the \verb"factorAnalytics" package also provides a collection of common factors as both monthly (\verb"factors.M") and quarterly (\verb"factors.Q") time series. Refer to the help file for the dataset for more information.
+
+<<>>=
+data(CommonFactors)
+names(factors.Q)
+range(index(factors.Q))
+names(managers) <- c(names(managers)[1:6],c("LSEQ","SP500","US10Y","US3M"))
+asset.names <- names(managers[,1:6])
+factor.names <- names(managers[,7:9])
+@
+
+\newpage
+\section{Fitting a time series factor model}
+
+In a time series or macroeconomic factor model, observable economic time series such as industrial production growth rate, interest rates, market returns and inflation are used as common factors that contribute to asset returns. For example, the famous single index model by \cite{sharpe1964capital} uses the market excess return as the common factor (captures economy-wide or market risk) for all assets and the unexplained returns in the error term represents the non-market firm specific risk. On the other hand, \cite{chen1986economic} uses a multi-factor model to find that surprise inflation, the spread between long and short-term interest rates and between high and low grade bonds are significantly priced, while the market portfolio, aggregate consumption risk and oil price risk are not priced separately. Chapter 15 from \cite{zivot2006modeling} serves as a good reference for a description of the different multi-factor models, estimation methods and relevant examples using S-PLUS.
+
+Let's take a look at the arguments for \code{fitTsfm}.
+
+<<tidy=TRUE>>=
+args(fitTsfm)
+@
+
+The default model fitting method is LS regression and the default variable selection method is "none" (that is, all factors are included in the model). The different model fitting and variable selection options are described in sections 2.3 and 2.4.
+
+The default for \code{rf.name} and \code{mkt.name} are NULL. If \code{rf.name} is not specified by the user, perhaps because the data is already in excess return form, then no risk-free rate adjustment is made. Similarly, if \code{mkt.name} is not specified, market-timing factors are not added to the model.
+
+All other optional control parameters passed through the ellipsis are processed and assimilated internally by \code{fitTsfm.control}. More on that in section 2.5.
+
+\subsection{Single Index Model}
+
+Here's an implementation of the single index model for the 6 hypothetical assets described in section 1.3 earlier. Since \code{rf.name} was included, excess returns are computed and used for all variables during model fitting.
+<<>>=
+# Single Index Model using SP500
+fit.singleIndex <- fitTsfm(asset.names=asset.names, factor.names="SP500",
+                           rf.name="US3M", data=managers)
+@
+
+The resulting object, \code{fit.singleIndex}, has the following attributes.
+<<>>=
+class(fit.singleIndex)
+names(fit.singleIndex)
+@
+
+The component \code{asset.fit} contains a list of "lm" objects\footnotemark[1], one for each asset. The estimated coefficients\footnotemark[2] are in \code{alpha} and \code{beta}. R-squared and residual standard deviations are in \code{r2} and \code{resid.sd} respectively. The remaining components contain the input choices and the data.
+
+\footnotetext[1]{The fitted objects can be of class "lm", "lmRob" or "lars" depending on the fit and variable selection methods.}
+
+\footnotetext[2]{Refer to the summary method in section 2.6 for standard errors, degrees of freedom, t-statistics etc.}
+
+<<>>=
+fit.singleIndex # print the fitted "tsfm" object
+@
+
+Figure 1 shows the single factor linear fits for the assets. (Plot options are explained later in section 4.)
+
+<<fig.cap="Single Index model: Asset returns vs Factor Returns">>=
+# plot asset returns vs factor returns for the single factor models
+plot(fit.singleIndex, which=12, f.sub=1)
+@
+
+\subsection{Market Timing Models}
+
+In the following example, we fit the \cite{henriksson1981market} market timing model, using the SP500 as the market. Market timing accounts for the price movement of the general stock market relative to fixed income securities. The function \code{fitTsfmMT}, a wrapper to \code{fitTsfm}, includes $down.market = max(0, R_f-R_m)$ as a factor. To test market timing ability, this factor can be added to the single index model as shown below. The coefficient of this down-market factor can be interpreted as the number of "free" put options on the market provided by the manager's market-timings kills. That is, a negative value for the regression estimate would imply a negative value for market timing ability of the manager.
+<<>>=
+# Henriksson-Merton's market timing model
+fit.mktTiming <-  fitTsfmMT(asset.names=asset.names, mkt.name="SP500",
+                            rf.name="US3M", data=managers)
+t(fit.mktTiming$beta)
+fit.mktTiming$r2
+fit.mktTiming$resid.sd
+@
+
+% Similarly, to account for market timing with respect to volatility, one can specify \code{mkt.timing="TM"}. Following \cite{treynor1966can}, $market.sqd = (R_m-R_f)^2$ is added as a factor.
+
+Note: the user needs to specify which column in \code{data} corresponds to the market returns using argument \code{mkt.name}.
+
+\subsection{Fit methods}
+
+The default fit method is LS regression. The next example performs LS regression using all 3 available factors in the dataset. Notice that the R-squared values have improved considerably when compared to the single index model as well as the market-timing model.
+<<>>=
+fit.ols <- fitTsfm(asset.names=asset.names, factor.names=factor.names,
+                   rf.name=NULL, data=managers)
+fit.ols$beta
+fit.ols$r2
+fit.ols$resid.sd
+@
+
+Other options include discounted least squares (\code{"DLS"}) and robust regression (\code{"Robust"}). DLS is least squares regression using exponentially discounted weights and accounts for time variation in coefficients. Robust regression is resistant to outliers.
+<<>>=
+fit.robust <- fitTsfm(asset.names=asset.names, factor.names=factor.names,
+                      rf.name=NULL, data=managers, fit.method="Robust")
+fit.robust$beta
+fit.robust$r2
+fit.robust$resid.sd
+@
+
+Notice the lower R-squared values and smaller residual volatilities with robust regression. Figures 2 and 3 give a graphical comparison of the fitted returns for asset "HAM3" and residual volatilities from the factor model fits. Figure 2 depicts the smaller influence that the volatility of Jan 2000 has on the robust regression.
+<<fig.cap="HAM3 Returns: LS (top) vs Robust (bottom)", fig.show='hold'>>=
+par(mfrow=c(2,1))
+plot(fit.ols, plot.single=TRUE, which=1, asset.name="HAM3")
+mtext("LS", side=3)
+plot(fit.robust, plot.single=TRUE, which=1, asset.name="HAM3")
+mtext("Robust", side=3)
+@
+
+<<fig.cap="Residual Vol: LS (left) vs Robust (right)", fig.width=3, fig.height=2.5, out.width='.49\\linewidth', fig.show='hold'>>=
+par(mfrow=c(1,2))
+plot(fit.ols, which=5, xlim=c(0,0.045), sub="LS")
+plot(fit.robust, which=5, xlim=c(0,0.045), sub="Robust")
+@
+
+\subsection{Variable Selection}
+
+Though the R-squared values improved by adding more factors in fit.ols (compared to the single index model), one might prefer to employ variable selection methods such as "stepwise", "subsets" or "lars" to avoid over-fitting. The method can be selected via the \code{variable.selection} argument. The default "none", uses all the factors and performs no variable selection.
+
+Specifying "stepwise" selects traditional stepwise\footnotemark[3] LS or robust regression using \code{step} or \code{step.lmRob} respectively. Starting from the given initial set of factors, factors are added (or subtracted) only if the regression fit, as measured by the Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC)\footnotemark[4], improves.
+
+Specifying "subsets" enables subsets selection using \code{regsubsets}. The best performing subset of any given size or within a range of subset sizes is chosen. Different methods such as exhaustive search (default), forward or backward stepwise, or sequential replacement can be employed.
+
+Finally, "lars" corresponds to least angle regression using \code{lars} with variants "lasso" (default), "lar", "forward.stagewise" or "stepwise".
+
+\footnotetext[3]{The direction for stepwise search can be one of "forward", "backward" or "both". See the help file for more details.}
+
+\footnotetext[4]{AIC is the default. When the additive constant can be chosen so that AIC is equal to Mallows' Cp, this is done. The optional control parameter \code{k} can be used to switch to BIC instead.}
+
+The next example uses the \code{"lars"} variable selection method. The default type and criterion used are \code{"lasso"} and the \code{"Cp"} statistic.
+<<fig.show='hide'>>=
+fit.lars <- fitTsfm(asset.names=asset.names, factor.names=factor.names,
+                    data=managers, rf.name=NULL,
+                    variable.selection="lars")
+fit.lars
+@
+
+\newpage
+Using the same set of factors for comparison, let's fit another model using the \code{"subsets"} variable selection method. Here, the best subset of size 2 for each asset is chosen by specifying $nvmin = nvmax = 2$. Note that when $nvmin < nvmax$, the best subset is chosen from a range of subset sizes $[nvmin, nvmax]$. Default is $nvmin = 1$.
+<<>>=
+(fit.sub <- fitTsfm(asset.names=asset.names, factor.names=factor.names,
+                    data=managers, rf.name=NULL,
+                    variable.selection="subsets", nvmin=2, nvmax=2))
+@
+
+Comparing the coefficients and R-squared values from the two models, we find that the method that uses more factors for an asset have higher R-squared values as expected. However, when both "lars" and "subsets" chose the same number of factors, "lars" fits have a slightly higher R-squared values.
+
+The Figures 4 and 5 display the factor betas from the two fits.
+<<fig.cap="Factor betas: fit.sub", fig.show='hold'>>=
+plot(fit.sub, which=2, f.sub=1:3)
+@
+
+<<fig.cap="Factor betas: fit.lars", fig.show='hold'>>=
+plot(fit.lars, which=2, f.sub=1:3)
+@
+
+Remarks:
+\begin{itemize}
+\item Variable selection methods \code{"stepwise"} and \code{"subsets"} can be combined with any of the fit methods, "LS", "DLS" or "Robust". If variable selection method selected is \code{"lars"}, \code{fit.method} will be ignored.
+\item Refer to the next section on \code{fitTsfm control} for more details on the control arguments that can be passed to the different variable selection methods.
+\end{itemize}
+
+\subsection{fitTsfm control}
+
+Since \code{fitTsfm} calls many different regression fitting and variable selection methods, it made sense to collect all the optional controls for these functions and process them via \code{fitTsfm.control}. This function is meant to be used internally by \code{fitTsfm} when arguments are passed to it via the ellipsis. The use of control parameters was demonstrated with \code{nvmax} and \code{nvmin} in the fit.sub example earlier.
+
+For easy reference, here's a classified list of control parameters accepted and passed by \code{fitTsfm} to their respective model fitting (or) model selection functions in other packages. See the corresponding help files for more details on each parameter.
+\begin{itemize}
+\item \verb"lm": "weights","model","x","y","qr"
+\item \verb"lmRob": "weights","model","x","y","nrep","efficiency","mxr","mxf","mxs","trace"
+\item \verb"step": "scope","scale","direction","trace","steps","k"
+\item \verb"regsubsets": "weights","nvmax","force.in","force.out","method","really.big"
+\item \verb"lars": "type","normalize","eps","max.steps","trace"
+\item \verb"cv.lars": "K","type","normalize","eps","max.steps","trace"
+\end{itemize}
+
+There are 3 other significant arguments that can be passed through the \code{...} argument to \code{fitTsfm}.
+\begin{itemize}
+\item \verb"decay": Determines the decay factor for DLS fit method, which corresponds to exponentially weighted least squares, with weights adding to unity.
+\item \verb"nvmin": The lower limit for the range of subset sizes from which the best model (BIC) is found when performing "subsets" selection. Note that the upper limit was already passed to \code{regsubsets} function. By specifying \code{nvmin=nvmax}, users can obtain the best model of a particular size (meaningful to those who want a parsimonious model, or to compare with a different model of the same size, or perhaps to avoid over-fitting/ data dredging etc.).
+\item \verb"lars.criterion": An option (one of "Cp" or "cv") to assess model selection for the \code{"lars"} variable selection method. "Cp" is Mallow's Cp statistic and "cv" is K-fold cross-validated mean squared prediction error.
+\end{itemize}
+
+\newpage
+\subsection{S3 generic methods}
+
+<<>>=
+methods(class="tsfm")
+@
+
+Many useful generic accessor functions are available for "tsfm" fit objects. \code{coef()} returns a matrix of estimated model coefficients including the intercept. \code{fitted()} returns an xts data object of the part of observed asset returns explained by the factor model. \code{residuals()} returns an xts data object with the part of observed asset returns not explained by the factor model. \code{predict()} uses the fitted factor model to estimate asset returns given a set of new or simulated factor return data.
+
+\code{summary()} prints standard errors and t-statistics for all estimated coefficients in addition to R-squared values and residual volatilities. Argument \code{se.type}, one of "Default", "HC" or "HAC", allows for heteroskedasticity and auto-correlation consistent estimates and standard errors whenever possible. A "summary.tsfm" object is returned which contains a list of summary objects returned by "lm", "lm.Rob" or "lars" for each asset fit.
+
+Note: Standard errors are currently not available for the "lars" variable selection method, as there seems to be no consensus on a statistically valid method of calculating standard errors for the lasso predictions.
+
+Factor model covariance and risk decomposition functions are explained in section 3 and the \code{plot} method is discussed separately in Section 4.
+
+Here are some examples using the time series factor models fitted earlier.
+<<>>=
+# all estimated coefficients from the LS fit using all 3 factors
+coef(fit.ols)
+
+# compare returns data with fitted and residual values for HAM1 from fit.lars
+HAM1.ts <- merge(fit.lars$data[,1], fitted(fit.lars)[,1], residuals(fit.lars)[,1])
+colnames(HAM1.ts) <- c("HAM1.return","HAM1.fitted","HAM1.residual")
+tail(HAM1.ts)
+
+# summary for fit.sub computing HAC standard erros
+summary(fit.sub, se.type="HAC")
+@
+
+\newpage
+\section{Factor Model Covariance \& Risk Decomposition}
+
+\subsection{Factor model covariance}
+
+Following \cite{zivot2006modeling}, $R_{i, t}$, the return on asset $i$ ($i = 1, ..., N$) at time $t$ ($t = 1, ..., T$), is fitted with a factor model of the form,
+\begin{equation}
+R_{i,t} = \alpha_i + \bm\beta_i' \: \mathbf{f_t} + \epsilon_{i,t}
+\end{equation}
+where, $\alpha_i$ is the intercept, $\mathbf{f_t}$ is a $K \times 1$ vector of factor returns at time $t$, $\bm\beta_i$ is a $K \times 1$ vector of factor exposures for asset $i$ and the error terms $\epsilon_{i,t}$ are serially uncorrelated across time and contemporaneously uncorrelated across assets so that $\epsilon_{i,t} \sim iid(0, \sigma_i^2)$. Thus, the variance of asset $i$'s return is given by
+\begin{equation}
+var(R_{i,t}) = \bm\beta_i'\: var(\mathbf{f_t})\: \bm\beta_i + \sigma_i^2
+\end{equation}
+
+And, the $N \times N$ covariance matrix of asset returns is
+\begin{equation}
+var(\mathbf{R}) = \bm\Omega = \mathbf{B}\: var(\mathbf{F})\: \mathbf{B}' + \mathbf{D}
+\end{equation}
+where, $R$ is the $N \times T$ matrix of asset returns, $B$ is the $N \times K$ matrix of factor betas, $\mathbf{F}$ is a $K \times T$ matrix of factor returns and $D$ is a diagonal matrix with $\sigma_i^2$ along the diagonal.
+
+\code{fmCov()} computes the factor model covariance from a fitted factor model. The covariance of factor returns is the sample covariance matrix by default, but the option exists for the user to specify their own. Options for handling missing observations include "pairwise.complete.obs" (default), "everything", "all.obs", "complete.obs" and "na.or.complete".
+
+<<fig.cap="Factor model return correlation (pairwise complete obs)", fig.show='asis', fig.width=5, fig.height=5>>=
+fmCov(fit.sub)
+# factor model return correlation plot
+plot(fit.sub, which=8)
+@
+
+\subsection{Standard deviation decomposition}
+
+Given the factor model in equation 1, the standard deviation of the asset $i$'s return can be decomposed as follows (based on \cite{meucci2007risk}):
+\begin{align}
+R_{i,t} &= \alpha_i + \bm\beta_i' \: \mathbf{f_t} + \epsilon_{i,t} \\
+&=  \bm\beta_i^{*'} \: \mathbf{f_t^*}
+\end{align}
+where, $\bm\beta_i^{*'} = (\bm\beta_i' \: \sigma_i)$ and $\mathbf{f_t^{*'}} = (\mathbf{f_t'} \: z_t)$, with $z_t \sim iid(0, 1)$ and $\sigma_i$ is asset $i$'s residual standard deviation.
+
+By Euler's theorem, the standard deviation of asset $i$'s return is:
+\begin{align}
+Sd.fm_i = \sum_{k=1}^{K+1} cSd_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mSd_{i,k}
+\end{align}
+where, summation is across the $K$ factors and the residual, $\mathbf{cSd_i}$ and $\mathbf{mSd_i}$ are the component and marginal contributions to $Sd.fm_i$ respectively. Computing $Sd.fm_i$ and $\mathbf{mSd_i}$ is straight forward. The formulas are given below and details are in \cite{meucci2007risk}. The covariance term is approximated by the sample covariance and $\odot$ represents element-wise multiplication.
+\begin{align}
+& Sd.fm_i = \sqrt{\bm\beta_i^{*'}\: cov(\mathbf{F^*})\: \bm\beta_i^*} \\
+& \mathbf{mSd_i} = \frac{cov(\mathbf{F^*})\: \bm\beta_i^*}{Sd.fm_i} \\
+& \mathbf{cSd_i} = \bm\beta_i^* \: \odot \: \mathbf{mSd_i}
+\end{align}
+
+\code{fmSdDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total standard deviation and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to SD", fig.show='asis', fig.width=5, fig.height=5>>=
+decomp <- fmSdDecomp(fit.sub)
+names(decomp)
+# get the factor model standard deviation for all assets
+decomp$Sd.fm
+# get the component contributions to Sd
+decomp$cSd
+# get the marginal factor contributions to Sd
+decomp$mSd
+# get the percentage component contributions to Sd
+decomp$pcSd
+# plot the percentage component contributions to Sd
+plot(fit.sub, which=9, f.sub=1:3)
+@
+\newpage
+
+\subsection{Value-at-Risk decomposition}
+
+The VaR version of equation 6 is given below. By Euler's theorem, the value-at-risk of asset $i$'s return is:
+\begin{equation}
+VaR.fm_i = \sum_{k=1}^{K+1} cVaR_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mVaR_{i,k}
+\end{equation}
+
+The marginal contribution to $VaR.fm$ is defined as the expectation of $F.star$, conditional on the loss being equal to $VaR.fm$. This is approximated as described in \cite{epperlein2006portfolio} using a triangular smoothing kernel. \code{type} gives the option to estimate $VaR.fm$ non-parametrically using the sample quantile (default) or assuming a normal distribution.
+
+\code{fmVaRDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total VaR and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to VaR", fig.show='asis', fig.width=5, fig.height=5>>=
+# factor model VaR decomp using estimated factor return covariance (default)
+# using tail probability = 10% and parametric (normal) VaR estimation
+decomp1 <- fmVaRDecomp(fit.sub, p=0.10, type="normal")
+names(decomp1)
+# get the factor model value-at-risk for all assets
+decomp1$VaR.fm
+# print the number of VaR exceedences for all assets
+decomp1$n.exceed
+# plot the percentage component contributions to VaR
+plot(fit.sub, which=11, f.sub=1:3)
+@
+
+\subsection{Expected Shortfall decomposition}
+
+The Expected Shortfall (ES) version of equation 6 is given below. By Euler's theorem, the expected shortfall of asset $i$'s return is:
+\begin{equation}
+ES.fm_i = \sum_{k=1}^{K+1} cES_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mES_{i,k}
+\end{equation}
+
+The marginal contribution to $ES.fm$ is defined as the expectation of $F.star$, conditional on the loss being less than or equal to $ES.fm$. This is estimated as a sample average of the observations in that data window. Once again, input variable \code{type} gives the option to estimate $ES.fm$ non-parametrically using the sample quantile (default) or assuming a normal distribution.
+
+\code{fmEsDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total ES and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to ES", fig.show='asis', fig.width=5, fig.height=5>>=
+# using normal distr. for computing ES (default is non-param. sample quantile)
+decomp2 <- fmEsDecomp(fit.sub, type="normal")
+names(decomp2)
+# get the factor model expected shortfall for all assets
+decomp2$ES.fm
+# get the component contributions to Sd
+decomp2$cES
+# get the marginal factor contributions to ES
+decomp2$mES
+# get the percentage component contributions to ES
+decomp2$pcES
+# plot the percentage component contributions to ES
+plot(fit.sub, which=10, f.sub=1:3)
+@
+
+\newpage
+
+\section{Plot}
+
+Some types of individual asset (Figure 2) and group plots (Figures 1, 3-9) have already been demonstrated. Let's take a look at all available arguments for plotting a "tsfm" object.
+<<eval=FALSE>>=
+## S3 method for class "tsfm"
+plot (x, which=NULL, f.sub=1:2, a.sub=1:6, plot.single=FALSE, asset.name,
+      colorset=c("royalblue","dimgray","olivedrab","firebrick",
+                 "goldenrod","mediumorchid","deepskyblue","chocolate",
+                 "darkslategray"),
+      legend.loc="topleft", las=1, lwd=2, maxlag=15, ...)
+@
+
+\subsection{Group plots}
+
+This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is any "tsfm" object, will bring up a menu (shown below) for group plots.
+<<eval=FALSE, results='hide'>>=
+plot(fit.sub)
+
+# Make a plot selection (or 0 to exit):
+
+#  1: Factor model coefficients: Alpha
+#  2: Factor model coefficients: Betas
+#  3: Actual and Fitted asset returns
+#  4: R-squared
+#  5: Residual Volatility
+#  6: Scatterplot matrix of residuals, with histograms, density overlays,
+#     correlations and significance stars
+#  7: Factor Model Residual Correlation
+#  8: Factor Model Return Correlation
+#  9: Factor Contribution to SD
+# 10: Factor Contribution to ES
+# 11: Factor Contribution to VaR
+# 12: Asset returns vs factor returns (single factor model)
+#
+# Selection:
+@
+
+Remarks:
+\begin{itemize}
+\item Only a subset of assets and factors selected by \code{a.sub} and \code{f.sub} are plotted. The first 2 factors and first 6 assets are shown by default.
+\item The last option for plotting asset returns vs. factor returns (group plot option 12 and individual asset plot option 19) are only applicable for single factor models.
+\end{itemize}
+
+<<fig.cap="Actual and fitted factor model returns for the 1st 4 assets", fig.show='asis', fig.width=7, fig.height=10>>=
+# Examples of group plots: looping disabled & no. of assets displayed = 4.
+plot(fit.sub, which=3, a.sub=1:4, legend.loc=NULL, lwd=1)
+@
+
+<<fig.cap="Residual scatterplot matrix with histograms, density overlays, correlations and significance stars", warning=FALSE, fig.show='asis', fig.width=6, fig.height=6>>=
+plot(fit.sub, which=6) # residual scatter plot matrix with correlations
+@
+
+\subsection{Menu and looping}
+
+If the plot type argument \code{which} is not specified, a menu prompts for user input. In case multiple plots are needed, the menu is repeated after each plot (enter 0 to exit). User can also input a numeric vector of plot options via \code{which}.
+
+\newpage
+\subsection{Individual plots}
+
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fitted object \code{x}, \code{asset.name} is also necessary. In case the \code{tsfm} object \code{x} contains only a single asset's fit, plot.tsfm can infer \code{asset.name} without user input.
+
+Here's the individual plot menu.
+<<eval=FALSE, results='hide'>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1")
+
+# Make a plot selection (or 0 to exit):
+#  1: Actual and fitted asset returns
+#  2: Actual vs fitted asset returns
+#  3: Residuals vs fitted asset returns
+#  4: Sqrt. of modified residuals vs fitted
+#  5: Residuals with standard error bands
+#  6: Time series of squared residuals
+#  7: Time series of absolute residuals
+#  8: SACF and PACF of residuals
+#  9: SACF and PACF of squared residuals
+# 10: SACF and PACF of absolute residuals
+# 11: Non-parametric density of residuals with normal overlaid
+# 12: Non-parametric density of residuals with skew-t overlaid
+# 13: Histogram of residuals with non-parametric density and normal overlaid
+# 14: QQ-plot of residuals
+# 15: CUSUM test-Recursive residuals
+# 16: CUSUM test-LS residuals
+# 17: Recursive estimates (RE) test of LS regression coefficients
+# 18: Rolling regression over a 24-period observation window
+# 19: Asset returns vs factor returns (single factor model)
+#
+# Selection:
+@
+
+Remarks:
+\begin{itemize}
+\item CUSUM plots (individual asset plot options 15, 16 and 17) are applicable only for \code{fit.method="LS"}.
+\item Modified residuals, rolling regression and single factor model plots (individual asset plot options 4, 18 and 19) are not applicable for \code{variable.selection="lars"}.
+\end{itemize}
+
+Here are a few more examples which don't need interactive user input.
+<<fig.cap="Time series plot of residuals with standard error bands: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=5, ylim=c(-0.06,0.06))
+@
+
+<<fig.cap="SACF and PACF of absolute residuals: HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=10)
+@
+
+<<fig.cap="QQ-plot of residuals", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=14)
+grid()
+@
+
+<<fig.cap="Non-parametric density of residuals with normal overlaid for HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=11)
+@
+
+<<fig.cap="Non-parametric density of residuals with skew-t overlaid for HAM1", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.sub, plot.single=TRUE, asset.name="HAM1", which=12)
+@
+\newpage
+
+
+\end{document}

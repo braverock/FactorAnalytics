@@ -4,8 +4,17 @@
 \alias{vif}
 \title{Factor Model Variance Inflaction Factor Values}
 \usage{
-vif(ffmObj, digits = 2, isPrint = T, isPlot = T, lwd = 2,
-  stripText.cex = 1, axis.cex = 1, title = TRUE, ...)
+vif(
+  ffmObj,
+  digits = 2,
+  isPrint = T,
+  isPlot = T,
+  lwd = 2,
+  stripText.cex = 1,
+  axis.cex = 1,
+  title = TRUE,
+  ...
+)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
@@ -45,7 +54,7 @@ Calculate and plot the Factor Model Variance Inflaction Factor Values for a fitt
  data("factorDataSetDjia5Yrs")
 
 #Fit a Ffm
-require(factorAnalytics)
+require(FactorAnalytics)
  fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"))
 

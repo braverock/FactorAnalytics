@@ -4,14 +4,24 @@
 \alias{tsPlotMP}
 \title{Time Series Plots}
 \usage{
-tsPlotMP(ret, add.grid = FALSE, layout = NULL, type = "l",
-  yname = "RETURNS (\%)", scaleType = "free", stripLeft = TRUE,
-  main = NULL, lwd = 1, stripText.cex = 1, axis.cex = 1,
-  color = "black", zeroLine = TRUE)
+tsPlotMP(
+  ret,
+  add.grid = FALSE,
+  layout = NULL,
+  type = "l",
+  yname = "RETURNS (\%)",
+  Pct = F,
+  scaleType = "free",
+  stripLeft = TRUE,
+  main = NULL,
+  lwd = 1,
+  stripText.cex = 1,
+  axis.cex = 1,
+  color = "black",
+  zeroLine = TRUE
+)
 }
 \arguments{
-\item{ret}{an time series exposure/return object}
-
 \item{add.grid}{logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')}
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
@@ -19,6 +29,8 @@ tsPlotMP(ret, add.grid = FALSE, layout = NULL, type = "l",
 \item{type}{character. type of the plot; 'l' denotes a line, 'p' denotes a point, and 'b' and 'o' both denote both together.deafault is 'l'.}
 
 \item{yname}{character or espression giving label(s) for the y-axis}
+
+\item{Pct}{Pct controls if use the percentage value.}
 
 \item{scaleType}{scaleType controls if use a same scale of y-axis, choose from c('same', 'free')}
 
@@ -35,6 +47,8 @@ tsPlotMP(ret, add.grid = FALSE, layout = NULL, type = "l",
 \item{color}{A specification for the default plotting color. Default is black.}
 
 \item{zeroLine}{logical varible to choose add a dotted horizontal line at the zero vertical distance}
+
+\item{data}{an time series exposure/return object}
 }
 \description{
 Plot time series with specific plotting parameters

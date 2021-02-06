@@ -8,19 +8,46 @@
 \usage{
 repRisk(object, ...)
 
-\method{repRisk}{tsfm}(object, weights = NULL, risk = c("Sd", "VaR",
-  "ES"), decomp = c("FPCR", "FCR", "FMCR"), digits = NULL,
-  invert = FALSE, nrowPrint = 20, p = 0.05, type = c("np",
-  "normal"), use = "pairwise.complete.obs", sliceby = c("factor",
-  "asset"), isPrint = TRUE, isPlot = FALSE, layout = NULL,
-  stripText.cex = 1, axis.cex = 1, portfolio.only = FALSE, ...)
+\method{repRisk}{tsfm}(
+  object,
+  weights = NULL,
+  risk = c("Sd", "VaR", "ES"),
+  decomp = c("FPCR", "FCR", "FMCR"),
+  digits = NULL,
+  invert = FALSE,
+  nrowPrint = 20,
+  p = 0.05,
+  type = c("np", "normal"),
+  use = "pairwise.complete.obs",
+  sliceby = c("factor", "asset"),
+  isPrint = TRUE,
+  isPlot = FALSE,
+  layout = NULL,
+  stripText.cex = 1,
+  axis.cex = 1,
+  portfolio.only = FALSE,
+  ...
+)
 
-\method{repRisk}{ffm}(object, weights = NULL, risk = c("Sd", "VaR",
-  "ES"), decomp = c("FMCR", "FCR", "FPCR"), digits = NULL,
-  invert = FALSE, nrowPrint = 20, p = 0.05, type = c("np",
-  "normal"), sliceby = c("factor", "asset", "riskType"),
-  isPrint = TRUE, isPlot = FALSE, layout = NULL, stripText.cex = 1,
-  axis.cex = 1, portfolio.only = FALSE, ...)
+\method{repRisk}{ffm}(
+  object,
+  weights = NULL,
+  risk = c("Sd", "VaR", "ES"),
+  decomp = c("FMCR", "FCR", "FPCR"),
+  digits = NULL,
+  invert = FALSE,
+  nrowPrint = 20,
+  p = 0.05,
+  type = c("np", "normal"),
+  sliceby = c("factor", "asset", "riskType"),
+  isPrint = TRUE,
+  isPlot = FALSE,
+  layout = NULL,
+  stripText.cex = 1,
+  axis.cex = 1,
+  portfolio.only = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -99,7 +126,7 @@ return of a portfolio based on Euler's theorem, given the fitted factor model.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)
 report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR', 

@@ -8,12 +8,26 @@
 \usage{
 portVaRDecomp(object, ...)
 
-\method{portVaRDecomp}{tsfm}(object, weights = NULL, factor.cov,
-  p = 0.05, type = c("np", "normal"), invert = FALSE,
-  use = "pairwise.complete.obs", ...)
+\method{portVaRDecomp}{tsfm}(
+  object,
+  weights = NULL,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  invert = FALSE,
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{portVaRDecomp}{ffm}(object, weights = NULL, factor.cov,
-  p = 0.05, type = c("np", "normal"), invert = FALSE, ...)
+\method{portVaRDecomp}{ffm}(
+  object,
+  weights = NULL,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  invert = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -74,7 +88,7 @@ Epperlein & Smillie (2006); a triangular smoothing kernel is used here.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)
 decomp <- portVaRDecomp(fit.macro,invert = TRUE)

@@ -4,9 +4,16 @@
 \alias{fitTsfmLagBeta}
 \title{Fit a lagged Betas factor model using time series regression}
 \usage{
-fitTsfmLagBeta(asset.names, mkt.name, rf.name = NULL, data = data,
-  fit.method = c("LS", "DLS", "Robust"), LagBeta = 1,
-  control = fitTsfm.control(...), ...)
+fitTsfmLagBeta(
+  asset.names,
+  mkt.name,
+  rf.name = NULL,
+  data = data,
+  fit.method = c("LS", "DLS", "Robust"),
+  LagBeta = 1,
+  control = fitTsfm.control(...),
+  ...
+)
 }
 \arguments{
 \item{asset.names}{vector containing names of assets, whose returns or 

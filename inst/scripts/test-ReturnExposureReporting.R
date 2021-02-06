@@ -6,7 +6,7 @@
 #' @author Lingjie Yi
 
 
-library(factorAnalytics)
+library(FactorAnalytics)
 ##sample data
 load("stocks145scores6.rda")
 stacked.df = data145

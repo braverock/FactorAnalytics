@@ -8,13 +8,30 @@
 \usage{
 riskDecomp(object, ...)
 
-\method{riskDecomp}{tsfm}(object, risk, weights = NULL,
-  portDecomp = TRUE, p = 0.05, type = c("np", "normal"), factor.cov,
-  invert = FALSE, use = "pairwise.complete.obs", ...)
+\method{riskDecomp}{tsfm}(
+  object,
+  risk,
+  weights = NULL,
+  portDecomp = TRUE,
+  p = 0.05,
+  type = c("np", "normal"),
+  factor.cov,
+  invert = FALSE,
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{riskDecomp}{ffm}(object, risk, weights = NULL,
-  portDecomp = TRUE, factor.cov, p = 0.05, type = c("np", "normal"),
-  invert = FALSE, ...)
+\method{riskDecomp}{ffm}(
+  object,
+  risk,
+  weights = NULL,
+  portDecomp = TRUE,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  invert = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
@@ -63,7 +80,7 @@ the fitted factor model.
 \examples{
 # Time Series Factor Model
 data(managers)
-fit.macro <- factorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
+fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)
 decompSd <- riskDecomp(fit.macro,risk = "Sd")

@@ -1,6 +1,6 @@
 #' @title Functions to compute estimates and thier standard errors using fmmc
 #' 
-#' Control default arguments. Usually for factorAnalytics.
+#' Control default arguments. Usually for FactorAnalytics.
 #' 
 #' @details
 #' This method takes in the additional arguments list and checks if parameters
@@ -8,7 +8,7 @@
 #' fit.method(default: OLS) and variable.selection(default: subsets). If 
 #' variable.selection is set to values other than subsets/none then it will
 #' default to subsets. 
-#' arguments for factorAnalytics 
+#' arguments for FactorAnalytics 
 #' 
 #' @param  ... Arguments that must be passed to fitTsfm
 #' 
@@ -52,7 +52,7 @@
 #' 
 #' @param  R single vector of returns
 #' @param  factors matrix of factor returns
-#' @param  ... allows passing paramters to factorAnalytics.
+#' @param  ... allows passing paramters to FactorAnalytics.
 #' @author Rohit Arora
 #' 
 #' 
@@ -232,7 +232,7 @@
 #' 
 #' @param  R single vector of returns
 #' @param  factors matrix of factor returns
-#' @param  ... allows passing paramters to factorAnalytics.
+#' @param  ... allows passing paramters to FactorAnalytics.
 #' @author Rohit Arora
 #' 
 #' 
