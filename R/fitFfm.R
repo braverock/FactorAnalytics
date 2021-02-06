@@ -197,6 +197,9 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (missing(data) || !is.data.frame(data)) {
     stop("Invalid args: data must be a data.frame")
   }
+  if (length(unique(data$TICKER)) < 2) {
+    stop("Invalid args: data must contain at least 2 TICKER symbols")
+  }
   fit.method = fit.method[1]
   if (!(fit.method %in% c("LS","WLS","Rob","W-Rob"))) {
     stop("Invalid args: fit.method must be 'LS', 'WLS', 'Rob' or 'W-Rob'")
@@ -245,7 +248,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (!(analysis %in% c("none", "ISM", "NEW")) || length(z.score) != 1) {
     stop("Invalid args: control parameter 'analysis' must be either ISM or NEW")
   }
-  
+
   # initialize to avoid R CMD check's NOTE: no visible binding for global var
   DATE=NULL 
   W=NULL
