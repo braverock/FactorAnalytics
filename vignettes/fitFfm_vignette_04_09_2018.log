@@ -1,0 +1,608 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7380 64-bit) (preloaded format=pdflatex 2020.4.18)  1 FEB 2021 17:38
+entering extended mode
+**./fitFfm_vignette_04_09_2018.tex
+(fitFfm_vignette_04_09_2018.tex
+LaTeX2e <2020-02-02> patch level 5
+L3 programming layer <2020-04-06>
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\article.cls"
+Document Class: article 2019/12/20 v1.4l Standard LaTeX document class
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\size10.clo"
+File: size10.clo 2019/12/20 v1.4l Standard LaTeX file (size option)
+)
+\c@part=\count167
+\c@section=\count168
+\c@subsection=\count169
+\c@subsubsection=\count170
+\c@paragraph=\count171
+\c@subparagraph=\count172
+\c@figure=\count173
+\c@table=\count174
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen134
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\graphicx.sty"
+Package: graphicx 2019/11/30 v1.2a Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\keyval.sty"
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks15
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\graphics.sty"
+Package: graphics 2019/11/30 v1.4a Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\trig.sty"
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics-cfg\graphics.cfg"
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 105.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics-def\pdftex.def"
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen135
+\Gin@req@width=\dimen136
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\color.sty"
+Package: color 2019/11/23 v1.2a Standard LaTeX Color (DPC)
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/graphics-cfg\color.cfg"
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 147.
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/framed\framed.sty"
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip49
+\fb@frw=\dimen137
+\fb@frh=\dimen138
+\FrameRule=\dimen139
+\FrameSep=\dimen140
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\alltt.sty"
+Package: alltt 1997/06/16 v2.0g defines alltt environment
+)
+(C:/R/R-4.0.3/share/texmf/tex/latex\Rd.sty
+Package: Rd 
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\ifthen.sty"
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/tools\longtable.sty"
+Package: longtable 2020/01/07 v4.13 Multi-page Table package (DPC)
+\LTleft=\skip50
+\LTright=\skip51
+\LTpre=\skip52
+\LTpost=\skip53
+\LTchunksize=\count175
+\LTcapwidth=\dimen141
+\LT@head=\box45
+\LT@firsthead=\box46
+\LT@foot=\box47
+\LT@lastfoot=\box48
+\LT@cols=\count176
+\LT@rows=\count177
+\c@LT@tables=\count178
+\c@LT@chunks=\count179
+\LT@p@ftn=\toks16
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/tools\bm.sty"
+Package: bm 2019/07/24 v1.2d Bold Symbol Support (DPC/FMi)
+\symboldoperators=\mathgroup4
+\symboldletters=\mathgroup5
+\symboldsymbols=\mathgroup6
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 141.
+LaTeX Info: Redefining \bm on input line 209.
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/tools\verbatim.sty"
+Package: verbatim 2019/11/10 v1.5r LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks17
+\verbatim@line=\toks18
+\verbatim@in@stream=\read2
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/url\url.sty"
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\textcomp.sty"
+Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
+)
+\ldescriptionwidth=\skip54
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsmath.sty"
+Package: amsmath 2020/01/20 v2.17e AMS math features
+\@mathmargin=\skip55
+
+For additional information on amsmath, use the `?' option.
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amstext.sty"
+Package: amstext 2000/06/29 v2.01 AMS text
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsgen.sty"
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks19
+\ex@=\dimen142
+))
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsbsy.sty"
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+LaTeX Info: Redefining \boldsymbol on input line 28.
+\pmbraise@=\dimen143
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsopn.sty"
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count180
+LaTeX Info: Redefining \frac on input line 227.
+\uproot@=\count181
+\leftroot@=\count182
+LaTeX Info: Redefining \overline on input line 389.
+\classnum@=\count183
+\DOTSCASE@=\count184
+LaTeX Info: Redefining \ldots on input line 486.
+LaTeX Info: Redefining \dots on input line 489.
+LaTeX Info: Redefining \cdots on input line 610.
+\Mathstrutbox@=\box49
+\strutbox@=\box50
+\big@size=\dimen144
+LaTeX Font Info:    Redeclaring font encoding OML on input line 733.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 734.
+\macc@depth=\count185
+\c@MaxMatrixCols=\count186
+\dotsspace@=\muskip17
+\c@parentequation=\count187
+\dspbrk@lvl=\count188
+\tag@help=\toks20
+\row@=\count189
+\column@=\count190
+\maxfields@=\count191
+\andhelp@=\toks21
+\eqnshift@=\dimen145
+\alignsep@=\dimen146
+\tagshift@=\dimen147
+\tagwidth@=\dimen148
+\totwidth@=\dimen149
+\lineht@=\dimen150
+\@envbody=\toks22
+\multlinegap=\skip56
+\multlinetaggap=\skip57
+\mathdisplay@stack=\toks23
+LaTeX Info: Redefining \[ on input line 2859.
+LaTeX Info: Redefining \] on input line 2860.
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/natbib\natbib.sty"
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip58
+\bibsep=\skip59
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count192
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\inputenc.sty"
+Package: inputenc 2018/08/11 v1.3c Input encoding file
+\inpenc@prehook=\toks24
+\inpenc@posthook=\toks25
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\latin1.def"
+File: latin1.def 2018/08/11 v1.3c Input encoding file
+))
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\lmodern.sty"
+Package: lmodern 2009/10/30 v1.6 Latin Modern Fonts
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/lmr/m/n on input line 22.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/lmm/m/it on input line 23.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> OMS/lmsy/m/n on input line 24.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 25.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 26.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/lmm/b/it on input line 27.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> OMS/lmsy/b/n on input line 28.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/lmex/m/n on input line 29.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 31.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> OT1/lmss/m/n on input line 32.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/lmr/m/it on input line 33.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/bx/n on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> OT1/lmss/bx/n on input line 36.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/lmr/bx/it on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\fontenc.sty"
+Package: fontenc 2020/02/11 v2.0o Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 11
+2.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\t1lmr.fd"
+File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+))
+("C:\Program Files\MiKTeX 2.9\tex/latex/upquote\upquote.sty"
+Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
+tim
+)
+("C:\Program Files\MiKTeX 2.9\tex/latex/l3backend\l3backend-pdfmode.def"
+File: l3backend-pdfmode.def 2020-03-12 L3 backend support: PDF mode
+\l__kernel_color_stack_int=\count193
+\l__pdf_internal_box=\box51
+)
+No file fitFfm_vignette_04_09_2018.aux.
+\openout1 = `fitFfm_vignette_04_09_2018.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+("C:\Program Files\MiKTeX 2.9\tex/context/base/mkii\supp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count194
+\scratchdimen=\dimen151
+\scratchbox=\box52
+\nofMPsegments=\count195
+\nofMParguments=\count196
+\everyMPshowfont=\toks26
+\MPscratchCnt=\count197
+\MPscratchDim=\dimen152
+\MPnumerator=\count198
+\makeMPintoPDFobject=\count199
+\everyMPtoPDFconversion=\toks27
+) ("C:\Program Files\MiKTeX 2.9\tex/latex/epstopdf-pkg\epstopdf-base.sty"
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+)
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 8
+1.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\ot1lmr.fd"
+File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 8
+1.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\omllmm.fd"
+File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
+81.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\omslmsy.fd"
+File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
+81.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\omxlmex.fd"
+File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <12> on input line 81.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 81.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 81.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 8
+4.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\t1lmtt.fd"
+File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+No file fitFfm_vignette_04_09_2018.toc.
+\tf@toc=\write3
+\openout3 = `fitFfm_vignette_04_09_2018.toc'.
+
+[1
+
+{C:/Users/Doug/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+Package color Info: Redefining color shadecolor on input line 98.
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 100.
+Package color Info: Redefining color shadecolor on input line 106.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
+23.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/lm\ts1lmr.fd"
+File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 123.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 123.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 123.
+
+
+Package natbib Warning: Citation `grinold2000active' on page 2 undefined on inp
+ut line 123.
+
+
+Overfull \hbox (7.7075pt too wide) in paragraph at lines 123--124
+[]\T1/lmtt/m/n/10 fit.method, rob.stats, full.resid.cov, z.score, add.intercept
+, lag.exposures,  
+ []
+
+[2] [3]
+Package color Info: Redefining color shadecolor on input line 151.
+LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
+160.
+ ("C:\Program Files\MiKTeX 2.9\tex/latex/lm\ts1lmtt.fd"
+File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+Package color Info: Redefining color shadecolor on input line 171.
+ [4] [5]
+
+Package natbib Warning: Citation `zivot2006modeling' on page 6 undefined on inp
+ut line 224.
+
+
+Package natbib Warning: Citation `grinold2000active' on page 6 undefined on inp
+ut line 226.
+
+
+Package natbib Warning: Citation `fama1992cross' on page 6 undefined on input l
+ine 226.
+
+Package color Info: Redefining color shadecolor on input line 231.
+[6]
+Package color Info: Redefining color shadecolor on input line 260.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 268--268
+[]\T1/lmtt/b/n/10 ## Error in `rownames<-`(`*tmp*`, value = factor.names): atte
+mpt to set 'rownames'
+ []
+
+Package color Info: Redefining color shadecolor on input line 273.
+[7]
+Package color Info: Redefining color shadecolor on input line 291.
+Package color Info: Redefining color shadecolor on input line 304.
+
+Overfull \hbox (40.4573pt too wide) in paragraph at lines 312--312
+[]\T1/lmtt/b/n/10 ## Error in h(simpleError(msg, call)): error in evaluating th
+e argument 'x' in selecting
+ []
+
+[8]
+Package color Info: Redefining color shadecolor on input line 333.
+
+Overfull \hbox (14.20738pt too wide) in paragraph at lines 343--343
+[]\T1/lmtt/b/n/10 ## Error in h(simpleError(msg, call)): error in evaluating th
+e argument 'object' in
+ []
+
+Package color Info: Redefining color shadecolor on input line 370.
+[9] [10]
+Package color Info: Redefining color shadecolor on input line 412.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 419--419
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+
+Package natbib Warning: Citation `heston1995industry' on page 11 undefined on i
+nput line 422.
+
+
+Package natbib Warning: Citation `menchero2010characteristics' on page 11 undef
+ined on input line 422.
+
+Package color Info: Redefining color shadecolor on input line 425.
+Package color Info: Redefining color shadecolor on input line 452.
+
+Overfull \hbox (3.70741pt too wide) in paragraph at lines 455--455
+[][]\T1/lmtt/b/n/10 plot[][]\T1/lmtt/m/n/10 (fit.mkt.sector,[] []which[][]=[][]
+1[][],[] []colorset[][]=[][]"black"[][],[] []f.sub[][]=[][]1[][]:[][]10[][],[] 
+[]lwd[][]=[][]1[][],[] []sort.by[][]=[][]"mean"[][])[][] 
+ []
+
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 459--459
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+[11] [12]
+Package color Info: Redefining color shadecolor on input line 470.
+
+Overfull \hbox (3.70741pt too wide) in paragraph at lines 478--478
+[][]\T1/lmtt/b/n/10 print[][]\T1/lmtt/m/n/10 (adj.r2_style.sector[] []<-[] []1[
+][]-[][](([][]447[][]-[][]1[][])[][]*[][]([][]1[][]-[][]\T1/lmtt/b/n/10 mean[][
+]\T1/lmtt/m/n/10 (fit.style.sector[][]$[][]r2))[][]/[][]([][]447[][]-[][]12[][]
+-[][]1[][])))[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 495.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 501--501
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+Package color Info: Redefining color shadecolor on input line 505.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 511--511
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+Package color Info: Redefining color shadecolor on input line 515.
+
+Overfull \hbox (35.20732pt too wide) in paragraph at lines 517--517
+[][]\T1/lmtt/b/n/10 plot[][]\T1/lmtt/m/n/10 (fit.style.sector,[] []which[][]=[]
+[]12[][],[] []f.sub[][]=[][]1[][]:[][]3[][],[] []las[][]=[][]2[][],[] []legend.
+loc[][]=[][]"bottom"[][],[] []cex.legend[][]=[][]0.75[][])[][] 
+ []
+
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 521--521
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+Package color Info: Redefining color shadecolor on input line 525.
+[13]
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 531--531
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+Package color Info: Redefining color shadecolor on input line 535.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 541--541
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+[14]
+
+Package natbib Warning: Citation `zivot2006modeling' on page 15 undefined on in
+put line 549.
+
+Package color Info: Redefining color shadecolor on input line 567.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 586--586
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+
+Package natbib Warning: Citation `meucci2007risk' on page 15 undefined on input
+ line 591.
+
+[15]
+
+Package natbib Warning: Citation `meucci2007risk' on page 16 undefined on input
+ line 602.
+
+Package color Info: Redefining color shadecolor on input line 612.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 673--673
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+[16] [17]
+
+Package natbib Warning: Citation `epperlein2006portfolio' on page 18 undefined 
+on input line 684.
+
+Package color Info: Redefining color shadecolor on input line 689.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 720--720
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+[18]
+Package color Info: Redefining color shadecolor on input line 736.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 771--771
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+[19]
+Package color Info: Redefining color shadecolor on input line 780.
+Package color Info: Redefining color shadecolor on input line 795.
+ [20]
+Package color Info: Redefining color shadecolor on input line 823.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 830--830
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+[21]
+Package color Info: Redefining color shadecolor on input line 844.
+Package color Info: Redefining color shadecolor on input line 871.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 877--877
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+Package color Info: Redefining color shadecolor on input line 881.
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 887--887
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+Package color Info: Redefining color shadecolor on input line 891.
+[22]
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 897--897
+[]\T1/lmtt/b/n/10 ## Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a li
+st, but does not have
+ []
+
+
+Overfull \hbox (8.9574pt too wide) in paragraph at lines 902--902
+[]\T1/lmtt/b/n/10 ## Error in int_abline(a = a, b = b, h = h, v = v, untf = unt
+f, ...): plot.new has
+ []
+
+[23]
+No file fitFfm_vignette_04_09_2018.bbl.
+
+Package natbib Warning: There were undefined citations.
+
+(fitFfm_vignette_04_09_2018.aux) ) 
+Here is how much of TeX's memory you used:
+ 3264 strings out of 480896
+ 43177 string characters out of 2908248
+ 294989 words of memory out of 3000000
+ 19053 multiletter control sequences out of 15000+200000
+ 606707 words of font info for 83 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 30i,10n,29p,1181b,308s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/
+lm/lm-mathex.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.enc}
+{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/MiK
+TeX 2.9/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc
+/dvips/lm/lm-ts1.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ec.enc}
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Prog
+ram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmib10.pfb><C:/Program Fil
+es/MiKTeX 2.9/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files/MiKTeX 2.9/fon
+ts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/l
+m/lmbx7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmbx9.pfb><C:/Pr
+ogram Files/MiKTeX 2.9/fonts/type1/public/lm/lmex10.pfb><C:/Program Files/MiKTe
+X 2.9/fonts/type1/public/lm/lmmi10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
+/public/lm/lmmi7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmr10.p
+fb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmr12.pfb><C:/Program Fil
+es/MiKTeX 2.9/fonts/type1/public/lm/lmr17.pfb><C:/Program Files/MiKTeX 2.9/font
+s/type1/public/lm/lmr6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/l
+mr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmr8.pfb><C:/Program
+ Files/MiKTeX 2.9/fonts/type1/public/lm/lmr9.pfb><C:/Program Files/MiKTeX 2.9/f
+onts/type1/public/lm/lmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/lm/lmsy5.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmsy7.pfb><C:/
+Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmtk10.pfb><C:/Program Files/MiK
+TeX 2.9/fonts/type1/public/lm/lmtt10.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/lm/lmtt9.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/lm/lmtti
+10.pfb>
+Output written on fitFfm_vignette_04_09_2018.pdf (23 pages, 472696 bytes).
+PDF statistics:
+ 186 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

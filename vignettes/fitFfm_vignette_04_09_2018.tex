@@ -1,0 +1,908 @@
+\documentclass[a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{Rd}
+\usepackage{amsmath}
+\usepackage[round]{natbib}
+\usepackage{bm}
+\usepackage{verbatim}
+\usepackage[latin1]{inputenc}
+\bibliographystyle{abbrvnat}
+\usepackage{url}
+
+\let\proglang=\textsf
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\baselinestretch}{1.5}
+\setlength{\textwidth}{15cm} \setlength{\textheight}{22cm} \topmargin-1cm \evensidemargin0.5cm \oddsidemargin0.5cm
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+% \VignetteIndexEntry{Fitting a fundamental factor model with 'fitFfm' in factorAnalytics}
+%\VignetteEngine{knitr::knitr}
+
+% The latest version of the \verb"FactorAnalytics" package used in this vignette is hosted in the publicly available GitHub repository https://github.com/sangeeuw/factorAnalytics. There are plans for further updates to the package before its moved back to R-Forge and released on CRAN later this year.
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+\title{Fitting Fundamental Factor Models: FactorAnalytics vignette}
+\author{Sangeetha Srinivasan}
+\maketitle
+
+\begin{abstract}
+The purpose of this vignette is to demonstrate the use of \code{fitFfm} and related control, analysis and plot functions in the \code{FactorAnalytics} package.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+\newpage
+\section{Overview}
+
+\subsection{Load Package}
+
+
+The package can be installed from GitHub using \verb"devtools" as follows.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{install}\hlstd{(}\hlstr{"FactorAnalytics"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# load the package and its dependencies}
+\hlkwd{library}\hlstd{(FactorAnalytics)}
+\hlkwd{options}\hlstd{(}\hlkwc{digits}\hlstd{=}\hlnum{3}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The focus of this vignette is on the \code{fitFfm} function and related methods. The original function was designed by Doug Martin and initially implemented in S-PLUS by a number of University of Washington Ph.D. students: Christopher Green, Eric Aldrich, and Yindeng Jiang. Guy Yollin ported the function to R and Yi-An Chen modified that code as part of Google Summer of Code (GSOC) 2013 . Sangeetha Srinivasan tested and expanded the functionalities and S3 methods as part of GSOC in 2014 and 2015. Doug Martin, Avinash Acharya, Lingjie Yi and Chindhanai Uthaisaad added options to fit EWMA or GARCH model for errors, enabled a market + industry and/or sector and/or country model specification, etc. as part of GSOC 2016 and 2017. Refer to the other fundamental factor model vignette by Avinash Acharya for more examples elaborating on these recent functionalities and reporting functions.
+
+\subsection{Summary of fitFfm function and related S3 methods}
+
+Here's a summary of the fit function and related S3 methods (generic accessor functions) demonstrated in this vignette:
+
+\begin{itemize}
+
+\item \verb"fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var, " \\ \verb"fit.method, rob.stats, full.resid.cov, z.score, add.intercept, lag.exposures, " \\ \verb"resid.scale.type, lambda, GARCH.params, GARCH.MLE, std.return, analysis, " \\ \verb"target.vol, ...)": Fits a fundamental factor model for one or more asset returns or excess returns using $T$ cross-sectional regressions a.k.a. the "BARRA" approach (detailed in \citet{grinold2000active}), where $T$ is the number of time periods. Available fit methods include Least squares (LS), weighted least squares (WLS), robust (rob) and weighted-robust regression (W-Rob). Options for computing residual variances include sample variance, EWMA, Robust EWMA and GARCH(1,1). An object of class "ffm" containing the fitted objects, factor exposures, factor returns, $R^2$, residual volatility, etc. is returned. A more detailed description is provided in Section 2.
+
+\item \verb"coef(object, ...)": Returns a data.frame containing the coefficients (intercept and factor exposures) for the last time period for all assets.
+
+\item \verb"fitted(object, ...)": Returns an "xts" data object of fitted asset returns from the factor model for all assets.
+
+\item \verb"residuals(object, ...)": Returns an "xts" data object of residuals from the fitted factor model for all assets.
+
+\item \verb"fmCov(object, use, ...)": Returns the \code{N x N} symmetric covariance matrix for asset returns based on the fitted factor model using exposures from the last time period.
+
+\item \verb"fmSdDecomp(object, use, ...)": Returns a list containing the standard deviation of asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"use"} specifies how missing values are to be handled.
+
+\item \verb"fmVaRDecomp(object, factor.cov, p, type, use, ...)": Returns a list containing the value-at-risk (VaR) for asset returns based on the fitted factor model and the estimated marginal, component and percentage component factor contributions. \code{factor.cov} allows for user-specified factor covariance matrix; defaults to the sample covariance of historical factor returns. \code{type} specifies if VaR computation should be non-parametric (sample quantile) or based on a Normal distribution. And, \code{"p"} specifies the confidence level.
+
+\item \verb"fmEsDecomp(object, factor.cov, p, type, use, ...)": Returns a list containing the expected shortfall (ES) for asset returns based on the fitted factor model and the estimated marginal, component and percentage component factor contributions. \code{factor.cov} allows for user-specified factor covariance matrix; defaults to the sample covariance of historical factor returns. \code{type} specifies if VaR computation should be non-parametric (sample quantile) or based on a Normal distribution. And, \code{"p"} specifies the confidence level.
+
+\item \verb"plot(x)": The \code{plot} method for class "ffm" can be used for plotting factor model characteristics of a group of assets (default) or an individual asset. The user can select the type of plot either from the menu prompt or directly via argument \code{which}. In case multiple plots are needed, the menu is repeated after each plot (enter 0 to exit). User can also input a numeric vector of plot options via \code{which}.
+
+\item \verb"predict(object, newdata, pred.date, ...)": The \code{predict} method for class "ffm" returns a vector or matrix of predicted returns for new or simulated values of the fundamental characteristics. \code{pred.date} allows user to choose the relevant date for the estimated factor exposures to be used in the prediction.
+
+\item \verb"print(object, digits, ...)": The \code{predict} method for class "ffm" prints the call, factor model dimension and summary statistics for the estimated factor returns, cross-sectional $R^2$ values and residual variances from the fitted object.
+
+\item \verb"summary(object, ...)": The \code{summary} method for class "ffm" returns an object of class \code{"summary.ffm"} containing the summaries of the fitted objects. Printing the factor model summary object outputs the call, estimated factor returns, $R^2$ and residual volatility for each time period.
+
+\end{itemize}
+
+A complete list of related methods is shown below.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{methods}\hlstd{(}\hlkwc{class}\hlstd{=}\hlstr{"ffm"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##  [1] coef          fitted        fmCov         fmEsDecomp    fmRsq        
+##  [6] fmSdDecomp    fmTstats      fmVaRDecomp   portEsDecomp  portSdDecomp 
+## [11] portVaRDecomp portVolDecomp predict       print         repRisk      
+## [16] residuals     riskDecomp    summary      
+## see '?methods' for accessing help and source code
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Data}
+
+The following examples primarily use the \code{Stock.df} dataset. It contains fundamental and monthly return data for 447 stocks listed on the NYSE over a 8-year period. The dataset is balanced, i.e., every asset has a complete set of observations for all variables in each time period.
+
+The following queries help understand key aspects of the dataset:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# load the dataset into the environment}
+\hlkwd{data}\hlstd{(Stocks.df)}
+\hlcom{# get a list of the variable names}
+\hlkwd{colnames}\hlstd{(stock)}
+\end{alltt}
+\begin{verbatim}
+##  [1] "DATE"                "RETURN"              "TICKER"             
+##  [4] "PRICE"               "VOLUME"              "SHARES.OUT"         
+##  [7] "MARKET.EQUITY"       "LTDEBT"              "NET.SALES"          
+## [10] "COMMON.EQUITY"       "NET.INCOME"          "STOCKHOLDERS.EQUITY"
+## [13] "LOG.MARKETCAP"       "LOG.PRICE"           "BOOK2MARKET"        
+## [16] "GICS"                "GICS.INDUSTRY"       "GICS.SECTOR"
+\end{verbatim}
+\begin{alltt}
+\hlcom{# time period covered in the data}
+\hlkwd{range}\hlstd{(stock[,}\hlstr{"DATE"}\hlstd{])}
+\end{alltt}
+\begin{verbatim}
+## [1] "1996-02-29" "2003-12-31"
+\end{verbatim}
+\begin{alltt}
+\hlcom{# number of stocks}
+\hlkwd{length}\hlstd{(}\hlkwd{unique}\hlstd{(stock[,}\hlstr{"TICKER"}\hlstd{]))}
+\end{alltt}
+\begin{verbatim}
+## [1] 447
+\end{verbatim}
+\begin{alltt}
+\hlcom{# count stocks by GICS sector as of the last time period}
+\hlstd{stocklist}\hlkwb{<-}\hlkwd{subset}\hlstd{(stock,DATE}\hlopt{==}\hlstr{"2003-12-31"}\hlstd{)}
+\hlkwd{table}\hlstd{(stocklist}\hlopt{$}\hlstd{GICS.SECTOR)}
+\end{alltt}
+\begin{verbatim}
+## 
+##     Consumer Discretionary           Consumer Staples 
+##                         86                         30 
+##                     Energy                 Financials 
+##                         17                         55 
+##                Health Care                Industrials 
+##                         35                         89 
+##     Information Technology                  Materials 
+##                         57                         32 
+## Telecommunication Services                  Utilities 
+##                          6                         40
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\newpage
+\section{Fitting a fundamental factor model}
+
+A fundamental factor model uses observed cross-sectional asset characteristics such as dividend yield, earnings yield, book-to-market ratio, market capitalization, sector or industry classification, price volatility, price momemtum, leverage, etc. to determine common risk factors that contribute to asset returns. Chapter 15 from \citet{zivot2006modeling} serves as a good reference for a description of the different multi-factor models, estimation methods and relevant examples using S-PLUS.
+
+There are 2 main approaches to estimating the fundamental factor model - the "BARRA" approach (detailed in \citet{grinold2000active}) and the "Fama-French" approach (introduced in \citet{fama1992cross}). In the "BARRA" approach, the obsered fundamental attributes are the factor betas and the unknown factor returns are estimated via cross-sectional regressions for each time period. Due to cross-sectional heteroskedasticity of asset returns, ordinary least squares (OLS) estimation of the factor returns is inefficient. So weighted least squares regression is performed as a second step to get efficient estimates, with the inverse of the estimated residual variances or market cap used as weights. In the "Fama-French" approach, the factor returns are the observed returns of a hypothetical hedge portfolio that's long/short the top/bottom quintile of stocks for a given attribute (ex: market cap for the size factor). After the factor returns are computed for each characterictic, each asset's factor exposures are estimated via a time series regression. \code{fitFfm} described in this vignette uses the "BARRA" approach.
+
+Let's take a look at the arguments for \code{fitFfm}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{args}\hlstd{(fitFfm)}
+\end{alltt}
+\begin{verbatim}
+## function (data, asset.var, ret.var, date.var, exposure.vars, 
+##     weight.var = NULL, fit.method = c("LS", "WLS", "Rob", "W-Rob"), 
+##     rob.stats = FALSE, full.resid.cov = FALSE, z.score = c("none", 
+##         "crossSection", "timeSeries"), addIntercept = FALSE, 
+##     lagExposures = TRUE, resid.scaleType = "stdDev", lambda = 0.9, 
+##     GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81), 
+##     GARCH.MLE = FALSE, stdReturn = FALSE, analysis = c("none", 
+##         "ISM", "NEW"), targetedVol = 0.06, ...) 
+## NULL
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The default model fitting method is ordinary least squares (LS) regression, with the option to choose robust regression (Rob), weighted least squares (WLS) or weighted robust regression (W-Rob). The different model fitting options are demonstrated in the following sections. If weighted regression (WLS or W-Rob) is chosen, inverse of the residual variances are used as weights. \code{resid.scale.type} allows the user to choose the method for computing residual variances - sample variance, EWMA, Robust EWMA and GARCH(1,1).
+
+\code{z.score} provides the option to standardize factor exposures cross-sectionally across assets or across time periods. \code{weight.var} allows the user to give higher weight to some assets when estimating factor exposures; for example using the market cap of stocks as their weights. \code{add.intercept} gives the option to add an intercept term for fitting a Market + Sector or a Market + Sector + Country model. These models can simultaneously include other style factors. \code{lag.exposures} gives the option to use the factor exposures from the previous time period to estimate factor returns for the current period. \code{full.resid.cov} provides the option to choose between a diagonal vs. full residual covariance matrix. And, \code{rob.stats} allows for robust estimates of covariance, correlation, location and univariate scale.
+
+These and other control parameters are demonstrated in the following sections.
+
+\subsection{Single Factor Model}
+
+Here's an example of a single factor model using the book-to-market ratio, a proxy for the value factor, as the explanatory variable for the returns of 447 stocks in the dataset.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Single Factor Model}
+\hlstd{fit.single} \hlkwb{<-} \hlkwd{fitFfm}\hlstd{(}\hlkwc{data}\hlstd{=stock,} \hlkwc{asset.var}\hlstd{=}\hlstr{"TICKER"}\hlstd{,} \hlkwc{ret.var}\hlstd{=}\hlstr{"RETURN"}\hlstd{,}
+                     \hlkwc{date.var}\hlstd{=}\hlstr{"DATE"}\hlstd{,} \hlkwc{exposure.vars}\hlstd{=}\hlstr{"BOOK2MARKET"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in `rownames<-`(`*tmp*`, value = factor.names): attempt to set 'rownames' on an object with no dimensions}}\end{kframe}
+\end{knitrout}
+
+The resulting object, \code{fit.single}, has the following attributes.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{class}\hlstd{(fit.single)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'fit.single' not found}}\begin{alltt}
+\hlkwd{names}\hlstd{(fit.single)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'fit.single' not found}}\end{kframe}
+\end{knitrout}
+
+The component \code{factor.fit} contains a list of "lm" or "lmRob" objects, one for each time period. The fitted objects is of class "lm" if \code{fit.method="LS" or "WLS"}, or class "lmRob", if \code{fit.method="Rob" or "W-Rob"}. The component \code{factor.returns} contains the estimated factor returns and \code{beta} contains the factor exposures from the last time period. While, \code{r2} and \code{resid.var} denote the regression $R^2$ and estimated residual variance respectively. The estimated covariance matrices of factor returns, residuals and asset returns are given by \code{factor.cov}, \code{resid.cov} and \code{return.cov} respectively. The remaining components contain the input choices and the data.
+
+The \code{print} method displays a summary of the $T$ cross-sectional regressions, where $T$ is the number of time periods.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# print the fitted "ffm" object}
+\hlstd{fit.single}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'fit.single' not found}}\end{kframe}
+\end{knitrout}
+
+Figure 1 shows a scatter plot of residuals for the 1st 6 stocks in the last time period, including histograms, density overlays, correlations and significance stars. (A detailed list of plot options is provided later in Section 4.) Note the high residual correlation between MSFT and ORCL; this might be due to their exposure to other omitted factors such as a sector/industry risk factor for "Software \& Services". The next section demonstrates fitting an industry/sector factor model for these stocks.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# plot residual correlations for the single factor model}
+\hlcom{# default is to plot the 1st 6 assets}
+\hlkwd{plot}\hlstd{(fit.single,} \hlkwc{which}\hlstd{=}\hlnum{6}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlnum{1}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'fit.single' not found}}\begin{alltt}
+\hlcom{# GICS industry/sector classification (1st 6 stocks; penultimate time period)}
+\hlkwd{subset}\hlstd{(stock,DATE}\hlopt{==}\hlstr{"2003-11-28"}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,}\hlkwd{c}\hlstd{(}\hlstr{"TICKER"}\hlstd{,}\hlstr{"GICS.INDUSTRY"}\hlstd{,}\hlstr{"GICS.SECTOR"}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##     TICKER                   GICS.INDUSTRY            GICS.SECTOR
+## 94    JJSF        Food, Beverage & Tobacco       Consumer Staples
+## 189   PLXS Technology Hardware & Equipment Information Technology
+## 284   SUNW Technology Hardware & Equipment Information Technology
+## 379   ORCL             Software & Services Information Technology
+## 474   MSFT             Software & Services Information Technology
+## 569    SDS             Software & Services Information Technology
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\newpage
+\subsection{BARRA-type Industry Factor Model}
+
+A BARRA-type industry (sector) factor model is a fundamental factor model with multiple factors. Here is a demonstration using the 447 NYSE stocks in our dataset; where the 10 mutually exclusive GICS sector classifications are the 10 factors. The factor exposures will be dummy variables that indicate if a given stock belongs to a particular sector or not. Mutually exclusive sectors means that each stock belongs to a unique sector in any given time period. Notice that the average $R^2$ from the sector model is significantly higher (and average residual correlations are lower) than the single factor model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Sector Factor Model}
+\hlstd{fit.sector} \hlkwb{<-} \hlkwd{fitFfm}\hlstd{(}\hlkwc{data}\hlstd{=stock,} \hlkwc{asset.var}\hlstd{=}\hlstr{"TICKER"}\hlstd{,} \hlkwc{ret.var}\hlstd{=}\hlstr{"RETURN"}\hlstd{,}
+                     \hlkwc{date.var}\hlstd{=}\hlstr{"DATE"}\hlstd{,} \hlkwc{exposure.vars}\hlstd{=}\hlstr{"GICS.SECTOR"}\hlstd{)}
+\hlcom{# compare r2: single factor vs. sector model}
+\hlkwd{summary}\hlstd{(fit.single}\hlopt{$}\hlstd{r2)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'summary': object 'fit.single' not found}}\begin{alltt}
+\hlkwd{summary}\hlstd{(fit.sector}\hlopt{$}\hlstd{r2)}
+\end{alltt}
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.023   0.060   0.113   0.137   0.195   0.519
+\end{verbatim}
+\begin{alltt}
+\hlcom{# compare avg. non-diagonal correlations: single factor vs. sector model}
+\hlkwd{mean}\hlstd{(}\hlkwd{cor}\hlstd{(}\hlkwd{residuals}\hlstd{(fit.single))[}\hlkwd{cor}\hlstd{(}\hlkwd{residuals}\hlstd{(fit.single))}\hlopt{!=}\hlnum{1}\hlstd{])}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in residuals(fit.single): object 'fit.single' not found}}\begin{alltt}
+\hlkwd{mean}\hlstd{(}\hlkwd{cor}\hlstd{(}\hlkwd{residuals}\hlstd{(fit.sector))[}\hlkwd{cor}\hlstd{(}\hlkwd{residuals}\hlstd{(fit.sector))}\hlopt{!=}\hlnum{1}\hlstd{])}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.00121
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Let's take a look at the fitted factor model from the last period in the data. We observe that Energy, Materials and Telecomm sectors had particularly strong returns, with estimated factor returns over 10\% for that month\footnotemark[1].
+
+\footnotetext[1]{Energy stocks rebounded in 2003 from the beating they took in 2002 following the Enron scandal. Telecomm stocks benefited from the increased spending by companies investing in internet-based phone systems during this period.}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# print the summary from the last period's fit}
+\hlstd{num.periods} \hlkwb{<-} \hlkwd{length}\hlstd{(fit.sector}\hlopt{$}\hlstd{time.periods)}
+\hlkwd{summary}\hlstd{(fit.sector}\hlopt{$}\hlstd{factor.fit[[num.periods]])}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## FUN(formula = ..1, data = data[x, , drop = FALSE], na.action = ..3, 
+##     contrasts = ..2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.3984 -0.0806 -0.0067  0.0780  0.5362 
+## 
+## Coefficients:
+##                            Estimate Std. Error t value Pr(>|t|)    
+## Consumer Discretionary       0.0124     0.0154    0.80   0.4236    
+## Consumer Staples             0.0480     0.0261    1.84   0.0666 .  
+## Energy                       0.1131     0.0347    3.26   0.0012 ** 
+## Financials                   0.0466     0.0193    2.41   0.0162 *  
+## Health Care                  0.0358     0.0242    1.48   0.1398    
+## Industrials                  0.0415     0.0152    2.74   0.0064 ** 
+## Information Technology       0.0339     0.0190    1.79   0.0744 .  
+## Materials                    0.1146     0.0253    4.53  7.6e-06 ***
+## Telecommunication Services   0.1025     0.0584    1.76   0.0799 .  
+## Utilities                    0.0684     0.0226    3.02   0.0027 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.143 on 437 degrees of freedom
+## Multiple R-squared:  0.131,	Adjusted R-squared:  0.112 
+## F-statistic: 6.61 on 10 and 437 DF,  p-value: 1.44e-09
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Figure 2 shows the distribution of estimated monthly sector returns (from 1996 - 2003) in descending order of their mean. We find that the "Information Technology" sector had the highest average return (perhaps not suprising, given that the dataset covers the dot-com bubble).
+
+\newpage
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# plot distribution of factor returns by sector sorted by means}
+\hlkwd{plot}\hlstd{(fit.sector,} \hlkwc{which}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{colorset}\hlstd{=}\hlstr{"black"}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{sort.by}\hlstd{=}\hlstr{"mean"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+An extension of the above sector model is to isolate the market effect through the use of an intercept term and reparametrizing the sector exposures so that they are measured relative to the common market factor. Here, the intercept is interpreted as the return to the market factor (sum of all sectors), while the other factors are excess returns for the sector over the market. The methodology behind this model was introduced in the context of a common country effect in \citet{heston1995industry} and also detailed in \citet{menchero2010characteristics}. In \code{fitFfm} the market + sector model can be opted via the parameter \code{add.intercept} as shown below.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Market + Sector Factor Model}
+\hlstd{fit.mkt.sector} \hlkwb{<-} \hlkwd{fitFfm}\hlstd{(}\hlkwc{data}\hlstd{=stock,} \hlkwc{asset.var}\hlstd{=}\hlstr{"TICKER"}\hlstd{,} \hlkwc{ret.var}\hlstd{=}\hlstr{"RETURN"}\hlstd{,}
+                         \hlkwc{date.var}\hlstd{=}\hlstr{"DATE"}\hlstd{,} \hlkwc{exposure.vars}\hlstd{=}\hlstr{"GICS.SECTOR"}\hlstd{,}
+                         \hlkwc{add.intercept}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+
+\hlcom{# coefficients (factor exposures) for first 10 assets}
+\hlkwd{t}\hlstd{(}\hlkwd{coef}\hlstd{(fit.mkt.sector)[}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{,])}
+\end{alltt}
+\begin{verbatim}
+##                            JJSF PLXS SUNW ORCL MSFT SDS TROW HON EMC XRIT
+## Consumer Discretionary        0    0    0    0    0   0    0   0   0    0
+## Consumer Staples              1    0    0    0    0   0    0   0   0    0
+## Energy                        0    0    0    0    0   0    0   0   0    0
+## Financials                    0    0    0    0    0   0    1   0   0    0
+## Health Care                   0    0    0    0    0   0    0   0   0    0
+## Industrials                   0    0    0    0    0   0    0   1   0    0
+## Information Technology        0    1    1    1    1   1    0   0   1    1
+## Materials                     0    0    0    0    0   0    0   0   0    0
+## Telecommunication Services    0    0    0    0    0   0    0   0   0    0
+## Utilities                     0    0    0    0    0   0    0   0   0    0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# plot distribution of factor returns by sector sorted by means}
+\hlkwd{plot}\hlstd{(fit.mkt.sector,} \hlkwc{which}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{colorset}\hlstd{=}\hlstr{"black"}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{sort.by}\hlstd{=}\hlstr{"mean"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+The reparametrization of the market factor hasn't changed the order of sectors by mean factor return. The reader can verify that $R^2$ and other fit statistics haven't changed either.
+
+\newpage
+\subsection{Multi-factor Model with Sector and Style Characteristics}
+
+A fundamental factor model can simultaneously include both quantitative style factors, such as size (market cap), value (book-to-price ratio), price momentum etc., as well as sector/industry classifications. The next example demonstrates fitting a multi-factor model including 2 style factors, size and value, in addition to the sector model. Note that the adjusted-$R^2$ has improved.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Market + Sector Factor Model}
+\hlstd{fit.style.sector} \hlkwb{<-} \hlkwd{fitFfm}\hlstd{(}\hlkwc{data}\hlstd{=stock,} \hlkwc{asset.var}\hlstd{=}\hlstr{"TICKER"}\hlstd{,} \hlkwc{ret.var}\hlstd{=}\hlstr{"RETURN"}\hlstd{,}
+  \hlkwc{date.var}\hlstd{=}\hlstr{"DATE"}\hlstd{,} \hlkwc{exposure.vars}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"GICS.SECTOR"}\hlstd{,}\hlstr{"LOG.MARKETCAP"}\hlstd{,}\hlstr{"BOOK2MARKET"}\hlstd{))}
+
+\hlcom{# check if average adjusted R-squared improved vs. pure sector model}
+\hlcom{# adjusted r2 = 1 - ((n-1)*(1-r2)/(n-p-1))}
+\hlkwd{print}\hlstd{(adj.r2_style.sector} \hlkwb{<-} \hlnum{1}\hlopt{-}\hlstd{((}\hlnum{447}\hlopt{-}\hlnum{1}\hlstd{)}\hlopt{*}\hlstd{(}\hlnum{1}\hlopt{-}\hlkwd{mean}\hlstd{(fit.style.sector}\hlopt{$}\hlstd{r2))}\hlopt{/}\hlstd{(}\hlnum{447}\hlopt{-}\hlnum{12}\hlopt{-}\hlnum{1}\hlstd{)))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.126
+\end{verbatim}
+\begin{alltt}
+\hlkwd{print}\hlstd{(adj.r2_sector} \hlkwb{<-} \hlnum{1}\hlopt{-}\hlstd{((}\hlnum{447}\hlopt{-}\hlnum{1}\hlstd{)}\hlopt{*}\hlstd{(}\hlnum{1}\hlopt{-}\hlkwd{mean}\hlstd{(fit.sector}\hlopt{$}\hlstd{r2))}\hlopt{/}\hlstd{(}\hlnum{447}\hlopt{-}\hlnum{10}\hlopt{-}\hlnum{1}\hlstd{)))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.117
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Figures 4, 5 and 6 below show some properties (such as last period's factor exposures, time series of $R^2$ values and factor returns) of the fitted factor model. Figures 7 and 8 compares the kernel density of residuals for "MSFT" vs. normal and skew-t fits.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{12}\hlstd{,} \hlkwc{a.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{4}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{2}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{12}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{legend.loc}\hlstd{=}\hlstr{"bottom"}\hlstd{,} \hlkwc{cex.legend}\hlstd{=}\hlnum{0.75}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{plot.single}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{which}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{asset.name}\hlstd{=}\hlstr{"MSFT"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{plot.single}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{which}\hlstd{=}\hlnum{11}\hlstd{,} \hlkwc{asset.name}\hlstd{=}\hlstr{"MSFT"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\newpage
+\section{Factor Model Covariance \& Risk Decomposition}
+
+\subsection{Factor model covariance}
+
+Following \citet{zivot2006modeling}, $R_{i, t}$, the return on asset $i$ ($i = 1, ..., N$) at time $t$ ($t = 1, ..., T$), is fitted with a factor model of the form,
+\begin{equation}
+R_{i,t} = \alpha_i + \bm\beta_i' \: \mathbf{f_t} + \epsilon_{i,t}
+\end{equation}
+where, $\alpha_i$ is the intercept, $\mathbf{f_t}$ is a $K \times 1$ vector of factor returns at time $t$, $\bm\beta_i$ is a $K \times 1$ vector of factor exposures for asset $i$ and the error terms $\epsilon_{i,t}$ are serially uncorrelated across time and contemporaneously uncorrelated across assets so that $\epsilon_{i,t} \sim iid(0, \sigma_i^2)$. Thus, the variance of asset $i$'s return is given by
+\begin{equation}
+var(R_{i,t}) = \bm\beta_i'\: var(\mathbf{f_t})\: \bm\beta_i + \sigma_i^2
+\end{equation}
+
+And, the $N \times N$ covariance matrix of asset returns is
+\begin{equation}
+var(\mathbf{R}) = \bm\Omega = \mathbf{B}\: var(\mathbf{F})\: \mathbf{B}' + \mathbf{D}
+\end{equation}
+where, $R$ is the $N \times T$ matrix of asset returns, $B$ is the $N \times K$ matrix of factor betas, $\mathbf{F}$ is a $K \times T$ matrix of factor returns and $D$ is a diagonal matrix with $\sigma_i^2$ along the diagonal.
+
+\code{fmCov()} computes the factor model covariance from a fitted factor model. The covariance of factor returns is the sample covariance matrix by default, but the option exists for the user to specify their own. Options for handling missing observations include "pairwise.complete.obs" (default), "everything", "all.obs", "complete.obs" and "na.or.complete".
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{fmCov}\hlstd{(fit.style.sector)[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+##           JJSF      PLXS      SUNW     ORCL     MSFT       SDS
+## JJSF  0.031186  0.003423 -0.004958 -0.01453 -0.02224 -0.000505
+## PLXS  0.003423  0.068127  0.000755 -0.00183 -0.00491  0.002341
+## SUNW -0.004958  0.000755  0.057259  0.01107  0.01489  0.002837
+## ORCL -0.014532 -0.001825  0.011074  0.07685  0.03911  0.004194
+## MSFT -0.022237 -0.004907  0.014887  0.03911  0.08100  0.004351
+## SDS  -0.000505  0.002341  0.002837  0.00419  0.00435  0.030825
+\end{verbatim}
+\begin{alltt}
+\hlcom{# factor model return correlation plot (for 1st 6 assets by default)}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{8}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\subsection{Standard deviation decomposition}
+
+Given the factor model in equation 1, the standard deviation of the asset $i$'s return can be decomposed as follows (based on \citet{meucci2007risk}):
+\begin{align}
+R_{i,t} &= \alpha_i + \bm\beta_i' \: \mathbf{f_t} + \epsilon_{i,t} \\
+&=  \bm\beta_i^{*'} \: \mathbf{f_t^*}
+\end{align}
+where, $\bm\beta_i^{*'} = (\bm\beta_i' \: \sigma_i)$ and $\mathbf{f_t^{*'}} = (\mathbf{f_t'} \: z_t)$, with $z_t \sim iid(0, 1)$ and $\sigma_i$ is asset $i$'s residual standard deviation.
+
+By Euler's theorem, the standard deviation of asset $i$'s return is:
+\begin{align}
+Sd.fm_i = \sum_{k=1}^{K+1} cSd_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mSd_{i,k}
+\end{align}
+where, summation is across the $K$ factors and the residual, $\mathbf{cSd_i}$ and $\mathbf{mSd_i}$ are the component and marginal contributions to $Sd.fm_i$ respectively. Computing $Sd.fm_i$ and $\mathbf{mSd_i}$ is straight forward. The formulas are given below and details are in \citet{meucci2007risk}. The covariance term is approximated by the sample covariance and $\odot$ represents element-wise multiplication.
+\begin{align}
+& Sd.fm_i = \sqrt{\bm\beta_i^{*'}\: cov(\mathbf{F^*})\: \bm\beta_i^*} \\
+& \mathbf{mSd_i} = \frac{cov(\mathbf{F^*})\: \bm\beta_i^*}{Sd.fm_i} \\
+& \mathbf{cSd_i} = \bm\beta_i^* \: \odot \: \mathbf{mSd_i}
+\end{align}
+
+\code{fmSdDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total standard deviation and component, marginal and percentage component contributions for each asset are returned.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{decomp} \hlkwb{<-} \hlkwd{fmSdDecomp}\hlstd{(fit.style.sector)}
+\hlkwd{names}\hlstd{(decomp)}
+\end{alltt}
+\begin{verbatim}
+## [1] "Sd.fm" "mSd"   "cSd"   "pcSd"
+\end{verbatim}
+\begin{alltt}
+\hlcom{# get the factor model standard deviation for 1st 6 assets}
+\hlstd{decomp}\hlopt{$}\hlstd{Sd.fm[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+##  JJSF  PLXS  SUNW  ORCL  MSFT   SDS 
+## 0.155 0.279 0.255 0.249 0.197 0.203
+\end{verbatim}
+\begin{alltt}
+\hlcom{# get the component contributions to Sd for (1st 6 assets, relevant factors)}
+\hlstd{decomp}\hlopt{$}\hlstd{cSd[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{9}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##      LOG.MARKETCAP BOOK2MARKET Consumer Staples Information Technology
+## JJSF      2.36e-03   -7.16e-05           0.0128                 0.0000
+## PLXS      6.75e-04    1.88e-04           0.0000                 0.0469
+## SUNW     -5.62e-05   -1.38e-04           0.0000                 0.0509
+## ORCL      2.62e-03   -8.79e-05           0.0000                 0.0509
+## MSFT      9.18e-03   -6.46e-04           0.0000                 0.0643
+## SDS       3.99e-05    1.46e-05           0.0000                 0.0641
+\end{verbatim}
+\begin{alltt}
+\hlcom{# get the marginal factor contributions to Sd (1st 6 assets, relevant factors)}
+\hlstd{decomp}\hlopt{$}\hlstd{mSd[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{9}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##      LOG.MARKETCAP BOOK2MARKET Consumer Staples Information Technology
+## JJSF     -0.001820    3.32e-04          0.01282                0.00796
+## PLXS     -0.001165   -2.19e-04          0.00328                0.04695
+## SUNW     -0.000099    2.21e-04          0.00399                0.05090
+## ORCL      0.001265    7.30e-05          0.00401                0.05093
+## MSFT      0.003006    9.74e-04          0.00583                0.06433
+## SDS      -0.000907   -1.97e-05          0.00475                0.06414
+\end{verbatim}
+\begin{alltt}
+\hlcom{# get the % component contributions to Sd (1st 6 assets, relevant factors)}
+\hlstd{decomp}\hlopt{$}\hlstd{pcSd[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{9}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##      LOG.MARKETCAP BOOK2MARKET Consumer Staples Information Technology
+## JJSF        1.5283    -0.04632              8.3                    0.0
+## PLXS        0.2423     0.06760              0.0                   16.8
+## SUNW       -0.0221    -0.05418              0.0                   20.0
+## ORCL        1.0508    -0.03531              0.0                   20.5
+## MSFT        4.6697    -0.32874              0.0                   32.7
+## SDS         0.0196     0.00718              0.0                   31.6
+\end{verbatim}
+\begin{alltt}
+\hlcom{# plot the % component contributions to Sd (1st 6 assets, relevant factors)}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{9}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{9}\hlstd{))}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\newpage
+\subsection{Value-at-Risk decomposition}
+
+The VaR version of equation 6 is given below. By Euler's theorem, the value-at-risk of asset $i$'s return is:
+\begin{equation}
+VaR.fm_i = \sum_{k=1}^{K+1} cVaR_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mVaR_{i,k}
+\end{equation}
+
+The marginal contribution to $VaR.fm$ is defined as the expectation of $F.star$, conditional on the loss being equal to $VaR.fm$. This is approximated as described in \citet{epperlein2006portfolio} using a triangular smoothing kernel. \code{type} gives the option to estimate $VaR.fm$ non-parametrically using the sample quantile (default) or assuming a normal distribution.
+
+\code{fmVaRDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total VaR and component, marginal and percentage component contributions for each asset are returned.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{decomp1} \hlkwb{<-} \hlkwd{fmVaRDecomp}\hlstd{(fit.style.sector,} \hlkwc{type}\hlstd{=}\hlstr{"normal"}\hlstd{,} \hlkwc{p}\hlstd{=}\hlnum{0.10}\hlstd{)}
+\hlkwd{names}\hlstd{(decomp1)}
+\end{alltt}
+\begin{verbatim}
+## [1] "VaR.fm"     "n.exceed"   "idx.exceed" "mVaR"       "cVaR"      
+## [6] "pcVaR"
+\end{verbatim}
+\begin{alltt}
+\hlcom{# get the factor model value-at-risk for 1st 6 assets}
+\hlstd{decomp1}\hlopt{$}\hlstd{VaR.fm[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+##   JJSF   PLXS   SUNW   ORCL   MSFT    SDS 
+## -0.190 -0.335 -0.304 -0.299 -0.229 -0.238
+\end{verbatim}
+\begin{alltt}
+\hlcom{# print the number of VaR exceedences for 1st 6 assets}
+\hlstd{decomp1}\hlopt{$}\hlstd{n.exceed[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+## JJSF PLXS SUNW ORCL MSFT  SDS 
+##   11    6   12    9    7    6
+\end{verbatim}
+\begin{alltt}
+\hlcom{# plot the % component contributions to VaR (1st 6 assets, relevant factors)}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{11}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{9}\hlstd{))}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\newpage
+\subsection{Expected Shortfall decomposition}
+
+The Expected Shortfall (ES) version of equation 6 is given below. By Euler's theorem, the expected shortfall of asset $i$'s return is:
+\begin{equation}
+ES.fm_i = \sum_{k=1}^{K+1} cES_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mES_{i,k}
+\end{equation}
+
+The marginal contribution to $ES.fm$ is defined as the expectation of $F.star$, conditional on the loss being less than or equal to $ES.fm$. This is estimated as a sample average of the observations in that data window. Once again, input variable \code{type} gives the option to estimate $ES.fm$ non-parametrically using the sample quantile (default) or assuming a normal distribution.
+
+\code{fmEsDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total ES and component, marginal and percentage component contributions for each asset are returned.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{decomp2} \hlkwb{<-} \hlkwd{fmEsDecomp}\hlstd{(fit.style.sector,} \hlkwc{type}\hlstd{=}\hlstr{"normal"}\hlstd{)}
+\hlkwd{names}\hlstd{(decomp2)}
+\end{alltt}
+\begin{verbatim}
+## [1] "ES.fm" "mES"   "cES"   "pcES"
+\end{verbatim}
+\begin{alltt}
+\hlcom{# get the factor model expected shortfall for 1st 6 assets}
+\hlstd{decomp2}\hlopt{$}\hlstd{ES.fm[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+##   JJSF   PLXS   SUNW   ORCL   MSFT    SDS 
+## -0.327 -0.597 -0.549 -0.534 -0.428 -0.442
+\end{verbatim}
+\begin{alltt}
+\hlcom{# get the component contributions to ES for (1st 6 assets, relevant factors)}
+\hlstd{decomp2}\hlopt{$}\hlstd{cES[}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{9}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##      LOG.MARKETCAP BOOK2MARKET Consumer Staples Information Technology
+## JJSF     -4.87e-03     0.00115          -0.0357                  0.000
+## PLXS     -1.39e-03     0.00364           0.0000                 -0.122
+## SUNW      1.15e-04     0.00351           0.0000                 -0.133
+## ORCL     -5.41e-03     0.00568           0.0000                 -0.130
+## MSFT     -1.91e-02     0.00409           0.0000                 -0.156
+## SDS      -8.35e-05     0.00255           0.0000                 -0.153
+\end{verbatim}
+\begin{alltt}
+\hlcom{# plot the % component contributions to ES (1st 6 assets, relevant factors)}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{9}\hlstd{))}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\newpage
+
+\section{Plot}
+
+Some types of group plots (Figures 1-6,9-12) and individual asset plots (Figure 7,8) have already been demonstrated. Let's take a look at all available arguments for plotting a "ffm" object.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## S3 method for class "ffm"}
+\hlkwd{plot} \hlstd{(x,} \hlkwc{which}\hlstd{=}\hlkwa{NULL}\hlstd{,} \hlkwc{f.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{a.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlkwc{plot.single}\hlstd{=}\hlnum{FALSE}\hlstd{, asset.name,}
+      \hlkwc{colorset}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"royalblue"}\hlstd{,}\hlstr{"dimgray"}\hlstd{,}\hlstr{"olivedrab"}\hlstd{,}\hlstr{"firebrick"}\hlstd{,} \hlstr{"goldenrod"}\hlstd{,}
+                 \hlstr{"mediumorchid"}\hlstd{,}\hlstr{"deepskyblue"}\hlstd{,}\hlstr{"chocolate"}\hlstd{,}\hlstr{"darkslategray"}\hlstd{),}
+      \hlkwc{legend.loc}\hlstd{=}\hlstr{"topleft"}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{maxlag}\hlstd{=}\hlnum{15}\hlstd{, ...)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Group plots}
+
+This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is any "ffm" object, will bring up a menu (shown below) for group plots.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.sector)}
+
+\hlcom{# Make a plot selection (or 0 to exit):}
+\hlcom{#}
+\hlcom{#  1: Distribution of factor returns}
+\hlcom{#  2: Factor exposures from the last period}
+\hlcom{#  3: Actual and Fitted asset returns}
+\hlcom{#  4: Time-series of R-squared values}
+\hlcom{#  5: Residual variance across assets}
+\hlcom{#  6: Scatterplot matrix of residuals, with histograms, density overlays,}
+\hlcom{#     correlations and significance stars}
+\hlcom{#  7: Factor Model Residual Correlation}
+\hlcom{#  8: Factor Model Return Correlation}
+\hlcom{#  9: Factor Contribution to SD}
+\hlcom{# 10: Factor Contribution to ES}
+\hlcom{# 11: Factor Contribution to VaR}
+\hlcom{# 12: Time series of factor returns}
+\hlcom{#}
+\hlcom{# Selection:}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Remarks: Only a subset of assets and factors selected by \code{a.sub} and \code{f.sub} are plotted. The first 2 factors (or just the solitary factor for a single factpr model) and first 6 assets are shown by default.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Examples of group plots: looping disabled & no. of assets displayed = 4.}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{which}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{a.sub}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwc{legend.loc}\hlstd{=}\hlkwa{NULL}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{1}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\subsection{Menu and looping}
+
+If the plot type argument \code{which} is not specified, a menu prompts for user input. In case multiple plots are needed, the menu is repeated after each plot (enter 0 to exit). User can also input a numeric vector of plot options via \code{which}.
+
+\newpage
+\subsection{Individual plots}
+
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fitted object \code{x}, \code{asset.name} is also necessary. In case the \code{ffm} object \code{x} contains only a single asset's fit, plot.ffm can infer \code{asset.name} without user input.
+
+Here's the individual plot menu.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{plot.single}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{asset.name}\hlstd{=}\hlstr{"MSFT"}\hlstd{)}
+
+\hlcom{# Make a plot selection (or 0 to exit):}
+\hlcom{#}
+\hlcom{#  1: Actual and fitted asset returns}
+\hlcom{#  2: Actual vs. fitted asset returns}
+\hlcom{#  3: Residuals vs. fitted asset returns}
+\hlcom{#  4: Residuals with standard error bands}
+\hlcom{#  5: Time series of squared residuals}
+\hlcom{#  6: Time series of absolute residuals}
+\hlcom{#  7: SACF and PACF of residuals}
+\hlcom{#  8: SACF and PACF of squared residuals}
+\hlcom{#  9: SACF and PACF of absolute residuals}
+\hlcom{# 10: Non-parametric density of residuals with normal overlaid}
+\hlcom{# 11: Non-parametric density of residuals with skew-t overlaid}
+\hlcom{# 12: Histogram of residuals with non-parametric density and normal overlaid}
+\hlcom{# 13: QQ-plot of residuals}
+\hlcom{#}
+\hlcom{# Selection:}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Here are a few more examples which don't need interactive user input.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{plot.single}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{asset.name}\hlstd{=}\hlstr{"MSFT"}\hlstd{,} \hlkwc{which}\hlstd{=}\hlnum{4}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{plot.single}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{asset.name}\hlstd{=}\hlstr{"MSFT"}\hlstd{,} \hlkwc{which}\hlstd{=}\hlnum{9}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(fit.style.sector,} \hlkwc{plot.single}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{asset.name}\hlstd{=}\hlstr{"MSFT"}\hlstd{,} \hlkwc{which}\hlstd{=}\hlnum{13}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xy.coords(x, y, xlabel, ylabel, log): 'x' is a list, but does not have components 'x' and 'y'}}\begin{alltt}
+\hlkwd{grid}\hlstd{()}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in int\_abline(a = a, b = b, h = h, v = v, untf = untf, ...): plot.new has not been called yet}}\end{kframe}
+\end{knitrout}
+\newpage
+
+\bibliography{FA}
+
+\end{document}
