@@ -197,8 +197,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (missing(data) || !is.data.frame(data)) {
     stop("Invalid args: data must be a data.frame")
   }
-  if (length(unique(data$TICKER)) < 2) {
-    stop("Invalid args: data must contain at least 2 TICKER symbols")
+  if (!(asset.var %in% colnames(data)) || length(unique(data[[asset.var]])) < 2) {
+    stop("Invalid args: data must contain at least 2 assets in asset.var")
   }
   fit.method = fit.method[1]
   if (!(fit.method %in% c("LS","WLS","Rob","W-Rob"))) {
