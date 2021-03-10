@@ -4,21 +4,10 @@
 \alias{repReturn}
 \title{Portfolio return decomposition report}
 \usage{
-repReturn(
-  ffmObj,
-  weights = NULL,
-  isPlot = TRUE,
-  isPrint = TRUE,
-  layout = NULL,
-  scaleType = "free",
-  stripLeft = TRUE,
-  stripText.cex = 1,
-  axis.cex = 1,
-  digits = 1,
-  titleText = TRUE,
-  which = NULL,
-  ...
-)
+repReturn(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE,
+  layout = NULL, scaleType = "free", stripLeft = TRUE,
+  stripText.cex = 1, axis.cex = 1, digits = 1, titleText = TRUE,
+  which = NULL, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class ffm returned by fitFfm.}

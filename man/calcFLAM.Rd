@@ -4,14 +4,8 @@
 \alias{calcFLAM}
 \title{calcFLAM}
 \usage{
-calcFLAM(
-  specObj,
-  modelStats,
-  fitResults,
-  analysis = c("ISM", "NEW"),
-  targetedVol = 0.06,
-  ...
-)
+calcFLAM(specObj, modelStats, fitResults, analysis = c("ISM", "NEW"),
+  targetedVol = 0.06, ...)
 }
 \arguments{
 \item{analysis}{method used in the analysis of fundamental law of active management; one of "none", "ISM",

@@ -4,19 +4,15 @@
 \alias{roll.fitFfmDT}
 \title{roll.fitFfmDT}
 \usage{
-roll.fitFfmDT(
-  ffMSpecObj,
-  windowSize = 60,
-  refitEvery = 1,
+roll.fitFfmDT(ffMSpecObj, windowSize = 60, refitEvery = 1,
   refitWindow = c("Expanding", "Rolling"),
   stdExposuresControl = list(Std.Type = "timeSeries", lambda = 0.9),
-  stdReturnControl = list(GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)),
-  fitControl = list(fit.method = c("LS", "WLS", "Rob", "W-Rob"), resid.scaleType =
-    c("STDDEV", "EWMA", "ROBEWMA", "GARCH"), lambda = 0.9, GARCH.params = list(omega =
-    0.09, alpha = 0.1, beta = 0.81), GARCH.MLE = FALSE),
-  full.resid.cov = TRUE,
-  analysis = c("ISM", "NEW")
-)
+  stdReturnControl = list(GARCH.params = list(omega = 0.09, alpha = 0.1,
+  beta = 0.81)), fitControl = list(fit.method = c("LS", "WLS", "Rob",
+  "W-Rob"), resid.scaleType = c("STDDEV", "EWMA", "ROBEWMA", "GARCH"),
+  lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta =
+  0.81), GARCH.MLE = FALSE), full.resid.cov = TRUE, analysis = c("ISM",
+  "NEW"))
 }
 \arguments{
 \item{ffMSpecObj}{a specFFm object}

@@ -4,15 +4,9 @@
 \alias{exposuresTseries}
 \title{Time series plots of Style Exposures}
 \usage{
-exposuresTseries(
-  data,
-  tickers = NULL,
-  which.exposures = c("SIZE", "P2B", "ENTVAL"),
-  plot.returns = TRUE,
-  axis.cex = 1,
-  plot.type = "b",
-  ...
-)
+exposuresTseries(data, tickers = NULL, which.exposures = c("SIZE",
+  "P2B", "ENTVAL"), plot.returns = TRUE, axis.cex = 1,
+  plot.type = "b", ...)
 }
 \arguments{
 \item{data}{Dataframe with time series of style exposures and returns}

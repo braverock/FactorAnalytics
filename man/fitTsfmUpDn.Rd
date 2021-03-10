@@ -4,15 +4,9 @@
 \alias{fitTsfmUpDn}
 \title{Fit a up and down market factor model using time series regression}
 \usage{
-fitTsfmUpDn(
-  asset.names,
-  mkt.name,
-  rf.name = NULL,
-  data = data,
+fitTsfmUpDn(asset.names, mkt.name, rf.name = NULL, data = data,
   fit.method = c("LS", "DLS", "Robust"),
-  control = fitTsfm.control(...),
-  ...
-)
+  control = fitTsfm.control(...), ...)
 }
 \arguments{
 \item{asset.names}{vector containing names of assets, whose returns or 

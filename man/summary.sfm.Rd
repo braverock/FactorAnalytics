@@ -5,7 +5,8 @@
 \alias{print.summary.sfm}
 \title{Summarizing a fitted time series factor model}
 \usage{
-\method{summary}{sfm}(object, se.type = c("Default", "HC", "HAC"), n.top = 3, ...)
+\method{summary}{sfm}(object, se.type = c("Default", "HC", "HAC"),
+  n.top = 3, ...)
 
 \method{print}{summary.sfm}(x, digits = 3, ...)
 }

@@ -4,11 +4,8 @@
 \alias{standardizeExposures}
 \title{standardizeExposures}
 \usage{
-standardizeExposures(
-  specObj,
-  Std.Type = c("None", "CrossSection", "TimeSeries"),
-  lambda = 0.9
-)
+standardizeExposures(specObj, Std.Type = c("None", "CrossSection",
+  "TimeSeries"), lambda = 0.9)
 }
 \arguments{
 \item{specObj}{is a ffmSpec object,}

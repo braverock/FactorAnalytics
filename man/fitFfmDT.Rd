@@ -4,16 +4,11 @@
 \alias{fitFfmDT}
 \title{fitFfmDT}
 \usage{
-fitFfmDT(
-  ffMSpecObj,
-  fit.method = c("LS", "WLS", "Rob", "W-Rob"),
+fitFfmDT(ffMSpecObj, fit.method = c("LS", "WLS", "Rob", "W-Rob"),
   resid.scaleType = c("StdDev", "EWMA", "RobustEWMA", "GARCH"),
-  lambda = 0.9,
-  GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
-  GARCH.MLE = FALSE,
-  lmrobdet.control.para.list = lmrobdet.control(),
-  ...
-)
+  lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta =
+  0.81), GARCH.MLE = FALSE,
+  lmrobdet.control.para.list = lmrobdet.control(), ...)
 }
 \arguments{
 \item{ffMSpecObj}{a specFFm object}

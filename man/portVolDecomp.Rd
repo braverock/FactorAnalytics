@@ -8,13 +8,8 @@
 \usage{
 portVolDecomp(object, ...)
 
-\method{portVolDecomp}{tsfm}(
-  object,
-  weights = NULL,
-  factor.cov,
-  use = "pairwise.complete.obs",
-  ...
-)
+\method{portVolDecomp}{tsfm}(object, weights = NULL, factor.cov,
+  use = "pairwise.complete.obs", ...)
 
 \method{portVolDecomp}{ffm}(object, weights = NULL, factor.cov, ...)
 }

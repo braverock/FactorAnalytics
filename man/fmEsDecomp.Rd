@@ -9,32 +9,14 @@
 \usage{
 fmEsDecomp(object, ...)
 
-\method{fmEsDecomp}{tsfm}(
-  object,
-  factor.cov,
-  p = 0.05,
-  type = c("np", "normal"),
-  use = "pairwise.complete.obs",
-  ...
-)
+\method{fmEsDecomp}{tsfm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 
-\method{fmEsDecomp}{sfm}(
-  object,
-  factor.cov,
-  p = 0.05,
-  type = c("np", "normal"),
-  use = "pairwise.complete.obs",
-  ...
-)
+\method{fmEsDecomp}{sfm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 
-\method{fmEsDecomp}{ffm}(
-  object,
-  factor.cov,
-  p = 0.05,
-  type = c("np", "normal"),
-  use = "pairwise.complete.obs",
-  ...
-)
+\method{fmEsDecomp}{ffm}(object, factor.cov, p = 0.05, type = c("np",
+  "normal"), use = "pairwise.complete.obs", ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}

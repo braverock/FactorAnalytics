@@ -4,15 +4,9 @@
 \alias{fitTsfmMT}
 \title{Fit a market timing time series factor model}
 \usage{
-fitTsfmMT(
-  asset.names,
-  mkt.name,
-  rf.name = NULL,
-  data = data,
+fitTsfmMT(asset.names, mkt.name, rf.name = NULL, data = data,
   fit.method = c("LS", "DLS", "Robust"),
-  control = fitTsfm.control(...),
-  ...
-)
+  control = fitTsfm.control(...), ...)
 }
 \arguments{
 \item{asset.names}{vector containing names of assets, whose returns or 

@@ -4,20 +4,11 @@
 \alias{plot.tsfmUpDn}
 \title{Plot actual against fitted values of up and down market time series factor model}
 \usage{
-\method{plot}{tsfmUpDn}(
-  x,
-  asset.name = NULL,
-  SFM.line = FALSE,
-  LSandRob = FALSE,
-  line.color = c("blue", "purple"),
-  line.type = c("dashed", "solid"),
-  line.width = c(1, 2),
-  sfm.line.type = "dashed",
-  add.legend = TRUE,
-  legend.loc = "topleft",
-  legend.cex = 0.9,
-  ...
-)
+\method{plot}{tsfmUpDn}(x, asset.name = NULL, SFM.line = FALSE,
+  LSandRob = FALSE, line.color = c("blue", "purple"),
+  line.type = c("dashed", "solid"), line.width = c(1, 2),
+  sfm.line.type = "dashed", add.legend = TRUE,
+  legend.loc = "topleft", legend.cex = 0.9, ...)
 }
 \arguments{
 \item{x}{an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.}

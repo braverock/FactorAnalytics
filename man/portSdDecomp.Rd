@@ -8,13 +8,8 @@
 \usage{
 portSdDecomp(object, ...)
 
-\method{portSdDecomp}{tsfm}(
-  object,
-  weights = NULL,
-  factor.cov,
-  use = "pairwise.complete.obs",
-  ...
-)
+\method{portSdDecomp}{tsfm}(object, weights = NULL, factor.cov,
+  use = "pairwise.complete.obs", ...)
 
 \method{portSdDecomp}{ffm}(object, weights = NULL, factor.cov, ...)
 }

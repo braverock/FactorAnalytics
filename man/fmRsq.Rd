@@ -7,20 +7,9 @@
 \usage{
 fmRsq(ffmObj, ...)
 
-\method{fmRsq}{ffm}(
-  ffmObj,
-  rsq = T,
-  rsqAdj = F,
-  plt.type = 2,
-  digits = 2,
-  isPrint = T,
-  isPlot = T,
-  lwd = 2,
-  stripText.cex = 1,
-  axis.cex = 1,
-  title = TRUE,
-  ...
-)
+\method{fmRsq}{ffm}(ffmObj, rsq = T, rsqAdj = F, plt.type = 2,
+  digits = 2, isPrint = T, isPlot = T, lwd = 2,
+  stripText.cex = 1, axis.cex = 1, title = TRUE, ...)
 }
 \arguments{
 \item{ffmObj}{an object of class \code{ffm} produced by \code{fitFfm}}
