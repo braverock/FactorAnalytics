@@ -288,8 +288,6 @@ fitTsfm.control <- function(
 					y=y, 
 					qr=qr, 
 					nrep=nrep, 
-					
-					
 					bb = bb,
 					efficiency=efficiency,
 					family = family,
