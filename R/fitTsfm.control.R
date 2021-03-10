@@ -61,8 +61,6 @@
 #' @param refine.PY number of refinement steps for the Pen~a-Yohai candidates
 #' @param solve.tol relative tolerance for inversion
 #' @param trace.lev positive values (increasingly) provide details on the progress of the MM-algorithm
-#' @param mts maximum number of subsamples. Un-used, but passed (unnecessarily) to the function
-#' that performs M-iterations (lmrob..M..fit), so set here.
 #' @param compute.rd logical value indicating whether robust leverage distances need to be computed.
 #' @param family string specifying the name of the family of loss function to be used (current valid
 #' options are "bisquare", "optimal" and "modopt"). Incomplete entries will be matched to
@@ -283,7 +281,15 @@ fitTsfm.control <- function(
 	}
 	
 	# return list of arguments with defaults if they are unspecified
-	result <- c(args, list(decay=decay, model=model, x=x, y=y, qr=qr, nrep=nrep, 
+	result <- c(args, list(
+					decay=decay, 
+					model=model, 
+					x=x, 
+					y=y, 
+					qr=qr, 
+					nrep=nrep, 
+					
+					
 					bb = bb,
 					efficiency=efficiency,
 					family = family,
@@ -306,9 +312,17 @@ fitTsfm.control <- function(
 					mscale_maxit = mscale_maxit, 
 					mscale_tol = mscale_tol, 
 					mscale_rho_fun = mscale_rho_fun,
-					mts = mts, steps=steps, k=k, nvmin=nvmin, 
-					nvmax=nvmax, force.in=force.in, force.out=force.out, 
-					really.big=really.big, normalize=normalize, eps=eps, 
-					plot.it=plot.it, lars.criterion=lars.criterion, K=K))
+					steps=steps, 
+					k=k, 
+					nvmin=nvmin, 
+					nvmax=nvmax, 
+					force.in=force.in, 
+					force.out=force.out, 
+					really.big=really.big, 
+					normalize=normalize, 
+					eps=eps, 
+					plot.it=plot.it, 
+					lars.criterion=lars.criterion, 
+					K=K))
 	return(result)
 }
