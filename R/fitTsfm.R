@@ -124,6 +124,8 @@
 #' 
 #' @examples
 #' data(managers)
+#' colnames(managers) = gsub(" ",'.',colnames(managers))
+#' 
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), data=managers)
 #' summary(fit)
