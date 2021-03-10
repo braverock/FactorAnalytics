@@ -107,7 +107,7 @@ An object of class \code{"ffm"} is a list containing the following
 components:
 \item{factor.fit}{list of fitted objects that estimate factor returns in each 
 time period. Each fitted object is of class \code{lm} if 
-\code{fit.method="LS" or "WLS"}, or, class \code{lmRob} if 
+\code{fit.method="LS" or "WLS"}, or, class \code{lmrobdetMM} if 
 \code{fit.method="Rob" or "W-Rob"}.}
 \item{beta}{N x K matrix of factor exposures for the last time period.}
 \item{factor.returns}{xts object of K-factor returns (including intercept).}
@@ -150,7 +150,7 @@ is returned.
 \details{
 Estimation method "LS" corresponds to ordinary least squares using 
 \code{\link[stats]{lm}} and "Rob" is robust regression using 
-\code{\link[robust]{lmRob}}. "WLS" is weighted least squares using estimates 
+\code{\link[RobStatTM]{lmrobdetMM}}. "WLS" is weighted least squares using estimates 
 of the residual variances from LS regression as weights (feasible GLS). 
 Similarly, "W-Rob" is weighted robust regression.
 
