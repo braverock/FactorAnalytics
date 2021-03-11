@@ -9,14 +9,32 @@
 \usage{
 fmVaRDecomp(object, ...)
 
-\method{fmVaRDecomp}{tsfm}(object, factor.cov, p = 0.05, type = c("np",
-  "normal"), use = "pairwise.complete.obs", ...)
+\method{fmVaRDecomp}{tsfm}(
+  object,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{fmVaRDecomp}{sfm}(object, factor.cov, p = 0.05, type = c("np",
-  "normal"), use = "pairwise.complete.obs", ...)
+\method{fmVaRDecomp}{sfm}(
+  object,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{fmVaRDecomp}{ffm}(object, factor.cov, p = 0.05, type = c("np",
-  "normal"), use = "pairwise.complete.obs", ...)
+\method{fmVaRDecomp}{ffm}(
+  object,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  use = "pairwise.complete.obs",
+  ...
+)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
@@ -85,7 +103,7 @@ VaR.decomp <- fmVaRDecomp(sfm.pca.fit, type="normal")
 VaR.decomp$cVaR
 
 # Fundamental Factor Model
-data(Stock.df)
+data(Stocks.df)
 exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)

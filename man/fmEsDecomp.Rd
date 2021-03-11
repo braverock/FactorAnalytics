@@ -9,14 +9,32 @@
 \usage{
 fmEsDecomp(object, ...)
 
-\method{fmEsDecomp}{tsfm}(object, factor.cov, p = 0.05, type = c("np",
-  "normal"), use = "pairwise.complete.obs", ...)
+\method{fmEsDecomp}{tsfm}(
+  object,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{fmEsDecomp}{sfm}(object, factor.cov, p = 0.05, type = c("np",
-  "normal"), use = "pairwise.complete.obs", ...)
+\method{fmEsDecomp}{sfm}(
+  object,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  use = "pairwise.complete.obs",
+  ...
+)
 
-\method{fmEsDecomp}{ffm}(object, factor.cov, p = 0.05, type = c("np",
-  "normal"), use = "pairwise.complete.obs", ...)
+\method{fmEsDecomp}{ffm}(
+  object,
+  factor.cov,
+  p = 0.05,
+  type = c("np", "normal"),
+  use = "pairwise.complete.obs",
+  ...
+)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
@@ -83,7 +101,7 @@ ES.decomp <- fmEsDecomp(sfm.pca.fit, type="normal")
 ES.decomp$cES
 
 # Fundamental Factor Model
-data(Stock.df)
+data(Stocks.df)
 exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)

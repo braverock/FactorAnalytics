@@ -1,5 +1,3 @@
-context("Test fitTsfm")
-require(testthat)
 test_that("fitTsfm is as expected", {
   
   fpath <- system.file("extdata", "timeSeriesReturns.csv", 

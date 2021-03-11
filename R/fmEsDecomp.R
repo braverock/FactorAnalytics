@@ -78,7 +78,7 @@
 #' ES.decomp$cES
 #' 
 #' # Fundamental Factor Model
-#' data(Stock.df)
+#' data(Stocks.df)
 #' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 #' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars=exposure.vars)

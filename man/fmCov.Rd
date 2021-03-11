@@ -9,8 +9,7 @@
 \usage{
 fmCov(object, ...)
 
-\method{fmCov}{tsfm}(object, factor.cov, use = "pairwise.complete.obs",
-  ...)
+\method{fmCov}{tsfm}(object, factor.cov, use = "pairwise.complete.obs", ...)
 
 \method{fmCov}{sfm}(object, use = "pairwise.complete.obs", ...)
 
@@ -70,7 +69,7 @@ sfm.pca.fit <- fitSfm(r.M, k=2)
 fmCov(sfm.pca.fit)
 
 # Fundamental factor Model
-data(Stock.df)
+data(Stocks.df)
 exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
 fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)

@@ -1,3 +1,5 @@
+test_that("fmRsq  behaves as expected", {
+
 #Load the data 
 data("factorDataSetDjia5Yrs")
 
@@ -30,4 +32,4 @@ expect_error(fmRsq(fit, rsq = F, rsqAdj = F),
              "Invalid arguments: Inputs rsq and rsqAdj cannot be False") 
 
 
-
+})

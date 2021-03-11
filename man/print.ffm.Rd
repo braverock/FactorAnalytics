@@ -24,7 +24,7 @@ Refer to \code{\link{summary.ffm}} for a more detailed summary of the fit at
 each time period.
 }
 \examples{
-data(Stock.df)
+data(Stocks.df)
 exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)

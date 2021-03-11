@@ -25,13 +25,13 @@
   Categorical variables: GICS, GICS.INDUSTRY, GICS.SECTOR
 }
 \usage{
-data(Stock.df)
+data(Stocks.df)
 }
 \format{
 data.frame
 }
 \examples{
-data(Stock.df)
+data(Stocks.df)
 str(stock)
 }
 \keyword{datasets}

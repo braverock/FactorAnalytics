@@ -21,13 +21,13 @@ expect_error(portSdDecomp(fit.macro, weights = c(0.5,0.5)),
 
 
 #Load fundamental and return data 
-data("stocks145scores6")
+load('../../tests/stocks145scores6.rda')
 dat = stocks145scores6
 dat$DATE = as.yearmon(dat$DATE)
 dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
 
 #Load long-only GMV weights for the return data
-data("wtsStocks145GmvLo")
+load('../../tests/wtsStocks145GmvLo.rda')
 wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
 
 #fit a fundamental factor model
