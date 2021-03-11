@@ -98,16 +98,19 @@ fitTsfmLagLeadBeta <- function(asset.names, mkt.name, rf.name=NULL,
   # Create market lag terms
   factor.names = mkt.name
   mktlag <- lag(data[,mkt.name],k=seq(1,LagLeadBeta,1))
-  mktlead <- lag(data[,mkt.name],k=seq(-1,-LagLeadBeta,-1))
+  if(!LagOnly)
+  	mktlead <- lag(data[,mkt.name],k=seq(-1,-LagLeadBeta,-1))
   
   for (i in 1:LagLeadBeta) {
     colnames(mktlag)[i] <- paste("MktLag",i,sep="")
-	colnames(mktlead)[i] <- paste("MktLead",i,sep="")
-	
-    factor.names <- c(factor.names,paste("MktLag",i,sep=""),paste("MktLead",i,sep=""))
+	factor.names <- c(factor.names,paste("MktLag",i,sep=""))
+	if(!LagOnly)		
+		colnames(mktlead)[i] <- paste("MktLead",i,sep="")
+		factor.names <- c(factor.names,paste("MktLead",i,sep=""))
   }
     data <- merge(data,mktlag)
-	data <- merge(data,mktlead)
+	if(!LagOnly)		
+		data <- merge(data,mktlead)
 	
   fit <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
                   data=data,fit.method=fit.method,variable.selection="none",control=control)
