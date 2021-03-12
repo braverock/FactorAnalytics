@@ -1,4 +1,6 @@
-
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/braverock/FactorAnalytics/workflows/R-CMD-check/badge.svg)](https://github.com/braverock/FactorAnalytics/actions)
+<!-- badges: end -->
 # Linear factor model fitting for asset returns
 
 The FactorAnalytics package contains fitting and analysis methods for the three main types of factor models used in conjunction with portfolio construction, optimization and risk management, namely fundamental factor models, time series factor models and statistical factor models. The purpose of this project is to add key improvements to the package that will make it its basic features and capabilities close to those of commercial portfolio optimization and risk management products.
