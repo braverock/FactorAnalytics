@@ -105,9 +105,9 @@ fitTsfmLagLeadBeta <- function(asset.names, mkt.name, rf.name=NULL,
 	  for (i in 1:LagLeadBeta) {
 	    colnames(mktlag)[i] <- paste("MktLag",i,sep="")
 		factor.names <- c(factor.names,paste("MktLag",i,sep=""))
-		if(!LagOnly)		
+		if(!LagOnly){		
 			colnames(mktlead)[i] <- paste("MktLead",i,sep="")
-			factor.names <- c(factor.names,paste("MktLead",i,sep=""))
+			factor.names <- c(factor.names,paste("MktLead",i,sep=""))}
 	  }
 	    data <- merge(data,mktlag)
 		if(!LagOnly)		
