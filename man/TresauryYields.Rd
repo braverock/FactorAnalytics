@@ -4,6 +4,9 @@
 \name{TresauryYields}
 \alias{TresauryYields}
 \title{Tresaury Yields}
+\source{
+
+}
 \usage{
 data("TresauryYields")
 }

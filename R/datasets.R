@@ -15,6 +15,8 @@
 #' models. The purpose of this project is to add key functionality to the
 #' package that will make it its basic features and capabilities close to
 #' those of commercial portfolio optimization and risk management products.
+#' 
+#' Doug's placeholder for new text
 #'
 #' @section CRSP data included in FactorAnalytics:
 #'

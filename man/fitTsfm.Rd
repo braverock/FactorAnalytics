@@ -7,10 +7,17 @@
 \alias{residuals.tsfm}
 \title{Fit a time series factor model using time series regression}
 \usage{
-fitTsfm(asset.names, factor.names, mkt.name = NULL, rf.name = NULL,
-  data = data, fit.method = c("LS", "DLS", "Robust"),
+fitTsfm(
+  asset.names,
+  factor.names,
+  mkt.name = NULL,
+  rf.name = NULL,
+  data = data,
+  fit.method = c("LS", "DLS", "Robust"),
   variable.selection = c("none", "stepwise", "subsets", "lars"),
-  control = fitTsfm.control(...), ...)
+  control = fitTsfm.control(...),
+  ...
+)
 
 \method{coef}{tsfm}(object, ...)
 

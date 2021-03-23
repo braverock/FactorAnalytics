@@ -4,8 +4,7 @@
 \alias{simulateARL}
 \title{Simulation for thresholds of the Lindley's recursion}
 \usage{
-simulateARL(mu, Threshold, delta, k = 3, EW_constant = 0.9,
-  Fixed_Sigma = 1)
+simulateARL(mu, Threshold, delta, k = 3, EW_constant = 0.9, Fixed_Sigma = 1)
 }
 \arguments{
 \item{mu}{A numeric value that determines the information ratio we want to
