@@ -9,6 +9,9 @@ readGithubFAdata(filename = "")
 \arguments{
 \item{filename}{stockCRSPdaily, stockCRSPweekly, stockCRSPmonthly}
 }
+\value{
+
+}
 \description{
 download FA dataset from github
 }

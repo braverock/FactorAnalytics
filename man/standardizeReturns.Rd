@@ -4,8 +4,10 @@
 \alias{standardizeReturns}
 \title{standardizeReturns}
 \usage{
-standardizeReturns(specObj, GARCH.params = list(omega = 0.09, alpha =
-  0.1, beta = 0.81))
+standardizeReturns(
+  specObj,
+  GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)
+)
 }
 \arguments{
 \item{specObj}{is a ffmSpec object}

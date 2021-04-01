@@ -4,11 +4,21 @@
 \alias{plot.ffm}
 \title{Plots from a fitted fundamental factor model}
 \usage{
-\method{plot}{ffm}(x, which = NULL, f.sub = 1:2, a.sub = 1:6,
-  plot.single = FALSE, asset.name, colorset = c("royalblue", "dimgray",
-  "olivedrab", "firebrick", "goldenrod", "mediumorchid", "deepskyblue",
-  "chocolate", "darkslategray"), legend.loc = "topleft", las = 1,
-  lwd = 2, maxlag = 15, ...)
+\method{plot}{ffm}(
+  x,
+  which = NULL,
+  f.sub = 1:2,
+  a.sub = 1:6,
+  plot.single = FALSE,
+  asset.name,
+  colorset = c("royalblue", "dimgray", "olivedrab", "firebrick", "goldenrod",
+    "mediumorchid", "deepskyblue", "chocolate", "darkslategray"),
+  legend.loc = "topleft",
+  las = 1,
+  lwd = 2,
+  maxlag = 15,
+  ...
+)
 }
 \arguments{
 \item{x}{an object of class \code{ffm} produced by \code{fitFfm}.}

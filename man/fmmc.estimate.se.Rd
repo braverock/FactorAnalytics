@@ -4,8 +4,13 @@
 \alias{fmmc.estimate.se}
 \title{Main function to calculate the standard errror of the estimate}
 \usage{
-fmmc.estimate.se(fmmcObjs, fun = NULL, se = FALSE, nboot = 100,
-  parallel = FALSE)
+fmmc.estimate.se(
+  fmmcObjs,
+  fun = NULL,
+  se = FALSE,
+  nboot = 100,
+  parallel = FALSE
+)
 }
 \arguments{
 \item{fmmcObjs}{A list of fmmc objects computed using .fmmc.proc and containing

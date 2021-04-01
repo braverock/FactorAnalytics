@@ -4,10 +4,22 @@
 \alias{tsPlotMP}
 \title{Time Series Plots}
 \usage{
-tsPlotMP(ret, add.grid = FALSE, layout = NULL, type = "l",
-  yname = "RETURNS (\%)", Pct = F, scaleType = "free",
-  stripLeft = TRUE, main = NULL, lwd = 1, stripText.cex = 1,
-  axis.cex = 1, color = "black", zeroLine = TRUE)
+tsPlotMP(
+  ret,
+  add.grid = FALSE,
+  layout = NULL,
+  type = "l",
+  yname = "RETURNS (\%)",
+  Pct = F,
+  scaleType = "free",
+  stripLeft = TRUE,
+  main = NULL,
+  lwd = 1,
+  stripText.cex = 1,
+  axis.cex = 1,
+  color = "black",
+  zeroLine = TRUE
+)
 }
 \arguments{
 \item{add.grid}{logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')}

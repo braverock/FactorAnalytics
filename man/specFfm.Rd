@@ -4,8 +4,16 @@
 \alias{specFfm}
 \title{Specifies the elements of a fundamental factor model}
 \usage{
-specFfm(data, asset.var, ret.var, date.var, exposure.vars,
-  weight.var = NULL, addIntercept = FALSE, rob.stats = FALSE)
+specFfm(
+  data,
+  asset.var,
+  ret.var,
+  date.var,
+  exposure.vars,
+  weight.var = NULL,
+  addIntercept = FALSE,
+  rob.stats = FALSE
+)
 }
 \arguments{
 \item{asset.var}{character; name of the variable  for asset names.}

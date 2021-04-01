@@ -7,8 +7,16 @@
 \alias{residuals.sfm}
 \title{Fit a statistical factor model using principal component analysis}
 \usage{
-fitSfm(data, k = 1, max.k = NULL, refine = TRUE, sig = 0.05,
-  check = FALSE, corr = FALSE, ...)
+fitSfm(
+  data,
+  k = 1,
+  max.k = NULL,
+  refine = TRUE,
+  sig = 0.05,
+  check = FALSE,
+  corr = FALSE,
+  ...
+)
 
 \method{coef}{sfm}(object, ...)
 

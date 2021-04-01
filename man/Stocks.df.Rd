@@ -4,6 +4,9 @@
 \name{Stocks.df}
 \alias{Stocks.df}
 \title{Stocks.df}
+\source{
+
+}
 \usage{
 data("Stocks.df")
 }
