@@ -1,0 +1,466 @@
+\documentclass[a4paper]{article}
+\usepackage{Rd}
+\usepackage{amsmath}
+\usepackage[round]{natbib}
+\usepackage{bm}
+\usepackage{verbatim}
+\usepackage[latin1]{inputenc}
+\bibliographystyle{abbrvnat}
+\usepackage{url}
+
+\let\proglang=\textsf
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\baselinestretch}{1.5}
+\setlength{\textwidth}{15cm} \setlength{\textheight}{22cm} \topmargin-1cm \evensidemargin0.5cm \oddsidemargin0.5cm
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+% \VignetteIndexEntry{Fitting a fundamental factor model with 'fitFfm' in factorAnalytics}
+%\VignetteEngine{knitr::knitr}
+
+% The latest version of the \verb"FactorAnalytics" package used in this vignette is hosted in the publicly available GitHub repository https://github.com/sangeeuw/factorAnalytics. There are plans for further updates to the package before its moved back to R-Forge and released on CRAN later this year.
+\begin{document}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(concordance=TRUE)
+@
+
+\title{Fitting Fundamental Factor Models: FactorAnalytics vignette}
+\author{Sangeetha Srinivasan}
+\maketitle
+
+\begin{abstract}
+The purpose of this vignette is to demonstrate the use of \code{fitFfm} and related control, analysis and plot functions in the \code{FactorAnalytics} package.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+\newpage
+\section{Overview}
+
+\subsection{Load Package}
+
+
+The package can be installed from GitHub using \verb"devtools" as follows.
+<<eval=FALSE>>=
+install("FactorAnalytics")
+@
+
+<<message=FALSE, warning=FALSE>>=
+# load the package and its dependencies
+library(FactorAnalytics)
+options(digits=3)
+@
+
+The focus of this vignette is on the \code{fitFfm} function and related methods. The original function was designed by Doug Martin and initially implemented in S-PLUS by a number of University of Washington Ph.D. students: Christopher Green, Eric Aldrich, and Yindeng Jiang. Guy Yollin ported the function to R and Yi-An Chen modified that code as part of Google Summer of Code (GSOC) 2013 . Sangeetha Srinivasan tested and expanded the functionalities and S3 methods as part of GSOC in 2014 and 2015. Doug Martin, Avinash Acharya, Lingjie Yi and Chindhanai Uthaisaad added options to fit EWMA or GARCH model for errors, enabled a market + industry and/or sector and/or country model specification, etc. as part of GSOC 2016 and 2017. Refer to the other fundamental factor model vignette by Avinash Acharya for more examples elaborating on these recent functionalities and reporting functions.
+
+\subsection{Summary of fitFfm function and related S3 methods}
+
+Here's a summary of the fit function and related S3 methods (generic accessor functions) demonstrated in this vignette:
+
+\begin{itemize}
+
+\item \verb"fitFfm(data, asset.var, ret.var, date.var, exposure.vars, weight.var, " \\ \verb"fit.method, rob.stats, full.resid.cov, z.score, add.intercept, lag.exposures, " \\ \verb"resid.scale.type, lambda, GARCH.params, GARCH.MLE, std.return, analysis, " \\ \verb"target.vol, ...)": Fits a fundamental factor model for one or more asset returns or excess returns using $T$ cross-sectional regressions a.k.a. the "BARRA" approach (detailed in \citet{grinold2000active}), where $T$ is the number of time periods. Available fit methods include Least squares (LS), weighted least squares (WLS), robust (rob) and weighted-robust regression (W-Rob). Options for computing residual variances include sample variance, EWMA, Robust EWMA and GARCH(1,1). An object of class "ffm" containing the fitted objects, factor exposures, factor returns, $R^2$, residual volatility, etc. is returned. A more detailed description is provided in Section 2.
+
+\item \verb"coef(object, ...)": Returns a data.frame containing the coefficients (intercept and factor exposures) for the last time period for all assets.
+
+\item \verb"fitted(object, ...)": Returns an "xts" data object of fitted asset returns from the factor model for all assets.
+
+\item \verb"residuals(object, ...)": Returns an "xts" data object of residuals from the fitted factor model for all assets.
+
+\item \verb"fmCov(object, use, ...)": Returns the \code{N x N} symmetric covariance matrix for asset returns based on the fitted factor model using exposures from the last time period.
+
+\item \verb"fmSdDecomp(object, use, ...)": Returns a list containing the standard deviation of asset returns based on the fitted factor model and the marginal, component and percentage component factor contributions estimated from the given sample. \code{"use"} specifies how missing values are to be handled.
+
+\item \verb"fmVaRDecomp(object, factor.cov, p, type, use, ...)": Returns a list containing the value-at-risk (VaR) for asset returns based on the fitted factor model and the estimated marginal, component and percentage component factor contributions. \code{factor.cov} allows for user-specified factor covariance matrix; defaults to the sample covariance of historical factor returns. \code{type} specifies if VaR computation should be non-parametric (sample quantile) or based on a Normal distribution. And, \code{"p"} specifies the confidence level.
+
+\item \verb"fmEsDecomp(object, factor.cov, p, type, use, ...)": Returns a list containing the expected shortfall (ES) for asset returns based on the fitted factor model and the estimated marginal, component and percentage component factor contributions. \code{factor.cov} allows for user-specified factor covariance matrix; defaults to the sample covariance of historical factor returns. \code{type} specifies if VaR computation should be non-parametric (sample quantile) or based on a Normal distribution. And, \code{"p"} specifies the confidence level.
+
+\item \verb"plot(x)": The \code{plot} method for class "ffm" can be used for plotting factor model characteristics of a group of assets (default) or an individual asset. The user can select the type of plot either from the menu prompt or directly via argument \code{which}. In case multiple plots are needed, the menu is repeated after each plot (enter 0 to exit). User can also input a numeric vector of plot options via \code{which}.
+
+\item \verb"predict(object, newdata, pred.date, ...)": The \code{predict} method for class "ffm" returns a vector or matrix of predicted returns for new or simulated values of the fundamental characteristics. \code{pred.date} allows user to choose the relevant date for the estimated factor exposures to be used in the prediction.
+
+\item \verb"print(object, digits, ...)": The \code{predict} method for class "ffm" prints the call, factor model dimension and summary statistics for the estimated factor returns, cross-sectional $R^2$ values and residual variances from the fitted object.
+
+\item \verb"summary(object, ...)": The \code{summary} method for class "ffm" returns an object of class \code{"summary.ffm"} containing the summaries of the fitted objects. Printing the factor model summary object outputs the call, estimated factor returns, $R^2$ and residual volatility for each time period.
+
+\end{itemize}
+
+A complete list of related methods is shown below.
+<<>>=
+methods(class="ffm")
+@
+
+\subsection{Data}
+
+The following examples primarily use the \code{Stock.df} dataset. It contains fundamental and monthly return data for 447 stocks listed on the NYSE over a 8-year period. The dataset is balanced, i.e., every asset has a complete set of observations for all variables in each time period.
+
+The following queries help understand key aspects of the dataset:
+<<>>=
+# load the dataset into the environment
+data(Stocks.df)
+# get a list of the variable names
+colnames(stock)
+# time period covered in the data
+range(stock[,"DATE"])
+# number of stocks
+length(unique(stock[,"TICKER"]))
+# count stocks by GICS sector as of the last time period
+stocklist<-subset(stock,DATE=="2003-12-31")
+table(stocklist$GICS.SECTOR)
+@
+
+\newpage
+\section{Fitting a fundamental factor model}
+
+A fundamental factor model uses observed cross-sectional asset characteristics such as dividend yield, earnings yield, book-to-market ratio, market capitalization, sector or industry classification, price volatility, price momemtum, leverage, etc. to determine common risk factors that contribute to asset returns. Chapter 15 from \citet{zivot2006modeling} serves as a good reference for a description of the different multi-factor models, estimation methods and relevant examples using S-PLUS.
+
+There are 2 main approaches to estimating the fundamental factor model - the "BARRA" approach (detailed in \citet{grinold2000active}) and the "Fama-French" approach (introduced in \citet{fama1992cross}). In the "BARRA" approach, the obsered fundamental attributes are the factor betas and the unknown factor returns are estimated via cross-sectional regressions for each time period. Due to cross-sectional heteroskedasticity of asset returns, ordinary least squares (OLS) estimation of the factor returns is inefficient. So weighted least squares regression is performed as a second step to get efficient estimates, with the inverse of the estimated residual variances or market cap used as weights. In the "Fama-French" approach, the factor returns are the observed returns of a hypothetical hedge portfolio that's long/short the top/bottom quintile of stocks for a given attribute (ex: market cap for the size factor). After the factor returns are computed for each characterictic, each asset's factor exposures are estimated via a time series regression. \code{fitFfm} described in this vignette uses the "BARRA" approach.
+
+Let's take a look at the arguments for \code{fitFfm}.
+
+<<tidy=TRUE>>=
+args(fitFfm)
+@
+
+The default model fitting method is ordinary least squares (LS) regression, with the option to choose robust regression (Rob), weighted least squares (WLS) or weighted robust regression (W-Rob). The different model fitting options are demonstrated in the following sections. If weighted regression (WLS or W-Rob) is chosen, inverse of the residual variances are used as weights. \code{resid.scale.type} allows the user to choose the method for computing residual variances - sample variance, EWMA, Robust EWMA and GARCH(1,1).
+
+\code{z.score} provides the option to standardize factor exposures cross-sectionally across assets or across time periods. \code{weight.var} allows the user to give higher weight to some assets when estimating factor exposures; for example using the market cap of stocks as their weights. \code{add.intercept} gives the option to add an intercept term for fitting a Market + Sector or a Market + Sector + Country model. These models can simultaneously include other style factors. \code{lag.exposures} gives the option to use the factor exposures from the previous time period to estimate factor returns for the current period. \code{full.resid.cov} provides the option to choose between a diagonal vs. full residual covariance matrix. And, \code{rob.stats} allows for robust estimates of covariance, correlation, location and univariate scale.
+
+These and other control parameters are demonstrated in the following sections.
+
+\subsection{Single Factor Model}
+
+Here's an example of a single factor model using the book-to-market ratio, a proxy for the value factor, as the explanatory variable for the returns of 447 stocks in the dataset.
+
+<<>>=
+# Single Factor Model
+fit.single <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
+                     date.var="DATE", exposure.vars="BOOK2MARKET")
+@
+
+The resulting object, \code{fit.single}, has the following attributes.
+<<>>=
+class(fit.single)
+names(fit.single)
+@
+
+The component \code{factor.fit} contains a list of "lm" or "lmRob" objects, one for each time period. The fitted objects is of class "lm" if \code{fit.method="LS" or "WLS"}, or class "lmRob", if \code{fit.method="Rob" or "W-Rob"}. The component \code{factor.returns} contains the estimated factor returns and \code{beta} contains the factor exposures from the last time period. While, \code{r2} and \code{resid.var} denote the regression $R^2$ and estimated residual variance respectively. The estimated covariance matrices of factor returns, residuals and asset returns are given by \code{factor.cov}, \code{resid.cov} and \code{return.cov} respectively. The remaining components contain the input choices and the data.
+
+The \code{print} method displays a summary of the $T$ cross-sectional regressions, where $T$ is the number of time periods.
+<<>>=
+# print the fitted "ffm" object
+fit.single
+@
+
+Figure 1 shows a scatter plot of residuals for the 1st 6 stocks in the last time period, including histograms, density overlays, correlations and significance stars. (A detailed list of plot options is provided later in Section 4.) Note the high residual correlation between MSFT and ORCL; this might be due to their exposure to other omitted factors such as a sector/industry risk factor for "Software \& Services". The next section demonstrates fitting an industry/sector factor model for these stocks.
+
+<<fig.cap="Single factor model: Residual correlations", warning=FALSE, fig.show='asis', fig.width=6, fig.height=6>>=
+# plot residual correlations for the single factor model
+# default is to plot the 1st 6 assets
+plot(fit.single, which=6, f.sub=1)
+# GICS industry/sector classification (1st 6 stocks; penultimate time period)
+subset(stock,DATE=="2003-11-28")[1:6,c("TICKER","GICS.INDUSTRY","GICS.SECTOR")]
+@
+
+\newpage
+\subsection{BARRA-type Industry Factor Model}
+
+A BARRA-type industry (sector) factor model is a fundamental factor model with multiple factors. Here is a demonstration using the 447 NYSE stocks in our dataset; where the 10 mutually exclusive GICS sector classifications are the 10 factors. The factor exposures will be dummy variables that indicate if a given stock belongs to a particular sector or not. Mutually exclusive sectors means that each stock belongs to a unique sector in any given time period. Notice that the average $R^2$ from the sector model is significantly higher (and average residual correlations are lower) than the single factor model.
+<<>>=
+# Sector Factor Model
+fit.sector <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
+                     date.var="DATE", exposure.vars="GICS.SECTOR")
+# compare r2: single factor vs. sector model
+summary(fit.single$r2)
+summary(fit.sector$r2)
+# compare avg. non-diagonal correlations: single factor vs. sector model
+mean(cor(residuals(fit.single))[cor(residuals(fit.single))!=1])
+mean(cor(residuals(fit.sector))[cor(residuals(fit.sector))!=1])
+@
+
+Let's take a look at the fitted factor model from the last period in the data. We observe that Energy, Materials and Telecomm sectors had particularly strong returns, with estimated factor returns over 10\% for that month\footnotemark[1].
+
+\footnotetext[1]{Energy stocks rebounded in 2003 from the beating they took in 2002 following the Enron scandal. Telecomm stocks benefited from the increased spending by companies investing in internet-based phone systems during this period.}
+
+<<>>=
+# print the summary from the last period's fit
+num.periods <- length(fit.sector$time.periods)
+summary(fit.sector$factor.fit[[num.periods]])
+@
+
+Figure 2 shows the distribution of estimated monthly sector returns (from 1996 - 2003) in descending order of their mean. We find that the "Information Technology" sector had the highest average return (perhaps not suprising, given that the dataset covers the dot-com bubble).
+
+\newpage
+<<fig.cap="Sector model: Distribution of factor returns sorted by mean", fig.show='asis', fig.width=5.5, fig.height=3.5>>=
+# plot distribution of factor returns by sector sorted by means
+plot(fit.sector, which=1, colorset="black", f.sub=1:10, lwd=1, sort.by="mean")
+@
+
+An extension of the above sector model is to isolate the market effect through the use of an intercept term and reparametrizing the sector exposures so that they are measured relative to the common market factor. Here, the intercept is interpreted as the return to the market factor (sum of all sectors), while the other factors are excess returns for the sector over the market. The methodology behind this model was introduced in the context of a common country effect in \citet{heston1995industry} and also detailed in \citet{menchero2010characteristics}. In \code{fitFfm} the market + sector model can be opted via the parameter \code{add.intercept} as shown below.
+
+<<>>=
+# Market + Sector Factor Model
+fit.mkt.sector <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
+                         date.var="DATE", exposure.vars="GICS.SECTOR",
+                         add.intercept=TRUE)
+
+# coefficients (factor exposures) for first 10 assets
+t(coef(fit.mkt.sector)[1:10,])
+@
+
+<<fig.cap="Market + Sector model: Distribution of factor returns sorted by mean", fig.show='asis', fig.width=5.5, fig.height=3.5>>=
+# plot distribution of factor returns by sector sorted by means
+plot(fit.mkt.sector, which=1, colorset="black", f.sub=1:10, lwd=1, sort.by="mean")
+@
+
+The reparametrization of the market factor hasn't changed the order of sectors by mean factor return. The reader can verify that $R^2$ and other fit statistics haven't changed either.
+
+\newpage
+\subsection{Multi-factor Model with Sector and Style Characteristics}
+
+A fundamental factor model can simultaneously include both quantitative style factors, such as size (market cap), value (book-to-price ratio), price momentum etc., as well as sector/industry classifications. The next example demonstrates fitting a multi-factor model including 2 style factors, size and value, in addition to the sector model. Note that the adjusted-$R^2$ has improved.
+
+<<>>=
+# Market + Sector Factor Model
+fit.style.sector <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
+  date.var="DATE", exposure.vars=c("GICS.SECTOR","LOG.MARKETCAP","BOOK2MARKET"))
+
+# check if average adjusted R-squared improved vs. pure sector model
+# adjusted r2 = 1 - ((n-1)*(1-r2)/(n-p-1))
+print(adj.r2_style.sector <- 1-((447-1)*(1-mean(fit.style.sector$r2))/(447-12-1)))
+print(adj.r2_sector <- 1-((447-1)*(1-mean(fit.sector$r2))/(447-10-1)))
+@
+
+Figures 4, 5 and 6 below show some properties (such as last period's factor exposures, time series of $R^2$ values and factor returns) of the fitted factor model. Figures 7 and 8 compares the kernel density of residuals for "MSFT" vs. normal and skew-t fits.
+
+<<fig.cap="Factor exposures from the last time period (1st 10 assets)", fig.show='asis', fig.width=8.5, fig.height=10>>=
+plot(fit.style.sector, which=2, f.sub=1:12, a.sub=1:10)
+@
+
+<<fig.cap="Time series of R-squared values", fig.show='asis', fig.width=6.5, fig.height=3>>=
+plot(fit.style.sector, which=4, las=2)
+@
+
+<<fig.cap="Time series of factor returns (2 style and 1 sector factors)", fig.show='asis', fig.width=7, fig.height=4.75>>=
+plot(fit.style.sector, which=12, f.sub=1:3, las=2, legend.loc="bottom", cex.legend=0.75)
+@
+
+<<fig.cap="Non-parametric density of residuals with normal overlaid for MSFT", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.style.sector, plot.single=TRUE, which=10, asset.name="MSFT")
+@
+
+<<fig.cap="Non-parametric density of residuals with skew-t overlaid for MSFT", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.style.sector, plot.single=TRUE, which=11, asset.name="MSFT")
+@
+
+\newpage
+\section{Factor Model Covariance \& Risk Decomposition}
+
+\subsection{Factor model covariance}
+
+Following \citet{zivot2006modeling}, $R_{i, t}$, the return on asset $i$ ($i = 1, ..., N$) at time $t$ ($t = 1, ..., T$), is fitted with a factor model of the form,
+\begin{equation}
+R_{i,t} = \alpha_i + \bm\beta_i' \: \mathbf{f_t} + \epsilon_{i,t}
+\end{equation}
+where, $\alpha_i$ is the intercept, $\mathbf{f_t}$ is a $K \times 1$ vector of factor returns at time $t$, $\bm\beta_i$ is a $K \times 1$ vector of factor exposures for asset $i$ and the error terms $\epsilon_{i,t}$ are serially uncorrelated across time and contemporaneously uncorrelated across assets so that $\epsilon_{i,t} \sim iid(0, \sigma_i^2)$. Thus, the variance of asset $i$'s return is given by
+\begin{equation}
+var(R_{i,t}) = \bm\beta_i'\: var(\mathbf{f_t})\: \bm\beta_i + \sigma_i^2
+\end{equation}
+
+And, the $N \times N$ covariance matrix of asset returns is
+\begin{equation}
+var(\mathbf{R}) = \bm\Omega = \mathbf{B}\: var(\mathbf{F})\: \mathbf{B}' + \mathbf{D}
+\end{equation}
+where, $R$ is the $N \times T$ matrix of asset returns, $B$ is the $N \times K$ matrix of factor betas, $\mathbf{F}$ is a $K \times T$ matrix of factor returns and $D$ is a diagonal matrix with $\sigma_i^2$ along the diagonal.
+
+\code{fmCov()} computes the factor model covariance from a fitted factor model. The covariance of factor returns is the sample covariance matrix by default, but the option exists for the user to specify their own. Options for handling missing observations include "pairwise.complete.obs" (default), "everything", "all.obs", "complete.obs" and "na.or.complete".
+
+<<fig.cap="Factor model return correlation (pairwise complete obs)", fig.show='asis', fig.width=5, fig.height=5>>=
+fmCov(fit.style.sector)[1:6,1:6]
+# factor model return correlation plot (for 1st 6 assets by default)
+plot(fit.style.sector, which=8)
+@
+
+\subsection{Standard deviation decomposition}
+
+Given the factor model in equation 1, the standard deviation of the asset $i$'s return can be decomposed as follows (based on \citet{meucci2007risk}):
+\begin{align}
+R_{i,t} &= \alpha_i + \bm\beta_i' \: \mathbf{f_t} + \epsilon_{i,t} \\
+&=  \bm\beta_i^{*'} \: \mathbf{f_t^*}
+\end{align}
+where, $\bm\beta_i^{*'} = (\bm\beta_i' \: \sigma_i)$ and $\mathbf{f_t^{*'}} = (\mathbf{f_t'} \: z_t)$, with $z_t \sim iid(0, 1)$ and $\sigma_i$ is asset $i$'s residual standard deviation.
+
+By Euler's theorem, the standard deviation of asset $i$'s return is:
+\begin{align}
+Sd.fm_i = \sum_{k=1}^{K+1} cSd_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mSd_{i,k}
+\end{align}
+where, summation is across the $K$ factors and the residual, $\mathbf{cSd_i}$ and $\mathbf{mSd_i}$ are the component and marginal contributions to $Sd.fm_i$ respectively. Computing $Sd.fm_i$ and $\mathbf{mSd_i}$ is straight forward. The formulas are given below and details are in \citet{meucci2007risk}. The covariance term is approximated by the sample covariance and $\odot$ represents element-wise multiplication.
+\begin{align}
+& Sd.fm_i = \sqrt{\bm\beta_i^{*'}\: cov(\mathbf{F^*})\: \bm\beta_i^*} \\
+& \mathbf{mSd_i} = \frac{cov(\mathbf{F^*})\: \bm\beta_i^*}{Sd.fm_i} \\
+& \mathbf{cSd_i} = \bm\beta_i^* \: \odot \: \mathbf{mSd_i}
+\end{align}
+
+\code{fmSdDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total standard deviation and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to SD">>=
+decomp <- fmSdDecomp(fit.style.sector)
+names(decomp)
+# get the factor model standard deviation for 1st 6 assets
+decomp$Sd.fm[1:6]
+# get the component contributions to Sd for (1st 6 assets, relevant factors)
+decomp$cSd[1:6, c(1,2,4,9)]
+# get the marginal factor contributions to Sd (1st 6 assets, relevant factors)
+decomp$mSd[1:6, c(1,2,4,9)]
+# get the % component contributions to Sd (1st 6 assets, relevant factors)
+decomp$pcSd[1:6, c(1,2,4,9)]
+# plot the % component contributions to Sd (1st 6 assets, relevant factors)
+plot(fit.style.sector, which=9, f.sub=c(1,2,4,9))
+@
+
+\newpage
+\subsection{Value-at-Risk decomposition}
+
+The VaR version of equation 6 is given below. By Euler's theorem, the value-at-risk of asset $i$'s return is:
+\begin{equation}
+VaR.fm_i = \sum_{k=1}^{K+1} cVaR_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mVaR_{i,k}
+\end{equation}
+
+The marginal contribution to $VaR.fm$ is defined as the expectation of $F.star$, conditional on the loss being equal to $VaR.fm$. This is approximated as described in \citet{epperlein2006portfolio} using a triangular smoothing kernel. \code{type} gives the option to estimate $VaR.fm$ non-parametrically using the sample quantile (default) or assuming a normal distribution.
+
+\code{fmVaRDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total VaR and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to VaR">>=
+decomp1 <- fmVaRDecomp(fit.style.sector, type="normal", p=0.10)
+names(decomp1)
+# get the factor model value-at-risk for 1st 6 assets
+decomp1$VaR.fm[1:6]
+# print the number of VaR exceedences for 1st 6 assets
+decomp1$n.exceed[1:6]
+# plot the % component contributions to VaR (1st 6 assets, relevant factors)
+plot(fit.style.sector, which=11, f.sub=c(1,2,4,9))
+@
+
+\newpage
+\subsection{Expected Shortfall decomposition}
+
+The Expected Shortfall (ES) version of equation 6 is given below. By Euler's theorem, the expected shortfall of asset $i$'s return is:
+\begin{equation}
+ES.fm_i = \sum_{k=1}^{K+1} cES_{i,k} = \sum_{k=1}^{K+1} \beta^*_{i,k} \: mES_{i,k}
+\end{equation}
+
+The marginal contribution to $ES.fm$ is defined as the expectation of $F.star$, conditional on the loss being less than or equal to $ES.fm$. This is estimated as a sample average of the observations in that data window. Once again, input variable \code{type} gives the option to estimate $ES.fm$ non-parametrically using the sample quantile (default) or assuming a normal distribution.
+
+\code{fmEsDecomp} performs this decomposition for all assets in the given factor model fit object as shown below. The total ES and component, marginal and percentage component contributions for each asset are returned.
+
+<<fig.cap="Percentage factor contribution to ES">>=
+decomp2 <- fmEsDecomp(fit.style.sector, type="normal")
+names(decomp2)
+# get the factor model expected shortfall for 1st 6 assets
+decomp2$ES.fm[1:6]
+# get the component contributions to ES for (1st 6 assets, relevant factors)
+decomp2$cES[1:6, c(1,2,4,9)]
+# plot the % component contributions to ES (1st 6 assets, relevant factors)
+plot(fit.style.sector, which=10, f.sub=c(1,2,4,9))
+@
+
+\newpage
+
+\section{Plot}
+
+Some types of group plots (Figures 1-6,9-12) and individual asset plots (Figure 7,8) have already been demonstrated. Let's take a look at all available arguments for plotting a "ffm" object.
+<<eval=FALSE>>=
+## S3 method for class "ffm"
+plot (x, which=NULL, f.sub=1:2, a.sub=1:6, plot.single=FALSE, asset.name,
+      colorset=c("royalblue","dimgray","olivedrab","firebrick", "goldenrod",
+                 "mediumorchid","deepskyblue","chocolate","darkslategray"),
+      legend.loc="topleft", las=1, lwd=2, maxlag=15, ...)
+@
+
+\subsection{Group plots}
+
+This is the default option for plotting. Simply running \code{plot(fit)}, where \code{fit} is any "ffm" object, will bring up a menu (shown below) for group plots.
+<<eval=FALSE, results='hide'>>=
+plot(fit.sector)
+
+# Make a plot selection (or 0 to exit):
+#
+#  1: Distribution of factor returns
+#  2: Factor exposures from the last period
+#  3: Actual and Fitted asset returns
+#  4: Time-series of R-squared values
+#  5: Residual variance across assets
+#  6: Scatterplot matrix of residuals, with histograms, density overlays,
+#     correlations and significance stars
+#  7: Factor Model Residual Correlation
+#  8: Factor Model Return Correlation
+#  9: Factor Contribution to SD
+# 10: Factor Contribution to ES
+# 11: Factor Contribution to VaR
+# 12: Time series of factor returns
+#
+# Selection:
+@
+
+Remarks: Only a subset of assets and factors selected by \code{a.sub} and \code{f.sub} are plotted. The first 2 factors (or just the solitary factor for a single factpr model) and first 6 assets are shown by default.
+
+<<fig.cap="Actual (blue) and fitted (grey) factor model returns for the 1st 3 assets", fig.show='asis', fig.width=7.5, fig.height=6>>=
+# Examples of group plots: looping disabled & no. of assets displayed = 4.
+plot(fit.style.sector, which=3, a.sub=1:3, legend.loc=NULL, lwd=1)
+@
+
+\subsection{Menu and looping}
+
+If the plot type argument \code{which} is not specified, a menu prompts for user input. In case multiple plots are needed, the menu is repeated after each plot (enter 0 to exit). User can also input a numeric vector of plot options via \code{which}.
+
+\newpage
+\subsection{Individual plots}
+
+Setting \code{plot.single=TRUE} enables individual asset plots. If there is more than one asset fit by the fitted object \code{x}, \code{asset.name} is also necessary. In case the \code{ffm} object \code{x} contains only a single asset's fit, plot.ffm can infer \code{asset.name} without user input.
+
+Here's the individual plot menu.
+<<eval=FALSE, results='hide'>>=
+plot(fit.style.sector, plot.single=TRUE, asset.name="MSFT")
+
+# Make a plot selection (or 0 to exit):
+#
+#  1: Actual and fitted asset returns
+#  2: Actual vs. fitted asset returns
+#  3: Residuals vs. fitted asset returns
+#  4: Residuals with standard error bands
+#  5: Time series of squared residuals
+#  6: Time series of absolute residuals
+#  7: SACF and PACF of residuals
+#  8: SACF and PACF of squared residuals
+#  9: SACF and PACF of absolute residuals
+# 10: Non-parametric density of residuals with normal overlaid
+# 11: Non-parametric density of residuals with skew-t overlaid
+# 12: Histogram of residuals with non-parametric density and normal overlaid
+# 13: QQ-plot of residuals
+#
+# Selection:
+@
+
+Here are a few more examples which don't need interactive user input.
+<<fig.cap="Time series plot of residuals with standard error bands: MSFT", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.style.sector, plot.single=TRUE, asset.name="MSFT", which=4)
+@
+
+<<fig.cap="SACF and PACF of absolute residuals: MSFT", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.style.sector, plot.single=TRUE, asset.name="MSFT", which=9)
+@
+
+<<fig.cap="QQ-plot of residuals: MSFT", fig.show='asis', fig.width=7, fig.height=4.5>>=
+plot(fit.style.sector, plot.single=TRUE, asset.name="MSFT", which=13)
+grid()
+@
+\newpage
+
+\bibliography{FA}
+
+\end{document}
