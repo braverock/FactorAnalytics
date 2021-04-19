@@ -646,8 +646,13 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   # now we have to extract the asset level residuals series and get their time series variance or
   # robust stats
   # residuals1 <- as.data.table(reg.listDT[get(d_) == max(get(d_)),]$residuals[[1]])
+  # we have a problem here in case of a jagged matrix
   residuals1 <- data.table::rbindlist(l = reg.listDT$residuals, use.names = F)
   setnames(residuals1, c("date", "id", "residuals") )
+  # find the residuals for the assets that exist as of last period
+  a_last <- reg.listDT[get(d_) == max(get(d_)),]$id[[1]]
+  # this is needed so that the matrices conform
+  residuals1 <- residuals1[ id %in% a_last]
   residuals1 <- data.table::dcast(data = residuals1 , formula = date ~ id, value.var = "residuals")
   residuals1 <- as.xts.data.table(residuals1)
 
