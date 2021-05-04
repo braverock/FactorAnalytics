@@ -7,17 +7,17 @@
 #' @export
 #'
 #' @examples
-#' readGithubFAdata("stockCRSPweekly")
+#' readGithubFAdata(filename  = "stockCRSPweekly")
 #' 
 readGithubFAdata <- function(filename = ''){
 
-	file_url <- paste0("https://github.com/braverock/FactorAnalytics/blob/master/data_nonpackage/",filename,".rda?raw=True")
-	load(url(file_url))
+	file_url <- paste0("https://github.com/kecoli/FactorAnalyticsData/blob/master/data/",filename,".rda?raw=True")
 	
-	print(paste0('file',filename,' downloaded and loaded from github.'))
+	load(url(file_url),envir = .GlobalEnv)
+	
+	print(paste0('file ',filename,' is downloaded and loaded from github.'))
+	
 }
-
-
 
 
 

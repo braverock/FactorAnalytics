@@ -1,6 +1,6 @@
 # TODO: Add comment
 # 
-# Author: kirk li
+# Author: Kirk Li, Doug Martin
 ###############################################################################
 
 
@@ -10,21 +10,26 @@
 #'
 #' @description The FactorAnalytics package contains fitting and analysis
 #' methods for the three main types of factor models used in conjunction with
-#' portfolio construction, optimization and risk management, namely
-#' fundamental factor models, time series factor models and statistical factor
-#' models. The purpose of this project is to add key improvements to the
+#' portfolio construction, optimization and risk management, namely time
+#' series factor models, fundamental factor models, and statistical factor
+#' models. The purpose of this project is to add key functionality to the
 #' package that will make it its basic features and capabilities close to
 #' those of commercial portfolio optimization and risk management products.
+#' 
+#' Doug's placeholder for new text
 #'
 #' @section CRSP data included in FactorAnalytics:
 #'
-#' FactorAnalytics contains data contributed by the Center for
-#' Research in Security Prices at the University of Chicago's Booth School of
-#' Business (CRSP). The CRSP data is provided for use in the academic hardcopy
-#' and ebook and for examples in the User Manual and Vignettes for, and
-#' containment in, the R package FactorAnalytics. The CRSP-contributed datasets
-#' are not covered by the GPL.  Use of the data in derivative works is not
-#' permitted without the express written permission of CRSP.
+#' FactorAnalytics contains data made available by formal agreement between
+#' Doug Martin and the Center for Research in Security Prices at the University
+#' of Chicago's Booth School of Business (CRSP).The CRSP data is provided for
+#' use in the academic hard copy book and ebook Portfolio Construction and Risk
+#' Management under development by Doug Martin, Tom Philips, Bernd Scherer and
+#' Kirk Li, and for containment in the R package FactorAnalytics, and in the 
+#' associated examples in the FactorAnalytics User Manual and Vignettes.
+#' The CRSP-contributed datasets are not covered by the GPL.  Use of the CRSP
+#' data in derivative works is not permitted without the express written
+#' permission of CRSP.
 #'
 #' The package developers wish to thank S&P Global Markets and the Center for
 #' Research in Security Prices for the generous inclusion of this data in
@@ -36,9 +41,9 @@
 #' @section Fundamental Factor Scores from S&P Global Market Intelligence:
 #'
 #' S&P Global Market Intelligence has kindly provided firm fundamentals data
-#' referred to as “scores” or “alpha factors” for educational use in the open
+#' referred to as ?scores? or ?alpha factors? for educational use in the open
 #' source FactorAnalytics R package. The data is contained in the R data frame
-#' object “factorDataSPGMI” consisting of the following cross-section of scores
+#' object ?factorDataSPGMI? consisting of the following cross-section of scores
 #' for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
 #' Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
 #' This data greatly facilitates the educational value to users of the

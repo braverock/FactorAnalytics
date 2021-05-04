@@ -10,7 +10,7 @@
 #' @details
 #' Estimation method "LS" corresponds to ordinary least squares using 
 #' \code{\link[stats]{lm}} and "Rob" is robust regression using 
-#' \code{\link[robust]{lmRob}}. "WLS" is weighted least squares using estimates 
+#' \code{\link[RobStatTM]{lmrobdetMM}}. "WLS" is weighted least squares using estimates 
 #' of the residual variances from LS regression as weights (feasible GLS). 
 #' Similarly, "W-Rob" is weighted robust regression.
 #' 
@@ -51,7 +51,8 @@
 #'             na.exclude na.fail na.omit var 
 #' @importFrom robustbase scaleTau2 covOGK
 #' @importFrom PerformanceAnalytics checkData skewness kurtosis
-#' @importFrom robust covRob covClassic lmRob
+#' @importFrom robust covRob covClassic
+#' @importFrom RobStatTM lmrobdetMM
 #' @importFrom rugarch ugarchspec ugarchfit
 #'
 #' @param data data.frame of the balanced panel data containing the variables 
@@ -102,7 +103,7 @@
 #' components:
 #' \item{factor.fit}{list of fitted objects that estimate factor returns in each 
 #' time period. Each fitted object is of class \code{lm} if 
-#' \code{fit.method="LS" or "WLS"}, or, class \code{lmRob} if 
+#' \code{fit.method="LS" or "WLS"}, or, class \code{lmrobdetMM} if 
 #' \code{fit.method="Rob" or "W-Rob"}.}
 #' \item{beta}{N x K matrix of factor exposures for the last time period.}
 #' \item{factor.returns}{xts object of K-factor returns (including intercept).}
@@ -197,8 +198,8 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   if (missing(data) || !is.data.frame(data)) {
     stop("Invalid args: data must be a data.frame")
   }
-  if (!(asset.var %in% colnames(data)) || length(unique(data[[asset.var]])) < 2)  {
-    stop("Invalid args: data must contain at least 2 TICKER symbols")
+  if (!(asset.var %in% colnames(data)) || length(unique(data[[asset.var]])) < 2) {
+    stop("Invalid args: data must contain at least 2 assets in asset.var")
   }
   fit.method = fit.method[1]
   if (!(fit.method %in% c("LS","WLS","Rob","W-Rob"))) {
@@ -353,7 +354,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   if(!model.MSCI)
   {
-    # determine factor model formula to be passed to lm or lmRob
+    # determine factor model formula to be passed to lm or lmrobdetMM
     fm.formula <- paste(ret.var, "~", paste(exposure.vars, collapse="+"))
     if (length(exposures.char))
     {
@@ -412,7 +413,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       contrasts.list = NULL}
     
     # estimate factor returns using LS or Robust regression
-    # returns a list of the fitted lm or lmRob objects for each time period
+    # returns a list of the fitted lm or lmrobdetMM objects for each time period
     if (grepl("LS",fit.method)) 
     {
       reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lm, 
@@ -421,7 +422,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     } 
     else if (grepl("Rob",fit.method))
     {
-      reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lmRob, 
+      reg.list <- by(data=data, INDICES=data[[date.var]], FUN=lmrobdetMM, 
                      formula=fm.formula, contrasts=contrasts.list, 
                      mxr=200, mxf=200, mxs=200, na.action=na.fail)
     }
@@ -493,7 +494,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     }
     
     # estimate factor returns using WLS or weighted-Robust regression
-    # returns a list of the fitted lm or lmRob objects for each time period
+    # returns a list of the fitted lm or lmrobdetMM objects for each time period
     if (fit.method=="WLS") {
       if(addIntercept  && !model.styleOnly){
         fm.formula = fmSI.formula
@@ -506,7 +507,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     } else if (fit.method=="W-Rob") {
       reg.list <- by(data=data, INDICES=data[[date.var]], 
                      FUN=function(x) {
-                       lmRob(data=x, formula=fm.formula, contrasts=contrasts.list, 
+						 lmrobdetMM(data=x, formula=fm.formula, contrasts=contrasts.list, 
                              na.action=na.fail, weights=W, 
                              mxr=200, mxf=200, mxs=200)
                      })
@@ -546,6 +547,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     factor.returns <- sapply(reg.list, function(x) {
       temp <- coef(x) 
       temp[match(factor.names, names(temp))]})
+
+	if(length(factor.names)==1){
+		factor.returns = t(as.matrix(factor.returns))
+	}
+
+
     # simplify factor.names for dummy variables
     if (length (exposures.char)) {
       factor.names <- c(exposures.num, levels(data[,exposures.char]))
@@ -565,7 +572,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     # factor and residual covariances
     if (rob.stats) {
       if (kappa(na.exclude(coredata(factor.returns))) < 1e+10) {
-        factor.cov <- covRob(coredata(factor.returns), estim="pairwiseGK", 
+        factor.cov <- robust::covRob(coredata(factor.returns), estim="pairwiseGK", 
                              distance=FALSE, na.action=na.omit)$cov
       } else {
         cat("Covariance matrix of factor returns is singular.\n")
@@ -587,11 +594,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           resid.cov <- diag(resid.var)
       }
     } else {
-      factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
+      factor.cov <- robust::covClassic(coredata(factor.returns), distance=FALSE, 
                                na.action=na.omit)$cov
       resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
       if (full.resid.cov) {
-        resid.cov <- covClassic(coredata(residuals), distance=FALSE, 
+        resid.cov <- robust::covClassic(coredata(residuals), distance=FALSE, 
                                 na.action=na.omit)$cov
       } else {
         #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
@@ -642,7 +649,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
                      paste(levels(data[,exposures.char]),sep=" "))
     factor.returns = factor.returns[, factor.names]
     #Fac Covarinace
-    factor.cov <-covClassic(coredata(factor.returns), distance=FALSE, 
+    factor.cov <-robust::covClassic(coredata(factor.returns), distance=FALSE, 
                             na.action=na.omit)$cov
     g.cov <- cov(t(g))
     #Residual Variance
@@ -848,7 +855,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       factor.returns <- factor.returns[,c(1,(K1+2+K2):K, 2:(K1+1), (K1+2):(K1+K2+1))]
     factor.names <- colnames(factor.returns)
     #Fac Covarinace
-    factor.cov <- covClassic(coredata(factor.returns), distance=FALSE, 
+    factor.cov <- robust::covClassic(coredata(factor.returns), distance=FALSE, 
                              na.action=na.omit)$cov
     #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)

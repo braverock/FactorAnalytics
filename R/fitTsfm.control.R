@@ -61,8 +61,6 @@
 #' @param refine.PY number of refinement steps for the Pen~a-Yohai candidates
 #' @param solve.tol relative tolerance for inversion
 #' @param trace.lev positive values (increasingly) provide details on the progress of the MM-algorithm
-#' @param mts maximum number of subsamples. Un-used, but passed (unnecessarily) to the function
-#' that performs M-iterations (lmrob..M..fit), so set here.
 #' @param compute.rd logical value indicating whether robust leverage distances need to be computed.
 #' @param family string specifying the name of the family of loss function to be used (current valid
 #' options are "bisquare", "optimal" and "modopt"). Incomplete entries will be matched to
@@ -173,6 +171,7 @@
 #'                data=managers, variable.selection="subsets", 
 #'                method="exhaustive", nvmin=2)
 #'
+#' @export
 
 
 
@@ -185,29 +184,30 @@ fitTsfm.control <- function(
 		qr=TRUE, 
 		nrep=NULL,
 		### from lmrobdet.control
-		bb = 0.5,
-		efficiency=0.9,
-		family = 'bisquare',
-		compute.rd = FALSE,
+		bb = 0.5, 
+		efficiency = 0.95, 
+		family = "mopt",
+		tuning.psi, 
+		tuning.chi, 
+		compute.rd = FALSE, 
 		corr.b = TRUE,
-		split.type = "f",
-		initial='S',
-		max.it = 100, 
-		refine.tol = 1e-7, 
-		rel.tol = 1e-7,
+		split.type = "f", 
+		initial = "S", 
+		max.it = 100,
+		refine.tol = 1e-07, 
+		rel.tol = 1e-07, 
 		refine.PY = 10,
-		solve.tol = 1e-7, 
-		trace.lev = 0,
-		psc_keep = 0.5, 
-		resid_keep_method = 'threshold',
-		resid_keep_thresh = 2, 
-		resid_keep_prop = .2, 
+		solve.tol = 1e-07, 
+		trace.lev = 0, 
+		psc_keep = 0.5,
+		resid_keep_method = "threshold", 
+		resid_keep_thresh = 2,
+		resid_keep_prop = 0.2, 
 		py_maxit = 20, 
-		py_eps = 1e-5,
+		py_eps = 1e-05,
 		mscale_maxit = 50, 
 		mscale_tol = 1e-06, 
-		mscale_rho_fun = 'bisquare',
-		mts = 1000,
+		mscale_rho_fun = "bisquare",
 		### end lmrobdet.control
 		scope, 
 		scale, 
@@ -281,7 +281,13 @@ fitTsfm.control <- function(
 	}
 	
 	# return list of arguments with defaults if they are unspecified
-	result <- c(args, list(decay=decay, model=model, x=x, y=y, qr=qr, nrep=nrep, 
+	result <- c(args, list(
+					decay=decay, 
+					model=model, 
+					x=x, 
+					y=y, 
+					qr=qr, 
+					nrep=nrep, 
 					bb = bb,
 					efficiency=efficiency,
 					family = family,
@@ -304,9 +310,17 @@ fitTsfm.control <- function(
 					mscale_maxit = mscale_maxit, 
 					mscale_tol = mscale_tol, 
 					mscale_rho_fun = mscale_rho_fun,
-					mts = mts, steps=steps, k=k, nvmin=nvmin, 
-					nvmax=nvmax, force.in=force.in, force.out=force.out, 
-					really.big=really.big, normalize=normalize, eps=eps, 
-					plot.it=plot.it, lars.criterion=lars.criterion, K=K))
+					steps=steps, 
+					k=k, 
+					nvmin=nvmin, 
+					nvmax=nvmax, 
+					force.in=force.in, 
+					force.out=force.out, 
+					really.big=really.big, 
+					normalize=normalize, 
+					eps=eps, 
+					plot.it=plot.it, 
+					lars.criterion=lars.criterion, 
+					K=K))
 	return(result)
 }

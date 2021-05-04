@@ -66,7 +66,7 @@ based on the fitted factor model.
 An object of class \code{"tsfm"} is a list containing the following 
 components:
 \item{asset.fit}{list of fitted objects for each asset. Each object is of 
-class \code{lm} if \code{fit.method="LS" or "DLS"}, class \code{lmRob} if 
+class \code{lm} if \code{fit.method="LS" or "DLS"}, class \code{lmrobdetMM} if 
 the \code{fit.method="Robust"}, or class \code{lars} if 
 \code{variable.selection="lars"}.}
 \item{alpha}{N x 1 data.frame of estimated alphas.}
@@ -101,12 +101,12 @@ return and factor to compute excess returns.
 Estimation method "LS" corresponds to ordinary least squares using 
 \code{\link[stats]{lm}}, "DLS" is discounted least squares (weighted least 
 squares with exponentially declining weights that sum to unity), and, 
-"Robust" is robust regression (using \code{\link[robust]{lmRob}}). 
+"Robust" is robust regression (using \code{\link[RobStatTM]{lmrobdetMM}}). 
 
 If \code{variable.selection="none"}, uses all the factors and performs no 
 variable selection. Whereas, "stepwise" performs traditional stepwise 
 LS or Robust regression (using \code{\link[stats]{step}} or 
-\code{\link[robust]{step.lmRob}}), that starts from the initial set of 
+\code{\link[RobStatTM]{step.lmrobdetMM}}), that starts from the initial set of 
 factors and adds/subtracts factors only if the regression fit, as measured 
 by the Bayesian Information Criterion (BIC) or Akaike Information Criterion 
 (AIC), improves. And, "subsets" enables subsets selection using 
@@ -139,6 +139,8 @@ with \code{xts} objects internally and colnames won't be left as they are.
 }
 \examples{
 data(managers)
+colnames(managers) = gsub(" ",'.',colnames(managers))
+
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,(7:9)]), data=managers)
 summary(fit)

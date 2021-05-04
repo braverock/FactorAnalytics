@@ -13,8 +13,10 @@ fitTsfm.control(
   qr = TRUE,
   nrep = NULL,
   bb = 0.5,
-  efficiency = 0.9,
-  family = "bisquare",
+  efficiency = 0.95,
+  family = "mopt",
+  tuning.psi,
+  tuning.chi,
   compute.rd = FALSE,
   corr.b = TRUE,
   split.type = "f",
@@ -34,7 +36,6 @@ fitTsfm.control(
   mscale_maxit = 50,
   mscale_tol = 1e-06,
   mscale_rho_fun = "bisquare",
-  mts = 1000,
   scope,
   scale,
   direction,
@@ -85,6 +86,16 @@ determines the robustness (breakdown point) of the resulting MM-estimator, which
 options are "bisquare", "optimal" and "modopt"). Incomplete entries will be matched to
 the current valid options.}
 
+\item{tuning.psi}{tuning parameters for the regression M-estimator computed with a rho function
+as specified with argument \code{family}. If missing, it is computed inside \code{lmrobdet.control} to match
+the value of \code{efficiency} according to the family of rho functions specified in \code{family}.
+Appropriate values for \code{tuning.psi} for a given desired efficiency for Gaussian errors
+can be constructed using the functions \link{bisquare}, \link{modopt} and \link{optimal}.}
+
+\item{tuning.chi}{tuning constant for the function used to compute the M-scale
+used for the initial S-estimator. If missing, it is computed inside \code{lmrobdet.control} to match
+the value of \code{bb} according to the family of rho functions specified in \code{family}.}
+
 \item{compute.rd}{logical value indicating whether robust leverage distances need to be computed.}
 
 \item{corr.b}{logical value indicating whether a finite-sample correction should be applied
@@ -130,9 +141,6 @@ be removed. See \code{\link{pyinit}}.}
 \item{mscale_tol}{Convergence tolerance for the M-scale algorithm. See \code{\link{pyinit}}.}
 
 \item{mscale_rho_fun}{String indicating the loss function used for the M-scale. See \code{\link{pyinit}}.}
-
-\item{mts}{maximum number of subsamples. Un-used, but passed (unnecessarily) to the function
-that performs M-iterations (lmrob..M..fit), so set here.}
 
 \item{scope}{defines the range of models examined in the \code{"stepwise"} 
 search. This should be either a single formula, or a list containing 
@@ -204,16 +212,6 @@ Default is \code{FALSE}.}
 
 \item{K}{number of folds for computing the K-fold cross-validated mean 
 squared prediction error for \code{"lars"}. Default is 10.}
-
-\item{tuning.chi}{tuning constant for the function used to compute the M-scale
-used for the initial S-estimator. If missing, it is computed inside \code{lmrobdet.control} to match
-the value of \code{bb} according to the family of rho functions specified in \code{family}.}
-
-\item{tuning.psi}{tuning parameters for the regression M-estimator computed with a rho function
-as specified with argument \code{family}. If missing, it is computed inside \code{lmrobdet.control} to match
-the value of \code{efficiency} according to the family of rho functions specified in \code{family}.
-Appropriate values for \code{tuning.psi} for a given desired efficiency for Gaussian errors
-can be constructed using the functions \link{bisquare}, \link{modopt} and \link{optimal}.}
 
 \item{trace}{If positive (or, not \code{FALSE}), info is printed during the 
 running of  \code{\link[stats]{step}}, \code{\link[lars]{lars}} or 
