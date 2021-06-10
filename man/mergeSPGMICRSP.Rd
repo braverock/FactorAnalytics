@@ -2,12 +2,12 @@
 % Please edit documentation in R/mergeData.R
 \name{mergeSPGMICRSP}
 \alias{mergeSPGMICRSP}
-\title{Merge SPGMI scores with CRSP stocks.}
+\title{Merge data SPGMI scores with CRSP stocks.}
 \usage{
 mergeSPGMICRSP()
 }
 \description{
-Merge SPGMI scores with CRSP stocks.
+Merge data SPGMI scores with CRSP stocks.
 }
 \examples{
 data(stocksCRSP)

@@ -16,7 +16,7 @@ readGithubFAdata(filename = "")
 download FA dataset from github
 }
 \examples{
-readGithubFAdata("stockCRSPweekly")
+readGithubFAdata(filename  = "stockCRSPweekly")
 
 }
 \author{

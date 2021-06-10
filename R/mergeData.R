@@ -1,4 +1,4 @@
-#' Merge SPGMI scores with CRSP stocks.
+#' Merge data SPGMI scores with CRSP stocks.
 #' 
 #' @author Kirk Li.
 #' 
@@ -11,7 +11,7 @@
 
 mergeSPGMICRSP = function(){
 
-	merge(stocksCRSP,scoresSPGMI,by=c('Ticker','Date','Company.Name','CapGroup'))
+	merge(stocksCRSP,scoresSPGMI,by=intersect(names(stocksCRSP),names(scoresSPGMI)),sort=FALSE)
 
 }
 
