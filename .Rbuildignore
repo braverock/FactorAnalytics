@@ -12,3 +12,4 @@ sandbox
 ^README\.Rmd$
 ^\.vimrc
 ^codecov\.yml$
+extra_data
