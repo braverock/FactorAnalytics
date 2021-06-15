@@ -7,3 +7,4 @@ Stocks.df.rda filter=lfs diff=lfs merge=lfs -text
 TreasuryYields.rda filter=lfs diff=lfs merge=lfs -text
 wtsDjiaGmvLo.rda filter=lfs diff=lfs merge=lfs -text
 factorDataSetDjia14Yrs.rda filter=lfs diff=lfs merge=lfs -text
+stocksCRSPweekly.rda filter=lfs diff=lfs merge=lfs -text
