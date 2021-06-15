@@ -1,10 +1,4 @@
-DougMartin_deliverables.zip filter=lfs diff=lfs merge=lfs -text
-factorDataSetDjia5Yrs.rda filter=lfs diff=lfs merge=lfs -text
-scoresSPGMI.rda filter=lfs diff=lfs merge=lfs -text
-StockReturns.rda filter=lfs diff=lfs merge=lfs -text
-stocksCRSP.rda filter=lfs diff=lfs merge=lfs -text
-Stocks.df.rda filter=lfs diff=lfs merge=lfs -text
-TreasuryYields.rda filter=lfs diff=lfs merge=lfs -text
-wtsDjiaGmvLo.rda filter=lfs diff=lfs merge=lfs -text
-factorDataSetDjia14Yrs.rda filter=lfs diff=lfs merge=lfs -text
-stocksCRSPweekly.rda filter=lfs diff=lfs merge=lfs -text
+*.rda filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.Rdata filter=lfs diff=lfs merge=lfs -text
+

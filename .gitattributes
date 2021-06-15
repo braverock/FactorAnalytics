@@ -1,1 +1,1 @@
-stocksCRSPweekly.rda filter=lfs diff=lfs merge=lfs -text
+*.rda filter=lfs diff=lfs merge=lfs -text
