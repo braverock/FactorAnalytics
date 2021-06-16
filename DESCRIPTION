@@ -3,7 +3,7 @@ Type: Package
 Title: Factor Analytics for asset return data
 Version: 2.1.2
 Date: 2020-11-19
-Author: Eric Zivot, Doug Martin, Sangeetha Srinivasan, Avinash Acharya, Yi-An Chen, Mido Shammaa, Lingjie Yi and Kirk Li. 
+Author: Eric Zivot, Doug Martin, Sangeetha Srinivasan, Avinash Acharya, Yi-An Chen, Mido Shammaa, Lingjie Yi, Kirk Li, and Justin M. Shea [ctb] 
 Maintainer: Kirk Li <cocokecoli@gmail.com>
 Description: Linear factor model fitting for asset returns (three major types-
     time series, fundamental and statistical factor models); related risk
