@@ -20,9 +20,9 @@ Description: Linear factor model fitting for asset returns (three major types-
   	The package developers wish to thank S&P Global Market Intelligence for contributing this data to the FactoAnalytics package.
 License: GPL-2
 Depends:
-    R (>= 3.0.0),
+    R (>= 3.5),
     foreach (>= 1.4),
-	xts (>= 0.9),
+	xts (>= 0.12-0),
     rrcov (>= 1.3)
 Imports:
     PerformanceAnalytics(>= 1.4),
