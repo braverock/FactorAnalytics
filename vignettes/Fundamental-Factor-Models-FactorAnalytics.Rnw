@@ -1,0 +1,7 @@
+\documentclass{article}
+\usepackage{pdfpages}
+%\VignetteIndexEntry{Fundamental Factor Models in FactorAnalytics}
+
+\begin{document}
+\includepdf[pages=-, fitpaper=true]{Fundamental-Factor-Models-FactorAnalytics.pdf}
+\end{document}
