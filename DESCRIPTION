@@ -22,13 +22,13 @@ License: GPL-2
 Depends:
     R (>= 3.5),
     foreach (>= 1.4),
-	xts (>= 0.12-0),
+	  xts (>= 0.12-0),
     rrcov (>= 1.3)
 Imports:
     PerformanceAnalytics(>= 1.4),
     zoo,
+    data.table,
     corrplot,
-    robustbase,
     leaps,
     lars,
     strucchange,
@@ -43,14 +43,15 @@ Imports:
     RCurl,
     bestglm,
     tseries,
-    data.table,
-	HH,
-	reshape2,
-	rugarch,
-	robust,
-	RobStatTM
+	  HH,
+	  rugarch,
+	  robust,
+	  robustbase,
+	  RobStatTM,
+	  reshape2
 Suggests:
-    testthat
+    testthat, R.rsp
+VignetteBuilder: R.rsp
 LazyLoad: yes
 LazyDataCompression: xz
 URL: https://github.com/braverock/FactorAnalytics
