@@ -30,7 +30,7 @@ install_github("braverock/FactorAnalytics")
 Git Large File Storage
 ------------
 
-Because of the large size of the factor data files, if you are going to load the repository from source and want accesss to the large binary data files, your git installation needs to support git large file storage (LFS).  Instructions are here:
+Because of the large size of the factor data files, if you are going to load the repository from source and want access to the large binary data files, your git installation needs to support git large file storage (LFS).  Instructions are here:
 
 https://docs.github.com/en/github/managing-large-files/versioning-large-files/installing-git-large-file-storage
 
