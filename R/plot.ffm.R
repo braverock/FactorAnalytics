@@ -103,7 +103,7 @@
 #' @examples
 #'
 #' # load data from the database
-#' data(Stock.df)
+#' data(Stocks.df)
 #' fit.style.sector <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
 #'                            exposure.vars=c("GICS.SECTOR","LOG.MARKETCAP",
 #'                                            "BOOK2MARKET"), date.var="DATE")
