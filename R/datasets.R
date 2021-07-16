@@ -1,35 +1,24 @@
-# TODO: Add comment
-# 
-# Author: Kirk Li, Doug Martin
-###############################################################################
-
-
 #' @name FactorAnalytics-package
 #' @title FactorAnalytics
 #' @aliases FactorAnalytics-package FactorAnalytics
 #'
 #' @description The FactorAnalytics package contains fitting and analysis
 #' methods for the three main types of factor models used in conjunction with
-#' portfolio construction, optimization and risk management, namely time
-#' series factor models, fundamental factor models, and statistical factor
-#' models. The purpose of this project is to add key functionality to the
+#' portfolio construction, optimization and risk management, namely
+#' fundamental factor models, time series factor models and statistical factor
+#' models. The purpose of this project is to add key improvements to the
 #' package that will make it its basic features and capabilities close to
 #' those of commercial portfolio optimization and risk management products.
-#' 
-#' Doug's placeholder for new text
 #'
 #' @section CRSP data included in FactorAnalytics:
 #'
-#' FactorAnalytics contains data made available by formal agreement between
-#' Doug Martin and the Center for Research in Security Prices at the University
-#' of Chicago's Booth School of Business (CRSP).The CRSP data is provided for
-#' use in the academic hard copy book and ebook Portfolio Construction and Risk
-#' Management under development by Doug Martin, Tom Philips, Bernd Scherer and
-#' Kirk Li, and for containment in the R package FactorAnalytics, and in the 
-#' associated examples in the FactorAnalytics User Manual and Vignettes.
-#' The CRSP-contributed datasets are not covered by the GPL.  Use of the CRSP
-#' data in derivative works is not permitted without the express written
-#' permission of CRSP.
+#' FactorAnalytics contains data contributed by the Center for
+#' Research in Security Prices at the University of Chicago's Booth School of
+#' Business (CRSP). The CRSP data is provided for use in the academic hardcopy
+#' and ebook and for examples in the User Manual and Vignettes for, and
+#' containment in, the R package FactorAnalytics. The CRSP-contributed datasets
+#' are not covered by the GPL.  Use of the data in derivative works is not
+#' permitted without the express written permission of CRSP.
 #'
 #' The package developers wish to thank S&P Global Markets and the Center for
 #' Research in Security Prices for the generous inclusion of this data in
@@ -41,9 +30,9 @@
 #' @section Fundamental Factor Scores from S&P Global Market Intelligence:
 #'
 #' S&P Global Market Intelligence has kindly provided firm fundamentals data
-#' referred to as ?scores? or ?alpha factors? for educational use in the open
+#' referred to as “scores” or “alpha factors” for educational use in the open
 #' source FactorAnalytics R package. The data is contained in the R data frame
-#' object ?factorDataSPGMI? consisting of the following cross-section of scores
+#' object “factorDataSPGMI” consisting of the following cross-section of scores
 #' for approximately 300 stocks from 1990 to 2015: AccrualRatioCF, AnnVol12M,
 #' Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style, LogMktCap, PM12M1M, ROE.
 #' This data greatly facilitates the educational value to users of the
@@ -54,6 +43,21 @@
 #' written permission of Standard and Poor Global Markets.
 #'
 #' @docType package
+NULL
+
+#' @name factorDataSPGMI
+#' @title Fundamental factor scores from S&P Global Market Intelligence
+#' @description S&P Global Market Intelligence has kindly provided firm fundamentals data
+#' referred to as scores or alpha factors for educational use in the open source FactorAnalytics
+#' R package. The data is contained in the R data frame object factorDataSPGMI
+#' consisting of the following cross-section of scores for approximately 300 stocks from 1990 to
+#' 2015: AccrualRatioCF, AnnVol12M, Beta60M, BP, Chg1YEPS, DivP, EBITDAEV, EP, EQ-style,
+#' LogMktCap, PM12M1M, ROE. This data greatly facilitates the educational value to users of the
+#' fundamental factor model in FactorAnalytics. The package developers wish to thank S&P Global
+#' Market Intelligence for contributing this data to the FactorAnalytics package.
+#' @docType data
+#' @source S&P Global Market Intelligence
+#' @usage data("factorDataSPGMI")
 NULL
 
 #' @name factorDataSetDjia14Yrs
@@ -82,6 +86,67 @@ NULL
 #' @usage data("factorDataSetDjia5Yrs")
 NULL
 
+#' @name stocks145scores6
+#' @title CRSP stocks Capital IQ scores
+#' @description Contains returns for 145 stocks starting from Jan 1990 to Dec 2014 spanned across 10 Sectors-
+#'              ENERGY, COSTAP, INDUS,T MATRLS, FINS, INFOTK, HEALTH, CODISC, UTILS and TELCOM
+#'              along with 6 factors: ROE, BP, MOM121, SIZE, VOL121, EP
+#'
+#'              The 10 Sectors correspond to Energy, ConsumerStaples, Industrials, Materials, Financials,
+#'              InformationTechnology, HealthCare, ConsumerDiscretionary,
+#'              Utilities and Telecommunications respectively.
+#'
+#' @docType data
+#' @source TBA
+#' @usage data("stocks145scores6")
+#'
+#'
+NULL
+
+#' @name wtsDjiaGmv
+#' @title DJIA GMV portfolio weights
+#' @description Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs)
+#'              for a global minimum variance portfolio starting from Jan 2008 to Dec 2012.
+#' @docType data
+#' @source TBA
+#' @usage data("wtsDjiaGmv")
+NULL
+
+#' @name wtsDjiaGmvLo
+#' @title DJIA GMV long-only portfolio weights
+#' @description Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs)
+#'              for a long-only global minimum variance portfolio starting from Jan 2008 to Dec 2012.
+#' @docType data
+#' @source TBA
+#' @usage data("wtsDjiaGmvLo")
+NULL
+
+#' @name wtsStocks145Gmv
+#' @title CRSP 145 stocks GMV portfolio weights
+#' @description Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6)
+#'              for a global minimum variance portfolio starting from Jan 1990 to Dec 2014.
+#' @docType data
+#' @source TBA
+#' @usage data("wtsStocks145Gmv")
+NULL
+
+#' @name wtsStocks145GmvLo
+#' @title CRSP 145 stocks GMV long-only weights
+#' @description Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6)
+#'              for a long-only global minimum variance portfolio starting from Jan 1990 to Dec 2014.
+#' @docType data
+#' @source TBA
+#' @usage data("wtsStocks145GmvLo")
+NULL
+
+#' @name RussellData
+#' @title Russell data
+#' @description 16 Russell data
+#' @docType data
+#' @source TBA
+#' @usage data("RussellData")
+NULL
+
 #' @name stocksCRSP
 #' @title CRSP stocks data
 #' @description stocksCRSP
@@ -90,6 +155,21 @@ NULL
 #' @usage data("stocksCRSP")
 NULL
 
+#' @name stocksCRSPscoresSPGMI
+#' @title cleaned SPGMI and CRSP data
+#' @description cleaned 300 stocks' 12 factor scores that merged with CRSP data
+#' @docType data
+#' @source TBA
+#' @usage data("stocksCRSPscoresSPGMI")
+NULL
+
+#' @name stocksCRSPscoresSPGMIraw
+#' @title raw SPGMI and CRSP data
+#' @description raw 300 stocks' 12 factor scores that merged with CRSP data
+#' @docType data
+#' @source TBA
+#' @usage data("stocksCRSPscoresSPGMIraw")
+NULL
 
 #' @name scoresSPGMI
 #' @title cleaned SPGMI data
@@ -99,48 +179,31 @@ NULL
 #' @usage data("scoresSPGMI")
 NULL
 
-#' @name TresauryYields
-#' @title Tresaury Yields
-#' @description TBA
+#' @name scoresSPGMIraw
+#' @title raw SPGMI data
+#' @description raw 300 stocks' 12 factor scores data
 #' @docType data
-#' @source 
-#' @usage data("TresauryYields")
+#' @source TBA
+#' @usage data("scoresSPGMIraw")
 NULL
 
-#' @name Stocks.df
-#' @title Stocks.df
-#' @description TBA
+#' @name scoresSPGMIraw
+#' @title raw SPGMI data
+#' @description raw 300 stocks' 12 factor scores data
 #' @docType data
-#' @source 
-#' @usage data("Stocks.df")
+#' @source TBA
+#' @usage data("scoresSPGMIraw")
 NULL
 
-#' @name StockReturns
-#' @title Stock Return Data
-#' @description
-#' \code{r.M}: A "data.frame" object with monthly returns (ranging from January 1978 to December 1987) for 15 assets whose names are given in the 'Details'.
-#' \code{r.W}: A "data.frame" object with weekly returns (ranging from January 8, 1997 to June 28, 2000) for 1618 U.S. stocks.
-#' @details 
-#'   The 15 assets in \code{r.M} are as follows:
-#'   CITCRP monthly returns of Citicorp.  
-#'   CONED monthly returns of Consolidated Edison.  
-#'   CONTIL monthly returns of Continental Illinois.  
-#'   DATGEN monthly returns of Data General.  
-#'   DEC monthly returns of Digital Equipment Company. 
-#'   DELTA monthly returns of Delta Airlines.  
-#'   GENMIL monthly returns of General Mills.  
-#'   GERBER monthly returns of Gerber.  
-#'   IBM monthly returns of International Business Machines.  
-#'   MARKET a value-weighted composite monthly returns based on transactions from the New York Stock Exchange and the American Exchange.  
-#'   MOBIL monthly returns of Mobile.  
-#'   PANAM monthly returns of Pan American Airways.  
-#'   PSNH monthly returns of Public Service of New Hampshire.  
-#'   TANDY monthly returns of Tandy.  
-#'   TEXACO monthly returns of Texaco.  
-#'   WEYER monthly returns of Weyerhauser.  
-#'   RKFREE monthly returns on 30-day U.S. Treasury bills.
+
+#' @name stocksWithFactorsData300
+#' @title 300 stocks with factors
+#' @description the dataset has been replaced with stocksCRSPscoresSPGM
 #' @docType data
-#' @source   S+FinMetrics Berndt.dat & folio.dat
-#' @references Berndt, E. R. (1991). The practice of econometrics: classic and contemporary. Reading, MA: Addison-Wesley.
-#' @usage data("StockReturns")
+#' @source TBA
+#' @usage data("stocksWithFactorsData300")
 NULL
+
+
+
+
