@@ -38,7 +38,7 @@ specific period use the \code{pred.date} argument.
 \examples{
 
 # Load fundamental and return data
-data(Stock.df)
+data(Stocks.df)
 
 # fit a fundamental factor model
 exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
