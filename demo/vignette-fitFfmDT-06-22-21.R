@@ -1,29 +1,10 @@
-## ----include=FALSE------------------------------------------------------------
-library(knitr)
-opts_chunk$set(
-	keep.source=TRUE,
-	tidy=TRUE,
-	message=FALSE, 
-	fig.path='Plots/', 
-	fig.align='center', 
-	fig.width=4.5, 
-	fig.height=3.0, 
-	fig.keep='last',
-	fig.show='hide',
-	dev.args=list(pointsize=10),
-	tidy.opts=list(width.cutoff=50),
-	cache=FALSE)
+
 require(methods)
 library(data.table)
 library(FactorAnalytics)
 
-
-
 ## ----echo=F,message=FALSE-----------------------------------------------------
-require(methods)
 rm(list=ls())
-
-
 
 ## ----eval=F,message=FALSE,warning=FALSE---------------------------------------
 ## help(factorDataSetDjia5Yrs)
