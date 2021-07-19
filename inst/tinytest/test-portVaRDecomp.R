@@ -33,7 +33,7 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
 
 #fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121","EP"),
+              exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M","EP"),
               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
               fit.method="WLS", z.score = "crossSection")
 
@@ -45,5 +45,3 @@ expect_equal(is.list(portVaRDecomp(fit.cross, p=0.9, type='normal')), TRUE)
 #testing error message
 expect_error(portVaRDecomp(fit.cross, weights = c(0.5,0.5)), 
              "Invalid argument: incorrect number of weights") 
-
-
