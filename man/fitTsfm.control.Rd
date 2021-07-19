@@ -83,14 +83,14 @@ determines the robustness (breakdown point) of the resulting MM-estimator, which
 \item{efficiency}{desired asymptotic efficiency of the final regression M-estimator. Defaults to 0.85.}
 
 \item{family}{string specifying the name of the family of loss function to be used (current valid
-options are "bisquare", "optimal" and "modopt"). Incomplete entries will be matched to
+options are "bisquare", "optimal" and "modopt" from the RobStatTM package). Incomplete entries will be matched to
 the current valid options.}
 
 \item{tuning.psi}{tuning parameters for the regression M-estimator computed with a rho function
 as specified with argument \code{family}. If missing, it is computed inside \code{lmrobdet.control} to match
 the value of \code{efficiency} according to the family of rho functions specified in \code{family}.
 Appropriate values for \code{tuning.psi} for a given desired efficiency for Gaussian errors
-can be constructed using the functions \link{bisquare}, \link{modopt} and \link{optimal}.}
+can be constructed using the functions \code{\link[RobStatTM]{bisquare}}, \code{\link[RobStatTM]{mopt}} and \code{\link[RobStatTM]{opt}}.}
 
 \item{tuning.chi}{tuning constant for the function used to compute the M-scale
 used for the initial S-estimator. If missing, it is computed inside \code{lmrobdet.control} to match
@@ -120,27 +120,27 @@ appropriate when there are categorical explanatory variables in the model.}
 
 \item{trace.lev}{positive values (increasingly) provide details on the progress of the MM-algorithm}
 
-\item{psc_keep}{For \code{pyinit}, proportion of observations to remove based on PSCs. The effective proportion of removed
-observations is adjusted according to the sample size to be \code{prosac*(1-p/n)}. See \code{\link{pyinit}}.}
+\item{psc_keep}{For pyinit, proportion of observations to remove based on PSCs. The effective proportion of removed
+observations is adjusted according to the sample size to be \code{prosac*(1-p/n)}. See \code{\link[pyinit]{pyinit}}.}
 
-\item{resid_keep_method}{For \code{pyinit}, how to clean the data based on large residuals. If
+\item{resid_keep_method}{For pyinit, how to clean the data based on large residuals. If
 \code{"threshold"}, all observations with scaled residuals larger than \code{C.res} will
 be removed, if \code{"proportion"}, observations with the largest \code{prop} residuals will
-be removed. See \code{\link{pyinit}}.}
+be removed. See \code{\link[pyinit]{pyinit}}.}
 
-\item{resid_keep_thresh}{See parameter \code{resid_keep_method} above. See \code{\link{pyinit}}.}
+\item{resid_keep_thresh}{See parameter \code{resid_keep_method} above. See \code{\link[pyinit]{pyinit}}.}
 
-\item{resid_keep_prop}{See parameter \code{resid_keep_method} above. See \code{\link{pyinit}}.}
+\item{resid_keep_prop}{See parameter \code{resid_keep_method} above. See \code{\link[pyinit]{pyinit}}.}
 
-\item{py_maxit}{Maximum number of iterations. See \code{\link{pyinit}}.}
+\item{py_maxit}{Maximum number of iterations. See \code{\link[pyinit]{pyinit}}.}
 
-\item{py_eps}{Relative tolerance for convergence.  See \code{\link{pyinit}}.}
+\item{py_eps}{Relative tolerance for convergence.  See \code{\link[pyinit]{pyinit}}.}
 
-\item{mscale_maxit}{Maximum number of iterations for the M-scale algorithm. See \code{\link{pyinit}}.}
+\item{mscale_maxit}{Maximum number of iterations for the M-scale algorithm. See \code{\link[pyinit]{pyinit}}.}
 
-\item{mscale_tol}{Convergence tolerance for the M-scale algorithm. See \code{\link{pyinit}}.}
+\item{mscale_tol}{Convergence tolerance for the M-scale algorithm. See \code{\link[pyinit]{pyinit}}.}
 
-\item{mscale_rho_fun}{String indicating the loss function used for the M-scale. See \code{\link{pyinit}}.}
+\item{mscale_rho_fun}{String indicating the loss function used for the M-scale. See \code{\link[pyinit]{pyinit}}.}
 
 \item{scope}{defines the range of models examined in the \code{"stepwise"} 
 search. This should be either a single formula, or a list containing 
