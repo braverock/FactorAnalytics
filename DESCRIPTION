@@ -27,7 +27,7 @@ Depends:
     foreach (>= 1.4),
 	  xts (>= 0.12-0),
     rrcov (>= 1.3),
-    data.table
+    data.table (>= 1.13)
 Imports: 
     PerformanceAnalytics(>= 1.4),
     zoo,
