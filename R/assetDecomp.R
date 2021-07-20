@@ -45,7 +45,7 @@
 #'ES.decomp = assetDecomp(fit, weights, rm = "ES", p = 0.05, type = "normal") 
 #' @export   
  
-assetDecomp = function(object, weights=NULL, rm, p, type = c("np", "normal"))
+assetDecomp = function(object, weights=NULL, rm, p, type = c("np", "normal"), ...)
 {
   type = type[1]
   n.assets = length(object$asset.names)
