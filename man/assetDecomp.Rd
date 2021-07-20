@@ -4,7 +4,7 @@
 \alias{assetDecomp}
 \title{Decompose portfolio risk into individual asset contributions and provide tabular report}
 \usage{
-assetDecomp(object, weights = NULL, rm, p, type = c("np", "normal"))
+assetDecomp(object, weights = NULL, rm, p, type = c("np", "normal"), ...)
 }
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
