@@ -21,7 +21,7 @@ roll.fitFfmDT(
 \arguments{
 \item{ffMSpecObj}{a specFFm object}
 
-\item{windowSize}{the size of the fit wondow}
+\item{windowSize}{the size of the fit window}
 
 \item{refitEvery}{the frequency of fitting}
 
