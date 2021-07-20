@@ -3,7 +3,7 @@
 #' @description roll.fitFfmDT rolls the fundamental factor model
 #' 
 #' @param ffMSpecObj a specFFm object
-#' @param windowSize the size of the fit wondow
+#' @param windowSize the size of the fit window
 #' @param refitEvery the frequency of fitting
 #' @param refitWindow choice of expanding or rolling 
 #' @param stdExposuresControl for exposure standardization; (give the Std.Type and lambda)
