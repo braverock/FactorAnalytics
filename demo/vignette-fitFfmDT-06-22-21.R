@@ -4,7 +4,7 @@ library(data.table)
 library(FactorAnalytics)
 
 ## ----echo=F,message=FALSE-----------------------------------------------------
-rm(list=ls())
+
 
 ## ----eval=F,message=FALSE,warning=FALSE---------------------------------------
 ## help(factorDataSetDjia5Yrs)
