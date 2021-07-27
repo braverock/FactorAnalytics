@@ -57,7 +57,7 @@ statistically valid method of calculating standard errors for the lasso
 predictions.
 }
 \examples{
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,7:9]), 
                data=managers)

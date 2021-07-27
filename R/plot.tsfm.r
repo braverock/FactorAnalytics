@@ -119,7 +119,7 @@
 #' @examples
 #' 
 #' # load data from the database
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
 #'                      rf.name="US.3m.TR", data=managers)

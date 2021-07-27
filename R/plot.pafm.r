@@ -27,7 +27,7 @@
 #' 
 #' @examples
 #' \dontrun{
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
 #' fm.attr <- paFm(fit)

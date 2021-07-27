@@ -14,7 +14,7 @@
 #' @seealso \code{\link{fitTsfmUpDn}}, \code{\link{summary.tsfmUpDn}}
 #' 
 #' @examples
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' # example: Up and down market factor model with LS fit
 #' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
 #'                        data=managers, fit.method="LS",control=NULL)

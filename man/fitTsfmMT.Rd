@@ -78,7 +78,7 @@ skills.
 }
 \examples{
 # load data from the database
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 
 # example: Market-timing time series factor model with LS fit
 fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), mkt.name="SP500.TR",

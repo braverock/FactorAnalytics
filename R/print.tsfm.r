@@ -14,7 +14,7 @@
 #' @seealso \code{\link{fitTsfm}}, \code{\link{summary.tsfm}}
 #' 
 #' @examples
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,7:9]), 
 #'                mkt.name="SP500.TR", data=managers)

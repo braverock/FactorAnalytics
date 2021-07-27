@@ -18,7 +18,7 @@
 #' 
 #' @examples
 #' # load data from the database
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' # fit the factor model with LS
 #  example: Up and down market factor model with LS fit
 #' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
