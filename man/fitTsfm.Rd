@@ -138,7 +138,7 @@ with \code{xts} objects internally and colnames won't be left as they are.
 }
 }
 \examples{
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 colnames(managers) = gsub(" ",'.',colnames(managers))
 
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),

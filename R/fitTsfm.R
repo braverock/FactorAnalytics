@@ -123,7 +123,7 @@
 #' \code{\link{paFm}} for Performance Attribution. 
 #' 
 #' @examples
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' colnames(managers) = gsub(" ",'.',colnames(managers))
 #' 
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),

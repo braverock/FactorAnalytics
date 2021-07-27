@@ -260,7 +260,7 @@ print(tsfm.ctrl)
 }
 
 # used internally by fitTsfm in the example below
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,(7:9)]), 
                data=managers, variable.selection="subsets", 

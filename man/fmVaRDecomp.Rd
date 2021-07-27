@@ -89,7 +89,7 @@ calculation of Normal VaR (adapted from a portfolio context to factor models)
 }
 \examples{
 # Time Series Factor Model
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:8)]), data=managers)
 VaR.decomp <- fmVaRDecomp(fit.macro)
