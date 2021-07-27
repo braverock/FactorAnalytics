@@ -71,8 +71,7 @@
 #' 
 #' @examples
 #' # load data from the database
-#' library(PerformanceAnalytics)
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' 
 #' # example: A lagged Beetas model with LS fit
 #' fit <- fitTsfmLagLeadBeta(asset.names=colnames(managers[,(1:6)]),LagLeadBeta=2,LagOnly=TRUE,
