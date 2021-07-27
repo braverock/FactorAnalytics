@@ -103,15 +103,6 @@ NULL
 #'
 NULL
 
-#' @name wtsDjiaGmv
-#' @title DJIA GMV portfolio weights
-#' @description Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs)
-#'              for a global minimum variance portfolio starting from Jan 2008 to Dec 2012.
-#' @docType data
-#' @source TBA
-#' @usage data("wtsDjiaGmv")
-NULL
-
 #' @name wtsDjiaGmvLo
 #' @title DJIA GMV long-only portfolio weights
 #' @description Contains weights obtained after optimizing the portfolio returns of the 30 DJIA stocks (from dataset factorDataSetDjia5Yrs)
@@ -119,15 +110,6 @@ NULL
 #' @docType data
 #' @source TBA
 #' @usage data("wtsDjiaGmvLo")
-NULL
-
-#' @name wtsStocks145Gmv
-#' @title CRSP 145 stocks GMV portfolio weights
-#' @description Contains weights obtained after optimizing the portfolio returns of 145 stocks (from dataset stocks145scores6)
-#'              for a global minimum variance portfolio starting from Jan 1990 to Dec 2014.
-#' @docType data
-#' @source TBA
-#' @usage data("wtsStocks145Gmv")
 NULL
 
 #' @name wtsStocks145GmvLo
@@ -170,23 +152,6 @@ NULL
 #' @source S&P Global Market Intelligence
 #' @usage data("scoresSPGMI")
 NULL
-
-#' @name scoresSPGMIraw
-#' @title raw SPGMI data
-#' @description raw 300 stocks' 12 factor scores data
-#' @docType data
-#' @source TBA
-#' @usage data("scoresSPGMIraw")
-NULL
-
-#' @name scoresSPGMIraw
-#' @title raw SPGMI data
-#' @description raw 300 stocks' 12 factor scores data
-#' @docType data
-#' @source TBA
-#' @usage data("scoresSPGMIraw")
-NULL
-
 
 #' @name stocksWithFactorsData300
 #' @title 300 stocks with factors
