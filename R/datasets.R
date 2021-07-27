@@ -139,14 +139,6 @@ NULL
 #' @usage data("wtsStocks145GmvLo")
 NULL
 
-#' @name RussellData
-#' @title Russell data
-#' @description 16 Russell data
-#' @docType data
-#' @source TBA
-#' @usage data("RussellData")
-NULL
-
 #' @name stocksCRSP
 #' @title CRSP stocks data
 #' @description stocksCRSP
