@@ -5,7 +5,7 @@
 \alias{stocksCRSP}
 \title{CRSP stocks data}
 \format{
-A data.frame with 92000 observations on 15 variables:
+A data.frame with 82000 observations on 15 variables:
 \itemize{
  \item \strong{Date:} type `Date`
  \item \strong{TICKERLast:} type `chr`
