@@ -4,7 +4,7 @@
 \alias{convert.ffmSpec}
 \title{Function to convert to current class # mido to change to retroFit}
 \usage{
-\method{convert}{ffmSpec}(SpecObj, FitObj, RegStatsObj)
+\method{convert}{ffmSpec}(SpecObj, FitObj, RegStatsObj, ...)
 }
 \arguments{
 \item{SpecObj}{an object as the output from specFfm function}

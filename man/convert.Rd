@@ -4,7 +4,7 @@
 \alias{convert}
 \title{convert}
 \usage{
-convert(x, ...)
+convert(SpecObj, FitObj, RegStatsObj, ...)
 }
 \description{
 function to convert the new ffm spec object to ffm object to make it
