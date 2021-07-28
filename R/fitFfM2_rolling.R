@@ -62,7 +62,7 @@ roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,
     # lagging is done once prior to roll
     
     if (!is.null(stdExposuresControl)) { # apply StandardizeExposures
-      rollingObject = standardizeExposures(obj = rollingObject, Std.Type = stdExposuresControl$Std.Type,
+      rollingObject = standardizeExposures(specObj = rollingObject, Std.Type = stdExposuresControl$Std.Type,
                                       lambda = stdExposuresControl$lambda)  
     }
     if (!is.null(stdReturnControl)){# standardize returns
@@ -72,7 +72,7 @@ roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,
     rollingFit <- fitFfmDT (rollingObject,fit.method = fitControl$fit.method, 
                             resid.scaleType = fitControl$resid.scaleType, lambda = fitControl$lambda, 
                             GARCH.params = fitControl$GARCH.params, GARCH.MLE = fitControl$GARCH.MLE)
-    regStats = extractRegressionStats(obj = rollingObject, fitResults = rollingFit, full.resid.cov = full.resid.cov)
+    regStats = extractRegressionStats(specObj = rollingObject, fitResults = rollingFit, full.resid.cov = full.resid.cov)
     ans <- calcFLAM(specObj = rollingObject, modelStats = regStats, fitResults = results, analysis = analysis[1])
     print(i)
     rebalDate <- uniqueDates[last(Tindx[rollind[[i]]])] # names ?
