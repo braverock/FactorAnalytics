@@ -33,6 +33,7 @@
 #' tsPlotMP(ret, color = 'Blue')
 #' tsPlotMP(ret, scaleType = "same", zeroLine = FALSE)
 #' tsPlotMP(ret, stripLeft = FALSE, main = 'Time Series Plot')
+#' tsPlotMP(ret, stripLeft = FALSE, main = 'Time Series Plot', layout = c(3,3))
 #'  
 #'    
 #' @export

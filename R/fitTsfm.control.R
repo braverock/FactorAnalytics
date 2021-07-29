@@ -53,7 +53,7 @@
 #' as specified with argument \code{family}. If missing, it is computed inside \code{lmrobdet.control} to match
 #' the value of \code{efficiency} according to the family of rho functions specified in \code{family}.
 #' Appropriate values for \code{tuning.psi} for a given desired efficiency for Gaussian errors
-#' can be constructed using the functions \link{bisquare}, \link{modopt} and \link{optimal}.
+#' can be constructed using the functions \code{\link[RobStatTM]{bisquare}}, \code{\link[RobStatTM]{mopt}} and \code{\link[RobStatTM]{opt}}.
 #' @param efficiency desired asymptotic efficiency of the final regression M-estimator. Defaults to 0.85.
 #' @param max.it maximum number of IRWLS iterations for the MM-estimator
 #' @param refine.tol relative convergence tolerance for the S-estimator
@@ -63,7 +63,7 @@
 #' @param trace.lev positive values (increasingly) provide details on the progress of the MM-algorithm
 #' @param compute.rd logical value indicating whether robust leverage distances need to be computed.
 #' @param family string specifying the name of the family of loss function to be used (current valid
-#' options are "bisquare", "optimal" and "modopt"). Incomplete entries will be matched to
+#' options are "bisquare", "optimal" and "modopt" from the RobStatTM package). Incomplete entries will be matched to
 #' the current valid options.
 #' @param corr.b logical value indicating whether a finite-sample correction should be applied
 #' to the M-scale parameter \code{bb}.
@@ -72,19 +72,19 @@
 #' @param initial string specifying the initial value for the M-step of the MM-estimator. Valid
 #' options are \code{'S'}, for an S-estimator and \code{'MS'} for an M-S estimator which is
 #' appropriate when there are categorical explanatory variables in the model.
-#' @param psc_keep For \code{pyinit}, proportion of observations to remove based on PSCs. The effective proportion of removed
-#' observations is adjusted according to the sample size to be \code{prosac*(1-p/n)}. See \code{\link{pyinit}}.
-#' @param resid_keep_method For \code{pyinit}, how to clean the data based on large residuals. If
+#' @param psc_keep For pyinit, proportion of observations to remove based on PSCs. The effective proportion of removed
+#' observations is adjusted according to the sample size to be \code{prosac*(1-p/n)}. See \code{\link[pyinit]{pyinit}}.
+#' @param resid_keep_method For pyinit, how to clean the data based on large residuals. If
 #' \code{"threshold"}, all observations with scaled residuals larger than \code{C.res} will
 #' be removed, if \code{"proportion"}, observations with the largest \code{prop} residuals will
-#' be removed. See \code{\link{pyinit}}.
-#' @param resid_keep_thresh See parameter \code{resid_keep_method} above. See \code{\link{pyinit}}.
-#' @param resid_keep_prop See parameter \code{resid_keep_method} above. See \code{\link{pyinit}}.
-#' @param py_maxit Maximum number of iterations. See \code{\link{pyinit}}.
-#' @param py_eps Relative tolerance for convergence.  See \code{\link{pyinit}}.
-#' @param mscale_maxit Maximum number of iterations for the M-scale algorithm. See \code{\link{pyinit}}.
-#' @param mscale_tol Convergence tolerance for the M-scale algorithm. See \code{\link{pyinit}}.
-#' @param mscale_rho_fun String indicating the loss function used for the M-scale. See \code{\link{pyinit}}.
+#' be removed. See \code{\link[pyinit]{pyinit}}.
+#' @param resid_keep_thresh See parameter \code{resid_keep_method} above. See \code{\link[pyinit]{pyinit}}.
+#' @param resid_keep_prop See parameter \code{resid_keep_method} above. See \code{\link[pyinit]{pyinit}}.
+#' @param py_maxit Maximum number of iterations. See \code{\link[pyinit]{pyinit}}.
+#' @param py_eps Relative tolerance for convergence.  See \code{\link[pyinit]{pyinit}}.
+#' @param mscale_maxit Maximum number of iterations for the M-scale algorithm. See \code{\link[pyinit]{pyinit}}.
+#' @param mscale_tol Convergence tolerance for the M-scale algorithm. See \code{\link[pyinit]{pyinit}}.
+#' @param mscale_rho_fun String indicating the loss function used for the M-scale. See \code{\link[pyinit]{pyinit}}.
 #' @param scope defines the range of models examined in the \code{"stepwise"} 
 #' search. This should be either a single formula, or a list containing 
 #' components \code{upper} and \code{lower}, both formulae. See 
@@ -165,7 +165,7 @@
 #' }
 #' 
 #' # used internally by fitTsfm in the example below
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
 #'                data=managers, variable.selection="subsets", 

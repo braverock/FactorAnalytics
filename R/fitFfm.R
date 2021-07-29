@@ -507,9 +507,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     } else if (fit.method=="W-Rob") {
       reg.list <- by(data=data, INDICES=data[[date.var]], 
                      FUN=function(x) {
-						 lmrobdetMM(data=x, formula=fm.formula, contrasts=contrasts.list, 
-                             na.action=na.fail, weights=W, 
-                             mxr=200, mxf=200, mxs=200)
+						 lmrobdetMM(data=x, 
+						            formula=fm.formula, 
+						            contrasts=contrasts.list, 
+                        na.action=na.fail, 
+						            weights=W, 
+                        ...)
                      })
     }
   }

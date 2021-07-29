@@ -32,7 +32,7 @@ time t. The return attributed to factor k is \code{b_k * f_kt} and specific
 return is \code{u_t}.
 }
 \examples{
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)
 # without benchmark

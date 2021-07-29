@@ -64,7 +64,7 @@ The \code{plot.tsfm} can be applied.
 \examples{
 
 # load data from the database
- data(managers)
+ data(managers, package = 'PerformanceAnalytics')
 # example: Up and down market factor model with  fit
  fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
                        data=managers, fit.method="LS")

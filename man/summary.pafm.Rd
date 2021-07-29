@@ -19,7 +19,7 @@ Generic function of summary method for \code{paFm}.
 }
 \examples{
 # load data from the database
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 # fit the factor model with LS
 fit.ts <- fitTsfm(asset.names=colnames(managers[,(1:6)]), 
                   factor.names=c("EDHEC.LS.EQ","SP500.TR"),

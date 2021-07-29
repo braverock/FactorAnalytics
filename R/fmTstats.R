@@ -3,13 +3,12 @@
 #' @description
 #'  Calculate and plot the time series of the t-statistic values and the
 #'  number of risk indices with significant t-stats for a fundamentally fit object.
-#' @importFrom xts xts
-#' @importFrom zoo plot.zoo coredata
-#' @importFrom zoo as.yearmon
+#' @importFrom xts xts 
+#' @importFrom zoo plot.zoo coredata as.yearmon
 #' @importFrom lattice panel.abline xyplot panel.xyplot barchart
 #' @importFrom grDevices dev.off
 #' @importFrom stats vcov
-#' @importFrom reshape2 melt
+#' @importFrom data.table melt
 #' @importFrom HH likert
 #'  
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
@@ -170,10 +169,10 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
     if(whichPlot == "significantTstatsH")
     {
         combined.sigTstatsH = combined.sigTstats[,c(3,1,2)]
-        mydata = as.data.frame(t(combined.sigTstatsH))
+        mydata = as.data.table(t(combined.sigTstatsH))
         mydata$id <- c("Total", "Negative","Positive")
         mydata$id  = factor(mydata$id , levels = c("Total", "Negative","Positive"))
-        dat <- melt(mydata,id.vars = "id")
+        dat <- melt(mydata, id.vars = "id")
         my.settings <- list(
           superpose.polygon=list(col=c("grey", "red","black"), border="transparent"),
           strip.border=list(col="black") 
@@ -188,7 +187,7 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
     if(whichPlot == "all" | whichPlot == "significantTstatsV")
     {
         combined.sigTstatsV = combined.sigTstats[,c(3,1,2)]
-        mydata = as.data.frame(t(combined.sigTstatsV))
+        mydata = as.data.table(t(combined.sigTstatsV))
         mydata$id <- c("Total", "Negative","Positive")
         mydata$id  = factor(mydata$id , levels = c("Positive", "Negative","Total"))
         dat <- melt(mydata,id.vars = "id")

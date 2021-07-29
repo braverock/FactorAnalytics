@@ -64,7 +64,7 @@
 #' 
 #' @examples
 #' #' # Time Series Factor Model
-#' data(managers)
+#' data(managers, package = 'PerformanceAnalytics')
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:8)]), data=managers)
 #' ES.decomp <- fmEsDecomp(fit.macro)
@@ -78,7 +78,7 @@
 #' ES.decomp$cES
 #' 
 #' # Fundamental Factor Model
-#' data(Stock.df)
+#' data(Stocks.df)
 #' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
 #' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
 #'               date.var="DATE", exposure.vars=exposure.vars)

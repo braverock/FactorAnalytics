@@ -1096,7 +1096,7 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
 #' @param RegStatsObj an object as the output from extractRegressionStats function
 #' @method convert ffmSpec
 #' @export
-convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj) {
+convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
 
   asset.names <- names(RegStatsObj$residuals) # unique(SpecObj$dataDT[[SpecObj$asset.var]])
   time.periods <- unique(SpecObj$dataDT[[SpecObj$date.var]])
@@ -1149,7 +1149,7 @@ convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj) {
 #' easier in plotting and reporting
 #' @export
 #'
-convert <- function(x,...) {
+convert <- function(SpecObj, FitObj, RegStatsObj, ...) {
   UseMethod("convert")
 }
 
@@ -1157,7 +1157,7 @@ convert <- function(x,...) {
 
 #' @method print ffmSpec
 #' @export
-print.ffmSpec <- function(SpecObj){
+print.ffmSpec <- function(x, ...){
   a_ <- SpecObj$asset.var
   r_ <- SpecObj$ret.var
   d_ <- SpecObj$date.var
@@ -1176,10 +1176,5 @@ print.ffmSpec <- function(SpecObj){
 
   cat(sprintf("The date variable is in this columns: %s.  The data spans from %s to %s.\n", d_,
               first(SpecObj$dataDT[[d_]]),  last(SpecObj$dataDT[[d_]])))
-
-
-
-
-
 
 }

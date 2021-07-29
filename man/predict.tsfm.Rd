@@ -28,7 +28,7 @@ calls the \code{predict} method for fitted objects of class \code{lm},
 }
 \examples{
 # load data from the database
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 # fit the factor model with LS
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)

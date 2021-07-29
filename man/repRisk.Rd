@@ -125,7 +125,7 @@ return of a portfolio based on Euler's theorem, given the fitted factor model.
 }
 \examples{
 # Time Series Factor Model
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)

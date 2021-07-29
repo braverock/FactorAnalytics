@@ -58,7 +58,7 @@ handling NAs restricts the method to "pearson".
 }
 \examples{
 # Time Series Factor model
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)                              
 fmCov(fit)
@@ -69,7 +69,7 @@ sfm.pca.fit <- fitSfm(r.M, k=2)
 fmCov(sfm.pca.fit)
 
 # Fundamental factor Model
-data(Stock.df)
+data(Stocks.df)
 exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
 fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
               date.var="DATE", exposure.vars=exposure.vars)

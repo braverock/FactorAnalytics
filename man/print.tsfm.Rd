@@ -20,7 +20,7 @@ the call, factor model dimension, regression coefficients, r-squared and
 residual volatilities from the fitted object.
 }
 \examples{
-data(managers)
+data(managers, package = 'PerformanceAnalytics')
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,7:9]), 
                mkt.name="SP500.TR", data=managers)

@@ -119,7 +119,11 @@
 #' @examples
 #' 
 #' # load data from the database
+<<<<<<< HEAD
 #' data(managers,package="PerformanceAnalytics")
+=======
+#' data(managers, package = 'PerformanceAnalytics')
+>>>>>>> branch 'master' of https://github.com/braverock/factorAnalytics.git
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
 #'                      rf.name="US 3m TR", data=managers)
@@ -582,3 +586,4 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
 	par(ask=FALSE)
 	par(las=0)
 }
+
