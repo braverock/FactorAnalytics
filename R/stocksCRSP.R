@@ -9,7 +9,7 @@
 #' @format A data.frame with 82000 observations on 15 variables:
 #' \itemize{
 #'  \item \strong{Date:} type `Date`
-#'  \item \strong{TICKERLast:} type `chr`
+#'  \item \strong{TICKERLast:} type `chr`. This is the ticker as of the last date
 #'  \item \strong{Ticker:} type `chr`
 #'  \item \strong{Company:} type `chr`
 #'  \item \strong{CapGroup:} type `chr`
