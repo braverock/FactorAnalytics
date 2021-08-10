@@ -10,7 +10,7 @@
 #' \itemize{
 #'  \item \strong{Date:} type `Date`
 #'  \item \strong{TICKERLast:} type `chr`. This is the ticker as of the last date
-#'  \item \strong{Ticker:} type `chr`
+#'  \item \strong{Ticker:} type `chr`. This is the actual ticker at all times
 #'  \item \strong{Company:} type `chr`
 #'  \item \strong{CapGroup:} type `chr`
 #'  \item \strong{GICS:} type `chr`
