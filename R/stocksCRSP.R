@@ -8,7 +8,7 @@
 #'
 #' @format A data.frame with 82000 observations on 15 variables:
 #' \itemize{
-#'  \item \strong{Date:} type `Date`
+#'  \item \strong{Date:} type `Date`.
 #'  \item \strong{TickerLast:} type `chr`. This is the ticker as of the last date
 #'  \item \strong{Ticker:} type `chr`. This is the actual ticker at each time
 #'  period
@@ -20,15 +20,17 @@
 #'  two digits of the GICS code
 #'  \item \strong{Return:} type `num`. Arithmetic stock return from one period
 #'  to the next in decimal form
-#'  \item \strong{RetExDiv:} type `num`
+#'  \item \strong{RetExDiv:} type `num`.
 #'  \item \strong{Price:} type `num`. Stock price at each time period in decimal
 #'  form
-#'  \item \strong{PrcSplitAdj:} type `num`
+#'  \item \strong{PrcSplitAdj:} type `num`.
 #'  \item \strong{Ret4WkBill:} type `num`. Return of 4 week Treasury bill
 #'  \item \strong{Ret13WkBill:} type `num`. Return of 13 week Treasury bill
 #'  \item \strong{Ret1YrBill:} type `num`. Return of 1 year Treasury bill
 #'  \item \strong{mktIndexCRSP:} type `num`. CRSP value weighted market return
 #' }
+#' 
 #' @source TBA
+#' 
 #' @examples  str(stocksCRSP)
 "stocksCRSP"
