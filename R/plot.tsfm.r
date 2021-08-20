@@ -117,12 +117,10 @@
 #' G(7,8) - \code{\link[corrplot]{corrplot.mixed}}. 
 #' 
 #' @examples
-#' 
-#' # load data from the database
-#' data(managers, package = 'PerformanceAnalytics')
+#' data(managers,package="PerformanceAnalytics")
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name="US.3m.TR", data=managers)
+#'                      rf.name="US 3m TR", data=managers)
 #'     
 #' # for group plots (default), user can select plot option from menu prompt
 #' # menu is repeated to get multiple types of plots based on the same fit
@@ -160,7 +158,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     
     if (missing(asset.name) && length(x$asset.names)>1) {
       stop("Missing input: 'asset.name' is required if plot.single is TRUE and 
-           the factor model fits multiple assets.")   
+							the factor model fits multiple assets.")   
     } else if (length(x$asset.names)==1) {
       i <- x$asset.names[1]
     } else {
@@ -239,13 +237,24 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                             col=colorset[1], col.smooth=colorset[2], lwd=lwd)
              }, "5L" = {
                ## Time series plot of residuals with standard error bands
-               chart.TimeSeries(Residuals, main=paste("Residuals:",i), 
-                                colorset=colorset, xlab="", ylab="Residuals", 
-                                lwd=lwd, lty="solid", las=las, ...)
-               abline(h=1.96*x$resid.sd[i], lwd=lwd, lty="dotted", col=colorset[2])
-               abline(h=-1.96*x$resid.sd[i], lwd=lwd, lty="dotted", col=colorset[2])
-               legend(x=legend.loc, lty=c("solid","dotted"), col=c(colorset[1:2]), 
-                      lwd=lwd, bty="n", legend=c("Residuals",expression("\u00b1 1.96 "*sigma)))
+               p = chart.TimeSeries(Residuals, main=paste("Residuals:",i), 
+                                    colorset=colorset, xlab="", ylab="Residuals", 
+                                    lwd=lwd, lty="solid", las=las,...)
+               
+               Residuals$tmpplot_h1 = 1.96*x$resid.sd[i]
+               Residuals$tmpplot_h2 = -1.96*x$resid.sd[i]
+               
+               # abline no longer works with plot.xts
+               #abline(h=1.96*x$resid.sd[i], lwd=lwd, lty="dotted", col=colorset[2])
+               #abline(h=-1.96*x$resid.sd[i], lwd=lwd, lty="dotted", col=colorset[2])
+               lines(Residuals$tmpplot_h1,lwd=lwd, lty="dotted", col=colorset[2])
+               lines(Residuals$tmpplot_h2,lwd=lwd, lty="dotted", col=colorset[2])
+               addLegend(legend.loc=legend.loc, lty=c("solid","dotted"), col=c(colorset[1:2]), 
+                         lwd=lwd, bty="n", legend.names=c("Residuals",expression("\u00b1 1.96 "*sigma)))
+               print(p)
+               # reset 
+               Residuals$tmpplot_h1 = Residuals$tmpplot_h2 = NULL
+               
              }, "6L" = {
                ## Time series plot of squared residuals
                chart.TimeSeries(Residuals^2, colorset=colorset, xlab="", 
@@ -461,8 +470,10 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  plotData <- merge.xts(x$data[,asset], fitted(x)[,asset])
                  colnames(plotData) <- c("Actual","Fitted")
                  main <- paste("Actual and Fitted:", asset)
-                 chart.TimeSeries(plotData, colorset=colorset, lwd=lwd, main=main, xlab="", 
-                                  ylab="Asset returns", legend.loc=legend.loc, pch=NULL, las=las,...)
+                 
+                 print(chart.TimeSeries(plotData, colorset=colorset, lwd=lwd, main=main, xlab="", 
+                                        ylab="Asset returns", legend.loc=legend.loc, pch=NULL, las=las,...))
+                 
                }
                par(mfrow=c(1,1))
              }, 
@@ -522,7 +533,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                           auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE), 
                           par.settings=list(superpose.polygon=list(col=colorset)),
                           panel=function(...){panel.grid(h=0, v=-1); 
-                                              panel.barchart(...)}, ...)
+                            panel.barchart(...)}, ...)
                )
              },
              "12L" ={
@@ -569,3 +580,4 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
   par(ask=FALSE)
   par(las=0)
 }
+
