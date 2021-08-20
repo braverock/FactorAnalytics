@@ -73,17 +73,19 @@
 #' # load data from the database
 #' data(managers, package = 'PerformanceAnalytics')
 #' 
-#' # example: A lagged Beetas model with LS fit
-#' fit <- fitTsfmLagLeadBeta(asset.names=colnames(managers[,(1:6)]),LagLeadBeta=2,LagOnly=TRUE,
-#'                       mkt.name="SP500 TR",rf.name="US 3m TR",data=managers)
+#' # example: A lagged Betas model with LS fit
+#' fit <- fitTsfmLagLeadBeta(asset.names = names(managers[,(1:6)]),
+#'                           mkt.name = "SP500 TR", rf.name = "US 3m TR", 
+#'                           data = managers, LagLeadBeta=2, LagOnly=TRUE)
 #' summary(fit)
 #' fitted(fit)
 #' 
 #' @export
 
 fitTsfmLagLeadBeta <- function(asset.names, mkt.name, rf.name=NULL, 
-                          data=data, fit.method=c("LS","DLS","Robust"),LagLeadBeta=1, LagOnly=FALSE,
-                          control=fitTsfm.control(...),...) {
+                          data=data, fit.method=c("LS","DLS","Robust"),
+                          LagLeadBeta=1, LagOnly=FALSE,
+                          control=fitTsfm.control(...), ...) {
 					  
 	if (LagLeadBeta!=0){
 	  if (is.null(mkt.name))  {
