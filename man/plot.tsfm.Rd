@@ -129,10 +129,10 @@ models.
 \examples{
 
 # load data from the database
-data(managers, package = 'PerformanceAnalytics')
+data(managers,package="PerformanceAnalytics")
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name="US.3m.TR", data=managers)
+                     rf.name="US 3m TR", data=managers)
     
 # for group plots (default), user can select plot option from menu prompt
 # menu is repeated to get multiple types of plots based on the same fit
