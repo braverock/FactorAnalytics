@@ -117,6 +117,8 @@
 #' G(7,8) - \code{\link[corrplot]{corrplot.mixed}}. 
 #' 
 #' @examples
+#' 
+#' # load data from the database
 #' data(managers,package="PerformanceAnalytics")
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
@@ -579,5 +581,6 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
   # revert to default par values
   par(ask=FALSE)
   par(las=0)
+
 }
 
