@@ -1157,7 +1157,7 @@ convert <- function(SpecObj, FitObj, RegStatsObj, ...) {
 
 #' @method print ffmSpec
 #' @export
-print.ffmSpec <- function(SpecObj, ...){
+print.ffmSpec <- function(x, ...){
   a_ <- SpecObj$asset.var
   r_ <- SpecObj$ret.var
   d_ <- SpecObj$date.var
