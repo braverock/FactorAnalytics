@@ -84,8 +84,12 @@ risk free rate is provided, the up market is the excess market returns which is 
 The goal of up and down market model is to capture two different market Betas in the up and down markets.
 }
 \examples{
-# load data from the database
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+ # Make syntactically valid column names
+colnames(managers)
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
 
 # example: Up and down market factor model with LS fit
 fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",

@@ -77,8 +77,12 @@
 #' The original time series function \code{\link{fitTsfm}} and its generic functions
 #'  application.
 #' @examples
-#' # load data from the database
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#'  # Make syntactically valid column names
+#' colnames(managers)
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
 #' 
 #' # example: Up and down market factor model with LS fit
 #' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
