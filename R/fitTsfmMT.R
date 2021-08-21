@@ -85,7 +85,6 @@
 #' summary(fit)
 #' 
 #' @export
-
 fitTsfmMT <- function(asset.names, mkt.name, rf.name=NULL, data=data, 
                       fit.method=c("LS","DLS","Robust"), 
                       control=fitTsfm.control(...), ...) {
@@ -100,27 +99,26 @@ See 'make.names' function and associated documentation as well as
 https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
   }
   
-  # convert data into an xts object and hereafter work with xts objects
+  # from PerformanceAnalytics, convert data into an xts object
   data.xts <- checkData(data)
   # convert index to 'Date' format for uniformity 
   time(data.xts) <- as.Date(time(data.xts))
   
-  # extract columns to be used in the time series regression
+  # extract variables to be used in the time series regression
   dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
   
-  # BROKEN (see ",," after dat.xts): convert all asset and factor returns to excess return form if specified
-  # if (!is.null(rf.name)) {
-  #  dat.xts <- "[<-"(dat.xts,, vapply(dat.xts, function(x) x-data.xts[,rf.name], 
-  #                                   FUN.VALUE = numeric(nrow(dat.xts))))
-  #} 
-  
+  # Note `Return.excess` will modify variable names, so change back
+  dat.xts.names <- colnames(dat.xts)
+  dat.xts <- PerformanceAnalytics::Return.excess(R = dat.xts, 
+                                                 Rf = data.xts[ ,rf.name])
+  colnames(dat.xts) <- dat.xts.names
   # mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
   
-  down.market <- dat.xts[,mkt.name]
+  down.market <- dat.xts[ ,mkt.name]
   down.market[down.market < 0 ] <- 0
-  dat.xts <- merge.xts(dat.xts,down.market)
+  dat.xts <- merge.xts(dat.xts, down.market)
   colnames(dat.xts)[dim(dat.xts)[2]] <- "down.market"
-  factor.names <- c(mkt.name,"down.market")
+  factor.names <- c(mkt.name, "down.market")
   
   #   if("TM" %in% mkt.timing) {
   #     market.sqd <- data.xts[,mkt.name]^2   
@@ -129,9 +127,13 @@ https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
   #     factor.names <- c(factor.names, "market.sqd")
   #   }
   
-  fit.MktTiming <-  fitTsfm(asset.names=asset.names, factor.names=factor.names, 
-                         rf.name=NULL, data=dat.xts, fit.method=fit.method, 
-                         variable.selection="none", control=control)
+  fit.MktTiming <-  fitTsfm(asset.names=asset.names, 
+                            factor.names=factor.names, 
+                            rf.name=NULL, 
+                            data=dat.xts, 
+                            fit.method=fit.method, 
+                            variable.selection="none", 
+                            control=control)
   
   return(fit.MktTiming)  
 }
