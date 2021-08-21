@@ -70,12 +70,17 @@
 #'  application.
 #' 
 #' @examples
-#' # load data from the database
+#' ## A lagged Betas model with LS fit
+#'  
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#'  # Make syntactically valid column names
+#' colnames(managers)
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
 #' 
-#' # example: A lagged Betas model with LS fit
 #' fit <- fitTsfmLagLeadBeta(asset.names = names(managers[,(1:6)]),
-#'                           mkt.name = "SP500 TR", rf.name = "US 3m TR", 
+#'                           mkt.name = "SP500.TR", rf.name = "US.3m.TR", 
 #'                           data = managers, LagLeadBeta=2, LagOnly=TRUE)
 #' summary(fit)
 #' fitted(fit)
@@ -97,26 +102,37 @@ fitTsfmLagLeadBeta <- function(asset.names, mkt.name, rf.name=NULL,
 	    stop("Invalid argument: LagLeadBeta must be an integer and no less than 1. The default is 1.")
 	  }
 	  
+	  if (length(grep(" ", colnames(data))) > 0) {
+	    stop("Please use syntactically valid column names for continuity with merge.xts. 
+	          See 'make.names' function and associated documentation. Also, this conversation: 
+	          https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
+	  }
 	  # Create market lag terms
 	  factor.names = mkt.name
-	  mktlag <- lag(data[,mkt.name],k=seq(1,LagLeadBeta,1))
+	  mktlag <- lag(data[ ,mkt.name], k=seq(1, LagLeadBeta, 1))
 	  if(!LagOnly)
-	  	mktlead <- lag(data[,mkt.name],k=seq(-1,-LagLeadBeta,-1))
+	  	mktlead <- lag(data[ ,mkt.name], k=seq(-1, -LagLeadBeta, -1))
 	  
 	  for (i in 1:LagLeadBeta) {
-	    colnames(mktlag)[i] <- paste("MktLag",i,sep="")
-		factor.names <- c(factor.names,paste("MktLag",i,sep=""))
+	    colnames(mktlag)[i] <- paste("MktLag", i, sep="")
+		factor.names <- c(factor.names, paste("MktLag", i, sep=""))
 		if(!LagOnly){		
-			colnames(mktlead)[i] <- paste("MktLead",i,sep="")
-			factor.names <- c(factor.names,paste("MktLead",i,sep=""))}
+			colnames(mktlead)[i] <- paste("MktLead", i, sep="")
+			factor.names <- c(factor.names, paste("MktLead", i, sep=""))}
 	  }
-	    data <- merge(data,mktlag)
+	    data <- merge(data, mktlag)
 		if(!LagOnly)		
-			data <- merge(data,mktlead)
+			data <- merge(data, mktlead)
 	}
 	
-  fit <-  fitTsfm(asset.names=asset.names,factor.names=factor.names,mkt.name=mkt.name,rf.name=rf.name,
-                  data=data,fit.method=fit.method,variable.selection="none",control=control)
+  fit <-  fitTsfm(asset.names=asset.names,
+                  factor.names=factor.names,
+                  mkt.name=mkt.name,
+                  rf.name=rf.name,
+                  data=data,
+                  fit.method=fit.method,
+                  variable.selection="none",
+                  control=control)
   
   return(fit)  
 }
