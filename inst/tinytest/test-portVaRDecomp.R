@@ -1,6 +1,8 @@
 
 # Time Series Factor Model
 data(managers, package = 'PerformanceAnalytics')
+colnames(managers) <- make.names( colnames(managers))
+
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name=colnames(managers[,10]), data=managers)
