@@ -47,7 +47,13 @@
 #' 
 #' @examples
 #' # Time Series Factor model
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#'  # Make syntactically valid column names
+#' colnames(managers)
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
+#' 
 #' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
 #'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)                              
 #' fmCov(fit)
