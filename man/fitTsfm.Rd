@@ -26,14 +26,14 @@ fitTsfm(
 \method{residuals}{tsfm}(object, ...)
 }
 \arguments{
-\item{asset.names}{vector of asset names, whose returns are the dependent 
+\item{asset.names}{vector of syntactically valid asset names, whose returns are the dependent 
 variable in the factor model.}
 
-\item{factor.names}{vector containing names of the factors.}
+\item{factor.names}{vector containing syntactically valid names of the factors.}
 
-\item{mkt.name}{name of the column for market returns. Default is \code{NULL}.}
+\item{mkt.name}{syntactically valid name of the column for market returns. Default is \code{NULL}.}
 
-\item{rf.name}{name of the column for the risk free rate; if excess returns 
+\item{rf.name}{syntactically valid name of the column for the risk free rate; if excess returns 
 should be calculated for all assets and factors. Default is \code{NULL}.}
 
 \item{data}{vector, matrix, data.frame, xts, timeSeries or zoo object
@@ -58,8 +58,8 @@ See details. Default is "LS".}
 \code{fitTsfm} returns an object of class \code{"tsfm"} for which 
 \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist. 
 
-The generic accessor functions \code{coef}, \code{fitted} and 
-\code{residuals} extract various useful features of the fit object. 
+The generic functions \code{coef}, \code{fitted} and  \code{residuals} 
+extract various useful features of the fit object. 
 Additionally, \code{fmCov} computes the covariance matrix for asset returns 
 based on the fitted factor model.
 
@@ -77,9 +77,9 @@ the \code{fit.method="Robust"}, or class \code{lars} if
 \code{variable.selection="lars"}}
 \item{call}{the matched function call.}
 \item{data}{xts data object containing the asset(s) and factor(s) returns.}
-\item{asset.names}{asset.names as input.}
-\item{factor.names}{factor.names as input.}
-\item{mkt.name}{mkt.name as input}
+\item{asset.names}{syntactically valid asset.names as input.}
+\item{factor.names}{syntactically valid factor.names as input.}
+\item{mkt.name}{syntactically valid mkt.name as input}
 \item{fit.method}{fit.method as input.}
 \item{variable.selection}{variable.selection as input.}
 Where N is the number of assets, K is the number of factors and T is the 
@@ -138,8 +138,12 @@ with \code{xts} objects internally and colnames won't be left as they are.
 }
 }
 \examples{
+ # load data
 data(managers, package = 'PerformanceAnalytics')
-colnames(managers) = gsub(" ",'.',colnames(managers))
+ # Make syntactically valid column names
+colnames(managers)
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
 
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,(7:9)]), data=managers)

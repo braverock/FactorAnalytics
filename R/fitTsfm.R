@@ -51,11 +51,11 @@
 #' with \code{xts} objects internally and colnames won't be left as they are.
 #' }
 #' 
-#' @param asset.names vector of asset names, whose returns are the dependent 
+#' @param asset.names vector of syntactically valid asset names, whose returns are the dependent 
 #' variable in the factor model.
-#' @param factor.names vector containing names of the factors.
-#' @param mkt.name name of the column for market returns. Default is \code{NULL}.
-#' @param rf.name name of the column for the risk free rate; if excess returns 
+#' @param factor.names vector containing syntactically valid names of the factors.
+#' @param mkt.name syntactically valid name of the column for market returns. Default is \code{NULL}.
+#' @param rf.name syntactically valid name of the column for the risk free rate; if excess returns 
 #' should be calculated for all assets and factors. Default is \code{NULL}.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing the columns \code{asset.names}, \code{factor.names}, and 
@@ -71,8 +71,8 @@
 #' @return \code{fitTsfm} returns an object of class \code{"tsfm"} for which 
 #' \code{print}, \code{plot}, \code{predict} and \code{summary} methods exist. 
 #' 
-#' The generic accessor functions \code{coef}, \code{fitted} and 
-#' \code{residuals} extract various useful features of the fit object. 
+#' The generic functions \code{coef}, \code{fitted} and  \code{residuals} 
+#' extract various useful features of the fit object. 
 #' Additionally, \code{fmCov} computes the covariance matrix for asset returns 
 #' based on the fitted factor model.
 #' 
@@ -90,9 +90,9 @@
 #' \code{variable.selection="lars"}}
 #' \item{call}{the matched function call.}
 #' \item{data}{xts data object containing the asset(s) and factor(s) returns.}
-#' \item{asset.names}{asset.names as input.}
-#' \item{factor.names}{factor.names as input.}
-#' \item{mkt.name}{mkt.name as input}
+#' \item{asset.names}{syntactically valid asset.names as input.}
+#' \item{factor.names}{syntactically valid factor.names as input.}
+#' \item{mkt.name}{syntactically valid mkt.name as input}
 #' \item{fit.method}{fit.method as input.}
 #' \item{variable.selection}{variable.selection as input.}
 #' Where N is the number of assets, K is the number of factors and T is the 
@@ -123,8 +123,12 @@
 #' \code{\link{paFm}} for Performance Attribution. 
 #' 
 #' @examples
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
-#' colnames(managers) = gsub(" ",'.',colnames(managers))
+#'  # Make syntactically valid column names
+#' colnames(managers)
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
 #' 
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), data=managers)
@@ -171,6 +175,11 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   }
   if (missing(factor.names) && !is.null(mkt.name)) {
     factor.names <- NULL
+  }
+  if (length(grep(" ", colnames(data))) > 0) {
+    stop("Please use syntactically valid column names for continuity with merge.xts. 
+	          See 'make.names' function and associated documentation. Also, this conversation: 
+	          https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
   }
   
   # extract arguments to pass to different fit and variable selection functions
