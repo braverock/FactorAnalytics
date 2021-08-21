@@ -15,12 +15,12 @@ fitTsfmMT(
 )
 }
 \arguments{
-\item{asset.names}{vector containing names of assets, whose returns or 
+\item{asset.names}{vector containing syntactically valid names of assets, whose returns or 
 excess returns are the dependent variable.}
 
-\item{mkt.name}{name of the column for market returns (required).}
+\item{mkt.name}{syntactically valid name of the column for market returns (required).}
 
-\item{rf.name}{name of the column of risk free rate variable to calculate 
+\item{rf.name}{syntactically valid name of the column of risk free rate variable to calculate 
 excess returns for all assets (in \code{asset.names}) and the market factor 
 (in \code{mkt.name}). Default is NULL, and no action is taken.}
 
@@ -77,12 +77,17 @@ of "free" put options on the market provided by the manager's market-timings
 skills.
 }
 \examples{
-# load data from the database
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+ # Make syntactically valid column names
+colnames(managers)
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
 
 # example: Market-timing time series factor model with LS fit
-fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), mkt.name="SP500.TR",
-                 rf.name="US.3m.TR", data=managers)
+fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), 
+                 mkt.name="SP500.TR", rf.name="US.3m.TR", 
+                 data=managers)
 summary(fit)
 
 }

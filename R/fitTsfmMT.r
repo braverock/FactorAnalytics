@@ -15,10 +15,10 @@
 #' of "free" put options on the market provided by the manager's market-timings 
 #' skills.
 #' 
-#' @param asset.names vector containing names of assets, whose returns or 
+#' @param asset.names vector containing syntactically valid names of assets, whose returns or 
 #' excess returns are the dependent variable.
-#' @param mkt.name name of the column for market returns (required).
-#' @param rf.name name of the column of risk free rate variable to calculate 
+#' @param mkt.name syntactically valid name of the column for market returns (required).
+#' @param rf.name syntactically valid name of the column of risk free rate variable to calculate 
 #' excess returns for all assets (in \code{asset.names}) and the market factor 
 #' (in \code{mkt.name}). Default is NULL, and no action is taken.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
@@ -71,12 +71,17 @@
 #' and related methods.
 #' 
 #' @examples
-#' # load data from the database
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#'  # Make syntactically valid column names
+#' colnames(managers)
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
 #' 
 #' # example: Market-timing time series factor model with LS fit
-#' fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), mkt.name="SP500.TR",
-#'                  rf.name="US.3m.TR", data=managers)
+#' fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), 
+#'                  mkt.name="SP500.TR", rf.name="US.3m.TR", 
+#'                  data=managers)
 #' summary(fit)
 #' 
 #' @export
@@ -89,6 +94,12 @@ fitTsfmMT <- function(asset.names, mkt.name, rf.name=NULL, data=data,
     stop("Missing argument: mkt.name is required for market timing models.")
   }
   
+  if (length(grep(" ", colnames(data))) > 0) {
+    stop("Please use syntactically valid column names for continuity with merge.xts. 
+See 'make.names' function and associated documentation as well as 
+https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
+  }
+  
   # convert data into an xts object and hereafter work with xts objects
   data.xts <- checkData(data)
   # convert index to 'Date' format for uniformity 
@@ -96,13 +107,12 @@ fitTsfmMT <- function(asset.names, mkt.name, rf.name=NULL, data=data,
   
   # extract columns to be used in the time series regression
   dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
-  ### After merging xts objects, the spaces in names get converted to periods
   
-  # convert all asset and factor returns to excess return form if specified
-  if (!is.null(rf.name)) {
-    dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
-                                     FUN.VALUE = numeric(nrow(dat.xts))))
-  } 
+  # BROKEN (see ",," after dat.xts): convert all asset and factor returns to excess return form if specified
+  # if (!is.null(rf.name)) {
+  #  dat.xts <- "[<-"(dat.xts,, vapply(dat.xts, function(x) x-data.xts[,rf.name], 
+  #                                   FUN.VALUE = numeric(nrow(dat.xts))))
+  #} 
   
   # mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
   
