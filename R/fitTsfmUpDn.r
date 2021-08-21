@@ -116,13 +116,14 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
   
   # extract columns to be used in the time series regression
   dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
+  
   ### After merging xts objects, the spaces in names get converted to periods
   
-  # convert all asset and factor returns to excess returns if specified
-  if (!is.null(rf.name)) {
-    dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
-                                     FUN.VALUE = numeric(nrow(dat.xts))))
-  } 
+  # BROKEN convert all asset and factor returns to excess returns if specified
+  # if (!is.null(rf.name)) {
+  #  dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
+  #                                   FUN.VALUE = numeric(nrow(dat.xts))))
+  #} 
   
   mkt <- dat.xts[,mkt.name]
   # up market
