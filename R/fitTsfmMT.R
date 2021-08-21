@@ -107,11 +107,13 @@ https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
   # extract variables to be used in the time series regression
   dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
   
+  if (!is.null(rf.name)) {
   # Note `Return.excess` will modify variable names, so change back
   dat.xts.names <- colnames(dat.xts)
   dat.xts <- PerformanceAnalytics::Return.excess(R = dat.xts, 
                                                  Rf = data.xts[ ,rf.name])
   colnames(dat.xts) <- dat.xts.names
+  }
   # mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
   
   down.market <- dat.xts[ ,mkt.name]
