@@ -53,10 +53,19 @@
 #' 
 #' @examples
 #' # Time Series Factor Model
+#' 
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#' colnames(managers)
+#'  # Make syntactically valid column names
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
+#' 
 #' fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name=colnames(managers[,10]), data=managers)
+#'                      rf.name=colnames(managers[,10]), 
+#'                      data=managers)
+#'                      
 #' decomp <- portSdDecomp(fit.macro)
 #' # get the factor contributions of risk
 #' decomp$cSd

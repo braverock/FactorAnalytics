@@ -14,10 +14,18 @@
 #' @seealso \code{\link{fitTsfmUpDn}}, \code{\link{summary.tsfmUpDn}}
 #' 
 #' @examples
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#' colnames(managers)
+#'  # Make syntactically valid column names
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
+#' 
 #' # example: Up and down market factor model with LS fit
-#' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="LS",control=NULL)
+#' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),
+#'                        mkt.name="SP500.TR",
+#'                        data=managers, 
+#'                        fit.method="LS")
 #'  
 #' print(fitUpDn)
 #' 

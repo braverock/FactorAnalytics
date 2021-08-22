@@ -63,27 +63,20 @@
 #' \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 #' 
 #' @examples
-#' #' # Time Series Factor Model
+#'  # Time Series Factor Model
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#' colnames(managers)
+#'  # Make syntactically valid column names
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
+#' 
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:8)]), data=managers)
 #' ES.decomp <- fmEsDecomp(fit.macro)
 #' # get the component contributions
 #' ES.decomp$cES
 #' 
-#' # Statistical Factor Model
-#' data(StockReturns)
-#' sfm.pca.fit <- fitSfm(r.M, k=2)
-#' ES.decomp <- fmEsDecomp(sfm.pca.fit, type="normal")
-#' ES.decomp$cES
-#' 
-#' # Fundamental Factor Model
-#' data(Stocks.df)
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-#' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' ES.decomp <- fmEsDecomp(fit, type="normal")
-#' head(ES.decomp$cES)
 #' 
 #' @export
 
