@@ -176,11 +176,6 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   if (missing(factor.names) && !is.null(mkt.name)) {
     factor.names <- NULL
   }
-  if (length(grep(" ", colnames(data))) > 0) {
-    stop("Please use syntactically valid column names for continuity with merge.xts. 
-See 'make.names' function and associated documentation as well as 
-https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
-  }
   
   # extract arguments to pass to different fit and variable selection functions
   decay <- control$decay
@@ -213,20 +208,18 @@ https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
   time(data.xts) <- as.Date(time(data.xts))
   
   # extract columns to be used in the time series regression
+  original_names <- c(colnames(data.xts[,asset.names]), colnames(data.xts[,factor.names]))
   dat.xts <- merge(data.xts[,asset.names], data.xts[,factor.names])
-  ### After merging xts objects, the spaces in names get converted to periods
-  
+  colnames(dat.xts) <- original_names
+ 
   # convert all asset and factor returns to excess return form if specified
   if (!is.null(rf.name)) {
-    dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
-                                     FUN.VALUE = numeric(nrow(dat.xts))))
+    # Note `Return.excess` will modify variable names, so change back
+    dat.xts.names <- colnames(dat.xts)
+    dat.xts <- PerformanceAnalytics::Return.excess(R = dat.xts, 
+                                                   Rf = data.xts[ ,rf.name])
+    colnames(dat.xts) <- dat.xts.names
   }
-  
-  # spaces get converted to periods in colnames of xts object after merge
-  asset.names <- gsub(" ",".", asset.names, fixed=TRUE)
-  factor.names <- gsub(" ",".", factor.names, fixed=TRUE)
-  mkt.name <- gsub(" ",".", mkt.name, fixed=TRUE)
-  rf.name <- gsub(" ",".", rf.name, fixed=TRUE)
   
   # select procedure based on the variable.selection method
   # returns a list of the fitted factor model for all assets
