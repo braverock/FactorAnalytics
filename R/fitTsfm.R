@@ -178,8 +178,8 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   }
   if (length(grep(" ", colnames(data))) > 0) {
     stop("Please use syntactically valid column names for continuity with merge.xts. 
-	          See 'make.names' function and associated documentation. Also, this conversation: 
-	          https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
+See 'make.names' function and associated documentation as well as 
+https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
   }
   
   # extract arguments to pass to different fit and variable selection functions
@@ -192,7 +192,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   
   m2 <-  match(names(as.list(args(lmrobdet.control ))), names(control), 0L)
   
-  lmrobdetMM.args <- do.call(lmrobdet.control,control[m2, drop=TRUE])
+  lmrobdetMM.args <- do.call(lmrobdet.control, control[m2, drop=TRUE])
   
   m3 <-  match(c("scope","scale","direction","trace","steps","k"), 
                names(control), 0L)

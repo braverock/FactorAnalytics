@@ -85,8 +85,10 @@
 #' colnames(managers)
 #' 
 #' # example: Up and down market factor model with LS fit
-#' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="LS",control=NULL)
+#' fitUpDn <- fitTsfmUpDn(asset.names = colnames(managers[,(1:6)]),
+#'                        mkt.name = "SP500.TR",
+#'                        data = managers, 
+#'                        fit.method = "LS")
 #'  
 #'  print(fitUpDn)
 #'  summary(fitUpDn)
@@ -122,6 +124,7 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
                                                  Rf = data.xts[ ,rf.name])
   colnames(dat.xts) <- dat.xts.names
   }
+  
   mkt <- dat.xts[ ,mkt.name]
   # up market
   dataUp.xts <- dat.xts[mkt >= 0]
