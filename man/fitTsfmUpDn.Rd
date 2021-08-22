@@ -15,15 +15,15 @@ fitTsfmUpDn(
 )
 }
 \arguments{
-\item{asset.names}{vector containing names of assets, whose returns or 
-excess returns are the dependent variable.}
+\item{asset.names}{Vector containing syntactically valid names of assets, 
+whose returns or excess returns are the dependent variable.}
 
-\item{mkt.name}{name of the column for market returns. It 
-is required for a up/down market model.}
+\item{mkt.name}{Syntactically valid name for market returns. Required for an
+up/down market model.}
 
-\item{rf.name}{name of the column of risk free rate variable to calculate 
-excess returns for all assets (in \code{asset.names}) and the market factor (in 
-\code{mkt.name}). Default is \code{NULL}, and no action is taken.}
+\item{rf.name}{Syntactically valid name of the risk free rate to calculate 
+excess returns for all assets (in \code{asset.names}) and the market factor 
+(in \code{mkt.name}). Default is \code{NULL}, and no action is taken.}
 
 \item{data}{vector, matrix, data.frame, xts, timeSeries or zoo object
 containing column(s) named in \code{asset.names}, \code{factor.names} and 
@@ -72,8 +72,8 @@ Where N is the number of assets and T is the
 number of time periods.
 }
 \description{
-This is a wrapper function to fits a up and down market model for one 
-or more asset returns or excess returns using time series regression. 
+This is a wrapper function to fits a up and down market model 
+for one or more asset returns or excess returns using time series regression. 
 Users can choose between ordinary least squares-LS, discounted least 
 squares-DLS (or) robust regression. An object of class 
 \code{"tsfmUpDn"} is returned.
@@ -92,8 +92,10 @@ colnames(managers) <- make.names( colnames(managers))
 colnames(managers)
 
 # example: Up and down market factor model with LS fit
-fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-                       data=managers, fit.method="LS",control=NULL)
+fitUpDn <- fitTsfmUpDn(asset.names = colnames(managers[,(1:6)]),
+                       mkt.name = "SP500.TR",
+                       data = managers, 
+                       fit.method = "LS")
  
  print(fitUpDn)
  summary(fitUpDn)
