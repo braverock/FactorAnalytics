@@ -77,9 +77,17 @@ and "block" corresponds to stationary block bootstrap-- Politis and Romano
 }
 \examples{
 # fit a time series factor model for all assets
+
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+colnames(managers)
+ # Make syntactically valid column names
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
+
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-               factor.names=colnames(managers[,(7:9)]), data=managers)
+               factor.names=colnames(managers[,(7:9)]), 
+               data=managers)
 
 # bootstrap returns using the fitted factor model, Normal dist. for residuals
 resid.par <- as.matrix(fit$resid.sd,1,6)
