@@ -86,11 +86,21 @@ average of the observations in that data window.
 }
 \examples{
 # Time Series Factor Model
+
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+colnames(managers)
+ # Make syntactically valid column names
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
+
 fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers[,10]), data=managers)
-ES.decomp <- portEsDecomp(fit.macro,invert = TRUE)
+                     rf.name=colnames(managers[,10]), 
+                     data=managers)
+                     
+ES.decomp <- portEsDecomp(fit.macro, invert = TRUE)
+
 # get the component contributions
 ES.decomp$cES
 
@@ -104,8 +114,7 @@ portEsDecomp(fit.macro, wts)
 data("stocks145scores6")
 dat = stocks145scores6
 dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-          dat$DATE <= as.yearmon("2012-12-31"),]
+dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
 
 # Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")

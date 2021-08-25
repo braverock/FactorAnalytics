@@ -57,7 +57,14 @@ sample covariance. \cr \cr
 }
 \examples{
 # Time Series Factor Model
+
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+colnames(managers)
+ # Make syntactically valid column names
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
+
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name="US.3m.TR", data=managers)
@@ -65,12 +72,6 @@ decomp <- fmSdDecomp(fit.macro)
 # get the percentage component contributions
 decomp$pcSd
 
-# Statistical Factor Model
-data(StockReturns)
-sfm.pca.fit <- fitSfm(r.M, k=2)
-decomp <- fmSdDecomp(sfm.pca.fit)
-decomp$pcSd
- 
 }
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 

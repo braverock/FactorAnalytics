@@ -1,7 +1,7 @@
 #' @title Fit a up and down market factor model using time series regression
 #' 
-#' @description This is a wrapper function to fits a up and down market model for one 
-#' or more asset returns or excess returns using time series regression. 
+#' @description This is a wrapper function to fits a up and down market model 
+#' for one or more asset returns or excess returns using time series regression. 
 #' Users can choose between ordinary least squares-LS, discounted least 
 #' squares-DLS (or) robust regression. An object of class 
 #' \code{"tsfmUpDn"} is returned.
@@ -12,13 +12,13 @@
 #' The goal of up and down market model is to capture two different market Betas in the up and down markets. 
 #' 
 #' 
-#' @param asset.names vector containing names of assets, whose returns or 
-#' excess returns are the dependent variable.
-#' @param mkt.name name of the column for market returns. It 
-#' is required for a up/down market model. 
-#' @param rf.name name of the column of risk free rate variable to calculate 
-#' excess returns for all assets (in \code{asset.names}) and the market factor (in 
-#' \code{mkt.name}). Default is \code{NULL}, and no action is taken.
+#' @param asset.names Vector containing syntactically valid names of assets, 
+#' whose returns or excess returns are the dependent variable.
+#' @param mkt.name Syntactically valid name for market returns. Required for an
+#' up/down market model. 
+#' @param rf.name Syntactically valid name of the risk free rate to calculate 
+#' excess returns for all assets (in \code{asset.names}) and the market factor 
+#' (in \code{mkt.name}). Default is \code{NULL}, and no action is taken.
 #' @param data vector, matrix, data.frame, xts, timeSeries or zoo object  
 #' containing column(s) named in \code{asset.names}, \code{factor.names} and 
 #' optionally, \code{mkt.name} and \code{rf.name}.
@@ -85,8 +85,10 @@
 #' colnames(managers)
 #' 
 #' # example: Up and down market factor model with LS fit
-#' fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="LS",control=NULL)
+#' fitUpDn <- fitTsfmUpDn(asset.names = colnames(managers[,(1:6)]),
+#'                        mkt.name = "SP500.TR",
+#'                        data = managers, 
+#'                        fit.method = "LS")
 #'  
 #'  print(fitUpDn)
 #'  summary(fitUpDn)
@@ -97,8 +99,6 @@
 #'  summary(fitUpDn$Dn)
 #' 
 #' @export
-
-
 fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL, 
                         data=data, fit.method=c("LS","DLS","Robust"), 
                         control=fitTsfm.control(...),...) {
@@ -117,15 +117,15 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
   # extract columns to be used in the time series regression
   dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
   
-  ### After merging xts objects, the spaces in names get converted to periods
+  if (!is.null(rf.name)) {
+  # Note `Return.excess` will modify variable names, so change back
+  dat.xts.names <- colnames(dat.xts)
+  dat.xts <- PerformanceAnalytics::Return.excess(R = dat.xts, 
+                                                 Rf = data.xts[ ,rf.name])
+  colnames(dat.xts) <- dat.xts.names
+  }
   
-  # BROKEN convert all asset and factor returns to excess returns if specified
-  # if (!is.null(rf.name)) {
-  #  dat.xts <- "[<-"(dat.xts,,vapply(dat.xts, function(x) x-data.xts[,rf.name], 
-  #                                   FUN.VALUE = numeric(nrow(dat.xts))))
-  #} 
-  
-  mkt <- dat.xts[,mkt.name]
+  mkt <- dat.xts[ ,mkt.name]
   # up market
   dataUp.xts <- dat.xts[mkt >= 0]
   
