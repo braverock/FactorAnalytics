@@ -12,7 +12,7 @@ fitTsfmLagLeadBeta(
   fit.method = c("LS", "DLS", "Robust"),
   LagLeadBeta = 1,
   LagOnly = FALSE,
-  control = fitTsfm.control(...),
+  control = fitTsfm.control(),
   ...
 )
 }
@@ -91,14 +91,10 @@ the lagged and lead Betas:
  
  # load data
 data(managers, package = 'PerformanceAnalytics')
- # Make syntactically valid column names
-colnames(managers)
-colnames(managers) <- make.names( colnames(managers))
-colnames(managers)
 
 fit <- fitTsfmLagLeadBeta(asset.names = names(managers[,(1:6)]),
-                          mkt.name = "SP500.TR", rf.name = "US.3m.TR", 
-                          data = managers, LagLeadBeta=2, LagOnly=TRUE)
+                          mkt.name = "SP500 TR", rf.name = "US 3m TR", 
+                          data = managers, LagLeadBeta = 2, LagOnly = TRUE)
 summary(fit)
 fitted(fit)
 
