@@ -36,7 +36,9 @@
 #' @examples
 #' data(managers, package = 'PerformanceAnalytics')
 #' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
-#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)
+#'                factor.names=c("EDHEC LS EQ","SP500 TR"), 
+#'                data=managers)
+#'                
 #' # without benchmark
 #' fm.attr <- paFm(fit)
 #' 
