@@ -15,7 +15,7 @@ fitTsfm(
   data = data,
   fit.method = c("LS", "DLS", "Robust"),
   variable.selection = c("none", "stepwise", "subsets", "lars"),
-  control = fitTsfm.control(...),
+  control = fitTsfm.control(),
   ...
 )
 
@@ -140,13 +140,10 @@ with \code{xts} objects internally and colnames won't be left as they are.
 \examples{
  # load data
 data(managers, package = 'PerformanceAnalytics')
- # Make syntactically valid column names
-colnames(managers)
-colnames(managers) <- make.names( colnames(managers))
-colnames(managers)
 
-fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-               factor.names=colnames(managers[,(7:9)]), data=managers)
+fit <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+               factor.names = colnames(managers[,(7:9)]), 
+               data=managers)
 summary(fit)
 fitted(fit)
 
@@ -159,14 +156,18 @@ plot(fit, plot.single=TRUE, asset.name="HAM1", which=1)
 # example using "subsets" variable selection
 fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                    factor.names=colnames(managers[,(7:9)]), 
-                   data=managers, variable.selection="subsets", 
-                   method="exhaustive", nvmin=2) 
+                   data=managers, 
+                   variable.selection="subsets", 
+                   method="exhaustive", 
+                   nvmin=2) 
 
 # example using "lars" variable selection and subtracting risk-free rate
 fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                    factor.names=colnames(managers[,(7:9)]), 
-                   rf.name="US.3m.TR", data=managers, 
-                   variable.selection="lars", lars.criterion="cv") 
+                   rf.name="US 3m TR", 
+                   data=managers, 
+                   variable.selection="lars", 
+                   lars.criterion="cv") 
 }
 \references{
 Christopherson, J. A., Carino, D. R., & Ferson, W. E. (2009). Portfolio 

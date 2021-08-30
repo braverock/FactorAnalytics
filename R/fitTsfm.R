@@ -125,13 +125,10 @@
 #' @examples
 #'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
-#'  # Make syntactically valid column names
-#' colnames(managers)
-#' colnames(managers) <- make.names( colnames(managers))
-#' colnames(managers)
 #' 
-#' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-#'                factor.names=colnames(managers[,(7:9)]), data=managers)
+#' fit <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+#'                factor.names = colnames(managers[,(7:9)]), 
+#'                data=managers)
 #' summary(fit)
 #' fitted(fit)
 #' 
@@ -144,21 +141,25 @@
 #' # example using "subsets" variable selection
 #' fit.sub <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                    factor.names=colnames(managers[,(7:9)]), 
-#'                    data=managers, variable.selection="subsets", 
-#'                    method="exhaustive", nvmin=2) 
+#'                    data=managers, 
+#'                    variable.selection="subsets", 
+#'                    method="exhaustive", 
+#'                    nvmin=2) 
 #' 
 #' # example using "lars" variable selection and subtracting risk-free rate
 #' fit.lar <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                    factor.names=colnames(managers[,(7:9)]), 
-#'                    rf.name="US.3m.TR", data=managers, 
-#'                    variable.selection="lars", lars.criterion="cv") 
+#'                    rf.name="US 3m TR", 
+#'                    data=managers, 
+#'                    variable.selection="lars", 
+#'                    lars.criterion="cv") 
 #' @importFrom RobStatTM lmrobdet.control
 #' @export
 
 fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL, 
                     data=data, fit.method=c("LS","DLS","Robust"), 
                     variable.selection=c("none","stepwise","subsets","lars"), 
-                    control=fitTsfm.control(...), ...) {
+                    control=fitTsfm.control(), ...) {
   
   # record the call as an element to be returned
   this.call <- match.call()
@@ -168,11 +169,13 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   if (!(fit.method %in% c("LS","DLS","Robust"))) {
     stop("Invalid args: fit.method must be 'LS', 'DLS' or 'Robust'")
   }
+  
   variable.selection = variable.selection[1]
   if (!(variable.selection %in% c("none","stepwise","subsets","lars"))) {
     stop("Invalid args: variable.selection must be either 'none',
          'stepwise','subsets' or 'lars'")
   }
+
   if (missing(factor.names) && !is.null(mkt.name)) {
     factor.names <- NULL
   }
@@ -203,15 +206,14 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   cv.lars.args <- control[m6, drop=TRUE]
   
   # convert data into an xts object and hereafter work with xts objects
-  data.xts <- checkData(data)
+  data.xts <- PerformanceAnalytics::checkData(data)
+  
   # convert index to 'Date' format for uniformity 
   time(data.xts) <- as.Date(time(data.xts))
   
   # extract columns to be used in the time series regression
-  original_names <- c(colnames(data.xts[,asset.names]), colnames(data.xts[,factor.names]))
-  dat.xts <- merge(data.xts[,asset.names], data.xts[,factor.names])
-  colnames(dat.xts) <- original_names
- 
+  dat.xts <- data.xts[ ,c(asset.names, factor.names)]
+
   # convert all asset and factor returns to excess return form if specified
   if (!is.null(rf.name)) {
     # Note `Return.excess` will modify variable names, so change back
@@ -249,12 +251,13 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   alpha <- coef.df[, 1, drop=FALSE]
   # to get alpha of class numeric, do: aplha <- coef.df[,1]
   beta <- coef.df[, -1, drop=FALSE]
+  # Remove back ticks added to var names with spaces on model output 
+  colnames(beta) <- gsub("`","", colnames(beta))
   # reorder and expand columns of beta to match factor.names
   tmp <- matrix(NA, length(asset.names), length(factor.names))
   colnames(tmp) <- factor.names
   rownames(tmp) <- asset.names
   beta <- merge(beta, tmp, all.x=TRUE, sort=FALSE)[,factor.names, drop=FALSE]
-  rownames(beta) <- asset.names
   # extract r2 and residual sd
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
   if (fit.method=="DLS") {
@@ -320,16 +323,28 @@ SelectStepwise <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # fit based on time series regression method chosen
     if (fit.method == "LS") {
-      lm.fit <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
-      reg.list[[i]] <- do.call("step", c(list(lm.fit),step.args))
+      lm.fit <- do.call("lm", 
+                        c(list(fm.formula, data=quote(reg.xts)), lm.args)
+                        )
+      reg.list[[i]] <- do.call("step", 
+                               c(list(lm.fit), step.args)
+                               )
     } else if (fit.method == "DLS") {
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      lm.fit <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
-      reg.list[[i]] <- do.call("step", c(list(lm.fit),step.args))
+      lm.fit <- do.call("lm", 
+                        c(list(fm.formula, data=quote(reg.xts)), lm.args)
+                        )
+      reg.list[[i]] <- do.call("step", 
+                               c(list(lm.fit), step.args)
+                               )
     } else if (fit.method == "Robust") {
 #		require(RobStatTM)
-		lmrobdetMM.fit <- do.call("lmrobdetMM", c(list(fm.formula,data=quote(reg.xts),control=lmrobdetMM.args)))
-      reg.list[[i]] <- do.call("step.lmrobdetMM", c(list(lmrobdetMM.fit),step.args))
+		lmrobdetMM.fit <- do.call("lmrobdetMM", 
+		                          c(list(fm.formula, data=quote(reg.xts), 
+		                                 control=lmrobdetMM.args))
+		                          )
+      reg.list[[i]] <- do.call("step.lmrobdetMM", 
+                               c(list(lmrobdetMM.fit), step.args))
     } 
   }
   reg.list
@@ -358,8 +373,9 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     }
     
     # choose best subset of factors depending on specified subset size
-    fm.subsets <- do.call("regsubsets", c(list(fm.formula,data=quote(reg.xts)), 
-                                          regsubsets.args))
+    fm.subsets <- do.call("regsubsets", c(list(fm.formula,
+                                               data=quote(reg.xts)), 
+                                               regsubsets.args))
     sum.sub <- summary(fm.subsets)
     
     # choose best model of a given subset size nvmax=nvmin (or) 
@@ -367,6 +383,8 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     nvmax <- length(sum.sub$bic)
     best.size <- which.min(sum.sub$bic[nvmin:nvmax]) + nvmin -1
     names.sub <- names(which(sum.sub$which[best.size,-1]==TRUE))
+    # Remove back ticks added to var names with spaces on model output 
+    names.sub <- gsub("`","", names.sub)
     bic <- min(sum.sub$bic[nvmin:nvmax])
     
     # completely remove NA cases for chosen subset
@@ -374,13 +392,19 @@ SelectAllSubsets <- function(dat.xts, asset.names, factor.names, fit.method,
     
     # fit based on time series regression method chosen
     if (fit.method == "LS") {
-      reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
+      reg.list[[i]] <- do.call("lm", 
+                               c(list(fm.formula,data=quote(reg.xts)), lm.args)
+                               )
     } else if (fit.method == "DLS") {
       lm.args$weights <- WeightsDLS(nrow(reg.xts), decay)
-      reg.list[[i]] <- do.call("lm", c(list(fm.formula,data=quote(reg.xts)),lm.args))
+      reg.list[[i]] <- do.call("lm", 
+                               c(list(fm.formula,data=quote(reg.xts)), lm.args)
+                               )
     } else if (fit.method == "Robust") {
 #	  require(RobStatTM)
-      reg.list[[i]] <- do.call("lmrobdetMM", c(list(fm.formula,data=quote(reg.xts)),lmrobdetMM.args))
+      reg.list[[i]] <- do.call("lmrobdetMM", 
+                               c(list(fm.formula,data=quote(reg.xts)), lmrobdetMM.args)
+                               )
     } 
   }
   reg.list
