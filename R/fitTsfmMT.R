@@ -73,14 +73,10 @@
 #' @examples
 #'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
-#'  # Make syntactically valid column names
-#' colnames(managers)
-#' colnames(managers) <- make.names( colnames(managers))
-#' colnames(managers)
 #' 
 #' # example: Market-timing time series factor model with LS fit
 #' fit <- fitTsfmMT(asset.names=colnames(managers[,(1:6)]), 
-#'                  mkt.name="SP500.TR", rf.name="US.3m.TR", 
+#'                  mkt.name="SP500 TR", rf.name="US 3m TR", 
 #'                  data=managers)
 #' summary(fit)
 #' 
@@ -93,20 +89,14 @@ fitTsfmMT <- function(asset.names, mkt.name, rf.name=NULL, data=data,
     stop("Missing argument: mkt.name is required for market timing models.")
   }
   
-  if (length(grep(" ", colnames(data))) > 0) {
-    stop("Please use syntactically valid column names for continuity with merge.xts. 
-See 'make.names' function and associated documentation as well as 
-https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
-  }
-  
   # from PerformanceAnalytics, convert data into an xts object
-  data.xts <- checkData(data)
+  data.xts <- PerformanceAnalytics::checkData(data)
   # convert index to 'Date' format for uniformity 
   time(data.xts) <- as.Date(time(data.xts))
   
   # extract variables to be used in the time series regression
-  dat.xts <- merge(data.xts[,asset.names], data.xts[,mkt.name])
-  
+  dat.xts <- data.xts[ ,c(asset.names, mkt.name)]
+
   if (!is.null(rf.name)) {
   # Note `Return.excess` will modify variable names, so change back
   dat.xts.names <- colnames(dat.xts)
@@ -115,12 +105,12 @@ https://stackoverflow.com/questions/9195718/variable-name-restrictions-in-r")
   colnames(dat.xts) <- dat.xts.names
   }
   # mkt-timing factors: down.market=max(0,Rf-Rm), market.sqd=(Rm-Rf)^2
-  
+    
   down.market <- dat.xts[ ,mkt.name]
   down.market[down.market < 0 ] <- 0
   dat.xts <- merge.xts(dat.xts, down.market)
-  colnames(dat.xts)[dim(dat.xts)[2]] <- "down.market"
-  factor.names <- c(mkt.name, "down.market")
+  colnames(dat.xts) <- c(asset.names, mkt.name, "down market")
+  factor.names <- c(mkt.name, "down market")
   
   #   if("TM" %in% mkt.timing) {
   #     market.sqd <- data.xts[,mkt.name]^2   
