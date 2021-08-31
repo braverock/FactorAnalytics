@@ -71,7 +71,8 @@ require(FactorAnalytics)
  fmRsq(fit)
  
  fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
-              date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"), addIntercept=TRUE)
+              date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"), 
+              addIntercept=TRUE)
 
 #Plot and print the time series of Adj R-squared and VIF values
  fmRsq(fit1, rsqAdj=TRUE, isPrint=TRUE, plt.type = 2)

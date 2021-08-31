@@ -75,13 +75,15 @@ Calculate and plot the time series of the t-statistic values and the
 #Fit a Ffm with style factors only
  require(FactorAnalytics)
  fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
-             date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS",z.score = "crossSection")
+             date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS"
+             ,z.score = "crossSection")
 
 #Compute time series of t-stats and number of significant t-stats 
  stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), z.alpha =1.96)
 
 fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-               date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B"), addIntercept=TRUE)
+               date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B")
+               , addIntercept=TRUE)
 #Compute time series of t-stats and number of significant t-stats 
  stats = fmTstats(fit1, isPlot = TRUE, z.alpha =1.96) 
                
