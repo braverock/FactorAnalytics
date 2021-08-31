@@ -49,7 +49,7 @@
 #'  plot(fitUpDn,SFM.line=TRUE,asset.name="HAM1")
 #'              
 #' # add Robust Up/Dn model fitted line and change legend to 
-#' show the robust up/dn Beta                               
+#' # show the robust up/dn Beta                               
 #'  plot(fitUpDn,LSandRob=TRUE,asset.name="HAM1")
 #'  
 #'                                                                                                                                      
