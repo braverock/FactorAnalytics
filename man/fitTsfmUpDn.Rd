@@ -39,13 +39,15 @@ the function \code{\link{fitTsfm.control}}. See the documentation for
 \item{...}{arguments passed to \code{\link{fitTsfm.control}}}
 }
 \value{
-\code{fitTsfmUpDn} returns an object \code{tsfmUpDn}. It supports generic function such as 
-\code{summary}, \code{predict}, \code{plot} and \code{print}.
+\code{fitTsfmUpDn} returns an object \code{tsfmUpDn}. It supports generic 
+function such as \code{summary}, \code{predict}, \code{plot} and \code{print}.
 
-It is also a list object containing \code{Up} and \code{Dn}. Both \code{Up} and \code{Dn} are class of \code{"tsfm"}. As a result, for each list 
+It is also a list object containing \code{Up} and \code{Dn}. Both \code{Up} 
+and \code{Dn} are class of \code{"tsfm"}. As a result, for each list 
 object, The generic function such as \code{print}, \code{plot}, \code{predict} 
-and \code{summary} methods exist for both \code{Up} and \code{Dn}. Also, the generic accessor functions \code{coef}, 
-\code{fitted}, \code{residuals} and  \code{fmCov} can be applied as well.
+and \code{summary} methods exist for both \code{Up} and \code{Dn}. Also, the 
+generic accessor functions \code{coef}, \code{fitted}, \code{residuals} and  
+\code{fmCov} can be applied as well.
 
 An object of class \code{"tsfmUpDn"} is a list containing \code{Up} and \code{Dn}:
 \item{Up}{An object of \code{tsfm} fitted by \code{fitTsfm} for the up market;}
@@ -79,21 +81,19 @@ squares-DLS (or) robust regression. An object of class
 \code{"tsfmUpDn"} is returned.
 }
 \details{
-\code{fitTsfmUpDn} will use \code{fitTsfm} to fit a time series model for up and down market respectively. If 
-risk free rate is provided, the up market is the excess market returns which is no less than 0.
-The goal of up and down market model is to capture two different market Betas in the up and down markets.
+\code{fitTsfmUpDn} will use \code{fitTsfm} to fit a time series model for up 
+and down market respectively. If risk free rate is provided, the up market is 
+the excess market returns which is no less than 0.
+The goal of up and down market model is to capture two different market Betas 
+in the up and down markets.
 }
 \examples{
  # load data
 data(managers, package = 'PerformanceAnalytics')
- # Make syntactically valid column names
-colnames(managers)
-colnames(managers) <- make.names( colnames(managers))
-colnames(managers)
 
 # example: Up and down market factor model with LS fit
 fitUpDn <- fitTsfmUpDn(asset.names = colnames(managers[,(1:6)]),
-                       mkt.name = "SP500.TR",
+                       mkt.name = "SP500 TR",
                        data = managers, 
                        fit.method = "LS")
  
@@ -116,8 +116,8 @@ The \code{tsfmUpDn} methods for generic functions:
 \code{\link{print.tsfmUpDn}} and \code{\link{summary.tsfmUpDn}}. 
 
 
-The original time series function \code{\link{fitTsfm}} and its generic functions
- application.
+The original time series function \code{\link{fitTsfm}} and its generic 
+functions application.
 }
 \author{
 Yi-An Chen.
