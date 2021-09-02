@@ -26,7 +26,7 @@
 #' Quantitative Approach for Producing Superior Returns and Controlling Risk. 
 #' McGraw-Hill.
 #' 
-#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}} 
+#' @seealso \code{\link{fitTsfm}}, \code{\link{fitFfm}} 
 #' for the factor model fitting functions.
 #' 
 #' The \code{pafm} methods for generic functions: 
@@ -36,9 +36,7 @@
 #' @examples
 #' data(managers, package = 'PerformanceAnalytics')
 #' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
-#'                factor.names=c("EDHEC LS EQ","SP500 TR"), 
-#'                data=managers)
-#'                
+#'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
 #' # without benchmark
 #' fm.attr <- paFm(fit)
 #' 

@@ -76,7 +76,7 @@ Zivot, E., & Jia-hui, W. A. N. G. (2006). Modeling Financial Time
 Series with S-Plus Springer-Verlag.
 }
 \seealso{
-\code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+\code{\link{fitTsfm}},\code{\link{fitFfm}}
 
 \code{\link[stats]{cov}} for more details on arguments \code{use} and 
 \code{method}.

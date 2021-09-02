@@ -37,8 +37,8 @@
 #' # load data from the database
 #'  data(managers, package = 'PerformanceAnalytics')
 #' # example: Up and down market factor model with  fit
-#'  fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-#'                        data=managers, fit.method="LS")
+#'  fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),
+#'  mkt.name="SP500.TR", data=managers, fit.method="LS")
 #' # plot the fitted model of every assets, press enter to show the next plot.
 #'  plot(fitUpDn)
 #'  
@@ -48,7 +48,8 @@
 #' # add a single market factor model fitted line
 #'  plot(fitUpDn,SFM.line=TRUE,asset.name="HAM1")
 #'              
-#' # add Robust Up/Dn model fitted line and change legend to show the robust up/dn Beta                               
+#' # add Robust Up/Dn model fitted line and change legend to 
+#' # show the robust up/dn Beta                               
 #'  plot(fitUpDn,LSandRob=TRUE,asset.name="HAM1")
 #'  
 #'                                                                                                                                      
