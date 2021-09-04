@@ -4,7 +4,8 @@
 The FactorAnalytics project is an open source package containing fitting and analysis methods for the three main types of factor models commonly used in conjunction with portfolio construction, optimization and risk management. These include:
 - fundamental factor models
 - time series factor models
-- statistical factor models. 
+- statistical factor models
+
 The purpose of this project is to provide basic features and capabilities close to those of commercial portfolio optimization and risk management products.
 
 In addition, functions for related risk and performance attribution to estimate:
@@ -12,9 +13,9 @@ In addition, functions for related risk and performance attribution to estimate:
 - VaR
 - ES
 - factor-contributed vs idiosyncratic returns
-- create tabular displays of risk and performance reports
 - factor model Monte Carlo
-- single and multiple imputation methods for simulating returns and backfilling unequal histories
+- multiple imputation methods for simulating returns and backfilling unequal histories
+- functions to create tabular displays of risk and performance reports
 
 
 ## Fundamental Factor Scores from S&P Global Market Intelligence
@@ -24,21 +25,15 @@ referred to as “scores” or “alpha factors” for educational use in the op
 `LogMktCap`, `PM12M1M`, `ROE`. This data greatly facilitates the educational value to users of the fundamental factor model in FactorAnalytics. The package developers wish to thank S&P Global Market Intelligence for kindly contributing this data, which will improving learning outcomes for all.
 
 
-## Installation
+## Installing from Source
 
+At present, this is the preferred method of installation. To do so, your git installation will first need to support git large file storage (LFS).  
 
-To get started, you can install the package from github using `remotes` or `devtools`.
+Instruction for installing are LFS are here: https://docs.github.com/en/github/managing-large-files/versioning-large-files/installing-git-large-file-storage
 
-``` r
-install_github("braverock/FactorAnalytics")
-```
+Plenty of documentation exists for cloning github repos and then building packages locally. A simple search specifying your IDE and OS should do.
 
-### Git Large File Storage
-
-
-Because of the large size of the factor data files, if you are going to load the repository from source and want access to the large binary data files, your git installation needs to support git large file storage (LFS).  
-
-Instructions are here: https://docs.github.com/en/github/managing-large-files/versioning-large-files/installing-git-large-file-storage
+Note a bug in `remotes`/`devtools` prevents the package from being loaded using `install_github("braverock/FactorAnalytics")`. Please see [r-lib/remotes/issues/637].
 
 
 ## Presentations and vignettes on FactorAnalytics
