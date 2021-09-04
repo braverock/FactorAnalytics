@@ -8,7 +8,7 @@ The FactorAnalytics project is an open source package containing fitting and ana
 
 The purpose of this project is to provide basic features and capabilities close to those of commercial portfolio optimization and risk management products.
 
-In addition, functions for related risk and performance attribution to estimate:
+In addition, the package contains functions for related risk and performance attribution estimates including:
 - volatility
 - VaR
 - ES
