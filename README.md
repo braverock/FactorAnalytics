@@ -33,7 +33,7 @@ Instruction for installing are LFS are here: https://docs.github.com/en/github/m
 
 Plenty of documentation exists for cloning github repos and then building packages locally. A simple search specifying your IDE and OS should do.
 
-Note a bug in `remotes`/`devtools` prevents the package from being loaded using `install_github("braverock/FactorAnalytics")`. Please see [r-lib/remotes/issues/637].
+Note a bug in `remotes`/`devtools` prevents the package from being loaded using `install_github("braverock/FactorAnalytics")`. Please see [r-lib/remotes/issues/637](https://github.com/r-lib/remotes/issues/637).
 
 
 ## Presentations and vignettes on FactorAnalytics
