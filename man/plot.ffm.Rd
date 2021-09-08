@@ -111,10 +111,13 @@ plot.ffm can infer \code{asset.name} without user input.
 \examples{
 
 # load data from the database
-data(Stocks.df)
-fit.style.sector <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
-                           exposure.vars=c("GICS.SECTOR","LOG.MARKETCAP",
-                                           "BOOK2MARKET"), date.var="DATE")
+data("factorDataSetDjia5Yrs")
+
+# fit a fundamental factor model
+exposure.vars <- c("P2B", "MKTCAP")
+fit.style.sector <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", 
+                           ret.var="RETURN", date.var="DATE", 
+                           exposure.vars=exposure.vars)
 
 # for group plots (default), user can select plot option from menu prompt
 # menu is repeated to get multiple types of plots based on the same fit
@@ -122,7 +125,7 @@ fit.style.sector <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN",
 
 # choose specific plot option(s) using which
 # plot all factor exposures from the last time period for 1st 10 assets
-plot(fit.style.sector, which=2, f.sub=1:12, a.sub=1:10)
+plot(fit.style.sector, which=2, f.sub=1:2, a.sub=1:10)
 
 # plot factor model residuals scatterplot matrix, with histograms, density
 # overlays, correlations and significance stars
@@ -130,7 +133,7 @@ plot(fit.style.sector, which=6)
 
 # for individual plots: set plot.single=TRUE and specify asset.name
 # histogram of residuals from an individual asset's factor model fit
-plot(fit.style.sector, plot.single=TRUE, asset.name="MSFT", which=12)
+plot(fit.style.sector, plot.single=TRUE, asset.name="AA", which=12)
 
 }
 \seealso{
