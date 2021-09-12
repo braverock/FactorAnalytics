@@ -26,6 +26,6 @@ DATA FILES (.rda)
 	scoresSPGMIraw.rda
 	stocksCRSP.rda
 	stocksCRSPdaily.rda
-	stocksCRSPscoresSPGMI.rda
-	stocksCRSPscoresSPGMIraw.rda
+	stocksCRSPscoresSPGMI.rda        Probably don't need
+	stocksCRSPscoresSPGMIraw.rda     Probably may want to keep for educational purposes since it contains missing data
 	stocksCRSPweekly.rda
