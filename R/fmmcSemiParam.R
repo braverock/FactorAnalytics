@@ -69,7 +69,7 @@
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,(7:9)]), 
 #'                data=managers)
-#' 
+#' \dontrun{
 #' # bootstrap returns using the fitted factor model, Normal dist. for residuals
 #' resid.par <- as.matrix(fit$resid.sd,1,6)
 #' fmmc.returns <- fmmcSemiParam(factor.ret=managers[,(7:9)], beta=fit$beta, 
@@ -101,7 +101,7 @@
 #' fmmc.returns.ffm <- fmmcSemiParam(factor.ret=fit.ffm$factor.returns,
 #'                                    beta=fit.ffm$beta, resid.par=resid.par,
 #'                                    resid.dist = "empirical", boot.method = "block")
-#' 
+#' }
 #' @export
 
 fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par, 

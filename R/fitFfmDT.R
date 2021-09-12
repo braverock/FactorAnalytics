@@ -877,6 +877,17 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     
   }
   
+  if (!identical(colnames(beta) , colnames(factor.returns))){
+    # we need to clean up.. easier to do it on the beta rather than the 
+    # factor returns ... (factor.cov) follows factor.returns
+    colnames(beta) <- sub(pattern = specObj$exposures.char,
+                          colnames(beta),replacement = "")
+    # the names of the beta matrix have a prefix when we have teh flag
+    # add intercept F and have an exposure variable that is a character.
+    # now that we have clened it up we can rarrragne the columns
+    beta = beta[, match(colnames(factor.returns), colnames(beta))]
+  }
+  
   # create list of return values.
   result <- list(beta=beta, factor.returns=factor.returns,
                  residuals=residuals1, r2=r2, factor.cov=factor.cov, g.cov = g.cov,
