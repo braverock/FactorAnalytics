@@ -38,17 +38,19 @@ specific period use the \code{pred.date} argument.
 \examples{
 
 # Load fundamental and return data
-data(Stocks.df)
+ data("factorDataSetDjia5Yrs")
 
 # fit a fundamental factor model
-exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-              date.var="DATE", exposure.vars=exposure.vars)
-
+fit <- fitFfm(data = factorDataSetDjia5Yrs, 
+              asset.var = "TICKER", 
+              ret.var = "RETURN", 
+              date.var = "DATE", 
+              exposure.vars = c("P2B", "MKTCAP"))
+              
 # generate random data
-newdata <- as.data.frame(unique(stock$TICKER))
-newdata$BOOK2MARKET <- rnorm(nrow(newdata))
-newdata$LOG.MARKETCAP <- rnorm(nrow(newdata))
+newdata <- as.data.frame(unique(factorDataSetDjia5Yrs$TICKER))
+newdata$P2B <- rnorm(nrow(newdata))
+newdata$MKTCAP <- rnorm(nrow(newdata))
 pred.fund <- predict(fit, newdata)
 
 }

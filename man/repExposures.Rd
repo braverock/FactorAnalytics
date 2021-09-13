@@ -82,16 +82,23 @@ data("wtsStocks145GmvLo")
 wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
 
 # fit a fundamental factor model
+exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE", "ANNVOL1M", "EP")
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = "crossSection")
+                    exposure.vars = exposure.vars,
+                    date.var = "DATE", 
+                    ret.var = "RETURN", 
+                    asset.var = "TICKER", 
+                    fit.method="WLS", 
+                    z.score = "crossSection")
 
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+
 repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
              which = 2, add.grid = TRUE, scaleType = 'same')
+             
 repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
+             
 repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
              which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue')
 }

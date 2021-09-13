@@ -72,35 +72,46 @@
 #' \dontrun{
 #' # bootstrap returns using the fitted factor model, Normal dist. for residuals
 #' resid.par <- as.matrix(fit$resid.sd,1,6)
-#' fmmc.returns <- fmmcSemiParam(factor.ret=managers[,(7:9)], beta=fit$beta, 
-#'                               alpha=fit$alpha, resid.par=resid.par)
+#' fmmc.returns <- fmmcSemiParam(factor.ret = managers[,(7:9)], 
+#'                               beta = fit$beta, 
+#'                               alpha = fit$alpha, 
+#'                               resid.par = resid.par)
 #'                      
 #' # Cornish-Fisher distribution for residuals
 #' resid.par <- cbind(c(1,2,1,3,0.1,0.5), rnorm(6), c(2,3,1,2,1,0))
 #' colnames(resid.par) <- c("var","skew","xskurt")
 #' rownames(resid.par) <- colnames(managers[,(1:6)])
-#' fmmc.returns.CF <- fmmcSemiParam(factor.ret=managers[,(7:9)], beta=fit$beta, 
-#'                                  alpha=fit$alpha, resid.par=resid.par,
-#'                                  resid.dist="Cornish-Fisher")
+#' 
+#' fmmc.returns.CF <- fmmcSemiParam(factor.ret = managers[,(7:9)], 
+#'                                  beta = fit$beta, 
+#'                                  alpha = fit$alpha, 
+#'                                  resid.par = resid.par,
+#'                                  resid.dist = "Cornish-Fisher")
 #' 
 #' # skew-t distribution
 #' resid.par <- cbind(rnorm(6), c(1,2,1,3,0.1,0.5), rnorm(6), c(2,3,1,6,10,100))
 #' colnames(resid.par) <- c("xi","omega","alpha","nu")
 #' rownames(resid.par) <- colnames(managers[,(1:6)])
-#' fmmc.returns.skewt <- fmmcSemiParam(factor.ret=managers[,(7:9)], 
-#'                                     beta=fit$beta, alpha=fit$alpha, 
-#'                                     resid.dist="skew-t", resid.par=resid.par)
+#' fmmc.returns.skewt <- fmmcSemiParam(factor.ret = managers[,(7:9)], 
+#'                                     beta = fit$beta, alpha = fit$alpha, 
+#'                                     resid.dist = "skew-t", resid.par = resid.par)
 #'                                     
 #' #Empirical deistribution 
 #' data("factorDataSetDjia5Yrs")
-#' exposure.vars <- c("P2B", "MKTCAP", "SECTOR")
-#' fit.ffm <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER",
-#'                    ret.var="RETURN", date.var="DATE", 
-#'                    exposure.vars=exposure.vars, addIntercept = FALSE)
-#' resid.par = fit.ffm$residuals
-#' fmmc.returns.ffm <- fmmcSemiParam(factor.ret=fit.ffm$factor.returns,
-#'                                    beta=fit.ffm$beta, resid.par=resid.par,
-#'                                    resid.dist = "empirical", boot.method = "block")
+#' exposure.vars <- 
+#' fit.ffm <- fitFfm(data = factorDataSetDjia5Yrs, 
+#'                   asset.var = "TICKER",
+#'                    ret.var = "RETURN", 
+#'                    date.var = "DATE", 
+#'                    exposure.vars = c("P2B", "MKTCAP", "SECTOR"), 
+#'                    addIntercept = FALSE)
+#'                    
+#' resid.par <- fit.ffm$residuals
+#' fmmc.returns.ffm <- fmmcSemiParam(factor.ret = fit.ffm$factor.returns,
+#'                                    beta = fit.ffm$beta, 
+#'                                    resid.par = resid.par,
+#'                                    resid.dist = "empirical", 
+#'                                    boot.method = "block")
 #' }
 #' @export
 

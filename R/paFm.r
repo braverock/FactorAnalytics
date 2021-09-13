@@ -36,9 +36,10 @@
 #' @examples
 #' data(managers, package = 'PerformanceAnalytics')
 #' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
-#'                factor.names=c("EDHEC LS EQ","SP500 TR"), data=managers)
+#'                factor.names=c("EDHEC LS EQ","SP500 TR"), 
+#'                data=managers)
 #' # without benchmark
-#' fm.attr <- paFm(fit)
+#' paFm(fit)
 #' 
 #' @export
 #' 
@@ -73,16 +74,17 @@ paFm <- function(fit, ...) {
       # active portfolio management p.512 17A.9 
       # top-down method
       
-      cum.ret <- Return.cumulative(actual.xts)
+      cum.ret <- PerformanceAnalytics::Return.cumulative(actual.xts)
       # setup initial value
-      attr.ret.xts.all <- xts(, dates)
+      attr.ret.xts.all <- xts(order.by = dates)
       
       for ( i in factorNames ) {
         
         if (is.na(fit$beta[k, i])) {
           cum.attr.ret[k, i] <- NA
-          attr.ret.xts.all <- merge(attr.ret.xts.all, 
-                                    xts(rep(NA, length(date)), dates))  
+          attr.ret.xts.all <- xts(x = rep(NA, length(dates)), 
+                                  order.by = dates)
+                                    
         } else {
           attr.ret.xts <- actual.xts - 
             xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), dates)  

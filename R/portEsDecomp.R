@@ -81,6 +81,7 @@
 #' wts = runif(6)
 #' wts = wts/sum(wts)
 #' names(wts) <- colnames(managers)[1:6]
+#' 
 #' portEsDecomp(fit.macro, wts)
 #' 
 #' # Fundamental Factor Model
@@ -95,13 +96,18 @@
 #'                                                      
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","SIZE",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = "crossSection")
+#'               exposure.vars = c("SECTOR","ROE","BP","SIZE", "EP"),
+#'               date.var = "DATE", 
+#'               ret.var = "RETURN", 
+#'               asset.var = "TICKER", 
+#'               fit.method="WLS", 
+#'               z.score = "crossSection")
 #'               
 #' decomp = portEsDecomp(fit.cross) 
+#' 
 #' #get the factor contributions of risk 
 #' decomp$cES
+#' 
 #' portEsDecomp(fit.cross, weights = wtsStocks145GmvLo)  
 #' @export
 

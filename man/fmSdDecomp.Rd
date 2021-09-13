@@ -16,7 +16,7 @@ fmSdDecomp(object, ...)
 \method{fmSdDecomp}{ffm}(object, factor.cov, ...)
 }
 \arguments{
-\item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
+\item{object}{fit object of class \code{tsfm} or \code{ffm}.}
 
 \item{...}{optional arguments passed to \code{\link[stats]{cov}}.}
 
@@ -85,7 +85,7 @@ and value-at-risk: their estimation error, decomposition, and optimization.
 Monetary and economic studies, 20(1), 87-121.
 }
 \seealso{
-\code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+\code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
 
 \code{\link{fmCov}} for factor model covariance.

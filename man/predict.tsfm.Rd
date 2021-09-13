@@ -29,14 +29,19 @@ calls the \code{predict} method for fitted objects of class \code{lm},
 \examples{
 # load data from the database
 data(managers, package = 'PerformanceAnalytics')
-# fit the factor model with LS
-fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-               factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)
 
-pred.fit <- predict(fit)
-newdata <- data.frame("EDHEC.LS.EQ"=rnorm(n=120), "SP500.TR"=rnorm(n=120))
-rownames(newdata) <- rownames(fit$data)
-pred.fit2 <- predict(fit, newdata, interval="confidence")
+# fit the factor model with LS
+fit <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+               factor.names = c("EDHEC LS EQ","SP500 TR"), 
+               data = managers)
+
+predict_fit <- predict(fit)
+
+newdata <- data.frame(rnorm(n=NROW(fit$data)), rnorm(n=NROW(fit$data)))
+colnames(newdata) <- c("EDHEC LS EQ", "SP500 TR")
+rownames(newdata) <- index(fit$data)
+
+predict_fit_2 <- predict(fit, newdata, interval = "confidence")
 
 }
 \seealso{

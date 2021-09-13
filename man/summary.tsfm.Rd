@@ -59,10 +59,6 @@ predictions.
 \examples{
  # load data
 data(managers, package = 'PerformanceAnalytics')
-colnames(managers)
- # Make syntactically valid column names
-colnames(managers) <- make.names( colnames(managers))
-colnames(managers)
 
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,7:9]), 
