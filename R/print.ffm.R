@@ -20,11 +20,12 @@
 #' @examples
 #' data("factorDataSetDjia5Yrs")
 #' # fit a fundamental factor model
-#' exposure.vars <- c("P2B", "MKTCAP")
-#' fit.style.sector <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", 
-#'                            ret.var="RETURN", date.var="DATE", 
-#'                            exposure.vars=exposure.vars)
-#' print(fit)
+#' fit.style.sector <- fitFfm(data=factorDataSetDjia5Yrs, 
+#'                            asset.var="TICKER", 
+#'                            ret.var="RETURN", 
+#'                            date.var="DATE", 
+#'                            exposure.vars = c("P2B", "MKTCAP"))
+#' print(fit.style.sector)
 #' 
 #' @method print ffm
 #' @export
