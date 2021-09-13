@@ -257,7 +257,7 @@ fitTsfm <- function(asset.names, factor.names, mkt.name=NULL, rf.name=NULL,
   tmp <- matrix(NA, length(asset.names), length(factor.names))
   colnames(tmp) <- factor.names
   rownames(tmp) <- asset.names
-  beta <- merge(beta, tmp,all.x=TRUE, sort=FALSE)[,factor.names, drop=FALSE]
+  beta <- merge(beta, tmp, all.x=TRUE, sort=FALSE)[,factor.names, drop=FALSE]
   row.names(beta) = asset.names
   # extract r2 and residual sd
   r2 <- sapply(reg.list, function(x) summary(x)$r.squared)
