@@ -73,18 +73,24 @@ dat = dat[dat$DATE >=as.yearmon("2008-01-01")
 data("wtsStocks145GmvLo")
 wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)                         
                                                                                  
-#fit a fundamental factor model
 # fit a fundamental factor model
+exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE", "ANNVOL1M", "EP")
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = "crossSection")
+              exposure.vars = exposure.vars,
+              date.var = "DATE", 
+              ret.var = "RETURN", 
+              asset.var = "TICKER", 
+              fit.method="WLS", 
+              z.score = "crossSection")
 
 repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+
 repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
           which = 4)
+          
 repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
           which = 1, add.grid = TRUE, scaleType = 'same')
+          
 repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
           which = 2, add.grid = FALSE, zeroLine = TRUE, color = 'Blue', 
           scaleType = 'free')              
