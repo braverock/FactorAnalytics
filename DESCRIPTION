@@ -21,18 +21,17 @@ Description: Linear factor model fitting for asset returns (three major types-
     FactorAnalytics package. 
 License: GPL-2
 Depends: 
-    R (>= 3.5),
-    foreach (>= 1.4),
-	  xts (>= 0.12-0),
-    data.table (>= 1.13)
+    R (>= 3.5), 
+    xts (>= 0.12-0)
 Imports: 
-    PerformanceAnalytics,
     zoo,
+    foreach,
+    data.table,
+    PerformanceAnalytics,
     corrplot,
     leaps,
     lars,
     strucchange,
-    lmtest,
     sandwich,
     lattice,
     MASS,
@@ -43,7 +42,6 @@ Imports:
     RCurl,
     bestglm,
     tseries,
-	  HH,
 	  robust,
 	  robustbase,
 	  RobStatTM,
@@ -51,9 +49,11 @@ Imports:
 	  rugarch
 Suggests:
     R.rsp, 
-    tinytest
+    tinytest,
+    lmtest,
+    HH
 VignetteBuilder: R.rsp
 LazyData: true
 LazyDataCompression: xz
 URL: https://github.com/braverock/FactorAnalytics
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

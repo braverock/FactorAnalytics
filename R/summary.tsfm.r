@@ -17,8 +17,10 @@
 #' predictions.
 #'  
 #' @param object an object of class \code{tsfm} returned by \code{fitTsfm}.
-#' @param se.type one of "Default", "HC" or "HAC"; option for computing 
-#' HC/HAC standard errors and t-statistics. Default is "Default".
+#' @param se.type one of "Default", "HC" or "HAC" option for computing HC/HAC 
+#' standard errors and t-statistics. Default is "Default". If "HC" or "HAC" 
+#' options are selected, you will need to first load the suggested `lmtest` 
+#' package. 
 #' @param x an object of class \code{summary.tsfm}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
@@ -51,6 +53,10 @@
 #'                data=managers)
 #' 
 #' # summary of factor model fit for all assets
+#' summary(fit)
+#' 
+#' # Summary of factor model, using lmtest 
+#' library(lmtest)
 #' summary(fit, "HAC")
 #' 
 #' # summary of lm fit for a single asset
@@ -79,6 +85,9 @@ summary.tsfm <- function(object, se.type=c("Default","HC","HAC"), ...){
   sum.list <- lapply(object$asset.fit, summary)
   
   # convert to HC/HAC standard errors and t-stats if specified
+  if (se.type=="HC" | se.type=="HAC") {
+     message("requires package lmtest")
+  }
   # extract coefficients separately for "lars" variable.selection method
   for (i in object$asset.names) {
     if (se.type=="HC") {
