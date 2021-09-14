@@ -31,7 +31,6 @@ Imports:
     corrplot,
     leaps,
     lars,
-    strucchange,
     sandwich,
     lattice,
     sn,
@@ -50,6 +49,7 @@ Suggests:
     R.rsp, 
     tinytest,
     lmtest,
+    strucchange,
     HH
 VignetteBuilder: R.rsp
 LazyData: true
