@@ -170,7 +170,7 @@ deviation of the exposures about the weighted mean. This may help avoid an
 ill-conditioned covariance matrix. Default option equally weights exposures 
 of different assets each period. 
 
-If \code{rob.stats=TRUE}, \code{\link[robust]{covRob}} is used to compute a 
+If \code{rob.stats=TRUE}, \code{\link[RobStatTM]{covRob}} is used to compute a 
 robust estimate of the factor covariance/correlation matrix, and, 
 \code{\link[robustbase]{scaleTau2}} is used to compute robust tau-estimates 
 of univariate scale for residuals during "WLS" or "W-Rob" regressions. When 
