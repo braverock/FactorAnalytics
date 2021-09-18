@@ -73,29 +73,41 @@ Calculate and plot the time series of the t-statistic values and the
  data("factorDataSetDjia5Yrs")
 
 #Fit a Ffm with style factors only
- require(FactorAnalytics)
- fit <- fitFfm(data = factorDataSetDjia5Yrs,exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
-             date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", fit.method="WLS"
-             ,z.score = "crossSection")
+ fit <- fitFfm(data = factorDataSetDjia5Yrs,
+               exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
+               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+               fit.method="WLS",
+               z.score = "crossSection")
 
 #Compute time series of t-stats and number of significant t-stats 
- stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), z.alpha =1.96)
+ stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), 
+                  z.alpha =1.96)
 
-fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-               date.var="DATE", exposure.vars=c("SECTOR","MKTCAP","ENTVAL","P2B")
-               , addIntercept=TRUE)
+fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", 
+               exposure.vars = c("SECTOR","MKTCAP","ENTVAL","P2B"),
+               ret.var = "RETURN", 
+               date.var = "DATE", 
+               addIntercept = TRUE)
+              
 #Compute time series of t-stats and number of significant t-stats 
- stats = fmTstats(fit1, isPlot = TRUE, z.alpha =1.96) 
+ stats = fmTstats(fit1, isPlot = TRUE, z.alpha = 1.96) 
                
 # Fit a SECTOR+COUNTRY+Style model with Intercept
 # Create a COUNTRY column with just 3 countries
 
  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
- exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
  
- fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-                   date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
- stats = fmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96)
+ fit.MICM <- fitFfm(data = factorDataSetDjia5Yrs, 
+                    asset.var = "TICKER",
+                    exposure.vars = c("SECTOR", "COUNTRY","P2B", "MKTCAP"),
+                    ret.var = "RETURN", 
+                    date.var = "DATE", 
+                    addIntercept = TRUE)
+ 
+ # Load library 'HH' to access the Likert option
+ library("HH")                   
+ stats = fmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96,
+                  whichPlot = "significantTstatsLikert")
 }
 \author{
 Avinash Acharya and Doug Martin

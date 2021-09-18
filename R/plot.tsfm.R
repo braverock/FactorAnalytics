@@ -67,9 +67,9 @@
 #' 12 = Non-parametric density of residuals with skew-t overlaid, \cr 
 #' 13 = Histogram of residuals with non-parametric density and normal overlaid,\cr
 #' 14 = QQ-plot of residuals,\cr
-#' 15 = CUSUM test-Recursive residuals,\cr
-#' 16 = CUSUM test-LS residuals,\cr
-#' 17 = Recursive estimates (RE) test of LS regression coefficients,\cr
+#' 15 = CUSUM test-Recursive residuals, requires strucchange package,\cr
+#' 16 = CUSUM test-LS residuals, requires strucchange package,\cr
+#' 17 = Recursive estimates (RE) test of LS regression coefficients, requires strucchange package,\cr
 #' 18 = Rolling regression over a 24-period observation window, \cr
 #' 19 = Asset returns vs factor returns (single factor model)
 #' @param f.sub numeric/character vector; subset of indexes/names of factors to 
@@ -118,17 +118,13 @@
 #' 
 #' @examples
 #' 
-#' # load data from the database
 #'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
-#'  # Make syntactically valid column names
-#' colnames(managers)
-#' colnames(managers) <- make.names( colnames(managers))
-#' colnames(managers)
 #' 
-#' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-#'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name="US.3m.TR", data=managers)
+#' fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+#'                      factor.names = colnames(managers[,(7:9)]),
+#'                      rf.name = "US 3m TR", 
+#'                      data = managers)
 #'     
 #' # for group plots (default), user can select plot option from menu prompt
 #' # menu is repeated to get multiple types of plots based on the same fit
@@ -145,6 +141,12 @@
 #' # for individual plots: set plot.single=TRUE and specify asset.name
 #' # histogram of residuals from an individual asset's factor model fit 
 #' plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=13)
+#' 
+#' # for individual plots, the "which" argument specifies plot type.
+#' # Plots 15:17 require the suggested "strucchange" package.
+#' # 17 plots the Recursive estimates (RE) test of LS regression coefficients.
+#' require(strucchange)
+#' plot(fit.macro, plot.single=TRUE, asset.name="HAM1", which=17)
 #' 
 #' @method plot tsfm
 #' @export
