@@ -617,7 +617,7 @@ fitFfmDT <- function(ffMSpecObj,
 #' @param fitResults output from fitFMDT
 #' @param full.resid.cov an option to calculate the full residual covariance or not
 #' @return a structure of class ffm holding all the information
-#' @importFrom robust covRob
+#' @importFrom RobStatTM covRob
 #' @import data.table
 #' @export
 #'
@@ -853,12 +853,10 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   # factor covariances ----
   if (specObj$rob.stats) {
     if (kappa(na.exclude(coredata(factor.returns))) < 1e+10) {
-      factor.cov <- covRob(coredata(factor.returns), estim="pairwiseGK",
-                           distance=FALSE, na.action = na.omit)$cov
+      factor.cov <- covRob(coredata(factor.returns))$cov
     } else {
       cat("Covariance matrix of factor returns is singular.\n")
-      factor.cov <- covRob(coredata(factor.returns), distance=FALSE,
-                           na.action = na.omit)$cov
+      factor.cov <- covRob(coredata(factor.returns))$cov
     }
   } else {
     factor.cov <- cov(coredata(factor.returns), use = "pairwise.complete.obs")

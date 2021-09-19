@@ -29,7 +29,7 @@
 #' budgets in a way that allows the process to convergence in a few (usually two) iterations
 #'
 #' @importFrom PerformanceAnalytics ES
-#' @importFrom robust covRob
+#' @importFrom RobStatTM covRob
 #' @importFrom zoo coredata
 #'
 #' @param returns A matrix with a time series of returns for each asset / strategy
@@ -172,8 +172,7 @@ robRiskBudget = function(returns = NULL, rf = 0, ER = NULL, IR = NULL, TE = NULL
 
   # Compute the correlation matrix if corr = NULL
   if (is.null(corMat)) {
-    corMat = covRob(data = coredata(excessReturns), corr = TRUE, estim = corMatMethod,
-                    na.action = na.omit)$cov
+    corMat = covRob(data = coredata(excessReturns), corr = TRUE)$cov
   }
 
   # Average the off-diagonal element if avgCor = TRUE

@@ -4,7 +4,7 @@
 #' @import rrcov
 
 #' @importFrom PerformanceAnalytics checkData Return.cumulative 
-#' @importFrom robust covRob lmRob step.lmRob covClassic
+#' @importFrom RobStatTM covRob lmrobdetMM step.lmrobdetMM covClassic
 #' @importFrom leaps regsubsets
 #' @importFrom lars lars cv.lars
 #' @importFrom sandwich vcovHC.default vcovHAC.default

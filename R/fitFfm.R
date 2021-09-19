@@ -51,8 +51,7 @@
 #'             na.exclude na.fail na.omit var 
 #' @importFrom robustbase scaleTau2 covOGK
 #' @importFrom PerformanceAnalytics checkData skewness kurtosis
-#' @importFrom robust covRob covClassic
-#' @importFrom RobStatTM lmrobdetMM
+#' @importFrom RobStatTM lmrobdetMM covRob covClassic
 #' @importFrom rugarch ugarchspec ugarchfit
 #'
 #' @param data data.frame of the balanced panel data containing the variables 
@@ -575,12 +574,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     # factor and residual covariances
     if (rob.stats) {
       if (kappa(na.exclude(coredata(factor.returns))) < 1e+10) {
-        factor.cov <- robust::covRob(coredata(factor.returns), estim="pairwiseGK", 
-                             distance=FALSE, na.action=na.omit)$cov
+        factor.cov <- covRob(coredata(factor.returns))$cov
+    # Removed na.action=na.omit because RobStatTM covRob has no such arg
       } else {
         cat("Covariance matrix of factor returns is singular.\n")
-        factor.cov <- covRob(coredata(factor.returns), distance=FALSE, 
-                             na.action=na.omit)$cov
+        factor.cov <- covRob(coredata(factor.returns))$cov
+    # Removed na.action=na.omit because RobStatTM covRob has no such arg
       }
       resid.var <- apply(coredata(residuals), 2, scaleTau2)^2
       if (full.resid.cov) {
