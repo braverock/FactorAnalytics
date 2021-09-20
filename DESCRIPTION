@@ -40,7 +40,6 @@ Imports:
     RCurl,
     bestglm,
     tseries,
-	  robust,
 	  robustbase,
 	  RobStatTM,
 	  rrcov,
