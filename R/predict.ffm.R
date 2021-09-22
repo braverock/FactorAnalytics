@@ -7,6 +7,8 @@
 #' \code{ffm} object. For predictions based on estimated factor returns from a 
 #' specific period use the \code{pred.date} argument.
 #' 
+#' @importFrom PerformanceAnalytics checkData
+#' 
 #' @param object an object of class \code{ffm} produced by \code{fitFfm}.
 #' @param newdata data.frame containing the variables \code{asset.var}, 
 #' \code{date.var} and the same exact \code{exposure.vars} used in the fitted
@@ -60,7 +62,7 @@ predict.ffm <- function(object, newdata=NULL, pred.date=NULL, ...){
   if (is.null(newdata)) {
     sapply(object$factor.fit, predict, ...)
   } else {
-    newdata <- checkData(newdata, method="data.frame")
+    newdata <- PerformanceAnalytics::checkData(newdata, method="data.frame")
     if (is.null(pred.date)) {
       sapply(object$factor.fit, predict, newdata, ...)
     } else {

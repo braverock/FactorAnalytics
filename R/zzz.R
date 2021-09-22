@@ -1,7 +1,6 @@
 #' @import xts
 #' @import zoo
 
-#' @importFrom PerformanceAnalytics checkData Return.cumulative 
 #' @importFrom RobStatTM covRob lmrobdetMM step.lmrobdetMM covClassic
 #' @importFrom leaps regsubsets
 #' @importFrom lars lars cv.lars

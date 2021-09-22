@@ -15,6 +15,8 @@
 #' of "free" put options on the market provided by the manager's market-timings 
 #' skills.
 #' 
+#' @importFrom PerformanceAnalytics checkData
+#' 
 #' @param asset.names vector containing syntactically valid names of assets, whose returns or 
 #' excess returns are the dependent variable.
 #' @param mkt.name syntactically valid name of the column for market returns (required).

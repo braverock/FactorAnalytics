@@ -51,6 +51,8 @@
 #' with \code{xts} objects internally and colnames won't be left as they are.
 #' }
 #' 
+#' @importFrom PerformanceAnalytics checkData
+#' 
 #' @param asset.names vector of syntactically valid asset names, whose returns are the dependent 
 #' variable in the factor model.
 #' @param factor.names vector containing syntactically valid names of the factors.
@@ -527,12 +529,12 @@ fitted.tsfm <- function(object, ...) {
       # get fitted values from each linear factor model fit 
       # and convert them into xts/zoo objects
       fitted.list = lapply(object$asset.fit, 
-                           function(x) checkData(fitted(x)))
+                           function(x) PerformanceAnalytics::checkData(fitted(x)))
       # this is a list of xts objects, indexed by the asset name
       # merge the objects in the list into one xts object
       fitted.xts <- do.call("merge", fitted.list) 
     } else {
-      fitted.xts <- checkData(fitted(object$asset.fit[[1]]))
+      fitted.xts <- PerformanceAnalytics::checkData(fitted(object$asset.fit[[1]]))
       colnames(fitted.xts) <- object$asset.names
     }
   }
@@ -555,12 +557,12 @@ residuals.tsfm <- function(object, ...) {
       # get residuals from each linear factor model fit 
       # and convert them into xts/zoo objects
       residuals.list = lapply(object$asset.fit, 
-                              function(x) checkData(residuals(x)))
+                              function(x) PerformanceAnalytics::checkData(residuals(x)))
       # this is a list of xts objects, indexed by the asset name
       # merge the objects in the list into one xts object
       residuals.xts <- do.call("merge", residuals.list) 
     } else {
-      residuals.xts <- checkData(residuals(object$asset.fit[[1]]))
+      residuals.xts <- PerformanceAnalytics::checkData(residuals(object$asset.fit[[1]]))
       colnames(residuals.xts) <- object$asset.names
     }
   }

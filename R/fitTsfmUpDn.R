@@ -13,6 +13,7 @@
 #' The goal of up and down market model is to capture two different market Betas 
 #' in the up and down markets. 
 #' 
+#' @importFrom PerformanceAnalytics checkData
 #' 
 #' @param asset.names Vector containing syntactically valid names of assets, 
 #' whose returns or excess returns are the dependent variable.
@@ -110,7 +111,7 @@ fitTsfmUpDn <- function(asset.names, mkt.name, rf.name=NULL,
   }  
    
   # convert data into an xts object and hereafter work with xts objects
-  data.xts <- checkData(data)
+  data.xts <- PerformanceAnalytics::checkData(data)
   # convert index to 'Date' format for uniformity 
   time(data.xts) <- as.Date(time(data.xts))
   

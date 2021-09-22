@@ -4,6 +4,8 @@
 #' calls the \code{predict} method for fitted objects of class \code{lm}, 
 #' \code{lmRob} or \code{lars} as appropriate.
 #' 
+#' @importFrom PerformanceAnalytics checkData
+#' 
 #' @param object an object of class \code{tsfm} produced by \code{fitTsfm}.
 #' @param newdata a vector, matrix, data.frame, xts, timeSeries or zoo object 
 #' containing the variables with which to predict.
@@ -46,7 +48,7 @@ predict.tsfm <- function(object, newdata=NULL, ...){
   if (is.null(newdata)) {
     sapply(object$asset.fit, predict, ...)
   } else {
-    newdata <- checkData(newdata, method="data.frame")
+    newdata <- PerformanceAnalytics::checkData(newdata, method="data.frame")
     sapply(object$asset.fit, predict, newdata, ...)
   }
 }
