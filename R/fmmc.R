@@ -266,6 +266,7 @@
 #' @author Rohit Arora
 #' 
 #' @import foreach
+#' @importFrom doSNOW registerDoSNOW 
 #' 
 #' @export
 #' 

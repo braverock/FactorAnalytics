@@ -13,7 +13,6 @@
 #' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport 
 #' stopCluster
 #' @importFrom boot boot
-#' @importFrom doSNOW registerDoSNOW 
 #' @importFrom bestglm bestglm
 
 NULL
