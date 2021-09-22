@@ -262,6 +262,9 @@
 #' Estimates with Factor Model Monte Carlo. SSRN Electronic Journal, July 2013.
 #' 
 #' @author Rohit Arora
+#' 
+#' @import foreach
+#' 
 #' @export
 #' 
 #' 

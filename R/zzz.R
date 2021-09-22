@@ -1,6 +1,5 @@
 #' @import xts
 #' @import zoo
-#' @import foreach
 #' @import rrcov
 
 #' @importFrom PerformanceAnalytics checkData Return.cumulative 
