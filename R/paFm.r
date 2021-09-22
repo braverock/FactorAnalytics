@@ -10,6 +10,9 @@
 #' time t. The return attributed to factor k is \code{b_k * f_kt} and specific 
 #' return is \code{u_t}. 
 #' 
+#' @importFrom PerformanceAnalytics checkData Return.cumulative
+#' @importFrom xts xts
+#' 
 #' @param fit an object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param ... other arguments/controls passed to the fit methods.
 #' 
@@ -69,36 +72,36 @@ paFm <- function(fit, ...) {
       ## extract information from lm, lmRob or lars object
       reg.xts <- na.omit(fit$data[, c(k, factorNames)])
       dates <- as.Date(index(reg.xts))
-      actual.xts <- xts(fit.lm$model[1], dates)
+      actual.xts <- xts::xts(fit.lm$model[1], dates)
       # attributed returns
       # active portfolio management p.512 17A.9 
       # top-down method
       
       cum.ret <- PerformanceAnalytics::Return.cumulative(actual.xts)
       # setup initial value
-      attr.ret.xts.all <- xts(order.by = dates)
+      attr.ret.xts.all <- xts::xts(order.by = dates)
       
       for ( i in factorNames ) {
         
         if (is.na(fit$beta[k, i])) {
           cum.attr.ret[k, i] <- NA
-          attr.ret.xts.all <- xts(x = rep(NA, length(dates)), 
+          attr.ret.xts.all <- xts::xts(x = rep(NA, length(dates)), 
                                   order.by = dates)
                                     
         } else {
           attr.ret.xts <- actual.xts - 
-            xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), dates)  
+            xts::xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), dates)  
           cum.attr.ret[k, i] <- cum.ret - 
-            Return.cumulative(actual.xts-attr.ret.xts)  
+            PerformanceAnalytics::Return.cumulative(actual.xts-attr.ret.xts)  
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
         }
       }
       
       # specific returns    
       spec.ret.xts <- actual.xts - 
-        xts(as.matrix(fit.lm$model[,factorNames])%*%as.matrix(fit.lm$coef[-1]), 
+        xts::xts(as.matrix(fit.lm$model[,factorNames])%*%as.matrix(fit.lm$coef[-1]), 
             dates)
-      cum.spec.ret[k,1] <- cum.ret - Return.cumulative(actual.xts-spec.ret.xts)
+      cum.spec.ret[k,1] <- cum.ret - PerformanceAnalytics::Return.cumulative(actual.xts-spec.ret.xts)
       attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
       colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")
     }
@@ -149,9 +152,9 @@ paFm <- function(fit, ...) {
       attr.factor <- exposure * coredata(factor.returns)
       specific.returns <- returns - apply(attr.factor, 1, sum)
       attr <- cbind(attr.factor, specific.returns)
-      attr.list[[k]] <- xts(attr, as.Date(date))
-      cum.attr.ret[k, ] <- apply(attr.factor, 2, Return.cumulative)
-      cum.spec.ret[k] <- Return.cumulative(specific.returns)
+      attr.list[[k]] <- xts::xts(attr, as.Date(date))
+      cum.attr.ret[k, ] <- apply(attr.factor, 2, PerformanceAnalytics::Return.cumulative)
+      cum.spec.ret[k] <- PerformanceAnalytics::Return.cumulative(specific.returns)
     }
   }
   
@@ -162,7 +165,7 @@ paFm <- function(fit, ...) {
     cum.spec.ret <- fit$r2
     factorNames <- colnames(fit$loadings)
     fundNames <- rownames(fit$loadings)
-    data <- checkData(fit$data)
+    data <- PerformanceAnalytics::checkData(fit$data)
     # create list for attribution
     attr.list <- list()
     # pca method
@@ -174,27 +177,27 @@ paFm <- function(fit, ...) {
         ## extract information from lm object
         date <- index(data[,k])
         # probably needs more general Date setting
-        actual.xts <- xts(fit.lm$model[1], as.Date(date))
+        actual.xts <- xts::xts(fit.lm$model[1], as.Date(date))
         # attributed returns
         # active portfolio management p.512 17A.9 
-        cum.ret <-   Return.cumulative(actual.xts)
+        cum.ret <-   PerformanceAnalytics::Return.cumulative(actual.xts)
         # setup initial value
-        attr.ret.xts.all <- xts(, as.Date(date))
+        attr.ret.xts.all <- xts::xts(, as.Date(date))
         
         for (i in factorNames) {
           attr.ret.xts <- actual.xts - 
-            xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), 
+            xts::xts(as.matrix(fit.lm$model[i])%*%as.matrix(fit.lm$coef[i]), 
                 as.Date(date))  
           cum.attr.ret[k,i] <- cum.ret - 
-            Return.cumulative(actual.xts - attr.ret.xts)  
+            PerformanceAnalytics::Return.cumulative(actual.xts - attr.ret.xts)  
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
         }
         
         # specific returns    
         spec.ret.xts <- actual.xts - 
-          xts(as.matrix(fit.lm$model[, -1])%*%as.matrix(fit.lm$coef[-1]), 
+          xts::xts(as.matrix(fit.lm$model[, -1])%*%as.matrix(fit.lm$coef[-1]), 
               as.Date(date))
-        cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts- spec.ret.xts)
+        cum.spec.ret[k] <- cum.ret - PerformanceAnalytics::Return.cumulative(actual.xts- spec.ret.xts)
         attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
         colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")
       }
@@ -205,19 +208,19 @@ paFm <- function(fit, ...) {
       date <- index(fit$factors)
       
       for (k in fundNames) {
-        attr.ret.xts.all <- xts(, as.Date(date))
-        actual.xts <- xts(fit$data[,k], as.Date(date))
-        cum.ret <- Return.cumulative(actual.xts)
+        attr.ret.xts.all <- xts::xts(, as.Date(date))
+        actual.xts <- xts::xts(fit$data[,k], as.Date(date))
+        cum.ret <- PerformanceAnalytics::Return.cumulative(actual.xts)
         
         for (i in factorNames) {
-          attr.ret.xts <- xts(fit$factors[,i]*fit$loadings[k,i], as.Date(date))
+          attr.ret.xts <- xts::xts(fit$factors[,i]*fit$loadings[k,i], as.Date(date))
           attr.ret.xts.all <- merge(attr.ret.xts.all, attr.ret.xts)
-          cum.attr.ret[k,i] <- cum.ret - Return.cumulative(actual.xts - 
+          cum.attr.ret[k,i] <- cum.ret - PerformanceAnalytics::Return.cumulative(actual.xts - 
                                                              attr.ret.xts)
         }
-        spec.ret.xts <- actual.xts - xts(fit$factors%*%t(fit$loadings[k,]), 
+        spec.ret.xts <- actual.xts - xts::xts(fit$factors%*%t(fit$loadings[k,]), 
                                          as.Date(date))
-        cum.spec.ret[k] <- cum.ret - Return.cumulative(actual.xts- spec.ret.xts)
+        cum.spec.ret[k] <- cum.ret - PerformanceAnalytics::Return.cumulative(actual.xts- spec.ret.xts)
         attr.list[[k]] <- merge(attr.ret.xts.all, spec.ret.xts)
         colnames(attr.list[[k]]) <- c(factorNames, "specific.returns")  
       }
