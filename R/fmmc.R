@@ -267,6 +267,7 @@
 #' 
 #' @import foreach
 #' @importFrom doSNOW registerDoSNOW 
+#' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport stopCluster 
 #' 
 #' @export
 #' 
