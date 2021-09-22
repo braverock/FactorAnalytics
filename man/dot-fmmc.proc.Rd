@@ -14,7 +14,7 @@ with standard errors for the estimates}
 
 \item{factors}{matrix of factor returns}
 
-\item{...}{allows passing paramters to FactorAnalytics.}
+\item{...}{allows passing parameters to FactorAnalytics.}
 }
 \description{
 This is the main implementation of the Factor Model Monte Carlo method. It returns

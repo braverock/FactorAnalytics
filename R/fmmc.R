@@ -50,9 +50,11 @@
 #'    outer join of the factors and residuals. We use this joined data to create new
 #'    simulated returns. Returns together with factors define a joint emperical density. 
 #' 
+#' @importFrom RCurl merge.list
+#' 
 #' @param  R single vector of returns
 #' @param  factors matrix of factor returns
-#' @param  ... allows passing paramters to FactorAnalytics.
+#' @param  ... allows passing parameters to FactorAnalytics.
 #' @author Rohit Arora
 #' 
 #' 
