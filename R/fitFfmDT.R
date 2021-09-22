@@ -665,7 +665,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     w <- data.table::dcast(data = w , formula = date ~ id, value.var = "w")
     w <- as.xts.data.table(w)
     
-    resid.cov  <- diag(as.numeric(w[last(index(w)),])) # use the last estimate
+    resid.cov  <- diag(as.numeric(w[xts::last(index(w)),])) # use the last estimate
     # update resid.var with the timeseries of estimated resid variances
     resid.var = w
     
