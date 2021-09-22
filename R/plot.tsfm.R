@@ -36,6 +36,8 @@
 #' 
 #' @importFrom sn dst rst st.mple
 #' @importFrom lattice panel.barchart panel.grid
+#' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram
+#' chart.QQPlot chart.Correlation
 #' 
 #' @param x an object of class \code{tsfm} produced by \code{fitTsfm}.
 #' @param which a number to indicate the type of plot. If a subset of the plots 

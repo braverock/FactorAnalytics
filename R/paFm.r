@@ -10,7 +10,7 @@
 #' time t. The return attributed to factor k is \code{b_k * f_kt} and specific 
 #' return is \code{u_t}. 
 #' 
-#' @importFrom PerformanceAnalytics checkData Return.cumulative
+#' @importFrom PerformanceAnalytics checkData Return.cumulative chart.TimeSeries
 #' @importFrom xts xts
 #' 
 #' @param fit an object of class \code{tsfm}, \code{sfm} or \code{ffm}.

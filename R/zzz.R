@@ -6,11 +6,8 @@
 #' @importFrom sandwich vcovHC.default vcovHAC.default
 #' @importFrom robustbase scaleTau2 covOGK
 
-#' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus 
-#' chart.Histogram chart.QQPlot chart.Correlation
-
 #' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport 
-#' stopCluster
+#' stopCluster 
 #' @importFrom boot boot
 #' @importFrom bestglm bestglm
 

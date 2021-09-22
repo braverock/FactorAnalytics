@@ -25,6 +25,8 @@
 #'
 #' @importFrom sn dst rst st.mple
 #' @importFrom lattice panel.barchart panel.grid
+#' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram 
+#' chart.QQPlot chart.Correlation
 #' 
 #' @param x an object of class \code{ffm} produced by \code{fitFfm}.
 #' @param which a number to indicate the type of plot. If multiple plots are
