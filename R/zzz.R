@@ -15,7 +15,6 @@
 #' stopCluster
 #' @importFrom boot boot
 #' @importFrom doSNOW registerDoSNOW 
-#' @importFrom RCurl merge.list
 #' @importFrom bestglm bestglm
 
 NULL
