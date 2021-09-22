@@ -28,7 +28,6 @@ Imports:
     foreach,
     data.table,
     PerformanceAnalytics,
-    corrplot,
     leaps,
     lars,
     sandwich,
@@ -46,6 +45,7 @@ Imports:
 Suggests:
     R.rsp, 
     tinytest,
+    corrplot,
     lmtest,
     strucchange,
     HH
