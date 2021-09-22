@@ -21,11 +21,11 @@ Description: Linear factor model fitting for asset returns (three major types-
     FactorAnalytics package. 
 License: GPL-2
 Depends: 
-    R (>= 3.5)
+    R (>= 3.5), 
+    data.table (>= 1.12),
+    xts (>= 0.12)
 Imports: 
-    xts,
     zoo,
-    data.table,
     PerformanceAnalytics,
     leaps,
     lars,
