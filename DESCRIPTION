@@ -39,9 +39,9 @@ Imports:
     RCurl,
     bestglm,
     tseries,
-	  robustbase,
-	  RobStatTM,
-	  rugarch
+	robustbase,
+	RobStatTM,
+	rugarch
 Suggests:
     R.rsp, 
     tinytest,

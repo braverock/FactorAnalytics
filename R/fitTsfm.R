@@ -53,6 +53,7 @@
 #' 
 #' @importFrom PerformanceAnalytics checkData
 #' @importFrom leaps regsubsets
+#' @importFrom RobStatTM step.lmrobdetMM
 #' 
 #' @param asset.names vector of syntactically valid asset names, whose returns are the dependent 
 #' variable in the factor model.
