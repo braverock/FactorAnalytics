@@ -1,6 +1,5 @@
 #' @import zoo
 
-#' @importFrom sandwich vcovHC.default vcovHAC.default
 #' @importFrom robustbase scaleTau2 covOGK
 
 #' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport 

@@ -15,6 +15,8 @@
 #' \code{variable.selection="lars"} as there seems to be no consensus on a 
 #' statistically valid method of calculating standard errors for the lasso 
 #' predictions.
+#' 
+#' @importFrom sandwich vcovHC.default vcovHAC.default
 #'  
 #' @param object an object of class \code{tsfm} returned by \code{fitTsfm}.
 #' @param se.type one of "Default", "HC" or "HAC" option for computing HC/HAC 
