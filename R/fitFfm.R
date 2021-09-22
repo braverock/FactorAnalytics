@@ -47,12 +47,13 @@
 #' re-factored, tested, corrected and expanded the functionalities and S3 
 #' methods.
 #'
-#' @importFrom stats lm as.formula coef contr.treatment fitted mad median model.matrix
-#'             na.exclude na.fail na.omit var 
-#' @importFrom robustbase scaleTau2 covOGK
+#' @import xts
 #' @importFrom PerformanceAnalytics checkData skewness kurtosis
+#' @importFrom robustbase scaleTau2 covOGK
 #' @importFrom RobStatTM lmrobdetMM covRob covClassic
 #' @importFrom rugarch ugarchspec ugarchfit
+#' @importFrom stats lm as.formula coef contr.treatment fitted mad median 
+#' model.matrix na.exclude na.fail na.omit var 
 #'
 #' @param data data.frame of the balanced panel data containing the variables 
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and 
@@ -596,11 +597,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           resid.cov <- diag(resid.var)
       }
     } else {
-      factor.cov <- robust::covClassic(coredata(factor.returns), distance=FALSE, 
+      factor.cov <- RobStatTM::covClassic(coredata(factor.returns), distance=FALSE, 
                                na.action=na.omit)$cov
       resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
       if (full.resid.cov) {
-        resid.cov <- robust::covClassic(coredata(residuals), distance=FALSE, 
+        resid.cov <- RobStatTM::covClassic(coredata(residuals), distance=FALSE, 
                                 na.action=na.omit)$cov
       } else {
         #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
@@ -651,7 +652,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
                      paste(levels(data[,exposures.char]),sep=" "))
     factor.returns = factor.returns[, factor.names]
     #Fac Covarinace
-    factor.cov <-robust::covClassic(coredata(factor.returns), distance=FALSE, 
+    factor.cov <-RobStatTM::covClassic(coredata(factor.returns), distance=FALSE, 
                             na.action=na.omit)$cov
     g.cov <- cov(t(g))
     #Residual Variance
@@ -857,7 +858,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       factor.returns <- factor.returns[,c(1,(K1+2+K2):K, 2:(K1+1), (K1+2):(K1+K2+1))]
     factor.names <- colnames(factor.returns)
     #Fac Covarinace
-    factor.cov <- robust::covClassic(coredata(factor.returns), distance=FALSE, 
+    factor.cov <- RobStatTM::covClassic(coredata(factor.returns), distance=FALSE, 
                              na.action=na.omit)$cov
     #Residual Variance
     resid.var <- apply(coredata(residuals), 2, var, na.rm=T)
