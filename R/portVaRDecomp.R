@@ -7,7 +7,7 @@
 #' kernel estimator. Option to choose between non-parametric and Normal.
 #' 
 #' @importFrom stats quantile residuals cov resid qnorm
-#' @importFrom xts as.xts
+#' @import xts
 #' @importFrom zoo as.Date index
 #' 
 #' @details The factor model for a portfolio's return at time \code{t} has the 

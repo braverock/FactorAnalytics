@@ -3,7 +3,7 @@
 #' @description
 #'  Calculate and plot the time series of the t-statistic values and the
 #'  number of risk indices with significant t-stats for a fundamentally fit object.
-#' @importFrom xts xts 
+#' @import xts 
 #' @importFrom zoo plot.zoo coredata as.yearmon
 #' @importFrom lattice panel.abline xyplot panel.xyplot barchart
 #' @importFrom grDevices dev.off

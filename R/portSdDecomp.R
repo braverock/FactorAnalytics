@@ -4,7 +4,7 @@
 #' portfolio returns based on Euler's theorem, given the fitted factor model.
 #' 
 #' @importFrom stats quantile residuals cov resid qnorm
-#' @importFrom xts as.xts 
+#' @import xts 
 #' @importFrom zoo index as.Date  
 #' 
 #' @details The factor model for a portfolio's return at time \code{t} has the 

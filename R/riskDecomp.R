@@ -3,7 +3,7 @@
 #' @description Compute the factor contributions to Sd, VaR and ES of returns based on Euler's theorem, given 
 #' the fitted factor model. 
 #' 
-#' @importFrom xts as.xts  
+#' @import xts  
 #' @importFrom zoo as.Date index 
 #' @importFrom graphics abline legend lines mtext panel.smooth rug
 #' @importFrom stats cor cov2cor density dnorm formula hatvalues lag pnorm printCoefmat 

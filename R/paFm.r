@@ -11,7 +11,7 @@
 #' return is \code{u_t}. 
 #' 
 #' @importFrom PerformanceAnalytics checkData Return.cumulative chart.TimeSeries
-#' @importFrom xts xts
+#' @import xts
 #' 
 #' @param fit an object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param ... other arguments/controls passed to the fit methods.

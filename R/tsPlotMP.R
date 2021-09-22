@@ -3,7 +3,7 @@
 #' @description Plot time series with specific plotting parameters 
 #'
 #' @importFrom lattice panel.abline xyplot panel.xyplot
-#' @importFrom xts xts
+#' @import xts
 #' 
 #' @param data an time series exposure/return object 
 #' @param add.grid logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')

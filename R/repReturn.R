@@ -3,7 +3,7 @@
 #' @description Decompostite return of portfolio into return of different factors based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
 #' @importFrom zoo as.yearmon coredata index
-#' @importFrom xts as.xts
+#' @import xts
 #' @importFrom graphics boxplot par axis text 
 #' @importFrom stats sd
 #' @importFrom utils menu

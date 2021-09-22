@@ -5,7 +5,7 @@
 #' @importFrom zoo as.yearmon
 #' @importFrom graphics barplot
 #' @importFrom stats lm
-#' @importFrom xts xts merge.xts
+#' @import xts
 #' @importFrom lattice panel.abline xyplot panel.xyplot strip.custom
 #' 
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
@@ -151,7 +151,7 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
       panel =  function(...){
         panel.abline(h=0,lty = 3)
         panel.xyplot(...)}
-      r2.combined = merge.xts("Rsq" = r2.xts,"AdjRsq" =  adj.r2.xts)
+      r2.combined = merge("Rsq" = r2.xts, "AdjRsq" =  adj.r2.xts)
 #       tsPlotMP(0.01*r2.combined,stripLeft = TRUE, scaleType = "same",
 #                color = "blue", yname = "", lwd = lwd, main = title.comb, type = "h", cex = 1.2)
       plt = xyplot(r2.combined,col = "blue", lwd =lwd, main = title.comb, type = "h",panel = panel,

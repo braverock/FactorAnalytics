@@ -3,7 +3,7 @@
 #' @description Compute the asset contributions to Sd, VaR and ES of returns based on Euler's theorem
 #' 
 #' @importFrom stats cov resid qnorm dnorm
-#' @importFrom xts xts  
+#' @import xts  
 #' 
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.

@@ -618,6 +618,7 @@ fitFfmDT <- function(ffMSpecObj,
 #' @param full.resid.cov an option to calculate the full residual covariance or not
 #' @return a structure of class ffm holding all the information
 #' @importFrom RobStatTM covRob
+#' @import xts
 #' @import data.table
 #' @export
 #'
@@ -665,14 +666,14 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     w <- data.table::dcast(data = w , formula = date ~ id, value.var = "w")
     w <- as.xts.data.table(w)
     
-    resid.cov  <- diag(as.numeric(w[xts::last(index(w)),])) # use the last estimate
+    resid.cov  <- diag(as.numeric(w[last(index(w)),])) # use the last estimate
     # update resid.var with the timeseries of estimated resid variances
     resid.var = w
     
     
   }
   #Residual Variance ----
-  residuals1 <- residuals1[, which(!is.na(xts::last(residuals1)))]
+  residuals1 <- residuals1[, which(!is.na(last(residuals1)))]
   resid.var <- apply(coredata(residuals1), 2, var, na.rm=T)
   # resid.var <- resid.var[which(!is.na(xts::last(residuals1)))]
   # if we have an unbalanced panel...then there would be some NA's so we have to clean them up

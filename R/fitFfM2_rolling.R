@@ -2,6 +2,8 @@
 #'
 #' @description roll.fitFfmDT rolls the fundamental factor model
 #' 
+#' @import data.table
+#' 
 #' @param ffMSpecObj a specFFm object
 #' @param windowSize the size of the fit window
 #' @param refitEvery the frequency of fitting
@@ -51,7 +53,7 @@ roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,
     # rollind = lapply(1:m, FUN = function(i) max(1, (S[i]-(windowSize-1))):S[i])
     rollind = lapply(1:m, FUN = function(i) (1+(i-1)*refitEvery):S[i])
   }
-  names(rollind) <- uniqueDates[sapply(rollind, data.table::last)]
+  names(rollind) <- uniqueDates[sapply(rollind, last)]
   tmp = lapply(as.list(1:m), FUN = function(i) {
     rollingObject <- specFfm(data = ffMSpecObj$dataDT[ rollIdx %in% Tindx[rollind[[i]]]],
                              asset.var = ffMSpecObj$asset.var, ret.var = ffMSpecObj$ret.var, 
@@ -75,7 +77,7 @@ roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,
     regStats = extractRegressionStats(specObj = rollingObject, fitResults = rollingFit, full.resid.cov = full.resid.cov)
     ans <- calcFLAM(specObj = rollingObject, modelStats = regStats, fitResults = results, analysis = analysis[1])
     print(i)
-    rebalDate <- uniqueDates[data.table::last(Tindx[rollind[[i]]])] # names ?
+    rebalDate <- uniqueDates[last(Tindx[rollind[[i]]])] # names ?
     rebalExposures <- rollingObject$dataDT[ get(d_) == rebalDate, c(rollingObject$asset.var, rollingObject$exposure.vars), with = FALSE]
     sigmaI <- regStats$resid.var
     # names(rebalExposures) <- names(sigmaI)
