@@ -4,7 +4,6 @@
 #' @importFrom RobStatTM covRob lmrobdetMM step.lmrobdetMM covClassic
 #' @importFrom lars lars cv.lars
 #' @importFrom sandwich vcovHC.default vcovHAC.default
-#' @importFrom tseries tsbootstrap
 #' @importFrom robustbase scaleTau2 covOGK
 
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus 

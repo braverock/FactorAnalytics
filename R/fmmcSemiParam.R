@@ -5,6 +5,8 @@
 #' chosen parametric distribution (Normal, Cornish-Fisher or Skew-t). Factor 
 #' returns are resampled through non-parametric or stationary bootstrap.
 #' 
+#' @importFrom tseries tsbootstrap
+#' 
 #' @param B number of bootstrap samples. Default is 1000.
 #' @param factor.ret \code{T x K} matrix or data.frame of factor returns having
 #' a complete history of data.
@@ -172,7 +174,7 @@ fmmcSemiParam <- function (B=1000, factor.ret, beta, alpha, resid.par,
     boot.idx <- sample(x=TP, size=B, replace=TRUE)
   } else {
     # stationary block resampling
-    boot.idx <- as.vector(tsbootstrap(x=1:TP, nb=ceiling(B/TP), type="stationary"))
+    boot.idx <- as.vector(tseries::tsbootstrap(x=1:TP, nb=ceiling(B/TP), type="stationary"))
     adj.B <- ceiling(B/TP)* TP - B
     if (adj.B > 0) {
       boot.idx <- boot.idx[1:B]
