@@ -8,7 +8,6 @@
 
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus 
 #' chart.Histogram chart.QQPlot chart.Correlation
-#' @importFrom lattice barchart xyplot panel.barchart panel.grid
 
 #' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport 
 #' stopCluster

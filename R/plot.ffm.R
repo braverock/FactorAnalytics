@@ -23,6 +23,9 @@
 #' In case the \code{ffm} object \code{x} contains only a single asset fit,
 #' plot.ffm can infer \code{asset.name} without user input.
 #'
+#' @importFrom sn dst rst st.mple
+#' @importFrom lattice panel.barchart panel.grid
+#' 
 #' @param x an object of class \code{ffm} produced by \code{fitFfm}.
 #' @param which a number to indicate the type of plot. If multiple plots are
 #' required, specify a subset from 1:12 for group plots and 1:13 for individual
@@ -75,8 +78,6 @@
 #' @param lwd set the line width, same as in \code{\link{plot}}. Default is 2.
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.
 #' @param ... further arguments to be passed to other plotting functions.
-#' 
-#' @importFrom sn dst rst st.mple
 #' 
 #' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 #'
