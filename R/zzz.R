@@ -15,7 +15,6 @@
 #' chart.Histogram chart.QQPlot chart.Correlation
 #' @importFrom lattice barchart xyplot panel.barchart panel.grid
 #' @importFrom corrplot corrplot.mixed
-#' @importFrom sn dst rst st.mple
 
 #' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport 
 #' stopCluster

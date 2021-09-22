@@ -94,6 +94,8 @@
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.
 #' @param ... further arguments to be passed to other plotting functions.
 #' 
+#' @importFrom sn dst rst st.mple
+#' 
 #' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 #' 
 #' @seealso \code{\link{fitTsfm}}, \code{\link{residuals.tsfm}}, 

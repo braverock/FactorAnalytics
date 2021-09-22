@@ -1,4 +1,3 @@
-
 #' @title Plots from a fitted fundamental factor model
 #'
 #' @description Generic \code{plot} method for object of class \code{ffm}.
@@ -76,7 +75,9 @@
 #' @param lwd set the line width, same as in \code{\link{plot}}. Default is 2.
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.
 #' @param ... further arguments to be passed to other plotting functions.
-#'
+#' 
+#' @importFrom sn dst rst st.mple
+#' 
 #' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 #'
 #' @seealso \code{\link{fitFfm}}, \code{\link{residuals.ffm}},
