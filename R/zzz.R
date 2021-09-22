@@ -1,6 +1,5 @@
 #' @import xts
 #' @import zoo
-#' @import rrcov
 
 #' @importFrom PerformanceAnalytics checkData Return.cumulative 
 #' @importFrom RobStatTM covRob lmrobdetMM step.lmrobdetMM covClassic

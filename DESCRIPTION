@@ -42,7 +42,6 @@ Imports:
     tseries,
 	  robustbase,
 	  RobStatTM,
-	  rrcov,
 	  rugarch
 Suggests:
     R.rsp, 
