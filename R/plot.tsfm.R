@@ -379,7 +379,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                } else if (meth=="Robust") {
                  reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
                  rollReg.z <- rollapply(reg.z, width=24, by.column=FALSE, align="right",
-                                        FUN = function(z) coef(lmRob(formula(fit), data=as.data.frame(z))))
+                                        FUN = function(z) coef(lmrobdetMM(formula(fit), data=as.data.frame(z))))
                }
                par(las=0)
                plot(rollReg.z, las=las, cex=0.8, lwd=lwd, col=colorset[1], ...,
