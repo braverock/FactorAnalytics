@@ -7,7 +7,7 @@ Author: Eric Zivot, Doug Martin, Sangeetha
      Srinivasan, Avinash Acharya, Yi-An Chen,
      Mido Shammaa, Lingjie Yi, Kirk Li, and
      Justin M. Shea
-Maintainer: Kirk Li <cocokecoli@gmail.com>
+Maintainer: Justin M. Shea <jshea@roosevelt.edu>
 Description: Linear factor model fitting for asset returns (three major types-
     time series, fundamental and statistical factor models); related risk
     (volatility, VaR and ES) and performance attribution (factor-contributed vs
