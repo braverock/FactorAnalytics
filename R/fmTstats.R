@@ -8,7 +8,6 @@
 #' @importFrom lattice panel.abline xyplot panel.xyplot barchart
 #' @importFrom grDevices dev.off
 #' @importFrom stats vcov
-#' @importFrom data.table melt
 #'  
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param isPlot   logical. If \code{FALSE} no plots are displayed.
@@ -38,7 +37,8 @@
 #' @examples 
 #'  
 #'  data("factorDataSetDjia5Yrs")
-#'
+#'  require(data.table)
+#'  
 #'#Fit a Ffm with style factors only
 #'  fit <- fitFfm(data = factorDataSetDjia5Yrs,
 #'                exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
@@ -90,8 +90,12 @@ fmTstats <- function(ffmObj, ...){
 #' @method fmTstats ffm
 #' @export
 #' 
-fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all", color = c("black", "cyan"),lwd =2, digits =2, z.alpha = 1.96, layout =c(2,3),type ="h", scale = "free", stripText.cex =1,axis.cex=1, title = TRUE, ... )
-{
+fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all", 
+                        color = c("black", "cyan"),lwd =2, digits =2, 
+                        z.alpha = 1.96, layout =c(2,3),type ="h", scale = "free", 
+                        stripText.cex =1,axis.cex=1, title = TRUE, ... ) {
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   # CREATE TIME SERIES OF T-STATS
   time.periods = length(ffmObj$time.periods)

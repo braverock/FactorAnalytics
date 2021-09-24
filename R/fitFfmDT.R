@@ -22,11 +22,13 @@
 #' @param rob.stats logical; If \code{TRUE}, robust estimates of covariance,
 #' correlation, location and univariate scale are computed as appropriate (see
 #' Details). Default is \code{FALSE}.
-#' @import data.table
+#' 
 #' @export
 #'
 specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
                     addIntercept = FALSE, rob.stats = FALSE){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   # set defaults and check input validity
   if (missing(data) || !is.data.frame(data)) {
@@ -107,10 +109,13 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.va
 #'  by one time period.
 #' @param specObj an ffm specification object of of class \code{"ffmSpec"}
 #' @return specObj an ffm spec Object that has been lagged
-#' @import data.table
+#' 
 #' @export
 #'
 lagExposures <- function(specObj){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
+  
   a_ <- eval(specObj$asset.var) # name of the asset column or id
   specObj$dataDT <- copy(specObj$dataDT) # hard_copy
   # need to protect against only categorical variables #mido
@@ -141,11 +146,14 @@ lagExposures <- function(specObj){
 #' @param lambda lambda value to be used for the EWMA estimation of residual variances.
 #' Default is 0.9
 #' @return the ffM spec object with exposures z-scored
-#' @import data.table
+#' 
 #' @export
 #'
-standardizeExposures <- function(specObj, Std.Type = c("None", "CrossSection", "TimeSeries"),
+standardizeExposures <- function(specObj, 
+                                 Std.Type = c("None", "CrossSection", "TimeSeries"),
                                  lambda = 0.9){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   weight.var <- specObj$weight.var
   dataDT <- copy(specObj$dataDT) # hard_copy
@@ -209,7 +217,6 @@ standardizeExposures <- function(specObj, Std.Type = c("None", "CrossSection", "
   return(specObj)
 }
 
-
 #'
 #'
 #' @title  residualizeReturns
@@ -220,10 +227,13 @@ standardizeExposures <- function(specObj, Std.Type = c("None", "CrossSection", "
 #' @param benchmark we might need market returns
 #' @param rfRate risk free rate
 #' @param isBenchExcess toggle to select whether to calculate excess returns or not
-#' @import data.table
+#' 
 #' @export
 residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
+  
+  require(data.table)
   dataDT <- copy(specObj$dataDT) # hard_copy
   currKey <- key(dataDT)
   d_ <- eval(specObj$date.var)
@@ -289,9 +299,12 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
 #' @param specObj  is a ffmSpec object
 #' @param GARCH.params fixed Garch(1,1) parameters
 #' @return an ffmSpec Object with the standardized returns added
-#' @import data.table
+#' 
 #' @export
-standardizeReturns <- function(specObj, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)){
+standardizeReturns <- function(specObj, 
+                               GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   dataDT <- copy(specObj$dataDT) # hard_copy
   a_ <- eval(specObj$asset.var) # name of the asset column or id
@@ -360,7 +373,7 @@ standardizeReturns <- function(specObj, GARCH.params = list(omega = 0.09, alpha 
 #' \item{R_matrix}{The K+1 by K restriction matrix where K is the number of categorical variables for each date.}
 #'
 #' @importFrom RobStatTM lmrobdetMM
-#' @import data.table
+#' 
 #' @export
 #'
 fitFfmDT <- function(ffMSpecObj,
@@ -369,6 +382,7 @@ fitFfmDT <- function(ffMSpecObj,
                      lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
                      GARCH.MLE = FALSE, lmrobdet.control.para.list = lmrobdet.control(), ...){
   
+  stopifnot(requireNamespace("data.table", quietly=TRUE))
   
   fit.method = toupper(fit.method[1])
   fit.method <- match.arg(arg = fit.method, choices = toupper(c("LS","WLS","ROB","W-ROB")), several.ok = F )
@@ -619,10 +633,12 @@ fitFfmDT <- function(ffMSpecObj,
 #' @return a structure of class ffm holding all the information
 #' @importFrom RobStatTM covRob
 #' @import xts
-#' @import data.table
+#' 
 #' @export
 #'
 extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   restriction.mat = NULL
   g.cov = NULL
@@ -913,6 +929,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 #' @param targetedVol numeric; the targeted portfolio volatility in the analysis. Default is 0.06.
 calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW"),
                      targetedVol = 0.06, ...){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
   # only works for SFM
   analysis <- match.arg(toupper(analysis[1]), choices = c("ISM", "NEW"), several.ok = F)
   
@@ -994,12 +1012,14 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
 
 # private functions ----
 #' @importFrom robustbase scaleTau2 covOGK
-#' @import data.table
+#' 
 #Calculate Weights For Second Weighted Regression (private function)
 calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegression,
                                           resid.scaleType = "STDDEV",  lambda = 0.9,
                                           GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
                                           GARCH.MLE = FALSE){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   resid.scaleType = toupper(resid.scaleType[1])
   resid.scaleType <- match.arg(arg = resid.scaleType, choices = toupper(c("STDDEV","EWMA","ROBUSTEWMA", "GARCH")), several.ok = F )
@@ -1108,6 +1128,8 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
 #' @export
 convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
   
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
+  
   asset.names <- names(RegStatsObj$residuals) # unique(SpecObj$dataDT[[SpecObj$asset.var]])
   time.periods <- unique(SpecObj$dataDT[[SpecObj$date.var]])
   temp <- FitObj$reg.listDT[ , summary(reg.list[[1]])$r.squared,
@@ -1168,6 +1190,9 @@ convert <- function(SpecObj, FitObj, RegStatsObj, ...) {
 #' @method print ffmSpec
 #' @export
 print.ffmSpec <- function(SpecObj, ...){
+  
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
+  
   a_ <- SpecObj$asset.var
   r_ <- SpecObj$ret.var
   d_ <- SpecObj$date.var

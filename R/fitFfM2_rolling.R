@@ -2,8 +2,6 @@
 #'
 #' @description roll.fitFfmDT rolls the fundamental factor model
 #' 
-#' @import data.table
-#' 
 #' @param ffMSpecObj a specFFm object
 #' @param windowSize the size of the fit window
 #' @param refitEvery the frequency of fitting

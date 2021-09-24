@@ -5,7 +5,7 @@
 #' return of a portfolio based on Euler's theorem, given the fitted factor model.
 #' 
 #' @importFrom lattice barchart
-#' @importFrom data.table melt
+
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param p tail probability for calculation. Default is 0.05.
 #' @param weights a vector of weights of the assets in the portfolio, names of 
@@ -65,7 +65,10 @@
 #' 
 #' @examples
 #' # Time Series Factor Model
+#' 
 #' data(managers, package = 'PerformanceAnalytics')
+#' require(data.table)
+#' 
 #' fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
 #'                      rf.name=colnames(managers[,10]), data=managers)
@@ -115,9 +118,11 @@
 #' @export    
 
 
-repRisk <- function(object, ...)
-{
+repRisk <- function(object, ...) {
+  
   # check input object validity
+  stopifnot(requireNamespace("data.table",quietly=TRUE))
+             
   if(inherits(object, "list"))
   {
     for(i in 1: length(object))
