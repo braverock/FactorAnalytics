@@ -11,7 +11,7 @@
 #' The \code{plot.tsfm} can be applied.
 #' 
 #' @importFrom xts merge.xts
-#' @import zoo coredata
+#' @importFrom zoo coredata
 #' @param x an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
 #' @param asset.name A vector of character to show single or multiple assets names. The defualt if 
 #' \code{NULL}.  
