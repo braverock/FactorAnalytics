@@ -80,17 +80,17 @@ W-Rob. The weights used in the weighted regression are estimated  using
 sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are 
 \code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.Default is 
 \code{stdDev} where the inverse of residual sample variances are used as the 
-weights.}
+weights. If using GARCH option, make sure to install and load rugarch package.}
 
 \item{lambda}{lambda value to be used for the EWMA estimation of residual 
 variances. Default is 0.9}
 
 \item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta. 
 Default values are 0.09, 0.1, 0.81 respectively. Valid only when 
-\code{GARCH.MLE} is set to \code{FALSE}.}
+\code{GARCH.MLE} is set to \code{FALSE}. Make sure to load rugarch package.}
 
 \item{stdReturn}{logical; If \code{TRUE}, the returns will be standardized 
-using GARCH(1,1) volatilities. Default is \code{FALSE}}
+using GARCH(1,1) volatilities. Default is \code{FALSE}. Make sure to load rugarch package.}
 
 \item{analysis}{method used in the analysis of fundamental law of active 
 management; one of "none", "ISM", or "NEW". Default is "none".}

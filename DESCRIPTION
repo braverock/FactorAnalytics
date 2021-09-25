@@ -38,13 +38,13 @@ Imports:
     RCurl,
     tseries,
 	robustbase,
-	RobStatTM,
-	rugarch
+	RobStatTM
 Suggests:
     R.rsp, 
     tinytest,
     corrplot,
     lmtest,
+    rugarch,
     strucchange,
     HH
 VignetteBuilder: R.rsp
