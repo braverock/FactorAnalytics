@@ -47,7 +47,8 @@
 #' re-factored, tested, corrected and expanded the functionalities and S3 
 #' methods.
 #'
-#' @import xts
+#' @importFrom xts as.xts
+#' @importFrom zoo as.yearmon
 #' @importFrom PerformanceAnalytics checkData skewness kurtosis
 #' @importFrom robustbase scaleTau2 covOGK
 #' @importFrom RobStatTM lmrobdetMM covRob covClassic
@@ -75,20 +76,29 @@
 #' @param full.resid.cov logical; If \code{TRUE}, a full residual covariance 
 #' matrix is estimated. Otherwise, a diagonal residual covariance matrix is 
 #' estimated. Default is \code{FALSE}.
-#' @param z.score method for exposure standardization; one of "none", "crossSection", or "timeSeries".
-#' Default is \code{"none"}.
-#' @param addIntercept logical; If \code{TRUE}, intercept is added in the exposure matrix. Default is \code{FALSE},
-#' @param lagExposures logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Default is \code{TRUE},
-#' @param resid.scaleType character; Only valid when fit.method is set to WLS or W-Rob. The weights used in 
-#' the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.
-#' Default is \code{stdDev} where the inverse of residual sample variances are used as the weights.
-#' @param lambda lambda value to be used for the EWMA estimation of residual variances. Default is 0.9
-#' @param GARCH.params list containing GARCH parameters omega, alpha, and beta. Default values are 0.09, 0.1, 0.81 respectively.
-#' Valid only when \code{GARCH.MLE} is set to \code{FALSE}.
-#' @param analysis method used in the analysis of fundamental law of active management; one of "none", "ISM", 
-#' or "NEW". Default is "none".
-#' @param stdReturn logical; If \code{TRUE}, the returns will be standardized using GARCH(1,1) volatilities. Default is \code{FALSE}
-#' @param targetedVol numeric; the targeted portfolio volatility in the analysis. Default is 0.06.
+#' @param z.score method for exposure standardization; one of "none", 
+#' "crossSection", or "timeSeries". Default is \code{"none"}.
+#' @param addIntercept logical; If \code{TRUE}, intercept is added in the 
+#' exposure matrix. Default is \code{FALSE},
+#' @param lagExposures logical; If \code{TRUE}, the style exposures in the 
+#' exposure matrix are lagged by one time period. Default is \code{TRUE},
+#' @param resid.scaleType character; Only valid when fit.method is set to WLS or 
+#' W-Rob. The weights used in the weighted regression are estimated  using 
+#' sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are 
+#' \code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.Default is 
+#' \code{stdDev} where the inverse of residual sample variances are used as the 
+#' weights.
+#' @param lambda lambda value to be used for the EWMA estimation of residual 
+#' variances. Default is 0.9
+#' @param GARCH.params list containing GARCH parameters omega, alpha, and beta. 
+#' Default values are 0.09, 0.1, 0.81 respectively. Valid only when 
+#' \code{GARCH.MLE} is set to \code{FALSE}.
+#' @param analysis method used in the analysis of fundamental law of active 
+#' management; one of "none", "ISM", or "NEW". Default is "none".
+#' @param stdReturn logical; If \code{TRUE}, the returns will be standardized 
+#' using GARCH(1,1) volatilities. Default is \code{FALSE}
+#' @param targetedVol numeric; the targeted portfolio volatility in the analysis. 
+#' Default is 0.06.
 #' @param ... potentially further arguments passed.
 #' 
 #' @return \code{fitFfm} returns an object of class \code{"ffm"} for which 
@@ -561,12 +571,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       factor.names <- c(exposures.num, levels(data[,exposures.char]))
     }
     rownames(factor.returns) <- factor.names
-    factor.returns <- checkData(t(factor.returns)) # T x K
+    factor.returns <- PerformanceAnalytics::checkData(t(factor.returns)) # T x K
     
     # time series of residuals
     residuals <- sapply(reg.list, residuals) #  NxT
     row.names(residuals) <- asset.names
-    residuals<- checkData(t(residuals)) #TxN
+    residuals<- PerformanceAnalytics::checkData(t(residuals)) #TxN
     
     
     # r-squared values for each time period
@@ -591,7 +601,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
           # update resid.var with the timeseries of estimated resid variances
-          resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
+          resid.var = xts::as.xts(t(w), order.by = zoo::as.yearmon(time.periods))
         }
         else
           resid.cov <- diag(resid.var)
@@ -609,7 +619,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
           row.names(w) = asset.names
           resid.cov <- diag(w[,ncol(w)])
           # update resid.var with the timeseries of estimated resid variances
-          resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
+          resid.var = xts::as.xts(t(w), order.by = zoo::as.yearmon(time.periods))
         }
         else
           resid.cov <- diag(resid.var)
@@ -642,10 +652,10 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     colnames(residuals) = as.character(unique(data[[date.var]]))
     row.names(residuals) = asset.names
     # Create a T x N xts object of residuals
-    residuals <- checkData(t(residuals))
+    residuals <- PerformanceAnalytics::checkData(t(residuals))
     r2<- sapply(reg.list, function(x) summary(x)$r.squared)
     names(r2) = as.character(unique(data[[date.var]]))
-    factor.returns <- checkData(t(factor.returns)) # T x K
+    factor.returns <- PerformanceAnalytics::checkData(t(factor.returns)) # T x K
     #Rearrange g,factor return to Mkt- Style Factor - Sec/Country order
     if(length(exposures.num) > 0) {g = g[c(1,K:nrow(g),2:(K-1)),]}
     factor.names<- c("Market", exposures.num,
@@ -663,7 +673,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
       # update resid.var with the timeseries of estimated resid variances
-      resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
+      resid.var = xts::as.xts(t(w), order.by = zoo::as.yearmon(time.periods))
     }
     else
       resid.cov <- diag(resid.var)
@@ -847,12 +857,12 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     }else residuals = returns - B.mod %*% g[1:(K1+K2-1), ]
     colnames(residuals) = as.character(unique(data[[date.var]]))
     # Create a T x N xts object of residuals
-    residuals <- checkData(t(residuals))
+    residuals <- PerformanceAnalytics::checkData(t(residuals))
     #all.equal(x,residuals)
     r2<- sapply(reg.list, function(x) summary(x)$r.squared)
     #r2 <- as.numeric(sapply(X = summary(reg.list), FUN = "[","r.squared"))
     names(r2) = as.character(unique(data[[date.var]]))
-    factor.returns <- checkData(t(factor.returns)) # T x K
+    factor.returns <- PerformanceAnalytics::checkData(t(factor.returns)) # T x K
     #Re-order the columns in the order mkt-style-sector-country
     if(length(exposures.num)>0)
       factor.returns <- factor.returns[,c(1,(K1+2+K2):K, 2:(K1+1), (K1+2):(K1+K2+1))]
@@ -868,7 +878,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
       row.names(w) = asset.names
       resid.cov <- diag(w[,ncol(w)])
       # update resid.var with the timeseries of estimated resid variances
-      resid.var = as.xts(t(w), order.by = as.yearmon(time.periods))
+      resid.var = xts::as.xts(t(w), order.by = zoo::as.yearmon(time.periods))
     }
     else
       resid.cov <- diag(resid.var)
@@ -1037,7 +1047,7 @@ coef.ffm <- function(object, ...) {
 fitted.ffm <- function(object, ...) {  
   # get fitted values for all assets in each time period
   # transpose and convert into xts/zoo objects
-  fitted.xts <- checkData(t(sapply(object$factor.fit, fitted)))
+  fitted.xts <- PerformanceAnalytics::checkData(t(sapply(object$factor.fit, fitted)))
   names(fitted.xts) <- object$asset.names
   return(fitted.xts)
 }

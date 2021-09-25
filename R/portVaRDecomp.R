@@ -7,8 +7,8 @@
 #' kernel estimator. Option to choose between non-parametric and Normal.
 #' 
 #' @importFrom stats quantile residuals cov resid qnorm
-#' @import xts
-#' @importFrom zoo as.Date index
+#' @importFrom xts as.xts
+#' @importFrom zoo as.yearmon index
 #' 
 #' @details The factor model for a portfolio's return at time \code{t} has the 
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
@@ -87,9 +87,8 @@
 #' # Fundamental Factor Model
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-#'           dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
 #'
 #' # Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -160,7 +159,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.05, type=
 
   # factor returns and residuals data
   factors.xts <- object$data[,object$factor.names]
-  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
+  resid.xts <- xts::as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
   if (type=="normal") {
@@ -204,7 +203,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.05, type=
   match = colnames(object$data) %in% asset.names
   R.xts <- object$data[,match]
   R.xts <- R.xts * weights
-  R.xts = as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
+  R.xts = xts::as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
   names(R.xts) = 'RETURN'
   
   if (type=="np") {
@@ -299,7 +298,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c
 
   # factor returns and residuals data
   factors.xts <- object$factor.returns
-  resid.xts <- as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
+  resid.xts <- xts::as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
 
   if (type=="normal") {
@@ -342,7 +341,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c
   # return data for portfolio
   R.xts = tapply(dat[,object$ret.var], list(dat[,object$date.var], dat[,object$asset.var]), FUN = I)
   R.xts <- R.xts * weights
-  R.xts = as.xts(rowSums(R.xts), order.by = object$time.periods)
+  R.xts = xts::as.xts(rowSums(R.xts), order.by = object$time.periods)
   names(R.xts) = 'RETURN'
   
   if (type=="np") {

@@ -3,7 +3,8 @@
 #' @description
 #'  Calculate and plot the time series of the t-statistic values and the
 #'  number of risk indices with significant t-stats for a fundamentally fit object.
-#' @import xts 
+#'  
+#' @importFrom data.table melt as.data.table
 #' @importFrom zoo plot.zoo coredata as.yearmon
 #' @importFrom lattice panel.abline xyplot panel.xyplot barchart
 #' @importFrom grDevices dev.off
@@ -37,7 +38,6 @@
 #' @examples 
 #'  
 #'  data("factorDataSetDjia5Yrs")
-#'  require(data.table)
 #'  
 #'#Fit a Ffm with style factors only
 #'  fit <- fitFfm(data = factorDataSetDjia5Yrs,
@@ -94,8 +94,6 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
                         color = c("black", "cyan"),lwd =2, digits =2, 
                         z.alpha = 1.96, layout =c(2,3),type ="h", scale = "free", 
                         stripText.cex =1,axis.cex=1, title = TRUE, ... ) {
-  
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   # CREATE TIME SERIES OF T-STATS
   time.periods = length(ffmObj$time.periods)
@@ -186,10 +184,10 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
     if(whichPlot == "significantTstatsH")
     {
         combined.sigTstatsH = combined.sigTstats[,c(3,1,2)]
-        mydata = as.data.table(t(combined.sigTstatsH))
+        mydata = data.table::as.data.table(t(combined.sigTstatsH))
         mydata$id <- c("Total", "Negative","Positive")
         mydata$id  = factor(mydata$id , levels = c("Total", "Negative","Positive"))
-        dat <- melt(mydata, id.vars = "id")
+        dat <- data.table::melt(mydata, id.vars = "id")
         my.settings <- list(
           superpose.polygon=list(col=c("grey", "red","black"), border="transparent"),
           strip.border=list(col="black") 
@@ -204,10 +202,10 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
     if(whichPlot == "all" | whichPlot == "significantTstatsV")
     {
         combined.sigTstatsV = combined.sigTstats[,c(3,1,2)]
-        mydata = as.data.table(t(combined.sigTstatsV))
+        mydata = data.table::as.data.table(t(combined.sigTstatsV))
         mydata$id <- c("Total", "Negative","Positive")
         mydata$id  = factor(mydata$id , levels = c("Positive", "Negative","Total"))
-        dat <- melt(mydata,id.vars = "id")
+        dat <- data.table::melt(mydata,id.vars = "id")
         my.settings <- list(
           superpose.polygon=list(col=c("black", "red","grey"), border="transparent"),
           strip.border=list(col="black") 

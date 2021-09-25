@@ -10,6 +10,8 @@
 #' For other types of plots, use the list objects \code{Up} and \code{Dn} of class \code{tsfmUpDn}. 
 #' The \code{plot.tsfm} can be applied.
 #' 
+#' @importFrom xts merge.xts
+#' @import zoo coredata
 #' @param x an object of class \code{tsfmUpDn} produced by \code{fitTsfmUpDn}.
 #' @param asset.name A vector of character to show single or multiple assets names. The defualt if 
 #' \code{NULL}.  
@@ -98,12 +100,12 @@ plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSandRob=FALSE,
       plotDataDn <-merge.xts(x$Dn$data[,c(assets.name,mkt.name)], fitted(x$Dn)[,assets.name])
       colnames(plotDataDn) <- c("ActualDn","MktDn","FittedDn")
     
-      plot(rbind(coredata(plotDataUp$MktUp),coredata(plotDataDn$MktDn)),
-           rbind(coredata(plotDataUp$ActualUp),coredata(plotDataDn$ActualDn)),
+      plot(rbind(zoo::coredata(plotDataUp$MktUp),zoo::coredata(plotDataDn$MktDn)),
+           rbind(zoo::coredata(plotDataUp$ActualUp),zoo::coredata(plotDataDn$ActualDn)),
            xlab=mkt.name,ylab=assets.name,...)
       abline(v=0)
-      lines(coredata(plotDataUp$MktUp),coredata(plotDataUp$FittedUp),col=line.color[1],lty=line.type[1],lwd=line.width[1])
-      lines(coredata(plotDataDn$MktDn),coredata(plotDataDn$FittedDn),col=line.color[1],lty=line.type[1],lwd=line.width[1])
+      lines(zoo::coredata(plotDataUp$MktUp),zoo::coredata(plotDataUp$FittedUp),col=line.color[1],lty=line.type[1],lwd=line.width[1])
+      lines(zoo::coredata(plotDataDn$MktDn),zoo::coredata(plotDataDn$FittedDn),col=line.color[1],lty=line.type[1],lwd=line.width[1])
       abline(h=0)
       
       up.beta <- round(summary(x$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)
@@ -113,7 +115,7 @@ plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSandRob=FALSE,
     
       # add LS line 
       if (SFM.line){
-        lines(coredata(plotDataSf[,mkt.name]),coredata(plotDataSf[,assets.name]),lty=sfm.line.type)
+        lines(zoo::coredata(plotDataSf[,mkt.name]),zoo::coredata(plotDataSf[,assets.name]),lty=sfm.line.type)
        # legend.name = paste(fit.method,"fitted line",seq="")
         
       }
@@ -124,8 +126,8 @@ plot.tsfmUpDn <- function(x,asset.name=NULL,SFM.line=FALSE,LSandRob=FALSE,
         colnames(plotDataUp.alt) <- c("ActualUp","MktUp","FittedUp")
         plotDataDn.alt <-merge.xts(x.alt$Dn$data[,c(assets.name,mkt.name)], fitted(x.alt$Dn)[,assets.name])
         colnames(plotDataDn.alt) <- c("ActualDn","MktDn","FittedDn")
-        lines(coredata(plotDataUp.alt$MktUp),coredata(plotDataUp.alt$FittedUp),col=line.color[2],lty=line.type[2],lwd=line.width[2])
-        lines(coredata(plotDataDn.alt$MktDn),coredata(plotDataDn.alt$FittedDn),col=line.color[2],lty=line.type[2],lwd=line.width[2])
+        lines(zoo::coredata(plotDataUp.alt$MktUp),zoo::coredata(plotDataUp.alt$FittedUp),col=line.color[2],lty=line.type[2],lwd=line.width[2])
+        lines(zoo::coredata(plotDataDn.alt$MktDn),zoo::coredata(plotDataDn.alt$FittedDn),col=line.color[2],lty=line.type[2],lwd=line.width[2])
         
        
         up.beta.alt <- round(summary(x.alt$Up)$sum.list[[assets.name]]$coefficients[mkt.name,1:2],2)

@@ -127,11 +127,12 @@ return of a portfolio based on Euler's theorem, given the fitted factor model.
 # Time Series Factor Model
 
 data(managers, package = 'PerformanceAnalytics')
-require(data.table)
 
-fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
-                     factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers[,10]), data=managers)
+fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+                     factor.names = colnames(managers[,(7:9)]),
+                     rf.name = colnames(managers[,10]), 
+                     data = managers)
+                     
 report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR', 
                   nrowPrint = 10)
 report 
@@ -143,9 +144,9 @@ repRisk(fit.macro, risk = "ES", decomp = 'FPCR', isPrint = FALSE,
 # Fundamental Factor Model
 data("stocks145scores6")
 dat = stocks145scores6
-dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-          dat$DATE <= as.yearmon("2012-12-31"),]
+dat$DATE = zoo::as.yearmon(dat$DATE)
+dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+
 
 # Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")

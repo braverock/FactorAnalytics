@@ -1,11 +1,13 @@
-
 #' @title Specifies the elements of a fundamental factor model
 #'
 #' @description Factor models have a few parameters that describe how the fitting is
 #' done.  This function summarizes them and returns a spec object for
 #' cross-sectional regressions.  It also preps the data. An object of class \code{"ffmSpec"}
 #' is returned.
-#' #' @param data data.frame of the balanced panel data containing the variables
+#' 
+#' @importFrom data.table as.data.table last 
+#' 
+#' @param data data.frame of the balanced panel data containing the variables
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
 #' optionally, \code{weight.var}.
 #' @param asset.var character; name of the variable  for asset names.
@@ -27,8 +29,6 @@
 #'
 specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
                     addIntercept = FALSE, rob.stats = FALSE){
-  
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
   
   # set defaults and check input validity
   if (missing(data) || !is.data.frame(data)) {
@@ -59,7 +59,7 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.va
   obj <- list()
   class(obj) <- "ffmSpec"
   # prep the data
-  obj$dataDT <- (as.data.table(data))[, c(date.var,asset.var,ret.var,exposure.vars), with = FALSE]
+  obj$dataDT <- ( data.table::as.data.table(data))[, c(date.var,asset.var,ret.var,exposure.vars), with = FALSE]
   obj$dataDT[ , eval(date.var) := as.Date(get(date.var))]
   # mido important change of order
   setkeyv(obj$dataDT,c(asset.var, date.var))
@@ -114,7 +114,7 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.va
 #'
 lagExposures <- function(specObj){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+   
   
   a_ <- eval(specObj$asset.var) # name of the asset column or id
   specObj$dataDT <- copy(specObj$dataDT) # hard_copy
@@ -153,7 +153,7 @@ standardizeExposures <- function(specObj,
                                  Std.Type = c("None", "CrossSection", "TimeSeries"),
                                  lambda = 0.9){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+   
   
   weight.var <- specObj$weight.var
   dataDT <- copy(specObj$dataDT) # hard_copy
@@ -231,9 +231,8 @@ standardizeExposures <- function(specObj,
 #' @export
 residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+   
   
-  require(data.table)
   dataDT <- copy(specObj$dataDT) # hard_copy
   currKey <- key(dataDT)
   d_ <- eval(specObj$date.var)
@@ -249,7 +248,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   if (is.xts(benchmark)){
     specObj$benchmark.var <- colnames(benchmark) # do this before converting to data.table
     if (is.null(specObj$benchmark.var)) stop("benchmark data must have column names.")
-    benchmark <- as.data.table(benchmark)
+    benchmark <-  data.table::as.data.table(benchmark)
     setnames(benchmark, old = "index", d_) # this way we are able to merge
     benchmark[[d_]] <- as.Date(benchmark[[d_]])
     setkeyv(benchmark, d_)
@@ -262,7 +261,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   if (is.xts(rfRate)){
     specObj$rfRate.var <- colnames(rfRate)
     if (is.null(specObj$rfRate.var)) stop("risk free vector must have a column name.")
-    rfRate <- as.data.table(rfRate)
+    rfRate <-  data.table::as.data.table(rfRate)
     setnames(rfRate, old = "index", d_) # this way we are able to merge
     rfRate[[d_]] <- as.Date(rfRate[[d_]])
     setkeyv(rfRate, d_)
@@ -304,7 +303,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
 standardizeReturns <- function(specObj, 
                                GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+   
   
   dataDT <- copy(specObj$dataDT) # hard_copy
   a_ <- eval(specObj$asset.var) # name of the asset column or id
@@ -381,8 +380,6 @@ fitFfmDT <- function(ffMSpecObj,
                      resid.scaleType = c("StdDev","EWMA","RobustEWMA", "GARCH"),
                      lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
                      GARCH.MLE = FALSE, lmrobdet.control.para.list = lmrobdet.control(), ...){
-  
-  stopifnot(requireNamespace("data.table", quietly=TRUE))
   
   fit.method = toupper(fit.method[1])
   fit.method <- match.arg(arg = fit.method, choices = toupper(c("LS","WLS","ROB","W-ROB")), several.ok = F )
@@ -578,7 +575,7 @@ fitFfmDT <- function(ffMSpecObj,
   # second pass weighted regressions ----
   if (grepl("W",fit.method)) {
     
-    SecondStepRegression <- rbindlist(betasDT$toRegress)
+    SecondStepRegression <- data.table::rbindlist(betasDT$toRegress)
     # compute residual variance for all assets for weighted regression
     # the weights will be 1/w
     SecondStepRegression <- calcAssetWeightsForRegression(specObj = ffMSpecObj, fitResults = reg.listDT,
@@ -631,15 +628,15 @@ fitFfmDT <- function(ffMSpecObj,
 #' @param fitResults output from fitFMDT
 #' @param full.resid.cov an option to calculate the full residual covariance or not
 #' @return a structure of class ffm holding all the information
+#' 
 #' @importFrom RobStatTM covRob
-#' @import xts
+#' @importFrom data.table rbindlist dcast as.xts.data.table last
 #' 
 #' @export
 #'
 extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
-  
+   
   restriction.mat = NULL
   g.cov = NULL
   
@@ -662,7 +659,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
                                            residuals = residuals(reg.list[[1]])))), by = d_]
   # now we have to extract the asset level residuals series and get their time series variance or
   # robust stats
-  # residuals1 <- as.data.table(reg.listDT[get(d_) == max(get(d_)),]$residuals[[1]])
+  # residuals1 <-  data.table::as.data.table(reg.listDT[get(d_) == max(get(d_)),]$residuals[[1]])
   # we have a problem here in case of a jagged matrix
   residuals1 <- data.table::rbindlist(l = reg.listDT$residuals, use.names = F)
   setnames(residuals1, c("date", "id", "residuals") )
@@ -670,8 +667,9 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   a_last <- reg.listDT[get(d_) == max(get(d_)),]$id[[1]]
   # this is needed so that the matrices conform
   residuals1 <- residuals1[ id %in% a_last]
-  residuals1 <- data.table::dcast(data = residuals1 , formula = date ~ id, value.var = "residuals")
-  residuals1 <- as.xts.data.table(residuals1)
+  residuals1 <- data.table::dcast(data = residuals1, formula = date ~ id, 
+                                  value.var = "residuals")
+  residuals1 <- data.table::as.xts.data.table(residuals1)
   
   # Resdiuals ----
   #if resid.scaleType is not stdDev, use the most recent residual var as the diagonal cov-var of residuals
@@ -680,16 +678,16 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
                                      w = w[[1]]))), by = d_]
     w <- data.table::rbindlist(l = reg.listDT$w)
     w <- data.table::dcast(data = w , formula = date ~ id, value.var = "w")
-    w <- as.xts.data.table(w)
+    w <- data.table::as.xts.data.table(w)
     
-    resid.cov  <- diag(as.numeric(w[last(index(w)),])) # use the last estimate
+    resid.cov  <- diag(as.numeric(w[data.table::last(index(w)),])) # use the last estimate
     # update resid.var with the timeseries of estimated resid variances
     resid.var = w
     
     
   }
   #Residual Variance ----
-  residuals1 <- residuals1[, which(!is.na(last(residuals1)))]
+  residuals1 <- residuals1[, which(!is.na(data.table::last(residuals1)))]
   resid.var <- apply(coredata(residuals1), 2, var, na.rm=T)
   # resid.var <- resid.var[which(!is.na(xts::last(residuals1)))]
   # if we have an unbalanced panel...then there would be some NA's so we have to clean them up
@@ -742,8 +740,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     factor.returns <- data.table::rbindlist(l = reg.listDT$factor.returns)
     colnames(factor.returns)[2] <- "factor"
     factor.returns <- data.table::dcast(data = factor.returns , formula = date ~ factor, value.var = "factor.returns")
-    setcolorder(factor.returns,  c( "date", factor.names))
-    factor.returns <- as.xts.data.table(factor.returns)
+    setcolorder(factor.returns,  c("date", factor.names))
+    factor.returns <- data.table::as.xts.data.table(factor.returns)
     
     #Exposure matrix for the last time period
     beta <- betasDT[ get(d_) == max(get(d_)), ]$beta[[1]]
@@ -779,8 +777,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     factor.returns <- betasDT[, c(d_ ,"R_matrix"), with = F][g]
     
     g <- g[, .(.(data.frame(date = get(d_)[[1]], t(g[[1]])))), by = d_]
-    g <- rbindlist(g$V1)
-    g <- as.xts.data.table(g)
+    g <- data.table::rbindlist(g$V1)
+    g <- data.table::as.xts.data.table(g)
     g.cov <- cov(g)
     K <- length(levels(specObj$dataDT[[specObj$exposures.char]]))
     # the first matrix contains the categorical variables that had the restriction matrix applied to
@@ -807,8 +805,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     }
     
     factor.returns[ , factor.returns := .(.(data.frame(date = get(d_)[[1]], factor.returns[[1]]))), by = d_]
-    factor.returns <- rbindlist(factor.returns$factor.returns)
-    factor.returns <- as.xts.data.table(factor.returns)
+    factor.returns <- data.table::rbindlist(factor.returns$factor.returns)
+    factor.returns <- data.table::as.xts.data.table(factor.returns)
     
     
     
@@ -844,8 +842,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     factor.returns <- betasDT[, c(d_ ,"R_matrix"), with = F][g]
     
     g <- g[, .(.(data.frame(date = get(d_)[[1]], t(g[[1]])))), by = d_]
-    g <- rbindlist(g$V1)
-    g <- as.xts.data.table(g)
+    g <- data.table::rbindlist(g$V1)
+    g <- data.table::as.xts.data.table(g)
     g.cov <- cov(g)
     K <- length(factor.names) - length(specObj$exposures.char)
     
@@ -857,8 +855,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     
     
     factor.returns[ , factor.returns := .(.(data.frame(date = get(d_)[[1]], factor.returns[[1]]))), by = d_]
-    factor.returns <- rbindlist(factor.returns$factor.returns)
-    factor.returns <- as.xts.data.table(factor.returns)
+    factor.returns <- data.table::rbindlist(factor.returns$factor.returns)
+    factor.returns <- data.table::as.xts.data.table(factor.returns)
     
     
     #Exposure matrix for the last time period
@@ -930,7 +928,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW"),
                      targetedVol = 0.06, ...){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+  
   # only works for SFM
   analysis <- match.arg(toupper(analysis[1]), choices = c("ISM", "NEW"), several.ok = F)
   
@@ -955,7 +953,7 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
       IC <- IC[ICtemp] # else merge the data
     }
   }
-  IC <- as.xts.data.table(IC)
+  IC <- data.table::as.xts.data.table(IC)
   # number of assets.... since they can change from month to month we will calculate mean # of assets
   N <- mean(specObj$dataDT[, .N, by = d_]$N, na.rm = TRUE)
   
@@ -1019,7 +1017,7 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
                                           GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
                                           GARCH.MLE = FALSE){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+   
   
   resid.scaleType = toupper(resid.scaleType[1])
   resid.scaleType <- match.arg(arg = resid.scaleType, choices = toupper(c("STDDEV","EWMA","ROBUSTEWMA", "GARCH")), several.ok = F )
@@ -1128,7 +1126,7 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
 #' @export
 convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+   
   
   asset.names <- names(RegStatsObj$residuals) # unique(SpecObj$dataDT[[SpecObj$asset.var]])
   time.periods <- unique(SpecObj$dataDT[[SpecObj$date.var]])
@@ -1191,7 +1189,7 @@ convert <- function(SpecObj, FitObj, RegStatsObj, ...) {
 #' @export
 print.ffmSpec <- function(SpecObj, ...){
   
-  stopifnot(requireNamespace("data.table",quietly=TRUE))
+   
   
   a_ <- SpecObj$asset.var
   r_ <- SpecObj$ret.var

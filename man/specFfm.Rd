@@ -16,6 +16,10 @@ specFfm(
 )
 }
 \arguments{
+\item{data}{data.frame of the balanced panel data containing the variables
+\code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
+optionally, \code{weight.var}.}
+
 \item{asset.var}{character; name of the variable  for asset names.}
 
 \item{ret.var}{character; name of the variable for asset returns.}
@@ -42,7 +46,4 @@ Factor models have a few parameters that describe how the fitting is
 done.  This function summarizes them and returns a spec object for
 cross-sectional regressions.  It also preps the data. An object of class \code{"ffmSpec"}
 is returned.
-#' @param data data.frame of the balanced panel data containing the variables
-\code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
-optionally, \code{weight.var}.
 }

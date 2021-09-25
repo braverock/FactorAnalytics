@@ -14,6 +14,7 @@
 #' in the up and down markets. 
 #' 
 #' @importFrom PerformanceAnalytics checkData
+#' @importFrom zoo time<-
 #' 
 #' @param asset.names Vector containing syntactically valid names of assets, 
 #' whose returns or excess returns are the dependent variable.

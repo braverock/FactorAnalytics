@@ -1,7 +1,7 @@
 Package: FactorAnalytics
 Type: Package
 Title: Factor Analytics for asset return data
-Version: 2.2.2
+Version: 2.2.3
 Date: 2021-09-13
 Author: Eric Zivot, Doug Martin, Sangeetha
      Srinivasan, Avinash Acharya, Yi-An Chen,
@@ -21,9 +21,10 @@ Description: Linear factor model fitting for asset returns (three major types-
     FactorAnalytics package. 
 License: GPL-2
 Depends: 
-    R (>= 3.5), 
-    xts (>= 0.12)
-Imports: 
+    R (>= 3.5)
+Imports:
+    data.table,
+    xts,
     zoo,
     PerformanceAnalytics,
     leaps,
@@ -40,7 +41,6 @@ Imports:
 	RobStatTM,
 	rugarch
 Suggests:
-    data.table, 
     R.rsp, 
     tinytest,
     corrplot,
@@ -52,3 +52,4 @@ LazyData: true
 LazyDataCompression: xz
 URL: https://github.com/braverock/FactorAnalytics
 RoxygenNote: 7.1.2
+Encoding: UTF-8

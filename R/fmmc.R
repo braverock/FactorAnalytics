@@ -51,6 +51,7 @@
 #'    simulated returns. Returns together with factors define a joint emperical density. 
 #' 
 #' @importFrom RCurl merge.list
+#' @importFrom xts as.xts
 #' 
 #' @param  R single vector of returns
 #' @param  factors matrix of factor returns
@@ -101,7 +102,7 @@
         return(NA)        
     }
     
-    resid <- do.call(merge,lapply(lapply(fit$asset.fit,residuals),as.xts))
+    resid <- do.call(merge, lapply(lapply(fit$asset.fit, residuals), xts::as.xts))
     beta <- t(fit$beta) 
     
     if(any(is.na(beta))) { 
@@ -167,7 +168,7 @@
         
     # If the data does not have dates then it cannot be transformed to xts. 
     # So lets fake dates to make xts happy
-    .data <- as.xts(.data , order.by=seq(as.Date("1980/1/1"), by = "day", 
+    .data <- xts::as.xts(.data , order.by=seq(as.Date("1980/1/1"), by = "day", 
         length.out = nrow(.data)))
     
     # lets get a new empirical distribution of factors and returns for a new subset

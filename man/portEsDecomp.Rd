@@ -89,15 +89,11 @@ average of the observations in that data window.
 
  # load data
 data(managers, package = 'PerformanceAnalytics')
-colnames(managers)
- # Make syntactically valid column names
-colnames(managers) <- make.names( colnames(managers))
-colnames(managers)
 
-fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
-                     factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers[,10]), 
-                     data=managers)
+fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+                     factor.names = colnames(managers[,(7:9)]),
+                     rf.name = colnames(managers[,10]), 
+                     data = managers)
                      
 ES.decomp <- portEsDecomp(fit.macro, invert = TRUE)
 
@@ -114,8 +110,8 @@ portEsDecomp(fit.macro, wts)
 # Fundamental Factor Model
 data("stocks145scores6")
 dat = stocks145scores6
-dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & dat$DATE <= as.yearmon("2012-12-31"),]
+dat$DATE = zoo::as.yearmon(dat$DATE)
+dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
 
 # Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")

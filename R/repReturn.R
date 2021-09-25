@@ -3,7 +3,7 @@
 #' @description Decompostite return of portfolio into return of different factors based on fundamental factor model. This method takes fundamental factor model fit, "ffm" object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
 #' @importFrom zoo as.yearmon coredata index
-#' @import xts
+#' @importFrom xts as.xts
 #' @importFrom graphics boxplot par axis text 
 #' @importFrom stats sd
 #' @importFrom utils menu
@@ -38,9 +38,9 @@
 #' #Load fundamental and return data 
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
-#'           & dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+#'
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -110,7 +110,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   
   #portfolio residuals
   sig.p <- sig * weights
-  sig.p <- as.xts(rowSums(coredata(sig.p)), order.by = index(sig.p))
+  sig.p <- xts::as.xts(rowSums(coredata(sig.p)), order.by = zoo::index(sig.p))
   colnames(sig.p) = 'ResidRet'
   
   
@@ -153,10 +153,10 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
     X = rbind(X,temp)
   }
-  X = as.xts(X[,-1],order.by = X[,1])
+  X = xts::as.xts(X[,-1],order.by = X[,1])
   
-  rk = as.xts(coredata(X) * coredata(facRet), order.by = index(sig.p)) 
-  facRet.p = as.xts(rowSums(coredata(rk)), order.by = index(sig.p))
+  rk = xts::as.xts(coredata(X) * coredata(facRet), order.by = zoo::index(sig.p)) 
+  facRet.p = xts::as.xts(rowSums(coredata(rk)), order.by = zoo::index(sig.p))
   colnames(facRet.p) = 'FacRet'
   
   ret.p =facRet.p + sig.p

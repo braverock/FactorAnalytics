@@ -3,7 +3,7 @@
 #' @description Plot time series with specific plotting parameters 
 #'
 #' @importFrom lattice panel.abline xyplot panel.xyplot
-#' @import xts
+#' @importFrom xts xts
 #' 
 #' @param data an time series exposure/return object 
 #' @param add.grid logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')
@@ -26,8 +26,8 @@
 #' #Load the data
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' returns = tapply(dat$RETURN,list(dat$DATE,dat$TICKER),I)
-#' ret = xts::xts(returns[,1:5],as.yearmon(rownames(returns)))
+#' returns = tapply(dat$RETURN, list(dat$DATE, dat$TICKER), I)
+#' ret = xts::xts(returns[,1:5], zoo::as.yearmon(rownames(returns)))
 #' 
 #' #generate return time series plot               
 #' tsPlotMP(ret, color = 'Blue')

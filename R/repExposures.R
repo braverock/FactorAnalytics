@@ -2,6 +2,7 @@
 #' 
 #' @description Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, 'ffm' object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
+#' @importFrom xts as.xts 
 #' @importFrom zoo as.yearmon coredata index
 #' @importFrom graphics boxplot 
 #' @importFrom stats sd
@@ -38,11 +39,12 @@
 #' @examples 
 #'
 #' #Load fundamental and return data 
+#' # Fundamental Factor Model
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
-#'           & dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+#'
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -142,7 +144,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
     X = rbind(X,temp)
   }
-  X = as.xts(X[,-1],order.by = X[,1])
+  X = xts::as.xts(X[,-1],order.by = X[,1])
   
   if(isPlot){
     par(mfrow = c(1,1))

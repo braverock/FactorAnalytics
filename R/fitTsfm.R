@@ -55,6 +55,7 @@
 #' @importFrom leaps regsubsets
 #' @importFrom RobStatTM step.lmrobdetMM
 #' @importFrom lars lars cv.lars
+#' @importFrom zoo index time<-
 #' 
 #' @param asset.names vector of syntactically valid asset names, whose returns are the dependent 
 #' variable in the factor model.
@@ -455,7 +456,7 @@ SelectLars <- function(dat.xts, asset.names, factor.names, lars.args,
     coef.lars <- predict(lars.fit, s=s, type="coef", mode="step")
     # alternately: coef.lars <- lars.fit[s, ]
     fitted.lars <- predict(lars.fit, xmat, s=s, type="fit", mode="step")
-    fitted.list[[i]] <- xts(fitted.lars$fit, index(reg.xts))
+    fitted.list[[i]] <- xts(fitted.lars$fit, zoo::index(reg.xts))
     # extract and assign the results
     asset.fit[[i]] = lars.fit
     beta.names <- names(coef.lars$coefficients)
@@ -569,6 +570,6 @@ residuals.tsfm <- function(object, ...) {
       colnames(residuals.xts) <- object$asset.names
     }
   }
-  time(residuals.xts) <- as.Date(time(residuals.xts))
+  # time(residuals.xts) <- as.Date(time(residuals.xts))
   return(residuals.xts)
 }

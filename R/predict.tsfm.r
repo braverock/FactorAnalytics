@@ -35,7 +35,7 @@
 #' 
 #' newdata <- data.frame(rnorm(n=NROW(fit$data)), rnorm(n=NROW(fit$data)))
 #' colnames(newdata) <- c("EDHEC LS EQ", "SP500 TR")
-#' rownames(newdata) <- index(fit$data)
+#' rownames(newdata) <- zoo::index(fit$data)
 #' 
 #' predict_fit_2 <- predict(fit, newdata, interval = "confidence")
 #' 

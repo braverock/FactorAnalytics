@@ -3,7 +3,8 @@
 #' @description Compute the asset contributions to Sd, VaR and ES of returns based on Euler's theorem
 #' 
 #' @importFrom stats cov resid qnorm dnorm
-#' @import xts  
+#' @importFrom xts xts  
+#' @importFrom zoo index
 #' 
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
@@ -77,7 +78,7 @@ assetDecomp = function(object, weights=NULL, rm, p, type = c("np", "normal"), ..
            else if(type == "np")
            {
              portRet = returns %*% weights
-             portRet = xts(portRet, order.by = index(returns))
+             portRet = xts(portRet, order.by = zoo::index(returns))
              Risk.fm <- quantile(portRet, probs=p, na.rm=TRUE)
              # epsilon is apprx. using Silverman's rule of thumb (bandwidth selection)
              # the constant 2.575 corresponds to a triangular kernel 
@@ -106,7 +107,7 @@ assetDecomp = function(object, weights=NULL, rm, p, type = c("np", "normal"), ..
            {
              VaR.fm <- rep(NA, 1)
              portRet = returns %*% weights
-             portRet = xts(portRet, order.by = index(returns))
+             portRet = xts(portRet, order.by = zoo::index(returns))
              # get VaR for each asset 
              VaR.fm <- quantile(portRet, probs=p, na.rm=TRUE)
              # index of VaR exceedances

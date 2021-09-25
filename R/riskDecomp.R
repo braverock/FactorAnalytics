@@ -3,7 +3,7 @@
 #' @description Compute the factor contributions to Sd, VaR and ES of returns based on Euler's theorem, given 
 #' the fitted factor model. 
 #' 
-#' @import xts  
+#' @importFrom xts as.xts  
 #' @importFrom zoo as.Date index 
 #' @importFrom graphics abline legend lines mtext panel.smooth rug
 #' @importFrom stats cor cov2cor density dnorm formula hatvalues lag pnorm printCoefmat 
@@ -69,9 +69,9 @@
 #' # Fundamental Factor Model
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-#'           dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+#'
 #'
 #' # Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -149,12 +149,12 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
     
     # get portfolio beta.star: 1 x (K+1)
     beta.star <- as.matrix(cbind(weights %*% as.matrix(beta), sqrt(sum(weights^2 * object$resid.sd^2))))  
-    resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
+    resid.xts <- xts::as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
   }
   else
   {
     beta.star <- as.matrix(cbind(beta, object$resid.sd))
-    resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
+    resid.xts <- xts::as.xts(t(t(residuals(object))/object$resid.sd))
   }
   
   colnames(beta.star)[dim(beta.star)[2]] <- "Resid" 
@@ -224,7 +224,7 @@ riskDecomp.tsfm <- function(object, risk, weights = NULL, portDecomp = TRUE, p=0
               match = colnames(object$data) %in% asset.names
               R.xts <- object$data[,match]
               R.xts <- R.xts * weights
-              R.xts = as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
+              R.xts = xts::as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
               names(R.xts) = 'RETURN'
               
               if (type=="np") { 
@@ -478,12 +478,12 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
     
     # get portfolio beta.star: 1 x (K+1)
     beta.star <- as.matrix(cbind(weights %*% beta, sqrt(sum(weights^2 * object$resid.var))))
-    resid.xts <- as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
+    resid.xts <- xts::as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
   }
   else
   {
     beta.star <- as.matrix(cbind(beta, sqrt(object$resid.var)))
-    resid.xts <- as.xts(t(t(residuals(object))/sqrt(object$resid.var)))
+    resid.xts <- xts::as.xts(t(t(residuals(object))/sqrt(object$resid.var)))
   }
   
   colnames(beta.star)[dim(beta.star)[2]] <- "Resid" 
@@ -549,11 +549,11 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
               # return data for portfolio
               R.xts = tapply(dat[,object$ret.var], list(dat[,object$date.var], dat[,object$asset.var]), FUN = I)
               R.xts <- R.xts * weights
-              R.xts = as.xts(rowSums(R.xts), order.by = object$time.periods)
+              R.xts = xts::as.xts(rowSums(R.xts), order.by = object$time.periods)
               names(R.xts) = 'RETURN'
               
               if (type=="np") { 
-                index(factors.xts) <- index(resid.xts)
+                zoo::index(factors.xts) <- zoo::index(resid.xts)
                 # get F.star data object
                 factor.star <- merge(factors.xts, resid.xts)
                 colnames(factor.star)[dim(factor.star)[2]] <- "Resid"
@@ -658,7 +658,7 @@ riskDecomp.ffm <- function(object, risk, weights = NULL, portDecomp =TRUE, facto
               for (i in object$asset.names) {
                 # return data for asset i
                 subrows <- which(object$data[[object$asset.var]]==i)
-                R.xts <- as.xts(object$data[subrows,object$ret.var], 
+                R.xts <- xts::as.xts(object$data[subrows,object$ret.var], 
                                 as.Date(object$data[subrows,object$date.var]))
                 
                 if (type=="np") {

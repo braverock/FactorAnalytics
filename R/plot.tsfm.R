@@ -34,6 +34,7 @@
 #' asset plot option 19 and group plot 12) are only applicable for single factor
 #' models.
 #' 
+#' @importFrom xts merge.xts 
 #' @importFrom sn dst rst st.mple
 #' @importFrom lattice panel.barchart panel.grid
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram

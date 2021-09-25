@@ -71,11 +71,12 @@ Calculate k factor time series based on fundamental factor model. This method ta
 \examples{
 
 #Load fundamental and return data 
+# Fundamental Factor Model
 data("stocks145scores6")
 dat = stocks145scores6
-dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
-          & dat$DATE <= as.yearmon("2012-12-31"),]
+dat$DATE = zoo::as.yearmon(dat$DATE)
+dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+
 
 #Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")

@@ -89,14 +89,13 @@ calculation of Normal ES (adapted from a portfolio context to factor models).
  # Time Series Factor Model
  # load data
 data(managers, package = 'PerformanceAnalytics')
-colnames(managers)
- # Make syntactically valid column names
-colnames(managers) <- make.names( colnames(managers))
-colnames(managers)
 
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-                     factor.names=colnames(managers[,(7:8)]), data=managers)
+                     factor.names=colnames(managers[,(7:8)]), 
+                     data=managers)
+                     
 ES.decomp <- fmEsDecomp(fit.macro)
+
 # get the component contributions
 ES.decomp$cES
 

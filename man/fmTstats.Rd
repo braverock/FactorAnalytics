@@ -71,7 +71,6 @@ Calculate and plot the time series of the t-statistic values and the
 \examples{
  
  data("factorDataSetDjia5Yrs")
- require(data.table)
  
 #Fit a Ffm with style factors only
  fit <- fitFfm(data = factorDataSetDjia5Yrs,

@@ -23,6 +23,8 @@
 #' In case the \code{ffm} object \code{x} contains only a single asset fit,
 #' plot.ffm can infer \code{asset.name} without user input.
 #'
+#' @importFrom xts as.xts merge.xts
+#' @importFrom zoo index
 #' @importFrom sn dst rst st.mple
 #' @importFrom lattice panel.barchart panel.grid
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram 
@@ -160,7 +162,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     fitted.ret <- fitted(x)[,i]
     resid.ret <- residuals(x)[,i]
     asset.ret <- subset(x$data,TICKER==i)[,c(x$date.var,x$ret.var)]
-    asset.ret.xts <- as.xts(asset.ret[,2], order.by=index(fitted.ret))
+    asset.ret.xts <- xts::as.xts(asset.ret[,2], order.by=zoo::index(fitted.ret))
     plotData <- merge.xts(asset.ret.xts, fitted.ret, resid.ret)
     colnames(plotData) <- c("Actual","Fitted","Residuals")
     Residuals <- na.omit(plotData[,"Residuals"])
@@ -369,7 +371,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  asset <- x$asset.names[i]
                  fitted.ret <- fitted(x)[,asset]
                  asset.ret <- subset(x$data,TICKER==asset)[,c(x$date.var,x$ret.var)]
-                 asset.ret.xts <- as.xts(asset.ret[,2], order.by=index(fitted.ret))
+                 asset.ret.xts <- xts::as.xts(asset.ret[,2], order.by=zoo::index(fitted.ret))
                  plotData <- merge.xts(asset.ret.xts, fitted.ret)
                  colnames(plotData) <- c("Actual","Fitted")
                  main <- paste("Actual and Fitted:", asset)

@@ -5,7 +5,7 @@
 #' @importFrom zoo as.yearmon
 #' @importFrom graphics barplot
 #' @importFrom stats lm
-#' @import xts
+#' @importFrom xts xts
 #' @importFrom lattice panel.abline xyplot panel.xyplot strip.custom
 #' 
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
@@ -86,14 +86,14 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
     if(isPlot && plt.type == 1)
     {
       barplot(r2,las=2,col=5,
-              names.arg= as.yearmon(names(r2)),
+              names.arg= zoo::as.yearmon(names(r2)),
               cex.names=0.5,
               main=" ")
       if(title){title("Factor Model R-squared Values")}
     }
     else if (isPlot && plt.type == 2)
     {
-      r2.xts = xts(r2, order.by = as.yearmon(names(r2)))
+      r2.xts = xts(r2, order.by = zoo::as.yearmon(names(r2)))
       
       if(rsqAdj) plt.r2 = TRUE else{
         if(title) title.Rsq = "Factor Model R-squared Values" else title.Rsq = " " 
@@ -117,11 +117,11 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
     K <- length(ffmObj$factor.name)
     p <- K-1
     adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
-    adj.r2.xts = xts(adj.r2, order.by = as.yearmon(names(r2)))
+    adj.r2.xts = xts(adj.r2, order.by = zoo::as.yearmon(names(r2)))
     if(isPlot && plt.type == 1)
     {
       barplot(adj.r2,las=2,col=5,
-              names.arg= as.yearmon(names(r2)),
+              names.arg= zoo::as.yearmon(names(r2)),
               cex.names=0.5,
               main=" ")
       if(title){title(" Factor Model Adjusted R-squared Values")}

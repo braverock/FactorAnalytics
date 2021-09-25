@@ -3,7 +3,6 @@
 #' @description Plot the time series plot of returns and style exposures of the data.
 #' 
 #' @importFrom lattice xyplot
-#' @import xts  
 #' 
 #' 
 #' @param data Dataframe with time series of style exposures and returns 

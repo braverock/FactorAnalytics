@@ -11,7 +11,8 @@
 #' return is \code{u_t}. 
 #' 
 #' @importFrom PerformanceAnalytics checkData Return.cumulative chart.TimeSeries
-#' @import xts
+#' @importFrom xts xts
+#' @importFrom zoo index
 #' 
 #' @param fit an object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param ... other arguments/controls passed to the fit methods.
@@ -71,7 +72,7 @@ paFm <- function(fit, ...) {
       
       ## extract information from lm, lmRob or lars object
       reg.xts <- na.omit(fit$data[, c(k, factorNames)])
-      dates <- as.Date(index(reg.xts))
+      dates <- as.Date(zoo::index(reg.xts))
       actual.xts <- xts::xts(fit.lm$model[1], dates)
       # attributed returns
       # active portfolio management p.512 17A.9 
@@ -115,7 +116,7 @@ paFm <- function(fit, ...) {
     # return attributed to factors
     factor.returns <- fit$factor.returns[, -1]
     factor.names <- colnames(fit$beta)
-    date <- index(factor.returns)
+    date <- zoo::index(factor.returns)
     ticker <- fit$asset.names
     
     #cumulative return attributed to factors
@@ -175,7 +176,7 @@ paFm <- function(fit, ...) {
       for (k in fundNames) {
         fit.lm <- fit$asset.fit[[k]]
         ## extract information from lm object
-        date <- index(data[,k])
+        date <- zoo::index(data[,k])
         # probably needs more general Date setting
         actual.xts <- xts::xts(fit.lm$model[1], as.Date(date))
         # attributed returns
@@ -205,7 +206,7 @@ paFm <- function(fit, ...) {
       # apca method:
       #   fit$loadings # N X K
       #   fit$factors  # T X K
-      date <- index(fit$factors)
+      date <- zoo::index(fit$factors)
       
       for (k in fundNames) {
         attr.ret.xts.all <- xts::xts(, as.Date(date))
