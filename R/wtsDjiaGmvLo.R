@@ -12,5 +12,7 @@
 #' @format A vector of type numeric with 22 observations
 #' 
 #' @source TBA
-#' @examples  str(wtsDjiaGmvLo)
+#' @examples  
+#' data(wtsDjiaGmvLo)
+#'  str(wtsDjiaGmvLo)
 "wtsDjiaGmvLo"

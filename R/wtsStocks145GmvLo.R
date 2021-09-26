@@ -12,5 +12,7 @@
 #' @format A vector of type numeric with 145 observations
 #' 
 #' @source TBA
-#' @examples  str(wtsStocks145GmvLo)
+#' @examples  
+#' data(wtsStocks145GmvLo)
+#'  str(wtsStocks145GmvLo)
 "wtsStocks145GmvLo"

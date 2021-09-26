@@ -32,5 +32,7 @@
 #' 
 #' @source TBA
 #' 
-#' @examples  str(stocksCRSP)
+#' @examples  
+#' data(stocksCRSP)
+#'  str(stocksCRSP)
 "stocksCRSP"

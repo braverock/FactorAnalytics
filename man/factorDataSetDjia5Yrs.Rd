@@ -44,6 +44,8 @@ Contains returns for 30 DJIA stocks spanned across 9 Sectors -ENERGY, COSTAP, IN
 DJIA stocks Compustat factors 5 yrs. Data loads lazily
 }
 \examples{
+ 
+data(factorDataSetDjia5Yrs)
  str(factorDataSetDjia5Yrs)
 }
 \keyword{datasets}

@@ -34,5 +34,7 @@
 #'  \item \strong{SIZE:} type `num`
 #' }
 #' @source TBA
-#' @examples  str(factorDataSetDjia5Yrs)
+#' @examples  
+#' data(factorDataSetDjia5Yrs)
+#'  str(factorDataSetDjia5Yrs)
 "factorDataSetDjia5Yrs"

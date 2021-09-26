@@ -29,5 +29,7 @@
 #'  \item \strong{SEV:} type `num`
 #' }
 #' #' @source S&P Global Market Intelligence
-#' @examples  str(scoresSPGMI)
+#' @examples  
+#' data(scoresSPGMI)
+#'  str(scoresSPGMI)
 "scoresSPGMI"

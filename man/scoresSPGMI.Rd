@@ -36,6 +36,8 @@ data('factorDataSetDjia5Yrs')
 Cleaned SPGMI data containing 300 stocks' 12 factor scores data
 }
 \examples{
+ 
+data(scoresSPGMI)
  str(scoresSPGMI)
 }
 \keyword{datasets}

@@ -32,5 +32,7 @@
 #'  \item \strong{rf:} type `num`
 #' }
 #' @source TBA
-#' @examples  str(stocks145scores6)
+#' @examples  
+#' data(stocks145scores6)
+#'  str(stocks145scores6)
 "stocks145scores6"

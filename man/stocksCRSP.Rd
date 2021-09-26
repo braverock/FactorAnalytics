@@ -39,6 +39,8 @@ data('stocksCRSP')
 CRSP stocks data
 }
 \examples{
+ 
+data(stocksCRSP)
  str(stocksCRSP)
 }
 \keyword{datasets}
