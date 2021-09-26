@@ -17,6 +17,14 @@ In addition, the package contains functions for related risk and performance att
 - multiple imputation methods for simulating returns and backfilling unequal histories
 - functions to create tabular displays of risk and performance reports
 
+## Installing FactorAnalytics
+
+Install from source is the preferred method of installation. To do so, your local git installation will need to support **git large file storage (LFS)**. Instruction for installing LFS can be found **[HERE](https://docs.github.com/en/github/managing-large-files/versioning-large-files/installing-git-large-file-storage)**
+
+Plenty of documentation exists for cloning github repos and building R packages locally. A simple search specifying your IDE and OS should do.
+
+Note a bug in `remotes`/`devtools` prevents the package from being loaded using `install_github("braverock/FactorAnalytics")`. Please see [r-lib/remotes/issues/637](https://github.com/r-lib/remotes/issues/637).
+
 
 ## Fundamental Factor Scores from S&P Global Market Intelligence
  
@@ -25,15 +33,6 @@ referred to as “scores” or “alpha factors” for educational use in the op
 `LogMktCap`, `PM12M1M`, `ROE`. This data greatly facilitates the educational value to users of the fundamental factor model in FactorAnalytics. The package developers wish to thank S&P Global Market Intelligence for kindly contributing this data, which will improving learning outcomes for all.
 
 
-## Installing from Source
-
-At present, this is the preferred method of installation. To do so, your git installation will first need to support git large file storage (LFS).  
-
-Instruction for installing are LFS are here: https://docs.github.com/en/github/managing-large-files/versioning-large-files/installing-git-large-file-storage
-
-Plenty of documentation exists for cloning github repos and then building packages locally. A simple search specifying your IDE and OS should do.
-
-Note a bug in `remotes`/`devtools` prevents the package from being loaded using `install_github("braverock/FactorAnalytics")`. Please see [r-lib/remotes/issues/637](https://github.com/r-lib/remotes/issues/637).
 
 
 ## Presentations and vignettes on FactorAnalytics
