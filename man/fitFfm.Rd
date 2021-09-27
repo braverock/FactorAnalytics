@@ -168,8 +168,10 @@ The weights to be used in "WLS" or "W-Rob" can be set using
 sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
  are used as the weights. For EWMA model, lambda = 0.9 is used as default and for GARCH(1,1) 
  omega = 0.09, alpha = 0.1, and beta = 0.81 are used as default as mentioned in Martin & Ding (2017).
- These default parameters can be changed using the arguments \code{lambda}, \code{GARCH.params} for EWMA and GARCH respectively.
- To compute GARCH parameters via MLE, set \code{GARCH.MLE} to \code{TRUE}. 
+ These default parameters can be changed using the arguments \code{lambda}, 
+ \code{GARCH.params} for EWMA and GARCH respectively. To compute GARCH 
+ parameters via MLE, set \code{GARCH.MLE} to \code{TRUE}. Make sure you have
+ the rugarch package installed and loaded, as is merely listed as SUGGESTS.
  
 Standardizing style factor exposures: The exposures can be standardized into
 z-scores using regular or robust (see \code{rob.stats}) measures of location 
