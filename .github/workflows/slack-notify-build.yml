@@ -30,13 +30,15 @@ jobs:
           sudo apt-get install curl libcurl4-openssl-dev
       - name: Install dependencies
         run: |
-          install.packages(c("remotes", "rcmdcheck", "quantmod"))
+          install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
         run: |
           options(crayon.enabled = TRUE)
-          rcmdcheck::rcmdcheck(args = "--as-cran", error_on = "error")
+          rcmdcheck::rcmdcheck(args = c("--as-cran",
+                                        "_R_CHECK_FORCE_SUGGESTS_=FALSE"_)
+                                        error_on = "error")
         shell: Rscript {0}
 
       - name: Notify slack success
