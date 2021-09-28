@@ -3,7 +3,7 @@
 \docType{data}
 \name{stocksCRSP}
 \alias{stocksCRSP}
-\title{stocksCRSP:}
+\title{stocksCRSP}
 \format{
 A data.frame with 82000 observations on 15 variables:
 \itemize{
@@ -30,23 +30,15 @@ A data.frame with 82000 observations on 15 variables:
 }
 }
 \source{
-Center for Research in Security Prices (CRSP)at the University of
-Chicago's Booth School of Business (CRSP)
+Center for Research in Security Prices (CRSP) at the University of
+Chicago's Booth School of Business (CRSP).
 }
 \usage{
-data('stocksCRSP')
+data(stocksCRSP)
 }
 \description{
 CRSP monthly stocks data for 300 stocks 1993 to 2015
 }
-\section{CRSP data}{
- is not covered by the GPL
-
-CRSP data is not covered by the GPL. Redistribution of the data is not
-permitted, and use of the data in derivative works is not permitted without
-the express written permission of CRSP.
-}
-
 \examples{
  
 data(stocksCRSP)
