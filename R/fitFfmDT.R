@@ -1187,27 +1187,27 @@ convert <- function(SpecObj, FitObj, RegStatsObj, ...) {
 
 #' @method print ffmSpec
 #' @export
-print.ffmSpec <- function(SpecObj, ...){
+print.ffmSpec <- function(x, ...){
   
    
   
-  a_ <- SpecObj$asset.var
-  r_ <- SpecObj$ret.var
-  d_ <- SpecObj$date.var
+  a_ <- x$asset.var
+  r_ <- x$ret.var
+  d_ <- x$date.var
   cat(sprintf("A fundamental factor model specification object.\n "))
-  cat(sprintf("The data table is %i rows by %i columns.\n", dim(SpecObj$dataDT)[1],dim(SpecObj$dataDT)[2]))
-  cat(sprintf("The asset identifier is: %s . There are %i unique assets.\n", a_, length(unique(SpecObj$dataDT[[a_]]))))
+  cat(sprintf("The data table is %i rows by %i columns.\n", dim(x$dataDT)[1],dim(x$dataDT)[2]))
+  cat(sprintf("The asset identifier is: %s . There are %i unique assets.\n", a_, length(unique(x$dataDT[[a_]]))))
   cat(sprintf("The return variable is in this column: %s \n", r_))
   
-  if (SpecObj$standardizedReturns & !SpecObj$residualizedReturns)
+  if (x$standardizedReturns & !x$residualizedReturns)
     cat(sprintf("Returns have been standardized but not residualized\n"))
-  if (!SpecObj$standardizedReturns & SpecObj$residualizedReturns)
+  if (!x$standardizedReturns &x$residualizedReturns)
     cat(sprintf("Returns have been residualized but not standardized\n "))
-  if (SpecObj$standardizedReturns & SpecObj$residualizedReturns)
+  if (x$standardizedReturns &x$residualizedReturns)
     cat(sprintf("Returns have been residualized and standardized\n "))
-  cat(sprintf("The return variable that is fit in the model is: %s.\n", SpecObj$yVar))
+  cat(sprintf("The return variable that is fit in the model is: %s.\n",x$yVar))
   
   cat(sprintf("The date variable is in this columns: %s.  The data spans from %s to %s.\n", d_,
-              SpecObj$dataDT[[d_]][1],  SpecObj$dataDT[[d_]][nrow(SpecObj$dataDT)]))
+             x$dataDT[[d_]][1], x$dataDT[[d_]][nrow(x$dataDT)]))
   
 }
