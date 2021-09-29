@@ -33,7 +33,8 @@
 #' @source Center for Research in Security Prices (CRSP) at the University of
 #' Chicago's Booth School of Business (CRSP).
 #' 
-#' NOTE: CRSP data is not covered by the GPL. Redistribution of the data is not
+#' @section NOTE:
+#' CRSP data is not covered by the GPL. Redistribution of the data is not
 #' permitted, and use of the data in derivative works is not permitted without
 #' the express written permission of CRSP.
 #' 
