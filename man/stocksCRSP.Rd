@@ -30,17 +30,23 @@ A data.frame with 82000 observations on 15 variables:
 }
 }
 \source{
-TBA
+Center for Research in Security Prices (CRSP) at the University of
+Chicago's Booth School of Business (CRSP). NOTE: CRSP data is not covered by
+the GPL. Redistribution of the data is not permitted, and use of the data in
+derivative works is not permitted without the written permission of CRSP.
 }
 \usage{
-data('stocksCRSP')
+data(stocksCRSP)
 }
 \description{
-CRSP stocks data
+CRSP monthly stocks data for 300 stocks 1993 to 2015
 }
 \examples{
  
 data(stocksCRSP)
- str(stocksCRSP)
+names(stocksCRSP)
+unique(stocksCRSP$Sector)
+unique(stocksCRSP$CapGroup)
+head(stocksCRSP,2)
 }
 \keyword{datasets}
