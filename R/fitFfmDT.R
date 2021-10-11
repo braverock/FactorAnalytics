@@ -5,7 +5,7 @@
 #' cross-sectional regressions.  It also preps the data. An object of class \code{"ffmSpec"}
 #' is returned.
 #' 
-#' @importFrom data.table as.data.table last 
+#' @importFrom data.table as.data.table last setkeyv copy shift key setnames setcolorder
 #' 
 #' @param data data.frame of the balanced panel data containing the variables
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
@@ -62,7 +62,7 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.va
   obj$dataDT <- ( data.table::as.data.table(data))[, c(date.var,asset.var,ret.var,exposure.vars), with = FALSE]
   obj$dataDT[ , eval(date.var) := as.Date(get(date.var))]
   # mido important change of order
-  setkeyv(obj$dataDT,c(asset.var, date.var))
+  data.table::setkeyv(obj$dataDT,c(asset.var, date.var))
   
   obj$dataDT[, idx := 1:.N, by = eval(asset.var)] # this is needed for path dependent calculations
   
@@ -126,7 +126,7 @@ lagExposures <- function(specObj){
   specObj$lagged <- TRUE
   
   specObj$dataDT <- specObj$dataDT[!is.na(get(e_))]
-  setkeyv(specObj$dataDT,c(a_, specObj$date.var))
+  data.table::setkeyv(specObj$dataDT,c(a_, specObj$date.var))
   
   specObj$dataDT[, idx := 1:.N, by = eval(specObj$asset.var)] # this is needed for path dependent calculations
   
@@ -237,7 +237,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   currKey <- key(dataDT)
   d_ <- eval(specObj$date.var)
   
-  setkeyv(dataDT, d_) # for merging with bench and ref
+  data.table::setkeyv(dataDT, d_) # for merging with bench and ref
   
   a_ <- eval(specObj$asset.var) # name of the asset column or id
   r_ <- specObj$yVar # name of the variable column for returns.. sometimes get sometimes eval
@@ -251,7 +251,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
     benchmark <-  data.table::as.data.table(benchmark)
     setnames(benchmark, old = "index", d_) # this way we are able to merge
     benchmark[[d_]] <- as.Date(benchmark[[d_]])
-    setkeyv(benchmark, d_)
+    data.table::setkeyv(benchmark, d_)
     dataDT <- merge(dataDT, benchmark, all.x = TRUE) # left join
     
   } else {
@@ -264,14 +264,14 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
     rfRate <-  data.table::as.data.table(rfRate)
     setnames(rfRate, old = "index", d_) # this way we are able to merge
     rfRate[[d_]] <- as.Date(rfRate[[d_]])
-    setkeyv(rfRate, d_)
+    data.table::setkeyv(rfRate, d_)
     dataDT <- merge(dataDT, rfRate, all.x = TRUE) # left join
     
   } else {
     stop("Invalid args: rfRate must be an xts.")
   }
   
-  setkeyv(dataDT, currKey)
+  data.table::setkeyv(dataDT, currKey)
   dataDT[, ExcessReturn := get(r_) - get(specObj$rfRate.var)]
   
   if (!isBenchExcess) {
@@ -435,8 +435,8 @@ fitFfmDT <- function(ffMSpecObj,
                                              beta.expochar[[1]]))), by = d_]
       #Number of factors
       beta.expochar[, K := .(dim(beta.star[[1]])[2]), by = d_]
-      setkeyv(betasDT, d_)
-      setkeyv(beta.expochar, d_)
+      data.table::setkeyv(betasDT, d_)
+      data.table::setkeyv(beta.expochar, d_)
       
       betasDT <- betasDT[beta.expochar]
     }
@@ -453,13 +453,13 @@ fitFfmDT <- function(ffMSpecObj,
       
       betasDT[, toRegress := .(.(cbind(B.mod[[1]],toRegress[[1]] ))), by = d_]
       
-      setkeyv(betasDT, d_)
+      data.table::setkeyv(betasDT, d_)
       if(length(ffMSpecObj$exposures.num) > 0){
         sdcols <- ffMSpecObj$exposures.num
         #Define Beta for Style factors
         tempDT <- ffMSpecObj$dataDT[, .(B.style = .(as.matrix(x = .SD))),
                                     .SDcols = sdcols, by = d_]
-        setkeyv(tempDT, ffMSpecObj$date.var)
+        data.table::setkeyv(tempDT, ffMSpecObj$date.var)
         
         betasDT <- betasDT[tempDT]
         betasDT[, beta.mod.style := .(.(cbind(B.mod[[1]],B.style[[1]]))), by = d_]
@@ -523,13 +523,13 @@ fitFfmDT <- function(ffMSpecObj,
     
     betasDT[, toRegress := .(.(cbind(B.mod[[1]],toRegress[[1]] ))), by = d_]
     
-    setkeyv(betasDT, d_)
+    data.table::setkeyv(betasDT, d_)
     # if(length(ffMSpecObj$exposures.num) > 0){
     #   sdcols <- ffMSpecObj$exposures.num
     #   #Define Beta for Style factors
     #   tempDT <- ffMSpecObj$dataDT[, .(B.style = .(as.matrix(x = .SD))),
     #                               .SDcols = sdcols, by = d_]
-    #   setkeyv(tempDT, ffMSpecObj$date.var)
+    #   data.table::setkeyv(tempDT, ffMSpecObj$date.var)
     #
     #   betasDT <- betasDT[tempDT]
     #   betasDT[, beta.mod.style := .(.(cbind(B.mod[[1]],B.style[[1]]))), by = d_]
@@ -606,8 +606,8 @@ fitFfmDT <- function(ffMSpecObj,
     }
     assetInfo <- SecondStepRegression[complete.cases(SecondStepRegression[,ffMSpecObj$exposure.vars, with = F]),
                                       .(id = .(get(a_)), w = .(1/W)), by = d_]
-    setkeyv(assetInfo, d_)
-    setkeyv(reg.listDT, d_)
+    data.table::setkeyv(assetInfo, d_)
+    data.table::setkeyv(reg.listDT, d_)
     reg.listDT <- reg.listDT[assetInfo]
   }
   
@@ -772,7 +772,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     # coefficients ----
     
     g <- reg.listDT[, .(g = .(coefficients(reg.list[[1]]))), by = d_]
-    setkeyv(g, d_)
+    data.table::setkeyv(g, d_)
     #factor returns = restriction matrix * g coefficients
     factor.returns <- betasDT[, c(d_ ,"R_matrix"), with = F][g]
     
@@ -837,7 +837,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     factor.names <- c("Market", specObj$exposures.num, paste(lvl,sep=""))
     
     g <- reg.listDT[, .(g = .(coefficients(reg.list[[1]]))), by = d_]
-    setkeyv(g, d_)
+    data.table::setkeyv(g, d_)
     #factor returns = restriction matrix * g coefficients
     factor.returns <- betasDT[, c(d_ ,"R_matrix"), with = F][g]
     
@@ -946,7 +946,7 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
     ICtemp <- specObj$dataDT[, (IC_ = .(cor(get(e_), get(r_), use = "pair"))) , by = d_]
     
     setnames(ICtemp,c(d_, paste0("IC_", e_)))
-    setkeyv(ICtemp, d_)
+    data.table::setkeyv(ICtemp, d_)
     if (is.null(IC)) {
       IC <- ICtemp # the first exposure
     } else {
@@ -1092,21 +1092,21 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
     
     # when the weighing scheme is not std deviation we need to merge bak by date and id
     # since the weights are time varying rather than jst 1/sample variance
-    setkeyv(W, c(a_, d_)) # so that we can merger it back with the regression data set and
-    setkeyv(SecondStepRegression, c(a_, d_))
+    data.table::setkeyv(W, c(a_, d_)) # so that we can merger it back with the regression data set and
+    data.table::setkeyv(SecondStepRegression, c(a_, d_))
     
   } else {
     W = resid.DT[, .(W = 1/unique(resid.var)), by = id] # id is the asset id
     setnames(W,old =  "id", a_) # we need the original name of the asset id
-    setkeyv(W, a_) # so that we can merger it back with the regression data set and
+    data.table::setkeyv(W, a_) # so that we can merger it back with the regression data set and
     # run weighted regressions
-    setkeyv(SecondStepRegression, a_)
+    data.table::setkeyv(SecondStepRegression, a_)
     
   }
   
   
   SecondStepRegression <- SecondStepRegression[W]
-  setkeyv(SecondStepRegression, c(d_, a_))
+  data.table::setkeyv(SecondStepRegression, c(d_, a_))
   return(SecondStepRegression)
 }
 
@@ -1148,7 +1148,7 @@ convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
   ffmObj$exposures.num <- SpecObj$exposures.num
   ffmObj$exposures.char <- SpecObj$exposures.char
   ffmObj$data <- copy(SpecObj$dataDT)
-  setkeyv(ffmObj$data, c(SpecObj$date.var, SpecObj$asset.var))  # to match the order
+  data.table::setkeyv(ffmObj$data, c(SpecObj$date.var, SpecObj$asset.var))  # to match the order
   # expected in reporting functions
   ffmObj$data = data.frame(ffmObj$data)
   
