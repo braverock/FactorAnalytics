@@ -188,8 +188,8 @@
 #'  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
 #'  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
 #'  
-#'  fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'                    date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
+#'  # fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+#'  #                 date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
 #' 
 #' @export
 
@@ -285,11 +285,11 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   
   # check number & type of exposure; convert character exposures to dummy vars
-  which.numeric <- sapply(facDatSmallDF[,  exposure.vars], is.numeric)
+  which.numeric <- sapply(data[,  exposure.vars], is.numeric)
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
-  if ((length(exposures.char) >1) && !addIntercept) {
-    stop("Invalid args: two categorical factor model without Market(Interecept) is currenlty not handled")
+  if ((length(exposures.char) > 1) && !addIntercept) {
+    stop("Invalid args: two categorical factor model without Market(Interecept) is currently not handled")
   }
   
   if (length(exposures.char) > 2)
