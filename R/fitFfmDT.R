@@ -5,7 +5,7 @@
 #' cross-sectional regressions.  It also preps the data. An object of class \code{"ffmSpec"}
 #' is returned.
 #' 
-#' @importFrom data.table as.data.table last setkeyv copy shift key setnames setcolorder
+#' @importFrom data.table as.data.table last setkey setkeyv copy shift key setnames setcolorder 
 #' 
 #' @param data data.frame of the balanced panel data containing the variables
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
@@ -1030,7 +1030,7 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
   # now we have to extract the asset level residuals series and get their time series variance or
   # robust stats
   resid.DT <- data.table::rbindlist(l = fitResults$residuals)
-  setkey(resid.DT, id, date)
+  data.table::setkey(resid.DT, id, date)
   
   resid.DT[, idx := 1:.N, by = id] # this is needed for path dependent calculations
   
