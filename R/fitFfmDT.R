@@ -1,11 +1,12 @@
 #' @title Specifies the elements of a fundamental factor model
 #'
-#' @description Factor models have a few parameters that describe how the fitting is
-#' done.  This function summarizes them and returns a spec object for
-#' cross-sectional regressions.  It also preps the data. An object of class \code{"ffmSpec"}
-#' is returned.
+#' @description Factor models have a few parameters that describe how the 
+#' fitting is done.  This function summarizes them and returns a spec object for
+#' cross-sectional regressions.  It also preps the data. An object of class 
+#' \code{"ffmSpec"} is returned.
 #' 
-#' @importFrom data.table as.data.table last setkey setkeyv copy shift key setnames setcolorder 
+#' @importFrom data.table as.data.table last setkey setkeyv copy shift key 
+#' setnames setcolorder 
 #' 
 #' @param data data.frame of the balanced panel data containing the variables
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
@@ -117,7 +118,7 @@ lagExposures <- function(specObj){
    
   
   a_ <- eval(specObj$asset.var) # name of the asset column or id
-  specObj$dataDT <- copy(specObj$dataDT) # hard_copy
+  specObj$dataDT <- data.table::copy(specObj$dataDT) # hard_copy
   # need to protect against only categorical variables #mido
   # for (e_ in specObj$exposures.num){
   for (e_ in specObj$exposure.vars){
@@ -156,7 +157,7 @@ standardizeExposures <- function(specObj,
    
   
   weight.var <- specObj$weight.var
-  dataDT <- copy(specObj$dataDT) # hard_copy
+  dataDT <- data.table::copy(specObj$dataDT) # hard_copy
   # we did have a copy but do we really need a full  copy, reference should be oka here
   if (class(specObj) != "ffmSpec") {
     stop("specObj must be class ffmSpec")
@@ -233,8 +234,8 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   
    
   
-  dataDT <- copy(specObj$dataDT) # hard_copy
-  currKey <- key(dataDT)
+  dataDT <- data.table::copy(specObj$dataDT) # hard_copy
+  currKey <- data.table::key(dataDT)
   d_ <- eval(specObj$date.var)
   
   data.table::setkeyv(dataDT, d_) # for merging with bench and ref
@@ -249,7 +250,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
     specObj$benchmark.var <- colnames(benchmark) # do this before converting to data.table
     if (is.null(specObj$benchmark.var)) stop("benchmark data must have column names.")
     benchmark <-  data.table::as.data.table(benchmark)
-    setnames(benchmark, old = "index", d_) # this way we are able to merge
+    data.table::setnames(benchmark, old = "index", d_) # this way we are able to merge
     benchmark[[d_]] <- as.Date(benchmark[[d_]])
     data.table::setkeyv(benchmark, d_)
     dataDT <- merge(dataDT, benchmark, all.x = TRUE) # left join
@@ -262,7 +263,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
     specObj$rfRate.var <- colnames(rfRate)
     if (is.null(specObj$rfRate.var)) stop("risk free vector must have a column name.")
     rfRate <-  data.table::as.data.table(rfRate)
-    setnames(rfRate, old = "index", d_) # this way we are able to merge
+    data.table::setnames(rfRate, old = "index", d_) # this way we are able to merge
     rfRate[[d_]] <- as.Date(rfRate[[d_]])
     data.table::setkeyv(rfRate, d_)
     dataDT <- merge(dataDT, rfRate, all.x = TRUE) # left join
@@ -286,7 +287,7 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   
   specObj$yVar <- "ResidualizedReturn"
   specObj$residualizedReturns <- TRUE
-  specObj$dataDT <- copy(dataDT)
+  specObj$dataDT <- data.table::copy(dataDT)
   
   return(specObj)
 }
@@ -305,7 +306,7 @@ standardizeReturns <- function(specObj,
   
    
   
-  dataDT <- copy(specObj$dataDT) # hard_copy
+  dataDT <- data.table::copy(specObj$dataDT) # hard_copy
   a_ <- eval(specObj$asset.var) # name of the asset column or id
   r_ <- specObj$yVar # name of the variable column for returns.. sometimes get sometimes eval
   # we need this variable to be created.. in case returns are not standardized
@@ -340,7 +341,7 @@ standardizeReturns <- function(specObj,
   dataDT[, sdReturns := NULL]
   dataDT[, ts := NULL]
   # dataDT[, sigmaGarch := NULL]
-  specObj$dataDT <- copy(dataDT)
+  specObj$dataDT <- data.table::copy(dataDT)
   
   return(specObj)
 }
@@ -419,7 +420,7 @@ fitFfmDT <- function(ffMSpecObj,
     # convert the pasted expression into a formula object
     fm.formula <- as.formula(fm.formula)
     
-    sdcols <- c(key(ffMSpecObj$dataDT), ffMSpecObj$yVar, ffMSpecObj$exposure.vars )
+    sdcols <- c(data.table::key(ffMSpecObj$dataDT), ffMSpecObj$yVar, ffMSpecObj$exposure.vars )
     #Beta  is for the whole model (generally without intercept)
     #clean up NA's
     ffMSpecObj$dataDT <- ffMSpecObj$dataDT[complete.cases(ffMSpecObj$dataDT[, .SD, .SDcols = sdcols])]
@@ -492,7 +493,7 @@ fitFfmDT <- function(ffMSpecObj,
     # convert the pasted expression into a formula object
     fm.formula <- as.formula(fm.formula)
     #Extract model beta, expo.char beta and expo.num betas
-    sdcols <- c(key(ffMSpecObj$dataDT), ffMSpecObj$yVar, ffMSpecObj$exposure.vars )
+    sdcols <- c(data.table::key(ffMSpecObj$dataDT), ffMSpecObj$yVar, ffMSpecObj$exposure.vars )
     #Beta  is for the whole model (generally without intercept)
     #clean up NA's
     ffMSpecObj$dataDT <- ffMSpecObj$dataDT[complete.cases(ffMSpecObj$dataDT[, .SD, .SDcols = sdcols])]
@@ -643,8 +644,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   a_ <- eval(specObj$asset.var) # data table requires variable names to be evaluated
   d_ <- eval(specObj$date.var) # name of the date var
   asset.names <- unique(specObj$data[[specObj$asset.var]])
-  reg.listDT <- copy(fitResults$reg.listDT)
-  betasDT <- copy(fitResults$betasDT)
+  reg.listDT <- data.table::copy(fitResults$reg.listDT)
+  betasDT <- data.table::copy(fitResults$betasDT)
   resid.scaleType <- fitResults$resid.scaleType # we send this because what we do in the
   # fit is linked to how we extract results
   fit.method <- fitResults$fit.method
@@ -662,7 +663,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   # residuals1 <-  data.table::as.data.table(reg.listDT[get(d_) == max(get(d_)),]$residuals[[1]])
   # we have a problem here in case of a jagged matrix
   residuals1 <- data.table::rbindlist(l = reg.listDT$residuals, use.names = F)
-  setnames(residuals1, c("date", "id", "residuals") )
+  data.table::setnames(residuals1, c("date", "id", "residuals") )
   # find the residuals for the assets that exist as of last period
   a_last <- reg.listDT[get(d_) == max(get(d_)),]$id[[1]]
   # this is needed so that the matrices conform
@@ -740,7 +741,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     factor.returns <- data.table::rbindlist(l = reg.listDT$factor.returns)
     colnames(factor.returns)[2] <- "factor"
     factor.returns <- data.table::dcast(data = factor.returns , formula = date ~ factor, value.var = "factor.returns")
-    setcolorder(factor.returns,  c("date", factor.names))
+    data.table::setcolorder(factor.returns,  c("date", factor.names))
     factor.returns <- data.table::as.xts.data.table(factor.returns)
     
     #Exposure matrix for the last time period
@@ -945,7 +946,7 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
     # we should use pearson?
     ICtemp <- specObj$dataDT[, (IC_ = .(cor(get(e_), get(r_), use = "pair"))) , by = d_]
     
-    setnames(ICtemp,c(d_, paste0("IC_", e_)))
+    data.table::setnames(ICtemp,c(d_, paste0("IC_", e_)))
     data.table::setkeyv(ICtemp, d_)
     if (is.null(IC)) {
       IC <- ICtemp # the first exposure
@@ -1088,7 +1089,7 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
     }
     
     W = resid.DT[, .(W = 1/w), by = c("id", "date")] # id is the asset id
-    setnames(W,old =  c("id","date"), c(a_, d_)) # we need the original name of the asset id
+    data.table::setnames(W,old =  c("id","date"), c(a_, d_)) # we need the original name of the asset id
     
     # when the weighing scheme is not std deviation we need to merge bak by date and id
     # since the weights are time varying rather than jst 1/sample variance
@@ -1097,7 +1098,7 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
     
   } else {
     W = resid.DT[, .(W = 1/unique(resid.var)), by = id] # id is the asset id
-    setnames(W,old =  "id", a_) # we need the original name of the asset id
+    data.table::setnames(W,old =  "id", a_) # we need the original name of the asset id
     data.table::setkeyv(W, a_) # so that we can merger it back with the regression data set and
     # run weighted regressions
     data.table::setkeyv(SecondStepRegression, a_)
@@ -1147,7 +1148,7 @@ convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
   ffmObj$exposure.vars <- SpecObj$exposure.vars
   ffmObj$exposures.num <- SpecObj$exposures.num
   ffmObj$exposures.char <- SpecObj$exposures.char
-  ffmObj$data <- copy(SpecObj$dataDT)
+  ffmObj$data <- data.table::copy(SpecObj$dataDT)
   data.table::setkeyv(ffmObj$data, c(SpecObj$date.var, SpecObj$asset.var))  # to match the order
   # expected in reporting functions
   ffmObj$data = data.frame(ffmObj$data)
