@@ -17,8 +17,8 @@ standardizeExposures(
 "CrossSection", or "TimeSeries".
 Default is \code{"none"}.}
 
-\item{lambda}{lambda value to be used for the EWMA estimation of residual variances.
-Default is 0.9}
+\item{lambda}{lambda value to be used for the EWMA estimation of residual 
+variances. Default is 0.9}
 }
 \value{
 the ffM spec object with exposures z-scored

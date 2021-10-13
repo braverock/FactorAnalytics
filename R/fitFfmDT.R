@@ -28,8 +28,8 @@
 #' 
 #' @export
 #'
-specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.var = NULL,
-                    addIntercept = FALSE, rob.stats = FALSE){
+specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
+                    weight.var = NULL, addIntercept = FALSE, rob.stats = FALSE){
   
   # set defaults and check input validity
   if (missing(data) || !is.data.frame(data)) {
@@ -65,7 +65,8 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, weight.va
   # mido important change of order
   data.table::setkeyv(obj$dataDT,c(asset.var, date.var))
   
-  obj$dataDT[, idx := 1:.N, by = eval(asset.var)] # this is needed for path dependent calculations
+  # this is needed for path dependent calculations
+  obj$dataDT[, idx := 1:.N, by = eval(asset.var)] 
   
   # specify the variables
   obj$asset.var <- asset.var
@@ -128,8 +129,8 @@ lagExposures <- function(specObj){
   
   specObj$dataDT <- specObj$dataDT[!is.na(get(e_))]
   data.table::setkeyv(specObj$dataDT,c(a_, specObj$date.var))
-  
-  specObj$dataDT[, idx := 1:.N, by = eval(specObj$asset.var)] # this is needed for path dependent calculations
+  # this is needed for path dependent calculations
+  specObj$dataDT[, idx := 1:.N, by = eval(specObj$asset.var)] 
   
   return(specObj)
 }
@@ -144,8 +145,8 @@ lagExposures <- function(specObj){
 #' @param Std.Type method for exposure standardization; one of "none",
 #' "CrossSection", or "TimeSeries".
 #' Default is \code{"none"}.
-#' @param lambda lambda value to be used for the EWMA estimation of residual variances.
-#' Default is 0.9
+#' @param lambda lambda value to be used for the EWMA estimation of residual 
+#' variances. Default is 0.9
 #' @return the ffM spec object with exposures z-scored
 #' 
 #' @export
@@ -154,8 +155,6 @@ standardizeExposures <- function(specObj,
                                  Std.Type = c("None", "CrossSection", "TimeSeries"),
                                  lambda = 0.9){
   
-   
-  
   weight.var <- specObj$weight.var
   dataDT <- data.table::copy(specObj$dataDT) # hard_copy
   # we did have a copy but do we really need a full  copy, reference should be oka here
@@ -163,13 +162,14 @@ standardizeExposures <- function(specObj,
     stop("specObj must be class ffmSpec")
   }
   Std.Type = toupper(Std.Type[1])
-  Std.Type <- match.arg(arg = Std.Type, choices = toupper(c("NONE", "CROSSSECTION", "TIMESERIES")), several.ok = F )
+  Std.Type <- match.arg(arg = Std.Type, choices = toupper(c("NONE", "CROSSSECTION", "TIMESERIES")), 
+                        several.ok = F )
   
   d_ <- eval(specObj$date.var) # name of the date var
   # Convert numeric exposures to z-scores
   if (!grepl(Std.Type, "NONE")) {
     if (!is.null(weight.var)) {
-      dataDT[, w := get(weight.var)] # adding the weight variable to the data table
+      dataDT[, w := get(weight.var)] # adding the weight variable to dataDT
       # Weight exposures within each period using weight.var
       dataDT[ , w := w/sum(w, na.rm = TRUE), by = d_]
       
@@ -182,8 +182,9 @@ standardizeExposures <- function(specObj,
     if (grepl(Std.Type, "CROSSSECTION")) {
       for (e_ in specObj$exposures.num) {
         if (specObj$rob.stats) {
-          dataDT[, eval(e_) := (w * get(e_) - median(w * get(e_), na.rm = TRUE))/
-                   mad(w * get(e_), center = median(w * get(e_), na.rm = TRUE)), by = d_]
+          dataDT[, eval(e_) := (w * get(e_) - median(w * get(e_), na.rm = TRUE))/mad(w * get(e_), 
+                   center = median(w * get(e_), na.rm = TRUE)), 
+                   by = d_]
           
         } else {
           dataDT[, eval(e_) := (w * get(e_) - mean(w * get(e_), na.rm = TRUE))/
@@ -197,8 +198,8 @@ standardizeExposures <- function(specObj,
       # for each exposure...quartion : do we need to weight it here?
       #startIdx <- ifelse(specObj$lagged,2,1)
       for (e_ in specObj$exposures.num) {
-        # for each asset compute the difference between its exposure at time t - 1 and
-        #the Xsection mean of exposures and square it
+# for each asset compute the difference between its exposure at time t - 1 and
+# the Xsection mean of exposures and square it
         dataDT[, ts := (get(e_) - mean(get(e_), na.rm = TRUE))^2, by = d_]
         for ( i in 1:NROW(dataDT))
           set(dataDT,i, "s", ifelse(dataDT$idx[i] <= 1,
@@ -227,7 +228,7 @@ standardizeExposures <- function(specObj,
 #' @param specObj  specObj is a ffmSpec object,
 #' @param benchmark we might need market returns
 #' @param rfRate risk free rate
-#' @param isBenchExcess toggle to select whether to calculate excess returns or not
+#' @param isBenchExcess toggle to select whether to calculate excess returns
 #' 
 #' @export
 residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
