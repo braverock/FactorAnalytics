@@ -1037,6 +1037,7 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
 
 # private functions ----
 #' @importFrom robustbase scaleTau2 covOGK
+#' @importFrom data.table := set .SD
 #' 
 #Calculate Weights For Second Weighted Regression (private function)
 calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegression,
