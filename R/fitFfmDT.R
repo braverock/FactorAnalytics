@@ -7,6 +7,7 @@
 #' 
 #' @importFrom data.table as.data.table last setkey setkeyv copy shift key 
 #' setnames setcolorder 
+#' @importFrom stats ts
 #' 
 #' @param data data.frame of the balanced panel data containing the variables
 #' \code{asset.var}, \code{ret.var}, \code{exposure.vars}, \code{date.var} and
@@ -384,6 +385,7 @@ standardizeReturns <- function(specObj,
 #' \item{R_matrix}{The K+1 by K restriction matrix where K is the number of categorical variables for each date.}
 #'
 #' @importFrom RobStatTM lmrobdetMM
+#' @importFrom stats complete.cases
 #' 
 #' @export
 #'
@@ -646,6 +648,7 @@ fitFfmDT <- function(ffMSpecObj,
 #' 
 #' @importFrom RobStatTM covRob
 #' @importFrom data.table rbindlist dcast as.xts.data.table last
+#' @importFrom stats coefficients
 #' 
 #' @export
 #'
