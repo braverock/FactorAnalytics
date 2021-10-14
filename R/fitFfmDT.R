@@ -357,8 +357,18 @@ standardizeReturns <- function(specObj,
 #' "ROB" or "W-ROB". See details. Default is "LS".
 #' @param resid.scaleType one of 4 choices "StdDev","EWMA","RobustEWMA", "GARCH"
 #' @param lambda the ewma parameter
-#' @param GARCH.params control structure for GARCH e.g. list(omega = 0.09, alpha = 0.1, beta = 0.81)
-#' @param GARCH.MLE if GARCH is used we can use maximum likelihood
+#' @param GARCH.params list containing GARCH parameters omega, alpha, and beta. 
+#' Default values are (0.09, 0.1, 0.81) respectively. Valid only when 
+#' \code{GARCH.MLE} is set to \code{FALSE}. Estimation outsourced to the
+#'  rugarch package, please load it first. 
+#' @param GARCH.MLE boolean input (TRUE|FALSE), default value = \code{FALSE}. This
+#' argument allows one to choose to compute GARCH parameters by maximum 
+#' likelihood estimation. Estimation outsourced to the rugarch
+#' package, please load it. 
+#' @param lmrobdet.control.para.list list of parameters to pass to lmrobdet.control().
+#' Sets tuning parameters for the MM estimator implemented in lmrobdetMM of the
+#' RobStatTM package. See \code{\link[RobStatTM]{lmrobdetMM}}.
+#' @param ... additional pass through arguments
 #' @return \code{fitFfm} returns a list with two object of class \code{"data.table"}
 #' The first reg.listDT is object of class \code{"data.table"} is a list containing the following
 #' components:
@@ -380,8 +390,11 @@ standardizeReturns <- function(specObj,
 fitFfmDT <- function(ffMSpecObj,
                      fit.method=c("LS","WLS","Rob","W-Rob"),
                      resid.scaleType = c("StdDev","EWMA","RobustEWMA", "GARCH"),
-                     lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
-                     GARCH.MLE = FALSE, lmrobdet.control.para.list = lmrobdet.control(), ...){
+                     lambda = 0.9, 
+                     GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
+                     GARCH.MLE = FALSE, 
+                     lmrobdet.control.para.list = lmrobdet.control(), 
+                     ...){
   
   fit.method = toupper(fit.method[1])
   fit.method <- match.arg(arg = fit.method, choices = toupper(c("LS","WLS","ROB","W-ROB")), several.ok = F )
@@ -627,7 +640,7 @@ fitFfmDT <- function(ffMSpecObj,
 #' @title extractRegressionStats
 #' @description function to compute or Extract objects to be returned
 #' @param specObj fitFM object that has been already fit
-#' @param fitResults output from fitFMDT
+#' @param fitResults output from fitFfmDT
 #' @param full.resid.cov an option to calculate the full residual covariance or not
 #' @return a structure of class ffm holding all the information
 #' 
@@ -924,9 +937,16 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 
 #' @title calcFLAM
 #' @description function to calculate fundamental law of active management
-#' @param analysis method used in the analysis of fundamental law of active management; one of "none", "ISM",
-#' or "NEW". Default is "none".
-#' @param targetedVol numeric; the targeted portfolio volatility in the analysis. Default is 0.06.
+#' @param specObj an object as the output from specFfm function
+#' @param modelStats Model Stats
+#' @param fitResults output from fitFfmDT
+#' @param analysis type character, choice of c("none", "ISM","NEW"). Default = "none".  
+#' Corresponds to methods used in the analysis of fundamental law of active management.
+#' @param targetedVol numeric; the targeted portfolio volatility in the analysis. 
+#' Default is 0.06.
+#' @param ... additional arguments
+#' 
+
 calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW"),
                      targetedVol = 0.06, ...){
   
@@ -1124,6 +1144,7 @@ calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegres
 #' @param SpecObj an object as the output from specFfm function
 #' @param FitObj an object as the output from fitFfmDT function
 #' @param RegStatsObj an object as the output from extractRegressionStats function
+#' @param ... additional arguments
 #' @method convert ffmSpec
 #' @export
 convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
@@ -1179,6 +1200,10 @@ convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
 #' @title convert
 #' @description function to convert the new ffm spec object to ffm object to make it
 #' easier in plotting and reporting
+#' @param SpecObj an object as the output from specFfm function
+#' @param FitObj an object as the output from fitFfmDT function
+#' @param RegStatsObj an object as the output from extractRegressionStats function
+#' @param ... additional arguments
 #' @export
 #'
 convert <- function(SpecObj, FitObj, RegStatsObj, ...) {

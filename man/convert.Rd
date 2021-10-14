@@ -6,6 +6,15 @@
 \usage{
 convert(SpecObj, FitObj, RegStatsObj, ...)
 }
+\arguments{
+\item{SpecObj}{an object as the output from specFfm function}
+
+\item{FitObj}{an object as the output from fitFfmDT function}
+
+\item{RegStatsObj}{an object as the output from extractRegressionStats function}
+
+\item{...}{additional arguments}
+}
 \description{
 function to convert the new ffm spec object to ffm object to make it
 easier in plotting and reporting

@@ -9,7 +9,7 @@ extractRegressionStats(specObj, fitResults, full.resid.cov = FALSE)
 \arguments{
 \item{specObj}{fitFM object that has been already fit}
 
-\item{fitResults}{output from fitFMDT}
+\item{fitResults}{output from fitFfmDT}
 
 \item{full.resid.cov}{an option to calculate the full residual covariance or not}
 }
