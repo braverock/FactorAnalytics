@@ -32,6 +32,7 @@ Imports:
     sandwich,
     lattice,
     sn,
+    boot,
     foreach,
     parallel,
     doSNOW,

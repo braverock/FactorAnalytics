@@ -937,6 +937,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 
 #' @title calcFLAM
 #' @description function to calculate fundamental law of active management
+#' @importFrom data.table data.table .N
 #' @param specObj an object as the output from specFfm function
 #' @param modelStats Model Stats
 #' @param fitResults output from fitFfmDT
@@ -952,7 +953,8 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
   
   
   # only works for SFM
-  analysis <- match.arg(toupper(analysis[1]), choices = c("ISM", "NEW"), several.ok = F)
+  analysis <- match.arg(toupper(analysis[1]), choices = c("ISM", "NEW"), 
+                        several.ok = F)
   
   # check if returns are lagged.. or I guess exposures are lagged then proceed.
   d_ <- eval(specObj$date.var)
@@ -967,7 +969,7 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
     # we should use pearson?
     ICtemp <- specObj$dataDT[, (IC_ = .(cor(get(e_), get(r_), use = "pair"))) , by = d_]
     
-    data.table::setnames(ICtemp,c(d_, paste0("IC_", e_)))
+    data.table::setnames(ICtemp, c(d_, paste0("IC_", e_)))
     data.table::setkeyv(ICtemp, d_)
     if (is.null(IC)) {
       IC <- ICtemp # the first exposure

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fmmc.R
 \name{.fmmc.default.args}
 \alias{.fmmc.default.args}
-\title{Functions to compute estimates and thier standard errors using fmmc
+\title{Functions to compute estimates and their standard errors using fmmc
 
 Control default arguments. Usually for FactorAnalytics.}
 \usage{
@@ -12,7 +12,7 @@ Control default arguments. Usually for FactorAnalytics.}
 \item{...}{Arguments that must be passed to fitTsfm}
 }
 \description{
-Functions to compute estimates and thier standard errors using fmmc
+Functions to compute estimates and their standard errors using fmmc
 
 Control default arguments. Usually for FactorAnalytics.
 }
