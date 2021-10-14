@@ -88,16 +88,23 @@
 #' sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are 
 #' \code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.Default is 
 #' \code{stdDev} where the inverse of residual sample variances are used as the 
-#' weights. If using GARCH option, make sure to install and load rugarch package.
+#' weights. If using GARCH option, make sure to install and load 
+#' rugarch package.
 #' @param lambda lambda value to be used for the EWMA estimation of residual 
 #' variances. Default is 0.9
 #' @param GARCH.params list containing GARCH parameters omega, alpha, and beta. 
-#' Default values are 0.09, 0.1, 0.81 respectively. Valid only when 
-#' \code{GARCH.MLE} is set to \code{FALSE}. Make sure to load rugarch package.
+#' Default values are (0.09, 0.1, 0.81) respectively. Valid only when 
+#' \code{GARCH.MLE} is set to \code{FALSE}. Estimation outsourced to the
+#'  rugarch package, please load it first. 
+#' @param GARCH.MLE boolean input (TRUE|FALSE), default value = \code{FALSE}. This
+#' argument allows one to choose to compute GARCH parameters by maximum 
+#' likelihood estimation. Estimation outsourced to the rugarch
+#' package, please load it.  
 #' @param analysis method used in the analysis of fundamental law of active 
 #' management; one of "none", "ISM", or "NEW". Default is "none".
 #' @param stdReturn logical; If \code{TRUE}, the returns will be standardized 
-#' using GARCH(1,1) volatilities. Default is \code{FALSE}. Make sure to load rugarch package.
+#' using GARCH(1,1) volatilities. Default is \code{FALSE}. Make sure to load 
+#' rugarch package.
 #' @param targetedVol numeric; the targeted portfolio volatility in the analysis. 
 #' Default is 0.06.
 #' @param ... potentially further arguments passed.
@@ -195,12 +202,20 @@
 
 
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
-                   weight.var=NULL, fit.method=c("LS","WLS","Rob","W-Rob"), 
-                   rob.stats=FALSE, full.resid.cov=FALSE, z.score = c("none", "crossSection", "timeSeries"), 
-                   addIntercept = FALSE, lagExposures=TRUE, resid.scaleType = "stdDev",
-                   lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81), 
-                   GARCH.MLE = FALSE, stdReturn = FALSE, analysis = c("none", "ISM", "NEW"), 
-                   targetedVol = 0.06, ...) {
+                   weight.var = NULL, 
+                   fit.method = c("LS","WLS","Rob","W-Rob"), 
+                   rob.stats = FALSE, 
+                   full.resid.cov = FALSE, 
+                   z.score = c("none", "crossSection", "timeSeries"), 
+                   addIntercept = FALSE, 
+                   lagExposures = TRUE, 
+                   resid.scaleType = "stdDev",
+                   lambda = 0.9, 
+                   GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81), 
+                   GARCH.MLE = FALSE, 
+                   stdReturn = FALSE, analysis = c("none", "ISM", "NEW"), 
+                   targetedVol = 0.06, 
+                   ...) {
   
   
   # record the call as an element to be returned
