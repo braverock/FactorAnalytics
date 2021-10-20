@@ -942,7 +942,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 #' @description function to calculate fundamental law of active management
 #' @importFrom data.table data.table .N
 #' @param specObj an object as the output from specFfm function
-#' @param modelStats Model Stats
+#' @param modelStats  output of the extractRegressionStats functions. 
+#' Contains fit statistics of the factor model.
 #' @param fitResults output from fitFfmDT
 #' @param analysis type character, choice of c("none", "ISM","NEW"). Default = "none".  
 #' Corresponds to methods used in the analysis of fundamental law of active management.

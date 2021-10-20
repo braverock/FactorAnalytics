@@ -16,7 +16,8 @@ calcFLAM(
 \arguments{
 \item{specObj}{an object as the output from specFfm function}
 
-\item{modelStats}{Model Stats}
+\item{modelStats}{output of the extractRegressionStats functions. 
+Contains fit statistics of the factor model.}
 
 \item{fitResults}{output from fitFfmDT}
 
