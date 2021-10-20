@@ -2,16 +2,23 @@
 % Please edit documentation in R/mergeData.R
 \name{mergeSPGMICRSP}
 \alias{mergeSPGMICRSP}
-\title{Merge data SPGMI scores with CRSP stocks.}
+\title{Merge SPGMI scores with CRSP stocks}
 \usage{
 mergeSPGMICRSP()
 }
+\arguments{
+\item{stocksCRSP}{a data.frame contains stocks in CRSP format. Default = 
+stocksCRSP. See \link{stocksCRSP}}
+
+\item{scoresSPGMI}{a data.frame contains factors in SPGMI format. Default =
+scoresSPGMI. See \link{scoresSPGMI}}
+}
 \description{
-Merge data SPGMI scores with CRSP stocks.
+Merge SPGMI scores with CRSP stocks
 }
 \examples{
-data(stocksCRSP)
-data(scoresSPGMI)
+data(stocksCRSP, package = "FactorAnalytics")
+data(scoresSPGMI, package = "FactorAnalytics")
 dataSPGMICRSP = mergeSPGMICRSP()
 }
 \author{
