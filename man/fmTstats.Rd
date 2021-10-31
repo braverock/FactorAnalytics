@@ -73,7 +73,8 @@ should be scaled relative to the default. Default = 1. 1.5 is 50\% larger,
 Default is \code{TRUE}.}
 }
 \value{
-\code{fmTstats} plots the t-stats and significant t-stats values  if \code{isPlot} is \code{TRUE} and returns a list with following components:
+\code{fmTstats} plots the t-stats and significant t-stats values  
+if \code{isPlot} is \code{TRUE} and returns a list with following components:
 \item{tstats}{ an xts object of t-stats values.}
 \item{z.alpha}{ critical value corresponding to the confidence interval.}
 }
@@ -84,20 +85,22 @@ Calculate and plot the time series of t-statistic values and the
 }
 \examples{
  
- data("factorDataSetDjia5Yrs")
+data("factorDataSetDjia5Yrs")
  
 #Fit a Ffm with style factors only
  fit <- fitFfm(data = factorDataSetDjia5Yrs,
                exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
-               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+               date.var = "DATE", 
+               ret.var = "RETURN", 
+               asset.var = "TICKER", 
                fit.method = "WLS",
                z.score = "crossSection")
 
 #Compute time series of t-stats and number of significant t-stats 
  stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), 
-                  z.alpha =1.96)
+                  z.alpha = 1.96)
 
-fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", 
+fit1 <- fitFfm(data = factorDataSetDjia5Yrs, asset.var = "TICKER", 
                exposure.vars = c("SECTOR","MKTCAP","ENTVAL","P2B"),
                ret.var = "RETURN", 
                date.var = "DATE", 
@@ -109,7 +112,7 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER",
 # Fit a SECTOR+COUNTRY+Style model with Intercept
 # Create a COUNTRY column with just 3 countries
 
- factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
+ factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ), rep("GERMANY", 1 )), 11), 60)
  
  fit.MICM <- fitFfm(data = factorDataSetDjia5Yrs, 
                     asset.var = "TICKER",
