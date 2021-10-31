@@ -11,7 +11,7 @@ fmTstats(ffmObj, ...)
   ffmObj,
   isPlot = TRUE,
   isPrint = FALSE,
-  whichPlot = "all",
+  whichPlot = "tStats",
   color = c("black", "cyan"),
   lwd = 2,
   digits = 2,
@@ -34,8 +34,10 @@ fmTstats(ffmObj, ...)
 
 \item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE},}
 
-\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ).
-Three variants of significantTstats stand for vertical, horizontal and likert barplots. Default is \code{all} plotting t-stats and significant t-stats with vertical bars.}
+\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from 
+("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert").
+Three variants of significantTstats stand for vertical, horizontal and likert barplots. 
+Default is \code{tStats} plotting t-stats and significant t-stats with vertical bars.}
 
 \item{color}{length 2 vector specifying the plotting color for t-stats plot and for barplot 
 respectively. default is \code{c("black", "cyan")}}
@@ -76,7 +78,7 @@ Calculate and plot the time series of the t-statistic values and the
  fit <- fitFfm(data = factorDataSetDjia5Yrs,
                exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
                date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-               fit.method="WLS",
+               fit.method = "WLS",
                z.score = "crossSection")
 
 #Compute time series of t-stats and number of significant t-stats 

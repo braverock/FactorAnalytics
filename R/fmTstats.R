@@ -2,7 +2,8 @@
 #' 
 #' @description
 #'  Calculate and plot the time series of the t-statistic values and the
-#'  number of risk indices with significant t-stats for a fundamentally fit object.
+#'  number of risk indices with significant t-stats for a fundamental factor model
+#'  object.
 #'  
 #' @importFrom data.table melt as.data.table
 #' @importFrom zoo plot.zoo coredata as.yearmon
@@ -10,11 +11,14 @@
 #' @importFrom grDevices dev.off
 #' @importFrom stats vcov
 #'  
-#' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
-#' @param isPlot   logical. If \code{FALSE} no plots are displayed.
-#' @param isPrint  logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE}, 
-#' @param whichPlot string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ).
-#'                   Three variants of significantTstats stand for vertical, horizontal and likert barplots. Default is \code{all} plotting t-stats and significant t-stats with vertical bars.
+#' @param ffmObj an object of class \code{ffm} produced by \code{fitFfm}
+#' @param isPlot logical. If \code{FALSE} no plots are displayed.
+#' @param isPrint logical. if \code{TRUE}, the time series of the computed factor model values is printed. 
+#' Default is \code{FALSE}, 
+#' @param whichPlot string indicating the plot(s) to be plotted. Choose from 
+#' ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert").
+#' Three variants of significantTstats stand for vertical, horizontal and likert barplots. 
+#' Default is \code{tStats} plotting t-stats and significant t-stats with vertical bars.
 #' @param color  length 2 vector specifying the plotting color for t-stats plot and for barplot 
 #'                 respectively. default is \code{c("black", "cyan")}
 #' @param lwd      line width relative to the default. default is 2.
@@ -43,7 +47,7 @@
 #'  fit <- fitFfm(data = factorDataSetDjia5Yrs,
 #'                exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
 #'                date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'                fit.method="WLS",
+#'                fit.method = "WLS",
 #'                z.score = "crossSection")
 #'
 #'#Compute time series of t-stats and number of significant t-stats 
@@ -90,10 +94,12 @@ fmTstats <- function(ffmObj, ...){
 #' @method fmTstats ffm
 #' @export
 #' 
-fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all", 
-                        color = c("black", "cyan"),lwd =2, digits =2, 
-                        z.alpha = 1.96, layout =c(2,3),type ="h", scale = "free", 
-                        stripText.cex =1,axis.cex=1, title = TRUE, ... ) {
+fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,
+                        whichPlot = "tStats", color = c("black", "cyan"), 
+                        lwd = 2, digits =2, z.alpha = 1.96, layout = c(2,3), 
+                        type = "h", scale = "free", 
+                        stripText.cex = 1, axis.cex = 1, 
+                        title = TRUE, ... ) {
   
   # CREATE TIME SERIES OF T-STATS
   time.periods = length(ffmObj$time.periods)
@@ -171,7 +177,7 @@ fmTstats.ffm<- function(ffmObj, isPlot = TRUE, isPrint = FALSE,whichPlot = "all"
     if(whichPlot == "significantTstatsLikert")
     {
       
-        plt = likert(var ~ ., percent.sigTstats,
+        plt = HH::likert(var ~ ., percent.sigTstats,
                      scales=list(y=list(cex=stripText.cex), x=list(cex=axis.cex)),
                      positive.order=TRUE, 
                      between=list(y=0),
