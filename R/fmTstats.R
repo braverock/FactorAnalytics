@@ -1,9 +1,9 @@
-#' @title  t-stats and Plots for a fitted Fundamental Factor Model
+#' @title  t-stats and plots for a fitted Fundamental Factor Model object 
 #' 
 #' @description
-#'  Calculate and plot the time series of the t-statistic values and the
-#'  number of risk indices with significant t-stats for a fundamental factor model
-#'  object.
+#'  Calculate and plot the time series of t-statistic values and the
+#'  number of risk indices with significant t-stats for a fundamental factor 
+#'  model of class \code{ffm} produced by \code{fitFfm} or \code{fitFfmDT}
 #'  
 #' @importFrom data.table melt as.data.table
 #' @importFrom zoo plot.zoo coredata as.yearmon
@@ -13,25 +13,34 @@
 #'  
 #' @param ffmObj an object of class \code{ffm} produced by \code{fitFfm}
 #' @param isPlot logical. If \code{FALSE} no plots are displayed.
-#' @param isPrint logical. if \code{TRUE}, the time series of the computed factor model values is printed. 
-#' Default is \code{FALSE}, 
+#' @param isPrint logical. if \code{TRUE}, the time series of the computed 
+#' factor model values is printed. Default is \code{FALSE}
 #' @param whichPlot string indicating the plot(s) to be plotted. Choose from 
 #' ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert").
 #' Three variants of significantTstats stand for vertical, horizontal and likert barplots. 
 #' Default is \code{tStats} plotting t-stats and significant t-stats with vertical bars.
-#' @param color  length 2 vector specifying the plotting color for t-stats plot and for barplot 
-#'                 respectively. default is \code{c("black", "cyan")}
-#' @param lwd      line width relative to the default. default is 2.
-#' @param digits   an integer indicating the number of decimal places to be used for rounding. default is 2.
-#' @param z.alpha  critical value corresponding to the confidence interval. default is 1.96 i.e 95\% C.I
-#' @param layout   numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in the xyplot of t-statistics. default is c(2,3).
-#' @param type     character. Type of the xyplot of t-statistics; \code{"l"} for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) vertical lines
-#'                 and \code{"b"} for both. Deafault is \code{"h"}.
-#' @param scale    character. It determines how axis limits are calculated for each panel. Possible values are "same" , "free" (default) and "sliced".
-#' @param stripText.cex a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
-#' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
-#' @param title    logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.
-
+#' @param color  length 2 vector specifying the plotting color for t-stats plot 
+#' and for barplot respectively. default is \code{c("black", "cyan")}
+#' @param lwd line width relative to the default. default is 2.
+#' @param digits an integer indicating the number of decimal places to be used 
+#' for rounding. default is 2.
+#' @param z.alpha  critical value corresponding to the confidence interval. 
+#' Default is 1.96 i.e 95\% C.I
+#' @param layout numeric vector of length 2 or 3 giving the number of columns, 
+#' rows, and pages (optional) in the xyplot of t-statistics. default is c(2,3).
+#' @param type type character. Type of the xyplot of t-statistics; \code{"l"} 
+#' for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) 
+#' vertical lines and \code{"b"} for both. Default is \code{"h"}.
+#' @param scale character. It determines how axis limits are calculated for each 
+#' panel. Possible values are "same" , "free" (default) and "sliced".
+#' @param stripText.cex a number indicating the amount by which strip text in 
+#' the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% 
+#' larger, 0.5 is 50\% smaller, etc.
+#' @param axis.cex a number indicating the amount by which axis in the plot(s) 
+#' should be scaled relative to the default. Default = 1. 1.5 is 50\% larger, 
+#' 0.5 is 50\% smaller, etc.
+#' @param title logical. if \code{TRUE}, the plots will have the main title. 
+#' Default is \code{TRUE}.
 #' @param ...     potentially further arguments passed.
 #' 
 #' @author Avinash Acharya and Doug Martin
