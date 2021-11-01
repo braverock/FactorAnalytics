@@ -37,7 +37,7 @@ jobs:
           install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
-        - name: Install packages listed in Suggests
+      - name: Install packages listed in Suggests
         run: |
           install.packages(c("remotes", "rcmdcheck", "R.rsp", "tinytest", 
           "corrplot", "lmtest", "rugarch", "strucchange", "HH"), 
