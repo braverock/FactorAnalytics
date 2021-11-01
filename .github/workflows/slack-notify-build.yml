@@ -27,7 +27,11 @@ jobs:
       - name: Install curl
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install curl libcurl4-openssl-dev git-lfs git
+          sudo apt-get install curl libcurl4-openssl-dev 
+      - name: Install Git Large File Storage (LFS)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install git git-lfs 
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
@@ -35,10 +39,10 @@ jobs:
         shell: Rscript {0}
         
       - name: Check
-        run: rcmdcheck::rcmdcheck(args = "--as-cran")
+        run: rcmdcheck::rcmdcheck(args = "--as-cran", error_on = "error")
         shell: Rscript {0}
         env:
-          _R_CHECK_FORCE_SUGGESTS_: false
+          _R_CHECK_FORCE_SUGGESTS_: true
 
       - name: Notify slack success
         if: success()
