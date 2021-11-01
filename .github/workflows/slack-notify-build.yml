@@ -27,7 +27,7 @@ jobs:
       - name: Install curl
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install curl libcurl4-openssl-dev
+          sudo apt-get install curl libcurl4-openssl-dev git-lfs git
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
@@ -35,7 +35,7 @@ jobs:
         shell: Rscript {0}
         
       - name: Check
-        run: rcmdcheck::rcmdcheck(args = c("--as-cran"))
+        run: rcmdcheck::rcmdcheck(args = "--as-cran")
         shell: Rscript {0}
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
