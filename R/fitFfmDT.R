@@ -1044,25 +1044,37 @@ calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW")
 
 # private functions ----
 #' @importFrom robustbase scaleTau2 covOGK
-#' @importFrom data.table := set .SD
+#' @importFrom data.table := set .SD 
 #' 
 #Calculate Weights For Second Weighted Regression (private function)
-calcAssetWeightsForRegression <- function(specObj, fitResults , SecondStepRegression,
-                                          resid.scaleType = "STDDEV",  lambda = 0.9,
-                                          GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
-                                          GARCH.MLE = FALSE){
+calcAssetWeightsForRegression <- function(specObj, 
+                                          fitResults , 
+                                          SecondStepRegression,
+                                          resid.scaleType = "STDDEV",  
+                                          lambda = 0.9,
+                                          GARCH.params = list(omega = 0.09, 
+                                                              alpha = 0.1, 
+                                                              beta = 0.81),
+                                          GARCH.MLE = FALSE) {
   
-   
+  # Due to NSE notes related to data.table in R CMD check
+  . = reg.list = id = idx = resid.var = ugarchspec = ugarchfit = w = NULL
+  # See data.table "Importing data.table" vignette
   
   resid.scaleType = toupper(resid.scaleType[1])
-  resid.scaleType <- match.arg(arg = resid.scaleType, choices = toupper(c("STDDEV","EWMA","ROBUSTEWMA", "GARCH")), several.ok = F )
+  resid.scaleType <- match.arg(arg = resid.scaleType, 
+                               choices = toupper(c("STDDEV",
+                                                   "EWMA", "ROBUSTEWMA", 
+                                                   "GARCH")), 
+                               several.ok = F)
   
   a_ <- eval(specObj$asset.var) # data table requires variable names to be evaluated
   d_ <- eval(specObj$date.var) # name of the date var
   
-  fitResults[, residuals := .(.(data.frame(date = get(d_)[[1]], id = fitResults$id[[1]],
+  fitResults[, residuals := .(.(data.frame(date = get(d_)[[1]], 
+                                           id = fitResults$id[[1]],
                                            residuals = residuals(reg.list[[1]])))), by = d_]
-  # now we have to extract the asset level residuals series and get their time series variance or
+  # extract the asset level residuals series and get time series variance or
   # robust stats
   resid.DT <- data.table::rbindlist(l = fitResults$residuals)
   data.table::setkey(resid.DT, id, date)
