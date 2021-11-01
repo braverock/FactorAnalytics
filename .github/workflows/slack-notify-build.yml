@@ -38,6 +38,8 @@ jobs:
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         shell: Rscript {0}
+        env:
+          _R_CHECK_FORCE_SUGGESTS_: false
 
       - name: Notify slack success
         if: success()
