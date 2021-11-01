@@ -208,8 +208,10 @@ summary(ffmObj)$sum.list[[a]]$coefficients[((fac.num+1):(fac.num+n.expo.num)),2]
     }
     if(whichPlot == "significantTstatsH")
     {
+      
         combined.sigTstatsH = combined.sigTstats[ ,c(3, 1, 2)]
         mydata = data.table::as.data.table( t(combined.sigTstatsH))
+        id <- NULL # due to NSE notes in R CMD check
         mydata$id <- c("Total", "Negative","Positive")
         mydata$id  = factor(mydata$id , levels = c("Total", "Negative","Positive"))
         dat <- data.table::melt(mydata, id.vars = "id")
