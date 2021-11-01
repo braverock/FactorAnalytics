@@ -117,19 +117,25 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
 #'
 lagExposures <- function(specObj){
   
-   
+  idx <- NULL # due to NSE notes related to data.table in R CMD check 
   
   a_ <- eval(specObj$asset.var) # name of the asset column or id
+  
   specObj$dataDT <- data.table::copy(specObj$dataDT) # hard_copy
-  # need to protect against only categorical variables #mido
+  
+  # need to protect against only categorical variables -Mido
+  
   # for (e_ in specObj$exposures.num){
   for (e_ in specObj$exposure.vars){
     specObj$dataDT[, eval(e_) := shift(get(e_), fill = NA, type = "lag") , by = a_]
   }
+  
   specObj$lagged <- TRUE
   
   specObj$dataDT <- specObj$dataDT[!is.na(get(e_))]
+  
   data.table::setkeyv(specObj$dataDT,c(a_, specObj$date.var))
+  
   # this is needed for path dependent calculations
   specObj$dataDT[, idx := 1:.N, by = eval(specObj$asset.var)] 
   
@@ -799,8 +805,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
     g <- data.table::as.xts.data.table(g)
     g.cov <- cov(g)
     K <- length(levels(specObj$dataDT[[specObj$exposures.char]]))
-    # the first matrix contains the categorical variables that had the restriction matrix applied to
-    # the second is the style varaiibles
+    # the first matrix contains the categorical variables that had the 
+    # restriction matrix applied to the second is the style variables
     if (length(specObj$exposures.num)) {
       factor.returns <- factor.returns[, .(factor.returns1 = .(R_matrix[[1]] %*% g[[1]][1:K]),
                                            factor.returns2 = .(g[[1]][(K+1): length(g[[1]])])), by = d_]
