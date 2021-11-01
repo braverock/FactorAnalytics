@@ -125,10 +125,14 @@ return of a portfolio based on Euler's theorem, given the fitted factor model.
 }
 \examples{
 # Time Series Factor Model
+
 data(managers, package = 'PerformanceAnalytics')
-fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
-                     factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers[,10]), data=managers)
+
+fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+                     factor.names = colnames(managers[,(7:9)]),
+                     rf.name = colnames(managers[,10]), 
+                     data = managers)
+                     
 report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR', 
                   nrowPrint = 10)
 report 
@@ -140,27 +144,35 @@ repRisk(fit.macro, risk = "ES", decomp = 'FPCR', isPrint = FALSE,
 # Fundamental Factor Model
 data("stocks145scores6")
 dat = stocks145scores6
-dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-          dat$DATE <= as.yearmon("2012-12-31"),]
+dat$DATE = zoo::as.yearmon(dat$DATE)
+dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+
 
 # Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
 wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
                                                      
 # fit a fundamental factor model
+exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M", "EP")
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-              "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-              fit.method="WLS", z.score = "crossSection")
+                    exposure.vars = exposure.vars,
+                    date.var = "DATE", 
+                    ret.var = "RETURN", 
+                    asset.var = "TICKER", 
+                    fit.method="WLS", 
+                    z.score = "crossSection")
+              
 repRisk(fit.cross, risk = "Sd", decomp = 'FCR', nrowPrint = 10,
         digits = 4) 
+        
 # get the factor contributions of risk 
 repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-        nrowPrint = 10)          
+        nrowPrint = 10)       
+           
 # portfolio only decomposition
 repRisk(fit.cross, wtsStocks145GmvLo, risk = c("VaR", "ES"), decomp = 'FPCR', 
-        portfolio.only = TRUE)       
+        portfolio.only = TRUE)    
+           
 # plot
 repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
         isPrint = FALSE, nrowPrint = 15, isPlot = TRUE, layout = c(4,2))  

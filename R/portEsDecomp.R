@@ -9,7 +9,7 @@
 #' 
 #' @importFrom stats quantile residuals cov resid qnorm
 #' @importFrom xts as.xts  
-#' @importFrom zoo as.Date index 
+#' @importFrom zoo zoo as.yearmon index
 #' 
 #' @details The factor model for a portfolio's return at time \code{t} has the 
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
@@ -59,11 +59,17 @@
 #' 
 #' @examples
 #' # Time Series Factor Model
+#' 
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
-#' fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
-#'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name=colnames(managers[,10]), data=managers)
-#' ES.decomp <- portEsDecomp(fit.macro,invert = TRUE)
+#' 
+#' fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+#'                      factor.names = colnames(managers[,(7:9)]),
+#'                      rf.name = colnames(managers[,10]), 
+#'                      data = managers)
+#'                      
+#' ES.decomp <- portEsDecomp(fit.macro, invert = TRUE)
+#' 
 #' # get the component contributions
 #' ES.decomp$cES
 #' 
@@ -71,14 +77,14 @@
 #' wts = runif(6)
 #' wts = wts/sum(wts)
 #' names(wts) <- colnames(managers)[1:6]
+#' 
 #' portEsDecomp(fit.macro, wts)
 #' 
 #' # Fundamental Factor Model
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-#'           dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
 #'
 #' # Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -86,13 +92,18 @@
 #'                                                      
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = "crossSection")
+#'               exposure.vars = c("SECTOR","ROE","BP","SIZE", "EP"),
+#'               date.var = "DATE", 
+#'               ret.var = "RETURN", 
+#'               asset.var = "TICKER", 
+#'               fit.method="WLS", 
+#'               z.score = "crossSection")
 #'               
 #' decomp = portEsDecomp(fit.cross) 
+#' 
 #' #get the factor contributions of risk 
 #' decomp$cES
+#' 
 #' portEsDecomp(fit.cross, weights = wtsStocks145GmvLo)  
 #' @export
 
@@ -108,6 +119,7 @@ portEsDecomp <- function(object, ...){
 #' @rdname portEsDecomp
 #' @method portEsDecomp tsfm
 #' @importFrom zoo index 
+#' @importFrom xts as.xts
 #' @export
 
 portEsDecomp.tsfm <- function(object, weights = NULL, p=0.05, type=c("np","normal"), 
@@ -148,7 +160,7 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.05, type=c("np","norma
   
   # factor returns and residuals data
   factors.xts <- object$data[,object$factor.names]
-  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
+  resid.xts <- xts::as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
   if (type=="normal") {
@@ -185,7 +197,7 @@ portEsDecomp.tsfm <- function(object, weights = NULL, p=0.05, type=c("np","norma
   match = colnames(object$data) %in% asset.names
   R.xts <- object$data[,match]
   R.xts <- R.xts * weights
-  R.xts = as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
+  R.xts = xts::as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
   names(R.xts) = 'RETURN'
   
   if (type=="np") { 
@@ -275,7 +287,7 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c(
 
   # factor returns and residuals data
   factors.xts <- object$factor.returns
-  resid.xts <- as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
+  resid.xts <- xts::as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
   if (type=="normal") {
@@ -318,7 +330,7 @@ portEsDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c(
   # return data for portfolio
   R.xts = tapply(dat[,object$ret.var], list(dat[,object$date.var], dat[,object$asset.var]), FUN = I)
   R.xts <- R.xts * weights
-  R.xts = as.xts(rowSums(R.xts), order.by = object$time.periods)
+  R.xts = xts::as.xts(rowSums(R.xts), order.by = object$time.periods)
   names(R.xts) = 'RETURN'
   
   

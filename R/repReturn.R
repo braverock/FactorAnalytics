@@ -38,26 +38,32 @@
 #' #Load fundamental and return data 
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
-#'           & dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+#'
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
 #' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)                         
 #'                                                                                  
-#' #fit a fundamental factor model
 #' # fit a fundamental factor model
+#' exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE", "ANNVOL1M", "EP")
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = "crossSection")
+#'               exposure.vars = exposure.vars,
+#'               date.var = "DATE", 
+#'               ret.var = "RETURN", 
+#'               asset.var = "TICKER", 
+#'               fit.method="WLS", 
+#'               z.score = "crossSection")
 #'
 #' repReturn(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+#' 
 #' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
 #'           which = 4)
+#'           
 #' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
 #'           which = 1, add.grid = TRUE, scaleType = 'same')
+#'           
 #' repReturn(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
 #'           which = 2, add.grid = FALSE, zeroLine = TRUE, color = 'Blue', 
 #'           scaleType = 'free')              
@@ -104,7 +110,7 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
   
   #portfolio residuals
   sig.p <- sig * weights
-  sig.p <- as.xts(rowSums(coredata(sig.p)), order.by = index(sig.p))
+  sig.p <- xts::as.xts(rowSums(coredata(sig.p)), order.by = zoo::index(sig.p))
   colnames(sig.p) = 'ResidRet'
   
   
@@ -147,10 +153,10 @@ repReturn <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, lay
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
     X = rbind(X,temp)
   }
-  X = as.xts(X[,-1],order.by = X[,1])
+  X = xts::as.xts(X[,-1],order.by = X[,1])
   
-  rk = as.xts(coredata(X) * coredata(facRet), order.by = index(sig.p)) 
-  facRet.p = as.xts(rowSums(coredata(rk)), order.by = index(sig.p))
+  rk = xts::as.xts(coredata(X) * coredata(facRet), order.by = zoo::index(sig.p)) 
+  facRet.p = xts::as.xts(rowSums(coredata(rk)), order.by = zoo::index(sig.p))
   colnames(facRet.p) = 'FacRet'
   
   ret.p =facRet.p + sig.p

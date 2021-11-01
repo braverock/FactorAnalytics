@@ -5,7 +5,8 @@
 #' return of a portfolio based on Euler's theorem, given the fitted factor model.
 #' 
 #' @importFrom lattice barchart
-#' @importFrom data.table melt
+#' @importFrom data.table melt as.data.table
+#' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
 #' @param p tail probability for calculation. Default is 0.05.
 #' @param weights a vector of weights of the assets in the portfolio, names of 
@@ -65,10 +66,14 @@
 #' 
 #' @examples
 #' # Time Series Factor Model
+#' 
 #' data(managers, package = 'PerformanceAnalytics')
-#' fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
-#'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name=colnames(managers[,10]), data=managers)
+#' 
+#' fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+#'                      factor.names = colnames(managers[,(7:9)]),
+#'                      rf.name = colnames(managers[,10]), 
+#'                      data = managers)
+#'                      
 #' report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR', 
 #'                   nrowPrint = 10)
 #' report 
@@ -80,36 +85,45 @@
 #' # Fundamental Factor Model
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-#'           dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+#'
 #'
 #' # Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
 #' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
 #'                                                      
 #' # fit a fundamental factor model
+#' exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M", "EP")
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = "crossSection")
+#'                     exposure.vars = exposure.vars,
+#'                     date.var = "DATE", 
+#'                     ret.var = "RETURN", 
+#'                     asset.var = "TICKER", 
+#'                     fit.method="WLS", 
+#'                     z.score = "crossSection")
+#'               
 #' repRisk(fit.cross, risk = "Sd", decomp = 'FCR', nrowPrint = 10,
 #'         digits = 4) 
+#'         
 #' # get the factor contributions of risk 
 #' repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-#'         nrowPrint = 10)          
+#'         nrowPrint = 10)       
+#'            
 #' # portfolio only decomposition
 #' repRisk(fit.cross, wtsStocks145GmvLo, risk = c("VaR", "ES"), decomp = 'FPCR', 
-#'         portfolio.only = TRUE)       
+#'         portfolio.only = TRUE)    
+#'            
 #' # plot
 #' repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
 #'         isPrint = FALSE, nrowPrint = 15, isPlot = TRUE, layout = c(4,2))  
 #' @export    
 
 
-repRisk <- function(object, ...)
-{
+repRisk <- function(object, ...) {
+  
   # check input object validity
+             
   if(inherits(object, "list"))
   {
     for(i in 1: length(object))
@@ -649,7 +663,7 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
         {
           result = output[[1]]
           result.mat = result[,-1]
-          newdata = melt((as.data.table(result.mat)), id.vars = as.factor(rownames(result.mat)))
+          # newdata = melt((as.data.table(result.mat)), id.vars = as.factor(rownames(result.mat)))
           if(sliceby == "riskType"){
             print(barchart(value~Var2|Var1, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio", decomp, "Comparison" ), cex = axis.cex),layout = layout,
                            scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex,rot=90)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
@@ -693,10 +707,20 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
           risk.type = rep(risk, 0.5*nrow(result.mat))
           #result.mat = cbind(result.mat, Risk = factor(risk.type))
           result.mat = result.mat[-c(1:length(risk)),]
-          newdata = melt(as.data.table(t(result.mat)), id.vars = as.factor(colnames(result.mat)))
+          newdata = data.table::melt(data.table::as.data.table(t(result.mat)), 
+                                     id.vars = as.factor(colnames(result.mat)))
+          
           newdata$risk = factor(rep(risk, ))
-          print(barchart(value~Var1|Var2*risk, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio Risk Comparison- ", decomp), cex = axis.cex),layout = layout,
-                         scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
+          
+          print(barchart(value~Var1|Var2*risk, data = newdata, stack = TRUE, 
+                         origin = 0, 
+                         main = list(paste("Portfolio Risk Comparison- ", decomp), 
+                                     cex = axis.cex), 
+                         layout = layout,
+                         scales=list(y=list(cex=axis.cex), 
+                                     x=list(cex=axis.cex)),
+                         par.strip.text=list(col="black", font=2, cex = stripText.cex),
+                         ylab = '', xlab = '', as.table = TRUE))
         }
         else{
           result.mat=  matrix(unlist(output.list), ncol = length(output.list))
@@ -704,7 +728,10 @@ repRisk.ffm <- function(object, weights = NULL, risk = c("Sd", "VaR", "ES"),
           rownames(result.mat) = names(output.list[[1]][[1]])
         #Remove Total
         result.mat = result.mat[-1,]
-        newdata = melt(as.data.table(t(result.mat)), id.vars = as.factor(colnames(result.mat)))
+        
+        newdata = data.table::melt(data.table::as.data.table(t(result.mat)), 
+                                   id.vars = as.factor(colnames(result.mat)))
+        
         print(barchart(value~Var1|Var2, data = newdata,stack = TRUE, origin =0, main = list(paste("Portfolio Risk Comparison- ",risk,decomp), cex = axis.cex),layout = layout,
                        scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex)),par.strip.text=list(col="black",font=2, cex = stripText.cex),ylab = '', xlab = '', as.table = TRUE))
 #         barchart(value~Var1|Var2, data = newdata, stack = TRUE, origin =0, scales = list(y = list(cex = axis.cex)),par.settings = my.settings,

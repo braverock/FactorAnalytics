@@ -66,28 +66,45 @@ Details). Default is \code{FALSE}.}
 matrix is estimated. Otherwise, a diagonal residual covariance matrix is 
 estimated. Default is \code{FALSE}.}
 
-\item{z.score}{method for exposure standardization; one of "none", "crossSection", or "timeSeries".
-Default is \code{"none"}.}
+\item{z.score}{method for exposure standardization; one of "none", 
+"crossSection", or "timeSeries". Default is \code{"none"}.}
 
-\item{addIntercept}{logical; If \code{TRUE}, intercept is added in the exposure matrix. Default is \code{FALSE},}
+\item{addIntercept}{logical; If \code{TRUE}, intercept is added in the 
+exposure matrix. Default is \code{FALSE},}
 
-\item{lagExposures}{logical; If \code{TRUE}, the style exposures in the exposure matrix are lagged by one time period. Default is \code{TRUE},}
+\item{lagExposures}{logical; If \code{TRUE}, the style exposures in the 
+exposure matrix are lagged by one time period. Default is \code{TRUE},}
 
-\item{resid.scaleType}{character; Only valid when fit.method is set to WLS or W-Rob. The weights used in 
-the weighted regression are estimated  using sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are \code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.
-Default is \code{stdDev} where the inverse of residual sample variances are used as the weights.}
+\item{resid.scaleType}{character; Only valid when fit.method is set to WLS or 
+W-Rob. The weights used in the weighted regression are estimated  using 
+sample variance, classic EWMA, robust EWMA or GARCH model. Valid values are 
+\code{stdDev}, \code{EWMA}, \code{robEWMA}, or \code{GARCH}.Default is 
+\code{stdDev} where the inverse of residual sample variances are used as the 
+weights. If using GARCH option, make sure to install and load 
+rugarch package.}
 
-\item{lambda}{lambda value to be used for the EWMA estimation of residual variances. Default is 0.9}
+\item{lambda}{lambda value to be used for the EWMA estimation of residual 
+variances. Default is 0.9}
 
-\item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta. Default values are 0.09, 0.1, 0.81 respectively.
-Valid only when \code{GARCH.MLE} is set to \code{FALSE}.}
+\item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta. 
+Default values are (0.09, 0.1, 0.81) respectively. Valid only when 
+\code{GARCH.MLE} is set to \code{FALSE}. Estimation outsourced to the
+ rugarch package, please load it first.}
 
-\item{stdReturn}{logical; If \code{TRUE}, the returns will be standardized using GARCH(1,1) volatilities. Default is \code{FALSE}}
+\item{GARCH.MLE}{boolean input (TRUE|FALSE), default value = \code{FALSE}. This
+argument allows one to choose to compute GARCH parameters by maximum 
+likelihood estimation. Estimation outsourced to the rugarch
+package, please load it.}
 
-\item{analysis}{method used in the analysis of fundamental law of active management; one of "none", "ISM", 
-or "NEW". Default is "none".}
+\item{stdReturn}{logical; If \code{TRUE}, the returns will be standardized 
+using GARCH(1,1) volatilities. Default is \code{FALSE}. Make sure to load 
+rugarch package.}
 
-\item{targetedVol}{numeric; the targeted portfolio volatility in the analysis. Default is 0.06.}
+\item{analysis}{method used in the analysis of fundamental law of active 
+management; one of "none", "ISM", or "NEW". Default is "none".}
+
+\item{targetedVol}{numeric; the targeted portfolio volatility in the analysis. 
+Default is 0.06.}
 
 \item{...}{potentially further arguments passed.}
 
@@ -159,8 +176,10 @@ The weights to be used in "WLS" or "W-Rob" can be set using
 sample variace, EWMA, Robust EWMA and GARCH(1,1). The inverse of these residual variances
  are used as the weights. For EWMA model, lambda = 0.9 is used as default and for GARCH(1,1) 
  omega = 0.09, alpha = 0.1, and beta = 0.81 are used as default as mentioned in Martin & Ding (2017).
- These default parameters can be changed using the arguments \code{lambda}, \code{GARCH.params} for EWMA and GARCH respectively.
- To compute GARCH parameters via MLE, set \code{GARCH.MLE} to \code{TRUE}. 
+ These default parameters can be changed using the arguments \code{lambda}, 
+ \code{GARCH.params} for EWMA and GARCH respectively. To compute GARCH 
+ parameters via MLE, set \code{GARCH.MLE} to \code{TRUE}. Make sure you have
+ the rugarch package installed and loaded, as is merely listed as SUGGESTS.
  
 Standardizing style factor exposures: The exposures can be standardized into
 z-scores using regular or robust (see \code{rob.stats}) measures of location 
@@ -170,7 +189,7 @@ deviation of the exposures about the weighted mean. This may help avoid an
 ill-conditioned covariance matrix. Default option equally weights exposures 
 of different assets each period. 
 
-If \code{rob.stats=TRUE}, \code{\link[robust]{covRob}} is used to compute a 
+If \code{rob.stats=TRUE}, \code{\link[RobStatTM]{covRob}} is used to compute a 
 robust estimate of the factor covariance/correlation matrix, and, 
 \code{\link[robustbase]{scaleTau2}} is used to compute robust tau-estimates 
 of univariate scale for residuals during "WLS" or "W-Rob" regressions. When 
@@ -210,8 +229,8 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
  
- fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-                   date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
+ # fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
+ #                 date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
 
 }
 \references{

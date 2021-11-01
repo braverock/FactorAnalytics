@@ -15,10 +15,14 @@
 #' \code{variable.selection="lars"} as there seems to be no consensus on a 
 #' statistically valid method of calculating standard errors for the lasso 
 #' predictions.
+#' 
+#' @importFrom sandwich vcovHC.default vcovHAC.default
 #'  
 #' @param object an object of class \code{tsfm} returned by \code{fitTsfm}.
-#' @param se.type one of "Default", "HC" or "HAC"; option for computing 
-#' HC/HAC standard errors and t-statistics. Default is "Default".
+#' @param se.type one of "Default", "HC" or "HAC" option for computing HC/HAC 
+#' standard errors and t-statistics. Default is "Default". If "HC" or "HAC" 
+#' options are selected, you will need to first load the suggested `lmtest` 
+#' package. 
 #' @param x an object of class \code{summary.tsfm}.
 #' @param digits number of significants digits to use when printing. 
 #' Default is 3.
@@ -43,12 +47,18 @@
 #' @seealso \code{\link{fitTsfm}}, \code{\link[stats]{summary.lm}}
 #' 
 #' @examples
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#' 
 #' fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                factor.names=colnames(managers[,7:9]), 
 #'                data=managers)
 #' 
 #' # summary of factor model fit for all assets
+#' summary(fit)
+#' 
+#' # Summary of factor model, using lmtest 
+#' library(lmtest)
 #' summary(fit, "HAC")
 #' 
 #' # summary of lm fit for a single asset
@@ -77,13 +87,16 @@ summary.tsfm <- function(object, se.type=c("Default","HC","HAC"), ...){
   sum.list <- lapply(object$asset.fit, summary)
   
   # convert to HC/HAC standard errors and t-stats if specified
+  if (se.type=="HC" | se.type=="HAC") {
+     message("requires package lmtest")
+  }
   # extract coefficients separately for "lars" variable.selection method
   for (i in object$asset.names) {
     if (se.type=="HC") {
-      sum.list[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]],
+      sum.list[[i]]$coefficients <- lmtest::coeftest.default(object$asset.fit[[i]],
                                                      vcov.=vcovHC.default)[,1:4]
     } else if (se.type=="HAC") {
-      sum.list[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]], 
+      sum.list[[i]]$coefficients <- lmtest::coeftest.default(object$asset.fit[[i]], 
                                                      vcov.=vcovHAC.default)[,1:4]
     }
   }

@@ -5,7 +5,7 @@
 #' @importFrom zoo as.yearmon
 #' @importFrom graphics barplot
 #' @importFrom stats lm
-#' @importFrom xts xts merge.xts
+#' @importFrom xts xts
 #' @importFrom lattice panel.abline xyplot panel.xyplot strip.custom
 #' 
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
@@ -34,15 +34,19 @@
 #'  data("factorDataSetDjia5Yrs")
 #'
 #' #Fit a Ffm
-#' require(FactorAnalytics)
-#'  fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
-#'               date.var="DATE", exposure.vars="SECTOR")
+#' 
+#'  fit <- fitFfm(data = factorDataSetDjia5Yrs, 
+#'                asset.var = "TICKER", 
+#'                ret.var = "RETURN",
+#'                date.var = "DATE", 
+#'                exposure.vars = "SECTOR")
 #'
 #' #Calcuate and plot the portfolio R-squared values
 #'  fmRsq(fit)
 #'  
 #'  fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN",
-#'               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"), addIntercept=TRUE)
+#'               date.var="DATE", exposure.vars=c("SECTOR", "P2B", "EV2S", "MKTCAP"), 
+#'               addIntercept=TRUE)
 #'
 #' #Plot and print the time series of Adj R-squared and VIF values
 #'  fmRsq(fit1, rsqAdj=TRUE, isPrint=TRUE, plt.type = 2)
@@ -85,14 +89,14 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
     if(isPlot && plt.type == 1)
     {
       barplot(r2,las=2,col=5,
-              names.arg= as.yearmon(names(r2)),
+              names.arg= zoo::as.yearmon(names(r2)),
               cex.names=0.5,
               main=" ")
       if(title){title("Factor Model R-squared Values")}
     }
     else if (isPlot && plt.type == 2)
     {
-      r2.xts = xts(r2, order.by = as.yearmon(names(r2)))
+      r2.xts = xts(r2, order.by = zoo::as.yearmon(names(r2)))
       
       if(rsqAdj) plt.r2 = TRUE else{
         if(title) title.Rsq = "Factor Model R-squared Values" else title.Rsq = " " 
@@ -116,11 +120,11 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
     K <- length(ffmObj$factor.name)
     p <- K-1
     adj.r2 <- 1 - ((n.assets - 1)*(1- r2) / (n.assets - p - 1))
-    adj.r2.xts = xts(adj.r2, order.by = as.yearmon(names(r2)))
+    adj.r2.xts = xts(adj.r2, order.by = zoo::as.yearmon(names(r2)))
     if(isPlot && plt.type == 1)
     {
       barplot(adj.r2,las=2,col=5,
-              names.arg= as.yearmon(names(r2)),
+              names.arg= zoo::as.yearmon(names(r2)),
               cex.names=0.5,
               main=" ")
       if(title){title(" Factor Model Adjusted R-squared Values")}
@@ -150,7 +154,7 @@ fmRsq.ffm <- function(ffmObj, rsq=T, rsqAdj=F,plt.type= 2, digits=2, isPrint=T, 
       panel =  function(...){
         panel.abline(h=0,lty = 3)
         panel.xyplot(...)}
-      r2.combined = merge.xts("Rsq" = r2.xts,"AdjRsq" =  adj.r2.xts)
+      r2.combined = merge("Rsq" = r2.xts, "AdjRsq" =  adj.r2.xts)
 #       tsPlotMP(0.01*r2.combined,stripLeft = TRUE, scaleType = "same",
 #                color = "blue", yname = "", lwd = lwd, main = title.comb, type = "h", cex = 1.2)
       plt = xyplot(r2.combined,col = "blue", lwd =lwd, main = title.comb, type = "h",panel = panel,

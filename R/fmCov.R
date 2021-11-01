@@ -40,29 +40,24 @@
 #' Zivot, E., & Jia-hui, W. A. N. G. (2006). Modeling Financial Time 
 #' Series with S-Plus Springer-Verlag.
 #' 
-#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+#' @seealso \code{\link{fitTsfm}},\code{\link{fitFfm}}
 #' 
 #' \code{\link[stats]{cov}} for more details on arguments \code{use} and 
 #' \code{method}.
 #' 
 #' @examples
-#' # Time Series Factor model
+#' # Time Series Factor model example
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
-#' fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
-#'                factor.names=c("EDHEC.LS.EQ","SP500.TR"), data=managers)                              
+#'  # Make syntactically valid column names
+#' colnames(managers)
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
+#' 
+#' fit <- fitTsfm(asset.names = colnames(managers[, (1:6)]), 
+#'                factor.names = c("EDHEC.LS.EQ","SP500.TR"), 
+#'                data = managers)                              
 #' fmCov(fit)
-#' 
-#' # Statistical Factor Model
-#' data(StockReturns)
-#' sfm.pca.fit <- fitSfm(r.M, k=2)
-#' fmCov(sfm.pca.fit)
-#' 
-#' # Fundamental factor Model
-#' data(Stocks.df)
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
-#' fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' fmCov(fit2)
 #' 
 #' @rdname fmCov
 #' @export

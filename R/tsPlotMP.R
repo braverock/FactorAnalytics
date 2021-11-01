@@ -5,7 +5,7 @@
 #' @importFrom lattice panel.abline xyplot panel.xyplot
 #' @importFrom xts xts
 #' 
-#' @param data an time series exposure/return object 
+#' @param ret an time series exposure/return object 
 #' @param add.grid logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')
 #' @param layout layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.
 #' @param type character. type of the plot; 'l' denotes a line, 'p' denotes a point, and 'b' and 'o' both denote both together.deafault is 'l'.
@@ -26,8 +26,8 @@
 #' #Load the data
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' returns = tapply(dat$RETURN,list(dat$DATE,dat$TICKER),I)
-#' ret = xts(returns[,1:5],as.yearmon(rownames(returns)))
+#' returns = tapply(dat$RETURN, list(dat$DATE, dat$TICKER), I)
+#' ret = xts::xts(returns[,1:5], zoo::as.yearmon(rownames(returns)))
 #' 
 #' #generate return time series plot               
 #' tsPlotMP(ret, color = 'Blue')
@@ -40,9 +40,10 @@
 
 # Lattice type time series plotting function
 
-tsPlotMP = function (ret, add.grid = FALSE, layout = NULL, type = "l", yname = "RETURNS (%)", 
-		Pct = F, scaleType = "free", stripLeft = TRUE, main = NULL, lwd = 1, 
-		stripText.cex = 1, axis.cex = 1, color = "black", zeroLine = TRUE) 
+tsPlotMP = function (ret, add.grid = FALSE, layout = NULL, type = "l", 
+                     yname = "RETURNS (%)", Pct = F, scaleType = "free", 
+                     stripLeft = TRUE, main = NULL, lwd = 1, stripText.cex = 1, 
+                     axis.cex = 1, color = "black", zeroLine = TRUE) 
 {
 	strip.left = stripLeft
 	strip = !strip.left

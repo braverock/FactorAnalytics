@@ -8,7 +8,7 @@
 #' 
 #' @importFrom stats quantile residuals cov resid qnorm
 #' @importFrom xts as.xts
-#' @importFrom zoo as.Date index
+#' @importFrom zoo as.yearmon index
 #' 
 #' @details The factor model for a portfolio's return at time \code{t} has the 
 #' form \cr \cr \code{R(t) = beta'f(t) + e(t) = beta.star'f.star(t)} \cr \cr 
@@ -59,11 +59,21 @@
 #' 
 #' @examples
 #' # Time Series Factor Model
+#' 
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#' colnames(managers)
+#'  # Make syntactically valid column names
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
+#' 
 #' fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
-#'                      rf.name=colnames(managers[,10]), data=managers)
+#'                      rf.name=colnames(managers[,10]), 
+#'                      data=managers)
+#'                      
 #' decomp <- portVaRDecomp(fit.macro,invert = TRUE)
+#' 
 #' # get the factor contributions of risk
 #' decomp$cVaR
 #' 
@@ -77,9 +87,8 @@
 #' # Fundamental Factor Model
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-#'           dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
 #'
 #' # Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
@@ -87,7 +96,7 @@
 #'                                                       
 #' # fit a fundamental factor model
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+#'               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M",
 #'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
 #'               fit.method="WLS", z.score = "crossSection")
 #'               
@@ -150,7 +159,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.05, type=
 
   # factor returns and residuals data
   factors.xts <- object$data[,object$factor.names]
-  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
+  resid.xts <- xts::as.xts(t(t(residuals(object))/object$resid.sd) %*% weights)
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
   
   if (type=="normal") {
@@ -194,7 +203,7 @@ portVaRDecomp.tsfm <- function(object, weights = NULL, factor.cov, p=0.05, type=
   match = colnames(object$data) %in% asset.names
   R.xts <- object$data[,match]
   R.xts <- R.xts * weights
-  R.xts = as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
+  R.xts = xts::as.xts(rowSums(R.xts), order.by = zoo::index(R.xts))
   names(R.xts) = 'RETURN'
   
   if (type=="np") {
@@ -289,7 +298,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c
 
   # factor returns and residuals data
   factors.xts <- object$factor.returns
-  resid.xts <- as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
+  resid.xts <- xts::as.xts( t(t(residuals(object))/sqrt(object$resid.var)) %*% weights)
   zoo::index(resid.xts) <- as.Date(zoo::index(resid.xts))
 
   if (type=="normal") {
@@ -332,7 +341,7 @@ portVaRDecomp.ffm <- function(object, weights = NULL, factor.cov, p=0.05, type=c
   # return data for portfolio
   R.xts = tapply(dat[,object$ret.var], list(dat[,object$date.var], dat[,object$asset.var]), FUN = I)
   R.xts <- R.xts * weights
-  R.xts = as.xts(rowSums(R.xts), order.by = object$time.periods)
+  R.xts = xts::as.xts(rowSums(R.xts), order.by = object$time.periods)
   names(R.xts) = 'RETURN'
   
   if (type=="np") {

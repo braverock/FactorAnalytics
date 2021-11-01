@@ -43,6 +43,8 @@ Contains returns for 145 stocks starting from Jan 1990 to Dec 2014 spanning
 CRSP stocks Capital IQ scores
 }
 \examples{
+ 
+data(stocks145scores6)
  str(stocks145scores6)
 }
 \keyword{datasets}

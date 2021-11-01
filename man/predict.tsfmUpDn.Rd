@@ -22,11 +22,14 @@ S3 \code{predict} method for object of class \code{tsfmUpDn}. It
 calls the \code{predict.tsfm} method for a list object of \code{Up} and \code{Dn}
 }
 \examples{
-# load data from the database
+ # load data
 data(managers, package = 'PerformanceAnalytics')
-# fit the factor model with LS
-fitUpDn <- fitTsfmUpDn(asset.names=colnames(managers[,(1:6)]),mkt.name="SP500.TR",
-                       data=managers, fit.method="LS")
+
+# fit the factor model with LS. example: Up and down market factor model with LS fit
+fitUpDn <- fitTsfmUpDn(asset.names = colnames(managers[,(1:6)]),
+                       mkt.name = "SP500 TR",
+                       data = managers, 
+                       fit.method = "LS")
  
 predict(fitUpDn)
 

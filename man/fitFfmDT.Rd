@@ -25,9 +25,21 @@ fitFfmDT(
 
 \item{lambda}{the ewma parameter}
 
-\item{GARCH.params}{control structure for GARCH e.g. list(omega = 0.09, alpha = 0.1, beta = 0.81)}
+\item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta. 
+Default values are (0.09, 0.1, 0.81) respectively. Valid only when 
+\code{GARCH.MLE} is set to \code{FALSE}. Estimation outsourced to the
+ rugarch package, please load it first.}
 
-\item{GARCH.MLE}{if GARCH is used we can use maximum likelihood}
+\item{GARCH.MLE}{boolean input (TRUE|FALSE), default value = \code{FALSE}. This
+argument allows one to choose to compute GARCH parameters by maximum 
+likelihood estimation. Estimation outsourced to the rugarch
+package, please load it.}
+
+\item{lmrobdet.control.para.list}{list of parameters to pass to lmrobdet.control().
+Sets tuning parameters for the MM estimator implemented in lmrobdetMM of the
+RobStatTM package. See \code{\link[RobStatTM]{lmrobdetMM}}.}
+
+\item{...}{additional pass through arguments}
 }
 \value{
 \code{fitFfm} returns a list with two object of class \code{"data.table"}

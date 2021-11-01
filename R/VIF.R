@@ -6,6 +6,7 @@
 #'                  So, at least 2 explanatory variables are required in \code{exposure.vars} of fitted model to find the VIF.
 #'
 #' @importFrom stats lm
+#' @importFrom xts xts
 #'
 #' @param ffmObj   an object of class \code{ffm} produced by \code{fitFfm}
 #' @param digits   an integer indicating the number of decimal places to be used for rounding. Default is 2.

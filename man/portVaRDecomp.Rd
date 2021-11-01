@@ -87,11 +87,21 @@ Epperlein & Smillie (2006); a triangular smoothing kernel is used here.
 }
 \examples{
 # Time Series Factor Model
+
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+colnames(managers)
+ # Make syntactically valid column names
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
+
 fit.macro <- FactorAnalytics::fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
-                     rf.name=colnames(managers[,10]), data=managers)
+                     rf.name=colnames(managers[,10]), 
+                     data=managers)
+                     
 decomp <- portVaRDecomp(fit.macro,invert = TRUE)
+
 # get the factor contributions of risk
 decomp$cVaR
 
@@ -105,9 +115,8 @@ portVaRDecomp(fit.macro, wts)
 # Fundamental Factor Model
 data("stocks145scores6")
 dat = stocks145scores6
-dat$DATE = as.yearmon(dat$DATE)
-dat = dat[dat$DATE >=as.yearmon("2008-01-01") & 
-          dat$DATE <= as.yearmon("2012-12-31"),]
+dat$DATE = zoo::as.yearmon(dat$DATE)
+dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
 
 # Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
@@ -115,7 +124,7 @@ wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
                                                       
 # fit a fundamental factor model
 fit.cross <- fitFfm(data = dat, 
-              exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
+              exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M",
               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
               fit.method="WLS", z.score = "crossSection")
               

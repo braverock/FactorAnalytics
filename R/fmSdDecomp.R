@@ -18,7 +18,7 @@
 #' \code{Sd.fm = sqrt(beta.star''cov(F.star)beta.star)} \cr 
 #' \code{mSd = cov(F.star)beta.star / Sd.fm}
 #' 
-#' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
+#' @param object fit object of class \code{tsfm} or \code{ffm}.
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
 #' @param use method for computing covariances in the presence of missing 
@@ -46,7 +46,7 @@
 #' and value-at-risk: their estimation error, decomposition, and optimization. 
 #' Monetary and economic studies, 20(1), 87-121.
 #' 
-#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+#' @seealso \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 #' for the different factor model fitting functions.
 #' 
 #' \code{\link{fmCov}} for factor model covariance.
@@ -55,7 +55,14 @@
 #' 
 #' @examples
 #' # Time Series Factor Model
+#' 
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#' colnames(managers)
+#'  # Make syntactically valid column names
+#' colnames(managers) <- make.names( colnames(managers))
+#' colnames(managers)
+#' 
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
 #'                      factor.names=colnames(managers[,(7:9)]),
 #'                      rf.name="US.3m.TR", data=managers)
@@ -63,13 +70,7 @@
 #' # get the percentage component contributions
 #' decomp$pcSd
 #' 
-#' # Statistical Factor Model
-#' data(StockReturns)
-#' sfm.pca.fit <- fitSfm(r.M, k=2)
-#' decomp <- fmSdDecomp(sfm.pca.fit)
-#' decomp$pcSd
-#'  
-#' @export                                       
+#' @export  
 
 fmSdDecomp <- function(object, ...){
   # check input object validity
@@ -156,7 +157,7 @@ fmSdDecomp.sfm <- function(object, factor.cov,
   } else {
     if (!identical(dim(factor.cov), as.integer(c(ncol(factor), ncol(factor))))) {
       stop("Dimensions of user specified factor covariance matrix are not 
-           compatible with the number of factors in the fitSfm object")
+           compatible with the number of factors in the fit object")
     }
   }
   

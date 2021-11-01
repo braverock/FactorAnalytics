@@ -12,7 +12,7 @@ fitTsfmLagLeadBeta(
   fit.method = c("LS", "DLS", "Robust"),
   LagLeadBeta = 1,
   LagOnly = FALSE,
-  control = fitTsfm.control(...),
+  control = fitTsfm.control(),
   ...
 )
 }
@@ -87,12 +87,14 @@ the lagged and lead Betas:
 \beta^-_1 + \ldots + \beta^-_K }
 }
 \examples{
-# load data from the database
+## A lagged Betas model with LS fit
+ 
+ # load data
 data(managers, package = 'PerformanceAnalytics')
 
-# example: A lagged Beetas model with LS fit
-fit <- fitTsfmLagLeadBeta(asset.names=colnames(managers[,(1:6)]),LagLeadBeta=2,LagOnly=TRUE,
-                      mkt.name="SP500 TR",rf.name="US 3m TR",data=managers)
+fit <- fitTsfmLagLeadBeta(asset.names = names(managers[,(1:6)]),
+                          mkt.name = "SP500 TR", rf.name = "US 3m TR", 
+                          data = managers, LagLeadBeta = 2, LagOnly = TRUE)
 summary(fit)
 fitted(fit)
 

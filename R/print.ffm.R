@@ -18,11 +18,14 @@
 #' @seealso \code{\link{fitFfm}}, \code{\link{summary.ffm}}
 #' 
 #' @examples
-#' data(Stocks.df)
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-#' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' print(fit)
+#' data("factorDataSetDjia5Yrs")
+#' # fit a fundamental factor model
+#' fit.style.sector <- fitFfm(data=factorDataSetDjia5Yrs, 
+#'                            asset.var="TICKER", 
+#'                            ret.var="RETURN", 
+#'                            date.var="DATE", 
+#'                            exposure.vars = c("P2B", "MKTCAP"))
+#' print(fit.style.sector)
 #' 
 #' @method print ffm
 #' @export

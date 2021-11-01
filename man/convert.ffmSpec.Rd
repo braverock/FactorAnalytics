@@ -12,6 +12,8 @@
 \item{FitObj}{an object as the output from fitFfmDT function}
 
 \item{RegStatsObj}{an object as the output from extractRegressionStats function}
+
+\item{...}{additional arguments}
 }
 \description{
 Function to convert to current class # mido to change to retroFit

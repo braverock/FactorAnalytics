@@ -16,7 +16,7 @@ fmSdDecomp(object, ...)
 \method{fmSdDecomp}{ffm}(object, factor.cov, ...)
 }
 \arguments{
-\item{object}{fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.}
+\item{object}{fit object of class \code{tsfm} or \code{ffm}.}
 
 \item{...}{optional arguments passed to \code{\link[stats]{cov}}.}
 
@@ -57,7 +57,14 @@ sample covariance. \cr \cr
 }
 \examples{
 # Time Series Factor Model
+
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+colnames(managers)
+ # Make syntactically valid column names
+colnames(managers) <- make.names( colnames(managers))
+colnames(managers)
+
 fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                      factor.names=colnames(managers[,(7:9)]),
                      rf.name="US.3m.TR", data=managers)
@@ -65,12 +72,6 @@ decomp <- fmSdDecomp(fit.macro)
 # get the percentage component contributions
 decomp$pcSd
 
-# Statistical Factor Model
-data(StockReturns)
-sfm.pca.fit <- fitSfm(r.M, k=2)
-decomp <- fmSdDecomp(sfm.pca.fit)
-decomp$pcSd
- 
 }
 \references{
 Hallerback (2003). Decomposing Portfolio Value-at-Risk: A General Analysis. 
@@ -84,7 +85,7 @@ and value-at-risk: their estimation error, decomposition, and optimization.
 Monetary and economic studies, 20(1), 87-121.
 }
 \seealso{
-\code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+\code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
 
 \code{\link{fmCov}} for factor model covariance.

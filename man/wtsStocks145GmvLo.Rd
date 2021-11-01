@@ -21,6 +21,8 @@ Contains weights obtained after optimizing the portfolio returns of 145 stocks (
 CRSP 145 stocks GMV long-only weights
 }
 \examples{
+ 
+data(wtsStocks145GmvLo)
  str(wtsStocks145GmvLo)
 }
 \keyword{datasets}

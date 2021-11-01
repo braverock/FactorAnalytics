@@ -13,7 +13,7 @@ residualizeReturns(specObj, benchmark, rfRate, isBenchExcess = F)
 
 \item{rfRate}{risk free rate}
 
-\item{isBenchExcess}{toggle to select whether to calculate excess returns or not}
+\item{isBenchExcess}{toggle to select whether to calculate excess returns}
 }
 \description{
 #' function to Residualize the returns via regressions

@@ -7,6 +7,8 @@
 #' \code{ffm} object. For predictions based on estimated factor returns from a 
 #' specific period use the \code{pred.date} argument.
 #' 
+#' @importFrom PerformanceAnalytics checkData
+#' 
 #' @param object an object of class \code{ffm} produced by \code{fitFfm}.
 #' @param newdata data.frame containing the variables \code{asset.var}, 
 #' \code{date.var} and the same exact \code{exposure.vars} used in the fitted
@@ -31,17 +33,19 @@
 #' @examples
 #' 
 #' # Load fundamental and return data
-#' data(Stocks.df)
+#'  data("factorDataSetDjia5Yrs")
 #' 
 #' # fit a fundamental factor model
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-#' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' 
+#' fit <- fitFfm(data = factorDataSetDjia5Yrs, 
+#'               asset.var = "TICKER", 
+#'               ret.var = "RETURN", 
+#'               date.var = "DATE", 
+#'               exposure.vars = c("P2B", "MKTCAP"))
+#'               
 #' # generate random data
-#' newdata <- as.data.frame(unique(stock$TICKER))
-#' newdata$BOOK2MARKET <- rnorm(nrow(newdata))
-#' newdata$LOG.MARKETCAP <- rnorm(nrow(newdata))
+#' newdata <- as.data.frame(unique(factorDataSetDjia5Yrs$TICKER))
+#' newdata$P2B <- rnorm(nrow(newdata))
+#' newdata$MKTCAP <- rnorm(nrow(newdata))
 #' pred.fund <- predict(fit, newdata)
 #' 
 #' @method predict ffm
@@ -58,7 +62,7 @@ predict.ffm <- function(object, newdata=NULL, pred.date=NULL, ...){
   if (is.null(newdata)) {
     sapply(object$factor.fit, predict, ...)
   } else {
-    newdata <- checkData(newdata, method="data.frame")
+    newdata <- PerformanceAnalytics::checkData(newdata, method="data.frame")
     if (is.null(pred.date)) {
       sapply(object$factor.fit, predict, newdata, ...)
     } else {

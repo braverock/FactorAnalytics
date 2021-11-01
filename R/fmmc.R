@@ -1,4 +1,4 @@
-#' @title Functions to compute estimates and thier standard errors using fmmc
+#' @title Functions to compute estimates and their standard errors using fmmc
 #' 
 #' Control default arguments. Usually for FactorAnalytics.
 #' 
@@ -50,9 +50,12 @@
 #'    outer join of the factors and residuals. We use this joined data to create new
 #'    simulated returns. Returns together with factors define a joint emperical density. 
 #' 
+#' @importFrom RCurl merge.list
+#' @importFrom xts as.xts
+#' 
 #' @param  R single vector of returns
 #' @param  factors matrix of factor returns
-#' @param  ... allows passing paramters to FactorAnalytics.
+#' @param  ... allows passing parameters to FactorAnalytics.
 #' @author Rohit Arora
 #' 
 #' 
@@ -99,7 +102,7 @@
         return(NA)        
     }
     
-    resid <- do.call(merge,lapply(lapply(fit$asset.fit,residuals),as.xts))
+    resid <- do.call(merge, lapply(lapply(fit$asset.fit, residuals), xts::as.xts))
     beta <- t(fit$beta) 
     
     if(any(is.na(beta))) { 
@@ -165,7 +168,7 @@
         
     # If the data does not have dates then it cannot be transformed to xts. 
     # So lets fake dates to make xts happy
-    .data <- as.xts(.data , order.by=seq(as.Date("1980/1/1"), by = "day", 
+    .data <- xts::as.xts(.data , order.by=seq(as.Date("1980/1/1"), by = "day", 
         length.out = nrow(.data)))
     
     # lets get a new empirical distribution of factors and returns for a new subset
@@ -186,6 +189,8 @@
 #' capabilities of boot function. All cores on your machine are used.
 #' We use the boot call from the boot library for calculating the estimate and
 #' its standard error.
+#' 
+#' @importFrom boot boot
 #' 
 #' @param  fmmcObj object returned by fmmc proc. This is a comprehensive object 
 #'         with all data for factors and returns.
@@ -217,7 +222,7 @@
     args <- list(TR = TR, TR1 = len, estimate.func = estimate.func, 
         fit.method = fmmcObj$args[["fit.method"]], var.sel = "none")
         
-    result <- boot(data=cbind(factors, returns), statistic = .fmmc.boot, 
+    result <- boot::boot(data=cbind(factors, returns), statistic = .fmmc.boot, 
         R = nboot, parallel = parallel, ncpus = ncpus, cl = cl, args=args)
         
     se <- apply(result$t,2,sd)
@@ -262,6 +267,11 @@
 #' Estimates with Factor Model Monte Carlo. SSRN Electronic Journal, July 2013.
 #' 
 #' @author Rohit Arora
+#' 
+#' @import foreach
+#' @importFrom doSNOW registerDoSNOW 
+#' @importFrom parallel makeCluster detectCores clusterEvalQ clusterExport stopCluster 
+#' 
 #' @export
 #' 
 #' 

@@ -1,0 +1,40 @@
+---
+title: "FactorAnalytics Package Data notes"
+author: "Doug Martin, edits by Justin M. Shea"
+date: "8/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## scoresSPGMI
+
+```{r}
+names(scoresSPGMI)
+```
+
+## stocksCRSP
+
+```{r}
+names(stocksCRSP)
+```
+
+
+
+
+## Weekly and Daily CRSP Stocks Uploadable to FactorAnalytics
+
+### stocksCRSPweekly
+
+```{r}
+names(stocksCRSPweekly)
+```
+
+### stocksCRSPdaily
+```{r}
+> names(stocksCRSPdaily)
+```

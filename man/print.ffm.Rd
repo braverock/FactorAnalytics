@@ -24,11 +24,14 @@ Refer to \code{\link{summary.ffm}} for a more detailed summary of the fit at
 each time period.
 }
 \examples{
-data(Stocks.df)
-exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-              date.var="DATE", exposure.vars=exposure.vars)
-print(fit)
+data("factorDataSetDjia5Yrs")
+# fit a fundamental factor model
+fit.style.sector <- fitFfm(data=factorDataSetDjia5Yrs, 
+                           asset.var="TICKER", 
+                           ret.var="RETURN", 
+                           date.var="DATE", 
+                           exposure.vars = c("P2B", "MKTCAP"))
+print(fit.style.sector)
 
 }
 \seealso{

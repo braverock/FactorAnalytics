@@ -22,6 +22,9 @@
 #' Refer to Eric Zivot's slides (referenced) for formulas pertaining to the 
 #' calculation of Normal ES (adapted from a portfolio context to factor models).
 #' 
+#' @importFrom xts as.xts
+#' @importFrom zoo time<-
+#' 
 #' @param object fit object of class \code{tsfm}, \code{sfm} or \code{ffm}.
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
@@ -56,34 +59,26 @@
 #' and value-at-risk: their estimation error, decomposition, and optimization. 
 #' Monetary and economic studies, 20(1), 87-121.
 #' 
-#' @seealso \code{\link{fitTsfm}}, \code{\link{fitSfm}}, \code{\link{fitFfm}}
+#' @seealso \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 #' for the different factor model fitting functions.
 #' 
 #' \code{\link{fmSdDecomp}} for factor model SD decomposition.
 #' \code{\link{fmVaRDecomp}} for factor model VaR decomposition.
 #' 
 #' @examples
-#' #' # Time Series Factor Model
+#'  # Time Series Factor Model
+#'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
+#' 
 #' fit.macro <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-#'                      factor.names=colnames(managers[,(7:8)]), data=managers)
+#'                      factor.names=colnames(managers[,(7:8)]), 
+#'                      data=managers)
+#'                      
 #' ES.decomp <- fmEsDecomp(fit.macro)
+#' 
 #' # get the component contributions
 #' ES.decomp$cES
 #' 
-#' # Statistical Factor Model
-#' data(StockReturns)
-#' sfm.pca.fit <- fitSfm(r.M, k=2)
-#' ES.decomp <- fmEsDecomp(sfm.pca.fit, type="normal")
-#' ES.decomp$cES
-#' 
-#' # Fundamental Factor Model
-#' data(Stocks.df)
-#' exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP")
-#' fit <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' ES.decomp <- fmEsDecomp(fit, type="normal")
-#' head(ES.decomp$cES)
 #' 
 #' @export
 
@@ -116,7 +111,7 @@ fmEsDecomp.tsfm <- function(object, factor.cov, p=0.05, type=c("np","normal"),
   
   # factor returns and residuals data
   factors.xts <- object$data[,object$factor.names]
-  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
+  resid.xts <- xts::as.xts(t(t(residuals(object))/object$resid.sd))
   time(resid.xts) <- as.Date(time(resid.xts))
   
   if (type=="normal") {
@@ -219,7 +214,7 @@ fmEsDecomp.sfm <- function(object, factor.cov, p=0.05, type=c("np","normal"),
   
   # factor returns and residuals data
   factors.xts <- object$factors
-  resid.xts <- as.xts(t(t(residuals(object))/object$resid.sd))
+  resid.xts <- xts::as.xts(t(t(residuals(object))/object$resid.sd))
   time(resid.xts) <- as.Date(time(resid.xts))
   
   if (type=="normal") {
@@ -321,7 +316,7 @@ fmEsDecomp.ffm <- function(object, factor.cov, p=0.05, type=c("np","normal"),
   
   # factor returns and residuals data
   factors.xts <- object$factor.returns
-  resid.xts <- as.xts(t(t(residuals(object))/sqrt(object$resid.var)))
+  resid.xts <- xts::as.xts(t(t(residuals(object))/sqrt(object$resid.var)))
   time(resid.xts) <- as.Date(time(resid.xts))
   
   if (type=="normal") {
@@ -362,7 +357,7 @@ fmEsDecomp.ffm <- function(object, factor.cov, p=0.05, type=c("np","normal"),
   for (i in object$asset.names) {
     # return data for asset i
     subrows <- which(object$data[[object$asset.var]]==i)
-    R.xts <- as.xts(object$data[subrows,object$ret.var], 
+    R.xts <- xts::as.xts(object$data[subrows,object$ret.var], 
                     as.Date(object$data[subrows,object$date.var]))
     
     if (type=="np") {

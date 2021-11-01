@@ -21,6 +21,8 @@ Contains weights obtained after optimizing the portfolio returns of the 30 DJIA 
 DJIA GMV long-only portfolio weights
 }
 \examples{
+ 
+data(wtsDjiaGmvLo)
  str(wtsDjiaGmvLo)
 }
 \keyword{datasets}

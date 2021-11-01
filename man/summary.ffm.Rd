@@ -48,16 +48,22 @@ If \code{T} is large, you might prefer the more succint summary produced by
 \code{\link{print.ffm}}.
 }
 \examples{
-data(Stocks.df)
-exposure.vars <- c("BOOK2MARKET", "LOG.MARKETCAP", "GICS.SECTOR")
-fit2 <- fitFfm(data=stock, asset.var="TICKER", ret.var="RETURN", 
-               date.var="DATE", exposure.vars=exposure.vars)
+data("factorDataSetDjia5Yrs")
+
+# fit a fundamental factor model
+fit <- fitFfm(data = factorDataSetDjia5Yrs, 
+              asset.var = "TICKER", 
+              ret.var = "RETURN", 
+              date.var = "DATE", 
+              exposure.vars = c("P2B", "MKTCAP"))
+              
+names(fit)
 
 # summary of factor returns estimated in each time period
-summary(fit2)
+summary(fit)
 
 # summary of lm fit for a single period
-summary(fit2$factor.fit[[1]])
+summary(fit$factor.fit[[1]])
 
 }
 \seealso{

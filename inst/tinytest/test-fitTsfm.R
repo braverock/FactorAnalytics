@@ -1,8 +1,8 @@
 
   #fpath <- system.file("tinytest","timeSeriesReturns.csv", 
   #                     package="FactorAnalytics")
-  returns.z <- read.zoo(file="timeSeriesReturns.csv", header=TRUE, sep=",", 
-                        as.is=TRUE, FUN=as.yearmon)
+  returns.z <- zoo::read.zoo(file="timeSeriesReturns.csv", header=TRUE, sep=",", 
+                        as.is=TRUE, FUN=zoo::as.yearmon)
   returns.z <- window(returns.z, start="2008-01-01", end="2012-12-31")  
   assets <- names(returns.z)[1:30]
   ex.rets <- returns.z[,assets]-returns.z$rf

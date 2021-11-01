@@ -1,6 +1,9 @@
 #Load the data 
 data("factorDataSetDjia5Yrs")
 data("wtsDjiaGmvLo")
+
+library(data.table)
+
 w = wtsDjiaGmvLo
 z.score =1.96
 #Fit a Ffm

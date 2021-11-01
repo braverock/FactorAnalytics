@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^.git$
+.github
 ^.*\.xlsx
 ^.*\.zip
 sandbox

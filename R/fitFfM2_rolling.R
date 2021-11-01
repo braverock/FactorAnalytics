@@ -11,17 +11,35 @@
 #' @param fitControl list of options for fitting the ffm
 #' @param full.resid.cov True or False toggle
 #' @param analysis choice of "ISM" or "NEW"
+#' 
 #' @export
-roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,  
+roll.fitFfmDT <- function(ffMSpecObj, 
+                          windowSize = 60, 
+                          refitEvery = 1,  
                           refitWindow = c("Expanding", "Rolling"),
-                          stdExposuresControl = list(Std.Type = "timeSeries", lambda = 0.9),
-                          stdReturnControl = list(GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)),
-                          fitControl = list(fit.method=c("LS","WLS","Rob","W-Rob"),
-                                            resid.scaleType = c("STDDEV","EWMA","ROBEWMA", "GARCH"),
-                                            lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
+                          stdExposuresControl = list(Std.Type = "timeSeries", 
+                                                     lambda = 0.9),
+                          stdReturnControl = list(GARCH.params = list(omega = 0.09, 
+                                                                      alpha = 0.1, 
+                                                                      beta = 0.81)),
+                          fitControl = list(fit.method = c("LS", "WLS",
+                                                           "Rob", "W-Rob"),
+                                            resid.scaleType = c("STDDEV",
+                                                                "EWMA", "ROBEWMA",
+                                                                "GARCH"),
+                                            lambda = 0.9, 
+                                            GARCH.params = list(omega = 0.09,
+                                                                alpha = 0.1, 
+                                                                beta = 0.81),
                                             GARCH.MLE = FALSE),
-                          full.resid.cov = TRUE, analysis = c("ISM", "NEW")
+                          full.resid.cov = TRUE, 
+                          analysis = c("ISM", "NEW")
                           ){
+  
+  # Due to NSE notes related to data.table in R CMD check
+  rollIdx = idx = results = NULL
+  # See data.table "Importing data.table" vignette
+  
   
   refitWindow = toupper(refitWindow[1])
   refitWindow <- match.arg(arg = refitWindow, choices = toupper(c("EXPANDING", "ROLLING")), several.ok = F )
@@ -51,7 +69,7 @@ roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,
     # rollind = lapply(1:m, FUN = function(i) max(1, (S[i]-(windowSize-1))):S[i])
     rollind = lapply(1:m, FUN = function(i) (1+(i-1)*refitEvery):S[i])
   }
-  names(rollind) <- uniqueDates[sapply(rollind, last)]
+  names(rollind) <- uniqueDates[sapply(rollind, data.table::last)]
   tmp = lapply(as.list(1:m), FUN = function(i) {
     rollingObject <- specFfm(data = ffMSpecObj$dataDT[ rollIdx %in% Tindx[rollind[[i]]]],
                              asset.var = ffMSpecObj$asset.var, ret.var = ffMSpecObj$ret.var, 
@@ -75,7 +93,7 @@ roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,
     regStats = extractRegressionStats(specObj = rollingObject, fitResults = rollingFit, full.resid.cov = full.resid.cov)
     ans <- calcFLAM(specObj = rollingObject, modelStats = regStats, fitResults = results, analysis = analysis[1])
     print(i)
-    rebalDate <- uniqueDates[last(Tindx[rollind[[i]]])] # names ?
+    rebalDate <- uniqueDates[data.table::last(Tindx[rollind[[i]]])] # names ?
     rebalExposures <- rollingObject$dataDT[ get(d_) == rebalDate, c(rollingObject$asset.var, rollingObject$exposure.vars), with = FALSE]
     sigmaI <- regStats$resid.var
     # names(rebalExposures) <- names(sigmaI)

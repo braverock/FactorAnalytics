@@ -3,6 +3,8 @@
 #' Generic function of plot method for paFm.
 #' Either plot all assets or choose a single asset to plot.
 #' 
+#' @importFrom zoo index
+#' 
 #' @param x object of class \code{"pafm"} created by
 #' \code{paFm}.
 #' @param which.plot Integer indicates which plot to create: "none" will
@@ -47,7 +49,7 @@ plot.pafm <- function(x, which.plot=c("none","1L","2L","3L"),max.show=6,
   
   # ... for  chart.TimeSeries
   if (is.null(date)){
-    date = index(x[[3]][[1]])[1]
+    date = zoo::index(x[[3]][[1]])[1]
   }
   
   # plot single assets

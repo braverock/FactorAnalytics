@@ -2,6 +2,7 @@
 #' 
 #' @description Calculate k factor time series based on fundamental factor model. This method takes fundamental factor model fit, 'ffm' object, and portfolio weight as inputs and generates numeric summary and plot visualization. 
 #' 
+#' @importFrom xts as.xts 
 #' @importFrom zoo as.yearmon coredata index
 #' @importFrom graphics boxplot 
 #' @importFrom stats sd
@@ -38,27 +39,35 @@
 #' @examples 
 #'
 #' #Load fundamental and return data 
+#' # Fundamental Factor Model
 #' data("stocks145scores6")
 #' dat = stocks145scores6
-#' dat$DATE = as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=as.yearmon("2008-01-01") 
-#'           & dat$DATE <= as.yearmon("2012-12-31"),]
+#' dat$DATE = zoo::as.yearmon(dat$DATE)
+#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
+#'
 #'
 #' #Load long-only GMV weights for the return data
 #' data("wtsStocks145GmvLo")
 #' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
 #' 
 #' # fit a fundamental factor model
+#' exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE", "ANNVOL1M", "EP")
 #' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","MOM121","SIZE","VOL121",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-#'               fit.method="WLS", z.score = "crossSection")
+#'                     exposure.vars = exposure.vars,
+#'                     date.var = "DATE", 
+#'                     ret.var = "RETURN", 
+#'                     asset.var = "TICKER", 
+#'                     fit.method="WLS", 
+#'                     z.score = "crossSection")
 #'
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = FALSE, digits = 4)
+#' 
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
 #'              which = 2, add.grid = TRUE, scaleType = 'same')
+#'              
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPlot = TRUE, which = 1,
 #'              add.grid = FALSE, zeroLine = TRUE, color = 'Blue')
+#'              
 #' repExposures(fit.cross, wtsStocks145GmvLo, isPrint = FALSE, isPlot = TRUE, 
 #'              which = 3, add.grid = FALSE, zeroLine = FALSE, color = 'Blue')
 #' @export
@@ -135,7 +144,7 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
     temp = cbind('Date'=ffmObj$time.periods[i],temp)
     X = rbind(X,temp)
   }
-  X = as.xts(X[,-1],order.by = X[,1])
+  X = xts::as.xts(X[,-1],order.by = X[,1])
   
   if(isPlot){
     par(mfrow = c(1,1))
@@ -200,11 +209,11 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                 dat.SecMean = as.data.frame(list("ids" = rep(main3, length(d)), "variable"= names(d), "value"= as.numeric(d)))
                 
 
-                plt1 = barchart(value~(variable)|ids,group = (ids),data=dat.StMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt1 = barchart(value~(variable)|"ids",group = ("ids"),data=dat.StMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt2 = barchart(value~(variable)|ids,group = (ids),data=dat.StVol,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt2 = barchart(value~(variable)|"ids",group = ("ids"),data=dat.StVol,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt3 = barchart(value~(variable)|ids,group = (ids),data=dat.SecMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt3 = barchart(value~(variable)|"ids",group = ("ids"),data=dat.SecMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex), strip.left = F)
                 
                 print(plt1, split=c(1,1,2,2), more=TRUE)

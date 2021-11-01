@@ -12,8 +12,10 @@
 \arguments{
 \item{object}{an object of class \code{tsfm} returned by \code{fitTsfm}.}
 
-\item{se.type}{one of "Default", "HC" or "HAC"; option for computing 
-HC/HAC standard errors and t-statistics. Default is "Default".}
+\item{se.type}{one of "Default", "HC" or "HAC" option for computing HC/HAC 
+standard errors and t-statistics. Default is "Default". If "HC" or "HAC" 
+options are selected, you will need to first load the suggested `lmtest` 
+package.}
 
 \item{...}{futher arguments passed to or from other methods.}
 
@@ -57,12 +59,18 @@ statistically valid method of calculating standard errors for the lasso
 predictions.
 }
 \examples{
+ # load data
 data(managers, package = 'PerformanceAnalytics')
+
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
                factor.names=colnames(managers[,7:9]), 
                data=managers)
 
 # summary of factor model fit for all assets
+summary(fit)
+
+# Summary of factor model, using lmtest 
+library(lmtest)
 summary(fit, "HAC")
 
 # summary of lm fit for a single asset
