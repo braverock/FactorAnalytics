@@ -31,14 +31,20 @@ jobs:
       - name: Install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install git git-lfs 
-      - name: Install dependencies
+          sudo apt-get install git-lfs 
+      - name: Install infrastructure packages
         run: |
           install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
+        - name: Install packages listed in Suggests
+        run: |
+          install.packages(c("remotes", "rcmdcheck", "R.rsp", "tinytest", 
+          "corrplot", "lmtest", "rugarch", "strucchange", "HH"), 
+          dependencies = TRUE)
+        shell: Rscript {0}
         
-      - name: Check
+      - name: R CMD Check
         run: rcmdcheck::rcmdcheck(args = "--as-cran", error_on = "error")
         shell: Rscript {0}
         env:
