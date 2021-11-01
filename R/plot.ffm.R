@@ -26,9 +26,9 @@
 #' @importFrom xts as.xts merge.xts
 #' @importFrom zoo index
 #' @importFrom sn dst rst st.mple
-#' @importFrom lattice panel.barchart panel.grid
+#' @importFrom lattice panel.barchart panel.grid barchart
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram 
-#' chart.QQPlot chart.Correlation
+#' chart.QQPlot chart.Correlation chart.Boxplot
 #' 
 #' @param x an object of class \code{ffm} produced by \code{fitFfm}.
 #' @param which a number to indicate the type of plot. If multiple plots are
@@ -161,7 +161,8 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     # extract info from the fitFfm object
     fitted.ret <- fitted(x)[,i]
     resid.ret <- residuals(x)[,i]
-    asset.ret <- subset(x$data,TICKER==i)[,c(x$date.var,x$ret.var)]
+    asset.ret <- subset(x = x$data, subset = get(fit.style.sector$asset.var) == i)
+    asset.ret <- asset.ret[ ,c(x$date.var, x$ret.var)]
     asset.ret.xts <- xts::as.xts(asset.ret[,2], order.by=zoo::index(fitted.ret))
     plotData <- merge.xts(asset.ret.xts, fitted.ret, resid.ret)
     colnames(plotData) <- c("Actual","Fitted","Residuals")
@@ -199,9 +200,11 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
       switch(which,
              "1L" = {
                ##  Time series plot of actual and fitted asset returns
-               chart.TimeSeries(plotData[,1:2], main=paste("Actual and fitted asset returns:",i),
-                                colorset=colorset, xlab="", ylab="Returns", lwd=lwd,
-                                legend.loc=legend.loc, pch=NULL, las=las, ...)
+      PerformanceAnalytics::chart.TimeSeries(plotData[,1:2], 
+                            main = paste("Actual and fitted asset returns:", i),
+                            colorset = colorset, xlab = "", ylab = "Returns", 
+                            lwd = lwd, legend.loc = legend.loc, pch = NULL, 
+                            las = las, ...)
              }, "2L" = {
                ## Actual vs. fitted asset returns
                plot(x=coredata(plotData[,2]), y=coredata(plotData[,1]),
@@ -217,7 +220,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                             col=colorset[1], col.smooth=colorset[2], lwd=lwd)
              }, "4L" = {
                ## Time series plot of residuals with standard error bands
-               chart.TimeSeries(Residuals, main=paste("Residuals:",i),
+               PerformanceAnalytics::chart.TimeSeries(Residuals, main=paste("Residuals:",i),
                                 colorset=colorset, xlab="", ylab="Residuals",
                                 lwd=lwd, lty="solid", las=las, ...)
                abline(h=1.96*resid.sd, lwd=lwd, lty="dotted", col=colorset[2])
@@ -226,27 +229,27 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                       lwd=lwd, bty="n", legend=c("Residuals",expression("\u00b1 1.96 "*sigma)))
              }, "5L" = {
                ## Time series plot of squared residuals
-               chart.TimeSeries(Residuals^2, colorset=colorset, xlab="",
+               PerformanceAnalytics::chart.TimeSeries(Residuals^2, colorset=colorset, xlab="",
                                 ylab=" Squared residuals", lwd=lwd,
                                 main=paste("Squared residuals:",i),
                                 legend.loc=NULL, pch=NULL, las=las, ...)
              }, "6L" = {
                ## Time series plot of absolute residuals
-               chart.TimeSeries(abs(Residuals), colorset=colorset, xlab="",
+               PerformanceAnalytics::chart.TimeSeries(abs(Residuals), colorset=colorset, xlab="",
                                 ylab="Absolute residuals", lwd=lwd,
                                 main=paste("Absolute residuals:",i),
                                 legend.loc=NULL, pch=NULL, las=las, ...)
              }, "7L" = {
                ## SACF and PACF of residuals
-               chart.ACFplus(Residuals, maxlag=maxlag,
+               PerformanceAnalytics::chart.ACFplus(Residuals, maxlag=maxlag,
                              main=paste("SACF & PACF - Residuals:",i), ...)
              }, "8L" = {
                ## SACF and PACF of squared residuals
-               chart.ACFplus(Residuals^2, maxlag=maxlag,
+               PerformanceAnalytics::chart.ACFplus(Residuals^2, maxlag=maxlag,
                              main=paste("SACF & PACF - Squared residuals:",i), ...)
              }, "9L" = {
                ## SACF and PACF of absolute residuals
-               chart.ACFplus(abs(Residuals), maxlag=maxlag,
+               PerformanceAnalytics::chart.ACFplus(abs(Residuals), maxlag=maxlag,
                              main=paste("SACF & PACF - Absolute residuals:",i), ...)
              }, "10L" = {
                ## Non-parametric density of residuals with normal overlaid
@@ -273,7 +276,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              }, "12L" = {
                ## Histogram of residuals with non-parametric density and normal overlaid
                methods <- c("add.density","add.normal","add.rug")
-               chart.Histogram(Residuals, xlab="Return residuals",
+               PerformanceAnalytics::chart.Histogram(Residuals, xlab="Return residuals",
                                methods=methods, colorset=colorset[c(1,2,3)],
                                lwd=lwd, main=paste("Histogram of residuals:",i), ...)
                legend(x=legend.loc, col=colorset[c(2,3)], lwd=lwd, bty="n",
@@ -282,7 +285,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                                 round(resid.sd,4),")",sep=""), side=3, line=0.25, cex=0.8)
              }, "13L" = {
                ##  QQ-plot of residuals
-               chart.QQPlot(Residuals, envelope=0.95, col=colorset[1:2], lwd=lwd,
+               PerformanceAnalytics::chart.QQPlot(Residuals, envelope=0.95, col=colorset[1:2], lwd=lwd,
                             main=paste("QQ-plot of residuals:",i), ...)
                legend(x=legend.loc, col=colorset[2], lty="dashed", lwd=1, bty="n",
                       legend=c("0.95 C.Env."))
@@ -345,7 +348,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              "1L" = {
                ## Distribution of factor returns
                main <- "Distribution of factor returns"
-               chart.Boxplot(x$factor.returns[,f.sub], colorset="black", lwd=1, main=main, xlab="Factor returns", ylab="",
+               PerformanceAnalytics::chart.Boxplot(x$factor.returns[,f.sub], colorset="black", lwd=1, main=main, xlab="Factor returns", ylab="",
                              legend.loc=legend.loc, pch=NULL, las=las, ...)
              },
              "2L" = {
@@ -356,7 +359,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                X <- as.vector(as.matrix(C[,,drop=FALSE]))
                Z <- col(C, as.factor=T)
                plot(
-                 barchart(Y~X|Z, main="Factor exposures from the last period \n", xlab="", as.table=TRUE,
+                 lattice::barchart(Y~X|Z, main="Factor exposures from the last period \n", xlab="", as.table=TRUE,
                           origin=0, col=colorset[1], scales=list(relation="free"), ...)
                )
              },
@@ -370,48 +373,48 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                for (i in a.sub) {
                  asset <- x$asset.names[i]
                  fitted.ret <- fitted(x)[,asset]
-                 asset.ret <- subset(x$data,TICKER==asset)[,c(x$date.var,x$ret.var)]
+                 asset.ret <- subset(x$data, asset.name==asset)[,c(x$date.var,x$ret.var)]
                  asset.ret.xts <- xts::as.xts(asset.ret[,2], order.by=zoo::index(fitted.ret))
                  plotData <- merge.xts(asset.ret.xts, fitted.ret)
                  colnames(plotData) <- c("Actual","Fitted")
                  main <- paste("Actual and Fitted:", asset)
-                 chart.TimeSeries(plotData, colorset=colorset, lwd=lwd, main=main, xlab="",
+                 PerformanceAnalytics::chart.TimeSeries(plotData, colorset=colorset, lwd=lwd, main=main, xlab="",
                                   ylab="Asset returns", legend.loc=legend.loc, pch=NULL, las=las, ...)
                }
                par(mfrow=c(1,1))
              },
              "4L" ={
                ## Time-series of R-squared values
-               chart.TimeSeries(x$r2, main="Time-series of R-squared values", xlab="", ylab="R-squared",
+               PerformanceAnalytics::chart.TimeSeries(x$r2, main="Time-series of R-squared values", xlab="", ylab="R-squared",
                                 colorset=colorset, lwd=lwd, pch=NULL, las=las, ...)
              },
              "5L" = {
                ## Residual variance across assets
                plot(
-                 barchart(x$resid.var[a.sub], main="Residual variance", xlab="", col=colorset[1], ...)
+                 lattice::barchart(x$resid.var[a.sub], main="Residual variance", xlab="", col=colorset[1], ...)
                )
              },
              "6L" = {
                ## Scatterplot matrix of residuals, with histograms, density overlays, correlations and significance stars
-               chart.Correlation(residuals(x)[,a.sub], ...)
+               PerformanceAnalytics::chart.Correlation(residuals(x)[,a.sub], ...)
              },
              "7L" = {
                ## Factor model residual correlation
                cor.resid <- cor(residuals(x)[,a.sub], use="pairwise.complete.obs")
-               corrplot.mixed(cor.resid, tl.col=1, upper="ellipse", ...)
+               corrplot::corrplot.mixed(cor.resid, tl.col=1, upper="ellipse", ...)
                # mtext("pairwise complete obs", line=0.5)
              },
              "8L" = {
                ## Factor model return correlation
                cor.fm <- cov2cor(fmCov(x)[a.sub,a.sub])
-               corrplot.mixed(cor.fm, tl.col=1, upper="ellipse", ...)
+               corrplot::corrplot.mixed(cor.fm, tl.col=1, upper="ellipse", ...)
                # mtext("pairwise complete obs", line=0.5)
              },
              "9L" = {
                ## Factor percentage contribution to SD
                pcSd.fm <- fmSdDecomp(x)$pcSd[a.sub,c(f.sub,k+1)]
                plot(
-                 barchart(pcSd.fm, main="Factor % Contribution to SD", xlab="",
+                 lattice::barchart(pcSd.fm, main="Factor % Contribution to SD", xlab="",
                           auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE),
                           par.settings=list(superpose.polygon=list(col=colorset)),
                           panel=function(...){panel.grid(h=0, v=-1); panel.barchart(...)}, ...)
@@ -421,7 +424,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                ## Factor percentage contribution to ES
                pcES.fm <- fmEsDecomp(x)$pcES[a.sub,c(f.sub,k+1)]
                plot(
-                 barchart(pcES.fm, main="Factor % Contribution to ES", xlab="",
+                 lattice::barchart(pcES.fm, main="Factor % Contribution to ES", xlab="",
                           auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE),
                           par.settings=list(superpose.polygon=list(col=colorset)),
                           panel=function(...){panel.grid(h=0, v=-1); panel.barchart(...)}, ...)
@@ -431,7 +434,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                ## Factor percentage contribution to VaR
                pcVaR.fm <- fmVaRDecomp(x)$pcVaR[a.sub,c(f.sub,k+1)]
                plot(
-                 barchart(pcVaR.fm, main="Factor % Contribution to VaR", xlab="",
+                 lattice::barchart(pcVaR.fm, main="Factor % Contribution to VaR", xlab="",
                           auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE),
                           par.settings=list(superpose.polygon=list(col=colorset)),
                           panel=function(...){panel.grid(h=0, v=-1);
@@ -441,7 +444,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              "12L" ={
                ## Time series of factor returns
                factor.ret <- x$factor.returns[,f.sub]
-               chart.TimeSeries(factor.ret, main="Time-series of factor returns", xlab="", ylab="Factor returns",
+               PerformanceAnalytics::chart.TimeSeries(factor.ret, main="Time-series of factor returns", xlab="", ylab="Factor returns",
                                 colorset=colorset, lwd=lwd, pch=NULL, legend.loc=legend.loc, las=las, ...)
                
              },
