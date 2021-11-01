@@ -32,6 +32,10 @@
 specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                     weight.var = NULL, addIntercept = FALSE, rob.stats = FALSE){
   
+  # Due to NSE notes related to data.table in R CMD check
+  idx = RawReturn = NULL
+  # See data.table "Importing data.table" vignette
+  
   # set defaults and check input validity
   if (missing(data) || !is.data.frame(data)) {
     stop("Invalid args: data must be a data.frame")
@@ -148,19 +152,28 @@ lagExposures <- function(specObj){
 #'
 #' @description
 #' function to calculate z-scores for numeric exposure using weights weight.var
+#' 
 #' @param specObj is a ffmSpec object,
 #' @param Std.Type method for exposure standardization; one of "none",
 #' "CrossSection", or "TimeSeries".
 #' Default is \code{"none"}.
 #' @param lambda lambda value to be used for the EWMA estimation of residual 
 #' variances. Default is 0.9
+#' 
 #' @return the ffM spec object with exposures z-scored
 #' 
 #' @export
 #'
 standardizeExposures <- function(specObj, 
-                                 Std.Type = c("None", "CrossSection", "TimeSeries"),
+                                 Std.Type = c("None", 
+                                              "CrossSection", 
+                                              "TimeSeries"),
                                  lambda = 0.9){
+  
+  # Due to NSE notes related to data.table in R CMD check
+  w = s = NULL
+  # See data.table "Importing data.table" vignette
+  
   
   weight.var <- specObj$weight.var
   dataDT <- data.table::copy(specObj$dataDT) # hard_copy
@@ -237,10 +250,15 @@ standardizeExposures <- function(specObj,
 #' @param rfRate risk free rate
 #' @param isBenchExcess toggle to select whether to calculate excess returns
 #' 
+#' @importFrom xts is.xts
+#' 
 #' @export
 residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
   
-   
+  # Due to NSE notes related to data.table in R CMD check
+  ExcessReturn = . = ResidualizedReturn = NULL
+  # See data.table "Importing data.table" vignette
+  
   
   dataDT <- data.table::copy(specObj$dataDT) # hard_copy
   currKey <- data.table::key(dataDT)
@@ -306,13 +324,18 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
 #' @description Standardize the returns using GARCH(1,1) volatilities.
 #' @param specObj  is a ffmSpec object
 #' @param GARCH.params fixed Garch(1,1) parameters
+#' 
 #' @return an ffmSpec Object with the standardized returns added
 #' 
 #' @export
 standardizeReturns <- function(specObj, 
-                               GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)){
+                               GARCH.params = list(omega = 0.09, 
+                                                   alpha = 0.1, 
+                                                   beta = 0.81)) {
   
-   
+  # Due to NSE notes related to data.table in R CMD check
+  sdReturns = . = sigmaGarch = StandardizedReturns = NULL
+  # See data.table "Importing data.table" vignette
   
   dataDT <- data.table::copy(specObj$dataDT) # hard_copy
   a_ <- eval(specObj$asset.var) # name of the asset column or id
