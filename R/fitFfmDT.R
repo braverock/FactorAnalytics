@@ -358,7 +358,9 @@ standardizeReturns <- function(specObj,
 
 #'
 #' @title fitFfmDT
+#' 
 #' @description This function fits a fundamental factor model
+#' 
 #' @param ffMSpecObj a specFFm object
 #' @param fit.method method for estimating factor returns; one of "LS", "WLS"
 #' "ROB" or "W-ROB". See details. Default is "LS".
@@ -376,6 +378,7 @@ standardizeReturns <- function(specObj,
 #' Sets tuning parameters for the MM estimator implemented in lmrobdetMM of the
 #' RobStatTM package. See \code{\link[RobStatTM]{lmrobdetMM}}.
 #' @param ... additional pass through arguments
+#' 
 #' @return \code{fitFfm} returns a list with two object of class \code{"data.table"}
 #' The first reg.listDT is object of class \code{"data.table"} is a list containing the following
 #' components:
@@ -403,6 +406,11 @@ fitFfmDT <- function(ffMSpecObj,
                      GARCH.MLE = FALSE, 
                      lmrobdet.control.para.list = lmrobdet.control(), 
                      ...){
+  
+  # Due to NSE notes related to data.table in R CMD check
+  . = beta.star = R_matrix = toRegress = beta.mod.style = B.style = NULL
+  beta.mic = beta1 = beta2 = K1 = K2 = W = NULL
+  # See data.table "Importing data.table" vignette
   
   fit.method = toupper(fit.method[1])
   fit.method <- match.arg(arg = fit.method, choices = toupper(c("LS","WLS","ROB","W-ROB")), several.ok = F )
@@ -646,10 +654,13 @@ fitFfmDT <- function(ffMSpecObj,
 
 
 #' @title extractRegressionStats
+#' 
 #' @description function to compute or Extract objects to be returned
+#' 
 #' @param specObj fitFM object that has been already fit
 #' @param fitResults output from fitFfmDT
 #' @param full.resid.cov an option to calculate the full residual covariance or not
+#' 
 #' @return a structure of class ffm holding all the information
 #' 
 #' @importFrom RobStatTM covRob
@@ -660,7 +671,10 @@ fitFfmDT <- function(ffMSpecObj,
 #'
 extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   
-   
+  # Due to NSE notes related to data.table in R CMD check
+  . = reg.list = id = R_matrix = factor.returns1 = factor.returns2 = B.mod = beta.mic = NULL
+  # See data.table "Importing data.table" vignette
+ 
   restriction.mat = NULL
   g.cov = NULL
   
@@ -945,8 +959,10 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 
 
 #' @title calcFLAM
+#' 
 #' @description function to calculate fundamental law of active management
 #' @importFrom data.table data.table .N
+#' 
 #' @param specObj an object as the output from specFfm function
 #' @param modelStats  output of the extractRegressionStats functions. 
 #' Contains fit statistics of the factor model.
@@ -961,6 +977,9 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
 calcFLAM <- function(specObj, modelStats, fitResults, analysis = c("ISM", "NEW"),
                      targetedVol = 0.06, ...){
   
+  # Due to NSE notes related to data.table in R CMD check
+  . = NULL
+  # See data.table "Importing data.table" vignette
   
   # only works for SFM
   analysis <- match.arg(toupper(analysis[1]), choices = c("ISM", "NEW"), 
@@ -1174,7 +1193,9 @@ calcAssetWeightsForRegression <- function(specObj,
 #' @export
 convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
   
-   
+  # Due to NSE notes related to data.table in R CMD check
+  reg.list = NULL
+  # See data.table "Importing data.table" vignette
   
   asset.names <- names(RegStatsObj$residuals) # unique(SpecObj$dataDT[[SpecObj$asset.var]])
   time.periods <- unique(SpecObj$dataDT[[SpecObj$date.var]])
