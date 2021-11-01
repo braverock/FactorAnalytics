@@ -161,7 +161,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     # extract info from the fitFfm object
     fitted.ret <- fitted(x)[,i]
     resid.ret <- residuals(x)[,i]
-    asset.ret <- subset(x = x$data, subset = get(fit.style.sector$asset.var) == i)
+    asset.ret <- subset(x = x$data, subset = get(x$asset.var) == i)
     asset.ret <- asset.ret[ ,c(x$date.var, x$ret.var)]
     asset.ret.xts <- xts::as.xts(asset.ret[,2], order.by=zoo::index(fitted.ret))
     plotData <- merge.xts(asset.ret.xts, fitted.ret, resid.ret)
