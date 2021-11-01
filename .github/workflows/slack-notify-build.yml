@@ -42,7 +42,7 @@ jobs:
         run: rcmdcheck::rcmdcheck(args = "--as-cran", error_on = "error")
         shell: Rscript {0}
         env:
-          _R_CHECK_FORCE_SUGGESTS_: true
+          _R_CHECK_FORCE_SUGGESTS_: false
 
       - name: Notify slack success
         if: success()
