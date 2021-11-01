@@ -35,10 +35,10 @@ jobs:
         shell: Rscript {0}
         
       - name: Check
-        run: rcmdcheck::rcmdcheck(args = c("--as-cran", error_on = "warning", check_dir = "check")
+        run: rcmdcheck::rcmdcheck(args = c("--as-cran", error_on = "ERROR")
         shell: Rscript {0}
         env:
-          _R_CHECK_FORCE_SUGGESTS_: false
+          _R_CHECK_FORCE_SUGGESTS_: FALSE
         
 
       - name: Notify slack success
