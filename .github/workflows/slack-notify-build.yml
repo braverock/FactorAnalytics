@@ -28,20 +28,15 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install curl libcurl4-openssl-dev 
-      - name: Install Git Large File Storage (LFS)
+      - name: Check for and install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install git-lfs 
-      - name: Install infrastructure packages
+          
+      - name: Install remotes, rcmdcheck, and all FA imports & Suggests
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
+          install.packages(c("remotes", "rcmdcheck", "Rmpfr"), dependencies = TRUE)
           remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-      - name: Install packages listed in Suggests
-        run: |
-          install.packages(c("remotes", "rcmdcheck", "R.rsp", "tinytest", 
-          "corrplot", "lmtest", "rugarch", "strucchange", "HH"), 
-          dependencies = TRUE)
         shell: Rscript {0}
         
       - name: R CMD Check
