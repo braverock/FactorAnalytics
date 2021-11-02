@@ -27,7 +27,8 @@ jobs:
       - name: Install curl
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install curl libcurl4-openssl-dev 
+          sudo apt-get install curl libcurl4-openssl-dev libcurl4-doc 
+          libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev
       - name: Check for and install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
@@ -35,7 +36,9 @@ jobs:
       - name: Install R pkg Linux dependencies 
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install pandoc libmpfr-dev    
+          sudo apt-get install pandoc libmpfr-dev libmpfr-doc texlive-latex-recommended 
+          texlive-xetex texlive-luatex pandoc-citeproc texlive-latex-extra context 
+          wkhtmltopdf librsvg2-bin groff ghc nodejs python libjs-mathjax node-katex    
           
       - name: Install remotes, rcmdcheck, and all FA imports & Suggests
         run: |
