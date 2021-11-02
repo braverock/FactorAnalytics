@@ -26,18 +26,12 @@ jobs:
       - name: Check for and install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install git-lfs 
-          sudo git lfs install        
+          sudo apt-get install git-lfs | git lfs install        
       - name: Install curl
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install curl libcurl4-openssl-dev libcurl4-doc 
+          sudo apt-get install curl libcurl4-openssl-dev libcurl4-doc |
           sudo apt-get install libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev
-      - name: Check for and install Git Large File Storage (LFS)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install git-lfs 
-          sudo git lfs install
       - name: Install R pkg Linux dependencies 
         if: runner.os == 'Linux'
         run: |
