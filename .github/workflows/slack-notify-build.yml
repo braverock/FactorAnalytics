@@ -21,7 +21,6 @@ jobs:
           channel_id: C01MS7ECQ8Z
           status: STARTING
           color: warning
-
      - name: Check for and install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
