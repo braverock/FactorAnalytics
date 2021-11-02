@@ -33,6 +33,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install git-lfs 
+          sudo ./install.sh
+          sudo git lfs install
       - name: Install R pkg Linux dependencies 
         if: runner.os == 'Linux'
         run: |
