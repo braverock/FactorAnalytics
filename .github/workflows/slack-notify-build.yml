@@ -32,6 +32,10 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install git-lfs 
+      - name: Install R pkg Linux dependencies 
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install pandoc libmpfr-dev    
           
       - name: Install remotes, rcmdcheck, and all FA imports & Suggests
         run: |
