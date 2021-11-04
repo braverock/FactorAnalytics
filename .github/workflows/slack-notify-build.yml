@@ -21,12 +21,12 @@ jobs:
           channel_id: C01MS7ECQ8Z
           status: STARTING
           color: warning
-      - uses: actions/checkout@v2
-      - uses: r-lib/actions/setup-r@v1
       - name: Check for and install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install git-lfs | git lfs install        
+          sudo apt-get install git-lfs | git lfs install  
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v1   
       - name: Install curl
         if: runner.os == 'Linux'
         run: |
