@@ -13,7 +13,7 @@
 containing the variables with which to predict.}
 
 \item{...}{optional arguments passed to \code{predict.lm} or
-\code{\link[robust]{predict.lmRob}}, such as \code{se.fit}, or, to 
+\code{\link[robustbase]{predict.lmrob}}, such as \code{se.fit}, or, to 
 \code{\link[lars]{predict.lars}} such as \code{mode}.}
 }
 \value{
