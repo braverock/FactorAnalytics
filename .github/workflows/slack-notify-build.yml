@@ -40,7 +40,7 @@ jobs:
       - name: Check for and install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install git-lfs | git lfs install  
+          sudo apt-get install git-lfs | git lfs install | git lfs pull  
  
       - uses: actions/checkout@v2
       
