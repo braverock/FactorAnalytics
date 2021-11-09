@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^.git$
 .github
+.lfs-assets-id
 ^.*\.xlsx
 ^.*\.zip
 sandbox
