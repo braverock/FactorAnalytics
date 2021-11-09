@@ -27,16 +27,16 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - name: Notify slack success
-        if: success()
-        id: slack # IMPORTANT: reference this step ID value in future Slack steps
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel_id: C01MS7ECQ8Z
-          status: STARTING
-          color: warning
+#      - name: Notify slack success
+#        if: success()
+#        id: slack # IMPORTANT: reference this step ID value in future Slack steps
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+#        uses: voxmedia/github-action-slack-notify-build@v1
+#        with:
+#          channel_id: C01MS7ECQ8Z
+#          status: STARTING
+#          color: warning
       - name: Check for and install Git Large File Storage (LFS)
         if: runner.os == 'Linux'
         run: |
@@ -61,27 +61,27 @@ jobs:
           
       - uses: r-lib/actions/check-r-package@v1
 
-      - name: Notify slack success
-        if: success()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
+#      - name: Notify slack success
+#        if: success()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+#        uses: voxmedia/github-action-slack-notify-build@v1
+#        with:
           # Updates existing message from the first step
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01MS7ECQ8Z
-          status: SUCCESS
-          color: good
+#          message_id: ${{ steps.slack.outputs.message_id }}
+#          channel_id: C01MS7ECQ8Z
+#          status: SUCCESS
+#          color: good
 
-      - name: Notify slack fail
-        if: failure()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
+#      - name: Notify slack fail
+#        if: failure()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+#        uses: voxmedia/github-action-slack-notify-build@v1
+#        with:
           # Updates existing message from the first step
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01MS7ECQ8Z
-          status: FAILED
-          color: danger
+#          message_id: ${{ steps.slack.outputs.message_id }}
+#          channel_id: C01MS7ECQ8Z
+#          status: FAILED
+#          color: danger
 
