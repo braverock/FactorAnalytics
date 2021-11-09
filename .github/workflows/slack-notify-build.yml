@@ -34,17 +34,9 @@ jobs:
       - name: Install R pkg Linux dependencies 
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install pandoc libmpfr-dev libmpfr-doc |
-          texlive-latex-recommended texlive-xetex texlive-luatex pandoc-citeproc texlive-latex-extra context | 
-          wkhtmltopdf librsvg2-bin groff ghc nodejs python libjs-mathjax node-katex fonts-noto fonts-freefont-otf | 
-          fonts-freefont-ttf fonts-texgyre |
-          texlive-xetex texlive-luatex pandoc-citeproc texlive-latex-extra context |
-          wkhtmltopdf librsvg2-bin groff ghc nodejs python libjs-mathjax node-katex
-  poppler-utils ghostscript fonts-japanese-mincho | fonts-ipafont-mincho
-  fonts-japanese-gothic | fonts-ipafont-gothic fonts-arphic-ukai
-  fonts-arphic-uming fonts-nanum gv | postscript-viewer perl-tk xpdf
-  | pdf-viewer xzdec texlive-latex-base-doc texlive-latex-recommended-doc
-  texlive-pstricks
+          sudo apt-get install pandoc texlive-full libmpfr-dev libmpfr-doc |
+          pandoc-citeproc python libjs-mathjax fonts-noto fonts-freefont-otf | 
+          fonts-freefont-ttf fonts-texgyre context
       - name: Install remotes, rcmdcheck, and all FA imports & Suggests
         run: |
           install.packages(c("remotes", "rcmdcheck", "Rmpfr"), dependencies = TRUE)
