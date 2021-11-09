@@ -34,9 +34,7 @@ jobs:
       - name: Install R pkg Linux dependencies 
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install pandoc texlive-full libmpfr-dev libmpfr-doc |
-          pandoc-citeproc python libjs-mathjax fonts-noto fonts-freefont-otf | 
-          fonts-freefont-ttf fonts-texgyre context
+          sudo apt-get install pandoc texlive-full libmpfr-dev libmpfr-doc pandoc-citeproc python libjs-mathjax 
       - name: Install remotes, rcmdcheck, and all FA imports & Suggests
         run: |
           install.packages(c("remotes", "rcmdcheck", "Rmpfr"), dependencies = TRUE)
