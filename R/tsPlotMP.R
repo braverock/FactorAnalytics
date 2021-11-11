@@ -19,7 +19,7 @@
 #' @param axis.cex a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 #' @param color A specification for the default plotting color. Default is black.
 #' @param zeroLine logical varible to choose add a dotted horizontal line at the zero vertical distance
-#' 
+#' @param panel function to add customized lines to the lattice plot. See examples.
 #' @author Douglas Martin, Lingjie Yi
 #' @examples 
 #'
@@ -34,15 +34,21 @@
 #' tsPlotMP(ret, scaleType = "same", zeroLine = FALSE)
 #' tsPlotMP(ret, stripLeft = FALSE, main = 'Time Series Plot')
 #' tsPlotMP(ret, stripLeft = FALSE, main = 'Time Series Plot', layout = c(3,3))
-#'  
-#'    
+#' 
+#' # example to add customized lines (abline)
+#' tsPlotMP(ret, color = 'Blue',main='test',zeroLine=FALSE,panel=function(...){
+#' 			panel.abline(v = 2000, lty = 3)
+#' 			panel.abline(h = 0, lty = 3) 
+#' 			panel.abline(h = 0.1, lty = 3)
+#' 			panel.abline(h = -0.1, lty = 3)
+#' 			panel.xyplot(...)})   
 #' @export
 
 # Lattice type time series plotting function
 
 tsPlotMP = function (ret, add.grid = FALSE, layout = NULL, type = "l", yname = "RETURNS (%)", 
 		Pct = F, scaleType = "free", stripLeft = TRUE, main = NULL, lwd = 1, 
-		stripText.cex = 1, axis.cex = 1, color = "black", zeroLine = TRUE) 
+		stripText.cex = 1, axis.cex = 1, color = "black", zeroLine = TRUE, panel = NULL) 
 {
 	strip.left = stripLeft
 	strip = !strip.left
@@ -52,14 +58,10 @@ tsPlotMP = function (ret, add.grid = FALSE, layout = NULL, type = "l", yname = "
 	else {
 		type = type
 	}
+	
 	if (zeroLine) {
 		panel = function(...) {
 			panel.abline(h = 0, lty = 3)
-			panel.xyplot(...)
-		}
-	}
-	else {
-		panel = function(...) {
 			panel.xyplot(...)
 		}
 	}
@@ -73,3 +75,4 @@ tsPlotMP = function (ret, add.grid = FALSE, layout = NULL, type = "l", yname = "
 	print(pl)
 }
 
+                                                  
