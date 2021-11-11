@@ -3,7 +3,7 @@
 \name{fmTstats}
 \alias{fmTstats}
 \alias{fmTstats.ffm}
-\title{t-stats and Plots for a fitted Fundamental Factor Model}
+\title{t-stats and plots for a fitted Fundamental Factor Model object}
 \usage{
 fmTstats(ffmObj, ...)
 
@@ -11,7 +11,7 @@ fmTstats(ffmObj, ...)
   ffmObj,
   isPlot = TRUE,
   isPrint = FALSE,
-  whichPlot = "all",
+  whichPlot = "tStats",
   color = c("black", "cyan"),
   lwd = 2,
   digits = 2,
@@ -32,58 +32,75 @@ fmTstats(ffmObj, ...)
 
 \item{isPlot}{logical. If \code{FALSE} no plots are displayed.}
 
-\item{isPrint}{logical. if \code{TRUE}, the time series of the computed factor model values is printed. default is \code{FALSE},}
+\item{isPrint}{logical. if \code{TRUE}, the time series of the computed 
+factor model values is printed. Default is \code{FALSE}}
 
-\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from ("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert" ).
-Three variants of significantTstats stand for vertical, horizontal and likert barplots. Default is \code{all} plotting t-stats and significant t-stats with vertical bars.}
+\item{whichPlot}{string indicating the plot(s) to be plotted. Choose from 
+("all", "tStats", "significantTstatsV", "significantTstatsH", "significantTstatsLikert").
+Three variants of significantTstats stand for vertical, horizontal and likert barplots. 
+Default is \code{tStats} plotting t-stats and significant t-stats with vertical bars.}
 
-\item{color}{length 2 vector specifying the plotting color for t-stats plot and for barplot 
-respectively. default is \code{c("black", "cyan")}}
+\item{color}{length 2 vector specifying the plotting color for t-stats plot 
+and for barplot respectively. default is \code{c("black", "cyan")}}
 
 \item{lwd}{line width relative to the default. default is 2.}
 
-\item{digits}{an integer indicating the number of decimal places to be used for rounding. default is 2.}
+\item{digits}{an integer indicating the number of decimal places to be used 
+for rounding. default is 2.}
 
-\item{z.alpha}{critical value corresponding to the confidence interval. default is 1.96 i.e 95\% C.I}
+\item{z.alpha}{critical value corresponding to the confidence interval. 
+Default is 1.96 i.e 95\% C.I}
 
-\item{layout}{numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in the xyplot of t-statistics. default is c(2,3).}
+\item{layout}{numeric vector of length 2 or 3 giving the number of columns, 
+rows, and pages (optional) in the xyplot of t-statistics. default is c(2,3).}
 
-\item{type}{character. Type of the xyplot of t-statistics; \code{"l"} for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) vertical lines
-and \code{"b"} for both. Deafault is \code{"h"}.}
+\item{type}{type character. Type of the xyplot of t-statistics; \code{"l"} 
+for lines, \code{"p"} for points, \code{"h"} for histogram like (or high-density) 
+vertical lines and \code{"b"} for both. Default is \code{"h"}.}
 
-\item{scale}{character. It determines how axis limits are calculated for each panel. Possible values are "same" , "free" (default) and "sliced".}
+\item{scale}{character. It determines how axis limits are calculated for each 
+panel. Possible values are "same" , "free" (default) and "sliced".}
 
-\item{stripText.cex}{a number indicating the amount by which strip text in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+\item{stripText.cex}{a number indicating the amount by which strip text in 
+the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% 
+larger, 0.5 is 50\% smaller, etc.}
 
-\item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
+\item{axis.cex}{a number indicating the amount by which axis in the plot(s) 
+should be scaled relative to the default. Default = 1. 1.5 is 50\% larger, 
+0.5 is 50\% smaller, etc.}
 
-\item{title}{logical. if \code{TRUE}, the plots will have the main tiltle. default is \code{TRUE}.}
+\item{title}{logical. if \code{TRUE}, the plots will have the main title. 
+Default is \code{TRUE}.}
 }
 \value{
-\code{fmTstats} plots the t-stats and significant t-stats values  if \code{isPlot} is \code{TRUE} and returns a list with following components:
+\code{fmTstats} plots the t-stats and significant t-stats values  
+if \code{isPlot} is \code{TRUE} and returns a list with following components:
 \item{tstats}{ an xts object of t-stats values.}
 \item{z.alpha}{ critical value corresponding to the confidence interval.}
 }
 \description{
-Calculate and plot the time series of the t-statistic values and the
- number of risk indices with significant t-stats for a fundamentally fit object.
+Calculate and plot the time series of t-statistic values and the
+ number of risk indices with significant t-stats for a fundamental factor 
+ model of class \code{ffm} produced by \code{fitFfm} or \code{fitFfmDT}
 }
 \examples{
  
- data("factorDataSetDjia5Yrs")
+data("factorDataSetDjia5Yrs")
  
 #Fit a Ffm with style factors only
  fit <- fitFfm(data = factorDataSetDjia5Yrs,
                exposure.vars = c("MKTCAP","ENTVAL","P2B","EV2S"),
-               date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
-               fit.method="WLS",
+               date.var = "DATE", 
+               ret.var = "RETURN", 
+               asset.var = "TICKER", 
+               fit.method = "WLS",
                z.score = "crossSection")
 
 #Compute time series of t-stats and number of significant t-stats 
  stats = fmTstats(fit, isPlot = TRUE, lwd = 2, color = c("blue", "blue"), 
-                  z.alpha =1.96)
+                  z.alpha = 1.96)
 
-fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", 
+fit1 <- fitFfm(data = factorDataSetDjia5Yrs, asset.var = "TICKER", 
                exposure.vars = c("SECTOR","MKTCAP","ENTVAL","P2B"),
                ret.var = "RETURN", 
                date.var = "DATE", 
@@ -95,7 +112,7 @@ fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER",
 # Fit a SECTOR+COUNTRY+Style model with Intercept
 # Create a COUNTRY column with just 3 countries
 
- factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
+ factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ), rep("GERMANY", 1 )), 11), 60)
  
  fit.MICM <- fitFfm(data = factorDataSetDjia5Yrs, 
                     asset.var = "TICKER",

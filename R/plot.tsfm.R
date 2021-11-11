@@ -34,9 +34,10 @@
 #' asset plot option 19 and group plot 12) are only applicable for single factor
 #' models.
 #' 
-#' @importFrom xts merge.xts 
+#' @importFrom xts merge.xts addLegend
+#' @importFrom zoo rollapply
 #' @importFrom sn dst rst st.mple
-#' @importFrom lattice panel.barchart panel.grid
+#' @importFrom lattice barchart panel.barchart panel.grid
 #' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram
 #' chart.QQPlot chart.Correlation
 #' 
@@ -265,7 +266,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                #abline(h=-1.96*x$resid.sd[i], lwd=lwd, lty="dotted", col=colorset[2])
                lines(Residuals$tmpplot_h1,lwd=lwd, lty="dotted", col=colorset[2])
                lines(Residuals$tmpplot_h2,lwd=lwd, lty="dotted", col=colorset[2])
-               addLegend(legend.loc=legend.loc, lty=c("solid","dotted"), col=c(colorset[1:2]), 
+               xts::addLegend(legend.loc=legend.loc, lty=c("solid","dotted"), col=c(colorset[1:2]), 
                          lwd=lwd, bty="n", legend.names=c("Residuals",expression("\u00b1 1.96 "*sigma)))
                print(p)
                # reset 
@@ -338,7 +339,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                if (!meth=="LS") {
                  stop("CUSUM analysis applicable only for 'LS' fit.method.")
                }
-               cusum.rec <- efp(formula(fit), type="Rec-CUSUM", data=fit$model)
+               cusum.rec <- strucchange::efp(formula(fit), type="Rec-CUSUM", data=fit$model)
                plot(cusum.rec, main=paste("Recursive CUSUM test:",i), las=las, 
                     col=colorset, lwd=lwd, ...)
              }, "16L" = {
@@ -346,7 +347,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                if (!meth=="LS") {
                  stop("CUSUM analysis applicable only for 'LS' fit.method.")
                }
-               cusum.ols <- efp(formula(fit), type="OLS-CUSUM", data=fit$model)
+               cusum.ols <- strucchange::efp(formula(fit), type="OLS-CUSUM", data=fit$model)
                plot(cusum.ols, main=paste("LS-based CUSUM test:",i), las=las, 
                     col=colorset, lwd=lwd, ...)
              }, "17L" = {
@@ -354,7 +355,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                if (!meth=="LS") {
                  stop("CUSUM analysis applicable only for 'LS' fit.method.")
                }        
-               cusum.est <- efp(formula(fit), type="RE", data=fit$model)
+               cusum.est <- strucchange::efp(formula(fit), type="RE", data=fit$model)
                plot(cusum.est, functional=NULL, col=colorset, las=0, cex.lab=0.7,
                     main=paste("RE test (Recursive estimates test):",i), ...)
                par(las=las, cex.lab=1)
@@ -364,7 +365,7 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  stop("This option is not available for 'lars' fits.")
                } else if (meth=="LS") {
                  reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
-                 rollReg.z <- rollapply(reg.z, width=24, by.column=FALSE, align="right",
+                 rollReg.z <- zoo::rollapply(reg.z, width=24, by.column=FALSE, align="right",
                                         FUN = function(z) coef(lm(formula(fit), data=as.data.frame(z))))
                } else if (meth=="DLS") {
                  # get decay factor
@@ -375,11 +376,11 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  }
                  reg.z <- zoo(fit$model[-length(fit$model)], as.Date(rownames(fit$model)))
                  # using exp. decaying weights for 24-period window
-                 rollReg.z <- rollapply(reg.z, width=24, by.column=FALSE, align="right",
+                 rollReg.z <- zoo::rollapply(reg.z, width=24, by.column=FALSE, align="right",
                                         FUN = function(z) coef(lm(formula(fit), data=as.data.frame(z), weights=decay^seq(23,0,-1))))
                } else if (meth=="Robust") {
                  reg.z <- zoo(fit$model, as.Date(rownames(fit$model)))
-                 rollReg.z <- rollapply(reg.z, width=24, by.column=FALSE, align="right",
+                 rollReg.z <- zoo::rollapply(reg.z, width=24, by.column=FALSE, align="right",
                                         FUN = function(z) coef(lmrobdetMM(formula(fit), data=as.data.frame(z))))
                }
                par(las=0)
@@ -512,13 +513,13 @@ plot.tsfm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              "7L" = {
                ## Factor model residual correlation
                cor.resid <- cor(residuals(x)[,a.sub], use="pairwise.complete.obs")
-               corrplot.mixed(cor.resid, tl.col=1, upper="ellipse", ...)
+               corrplot::corrplot.mixed(cor.resid, tl.col=1, upper="ellipse", ...)
                # mtext("pairwise complete obs", line=0.5)
              }, 
              "8L" = {
                ## Factor model return correlation
                cor.fm <- cov2cor(fmCov(x)[a.sub,a.sub]) 
-               corrplot.mixed(cor.fm, tl.col=1, upper="ellipse", ...)
+               corrplot::corrplot.mixed(cor.fm, tl.col=1, upper="ellipse", ...)
                # mtext("pairwise complete obs", line=0.5)
              },
              "9L" = {

@@ -19,7 +19,7 @@ be coercible to class \code{Date} and match one of the dates in the data used
 in the fiited \code{object}.}
 
 \item{...}{optional arguments passed to \code{predict.lm} or 
-\code{predict.lmRob}.}
+\code{\link[robustbase]{predict.lmrob}}.}
 }
 \value{
 \code{predict.ffm} produces a N x T matrix of predicted asset returns, where 
@@ -56,7 +56,7 @@ pred.fund <- predict(fit, newdata)
 }
 \seealso{
 \code{\link{fitFfm}}, \code{\link{summary.ffm}}, 
-\code{\link[stats]{predict.lm}}, \code{\link[robust]{predict.lmRob}}
+\code{\link[stats]{predict.lm}}, \code{\link[robustbase]{predict.lmrob}}
 }
 \author{
 Sangeetha Srinivasan

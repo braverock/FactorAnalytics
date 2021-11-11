@@ -93,10 +93,10 @@ summary.tsfm <- function(object, se.type=c("Default","HC","HAC"), ...){
   # extract coefficients separately for "lars" variable.selection method
   for (i in object$asset.names) {
     if (se.type=="HC") {
-      sum.list[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]],
+      sum.list[[i]]$coefficients <- lmtest::coeftest.default(object$asset.fit[[i]],
                                                      vcov.=vcovHC.default)[,1:4]
     } else if (se.type=="HAC") {
-      sum.list[[i]]$coefficients <- coeftest.default(object$asset.fit[[i]], 
+      sum.list[[i]]$coefficients <- lmtest::coeftest.default(object$asset.fit[[i]], 
                                                      vcov.=vcovHAC.default)[,1:4]
     }
   }

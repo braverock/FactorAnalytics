@@ -209,11 +209,11 @@ repExposures <- function(ffmObj, weights = NULL, isPlot = TRUE, isPrint = TRUE, 
                 dat.SecMean = as.data.frame(list("ids" = rep(main3, length(d)), "variable"= names(d), "value"= as.numeric(d)))
                 
 
-                plt1 = barchart(value~(variable)|ids,group = (ids),data=dat.StMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt1 = barchart(value~(variable)|"ids",group = ("ids"),data=dat.StMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt2 = barchart(value~(variable)|ids,group = (ids),data=dat.StVol,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt2 = barchart(value~(variable)|"ids",group = ("ids"),data=dat.StVol,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex))
-                plt3 = barchart(value~(variable)|ids,group = (ids),data=dat.SecMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
+                plt3 = barchart(value~(variable)|"ids",group = ("ids"),data=dat.SecMean,stack =TRUE,layout = layout,col = color,ylab = list(label = "Percentage (%)",cex = axis.cex),
                                 scales=list(y=list(cex=axis.cex), x=list(cex=axis.cex, rot = 90)),par.strip.text=list(col="black", cex = stripText.cex), strip.left = F)
                 
                 print(plt1, split=c(1,1,2,2), more=TRUE)

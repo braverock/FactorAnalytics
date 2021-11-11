@@ -23,6 +23,8 @@ tsPlotMP(
 )
 }
 \arguments{
+\item{ret}{an time series exposure/return object}
+
 \item{add.grid}{logical varible.If 'TRUE', type = c('l', 'g'); If 'FALSE', type = c('l')}
 
 \item{layout}{layout is a numeric vector of length 2 or 3 giving the number of columns, rows, and pages (optional) in a multipanel display.}
@@ -50,8 +52,6 @@ tsPlotMP(
 \item{zeroLine}{logical varible to choose add a dotted horizontal line at the zero vertical distance}
 
 \item{panel}{function to add customized lines to the lattice plot. See examples.}
-
-\item{data}{an time series exposure/return object}
 }
 \description{
 Plot time series with specific plotting parameters

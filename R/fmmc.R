@@ -1,4 +1,4 @@
-#' @title Functions to compute estimates and thier standard errors using fmmc
+#' @title Functions to compute estimates and their standard errors using fmmc
 #' 
 #' Control default arguments. Usually for FactorAnalytics.
 #' 
@@ -190,6 +190,8 @@
 #' We use the boot call from the boot library for calculating the estimate and
 #' its standard error.
 #' 
+#' @importFrom boot boot
+#' 
 #' @param  fmmcObj object returned by fmmc proc. This is a comprehensive object 
 #'         with all data for factors and returns.
 #' @param  nboot number of bootstap samples. Not sure how many repetations are
@@ -220,7 +222,7 @@
     args <- list(TR = TR, TR1 = len, estimate.func = estimate.func, 
         fit.method = fmmcObj$args[["fit.method"]], var.sel = "none")
         
-    result <- boot(data=cbind(factors, returns), statistic = .fmmc.boot, 
+    result <- boot::boot(data=cbind(factors, returns), statistic = .fmmc.boot, 
         R = nboot, parallel = parallel, ncpus = ncpus, cl = cl, args=args)
         
     se <- apply(result$t,2,sd)

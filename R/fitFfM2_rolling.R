@@ -11,17 +11,35 @@
 #' @param fitControl list of options for fitting the ffm
 #' @param full.resid.cov True or False toggle
 #' @param analysis choice of "ISM" or "NEW"
+#' 
 #' @export
-roll.fitFfmDT <- function(ffMSpecObj, windowSize = 60, refitEvery = 1,  
+roll.fitFfmDT <- function(ffMSpecObj, 
+                          windowSize = 60, 
+                          refitEvery = 1,  
                           refitWindow = c("Expanding", "Rolling"),
-                          stdExposuresControl = list(Std.Type = "timeSeries", lambda = 0.9),
-                          stdReturnControl = list(GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81)),
-                          fitControl = list(fit.method=c("LS","WLS","Rob","W-Rob"),
-                                            resid.scaleType = c("STDDEV","EWMA","ROBEWMA", "GARCH"),
-                                            lambda = 0.9, GARCH.params = list(omega = 0.09, alpha = 0.1, beta = 0.81),
+                          stdExposuresControl = list(Std.Type = "timeSeries", 
+                                                     lambda = 0.9),
+                          stdReturnControl = list(GARCH.params = list(omega = 0.09, 
+                                                                      alpha = 0.1, 
+                                                                      beta = 0.81)),
+                          fitControl = list(fit.method = c("LS", "WLS",
+                                                           "Rob", "W-Rob"),
+                                            resid.scaleType = c("STDDEV",
+                                                                "EWMA", "ROBEWMA",
+                                                                "GARCH"),
+                                            lambda = 0.9, 
+                                            GARCH.params = list(omega = 0.09,
+                                                                alpha = 0.1, 
+                                                                beta = 0.81),
                                             GARCH.MLE = FALSE),
-                          full.resid.cov = TRUE, analysis = c("ISM", "NEW")
+                          full.resid.cov = TRUE, 
+                          analysis = c("ISM", "NEW")
                           ){
+  
+  # Due to NSE notes related to data.table in R CMD check
+  rollIdx = idx = results = NULL
+  # See data.table "Importing data.table" vignette
+  
   
   refitWindow = toupper(refitWindow[1])
   refitWindow <- match.arg(arg = refitWindow, choices = toupper(c("EXPANDING", "ROLLING")), several.ok = F )

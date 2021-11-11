@@ -56,6 +56,7 @@
 #' @importFrom RobStatTM step.lmrobdetMM
 #' @importFrom lars lars cv.lars
 #' @importFrom zoo index time<-
+#' @importFrom stats predict
 #' 
 #' @param asset.names vector of syntactically valid asset names, whose returns are the dependent 
 #' variable in the factor model.
