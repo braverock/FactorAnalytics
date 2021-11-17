@@ -4,8 +4,8 @@
 #' 
 #' 
 #' @param object fit object of class \code{tsfm}, or \code{ffm}.
-#' @param weights a vector of weights of the assets in the portfolio. Default is NULL, 
-#' in which case an equal weights will be used.
+#' @param weights a vector of weights of the assets in the portfolio. 
+#' Default is NULL, in which case an equal weights will be used.
 #' @param factor.cov optional user specified factor covariance matrix with 
 #' named columns; defaults to the sample covariance matrix.
 #' @param use an optional character string giving a method for computing 
@@ -31,7 +31,7 @@
 #' 
 #' 
 #' @examples
-#' # Time Series Factor Model
+#' # Time Series Factor Model example
 #' 
 #'  # load data
 #' data(managers, package = 'PerformanceAnalytics')
@@ -45,21 +45,30 @@
 #' 
 #' decomp
 #' 
-#' # Fundamental Factor Model
-#' data("stocks145scores6")
-#' dat = stocks145scores6
-#' dat$DATE = zoo::as.yearmon(dat$DATE)
-#' dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon("2012-12-31"),]
-#'
-#'
-#' # Load long-only GMV weights for the return data
-#' data("wtsStocks145GmvLo")
-#' wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
+#' # Fundamental Factor Model example
+#' 
+#' ## First load CRSP and SPGMI data sets
+#' data(stocksCRSP)
+#' data(scoresSPGMI)
+#' 
+#' ## merge by intersection variables
+#' variables_intersect <- intersect(names(stocksCRSP), names(scoresSPGMI))
+#' CRSP_SPGMI <- merge(stocksCRSP, scoresSPGMI, by = variables_intersect)
+#' 
+#' ## Remove observations with missing Sector/GICS 
+#' NA_index <- is.na(CRSP_SPGMI$GICS) & is.na(CRSP_SPGMI$Sector)
+#' CRSP_SPGMI <- CRSP_SPGMI[!NA_index]  
+#' 
+#' ## Setindex for faster processing
+#' data.table::setindexv(CRSP_SPGMI, c("Date","TickerLast"))
 #'                                                      
 #' # fit a fundamental factor model
-#' fit.cross <- fitFfm(data = dat, 
-#'               exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M",
-#'               "EP"),date.var = "DATE", ret.var = "RETURN", asset.var = "TICKER", 
+#' 
+#' exposure.vars = c("Sector","AnnVol12M","BP", "EP", "LogMktCap", "PM12M1M")
+#' 
+#' fit.cross <- fitFfm(data = CRSP_SPGMI, 
+#'               exposure.vars = exposure.vars,
+#'               date.var = "Date", ret.var = "Return", asset.var = "TickerLast", 
 #'               fit.method="WLS", z.score = "crossSection")
 #'               
 #' decomp = portVolDecomp(fit.cross) 
