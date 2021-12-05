@@ -43,6 +43,56 @@ residual/specific volatility risk
 \description{
 Decompose portfolio variance risk into factor/residual risk
 }
+\examples{
+# Time Series Factor Model example
+
+ # load data
+data(managers, package = 'PerformanceAnalytics')
+
+fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
+                     factor.names = colnames(managers[,(7:9)]),
+                     rf.name = colnames(managers[,10]), 
+                     data = managers)
+                     
+decomp <- portVolDecomp(fit.macro)
+
+decomp
+
+# Fundamental Factor Model example
+
+## First load CRSP and SPGMI data sets
+data(stocksCRSP)
+data(scoresSPGMI)
+
+## merge by intersection variables
+intersecting_vars <- intersect(names(stocksCRSP), names(scoresSPGMI))
+   stocks_factors <- merge(stocksCRSP, scoresSPGMI, by = intersecting_vars)
+
+## Remove observations with missing Sector/GICS 
+      NA_index <- is.na(stocks_factors$GICS) & is.na(stocks_factors$Sector)
+stocks_factors <- stocks_factors[!NA_index]  
+
+## Setindex for faster processing
+data.table::setindexv(stocks_factors, c("Date","TickerLast"))
+                                                     
+# fit a fundamental factor model
+
+exposure_vars = c("Sector", "AnnVol12M", "BP", "EP", "LogMktCap", "PM12M1M")
+
+fit.cross <- fitFfm(data = stocks_factors, 
+                    asset.var = "TickerLast", 
+                    ret.var = "Return", 
+                    date.var = "Date", 
+                    exposure.vars = exposure_vars,
+                    fit.method = "WLS", 
+                    z.score = "crossSection")
+              
+decomp <- portVolDecomp(fit.cross)
+
+# get the factor contributions of risk 
+decomp             
+ 
+}
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the different factor model fitting functions.
