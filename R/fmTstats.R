@@ -86,7 +86,7 @@
 #'                     exposure.vars = c("SECTOR", "COUNTRY","P2B", "MKTCAP"),
 #'                     ret.var = "RETURN", 
 #'                     date.var = "DATE", 
-#'                     addIntercept = TRUE)
+#'                     addIntercept = FALSE)
 #'  
 #'  # Load library 'HH' to access the Likert option
 #'  library("HH")                   
