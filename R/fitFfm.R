@@ -80,7 +80,8 @@
 #' @param z.score method for exposure standardization; one of "none", 
 #' "crossSection", or "timeSeries". Default is \code{"none"}.
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the 
-#' exposure matrix. Default is \code{FALSE},
+#' exposure matrix. Note, if 2 or more variables are categorical, this must be
+#' false. Default is \code{FALSE}.
 #' @param lagExposures logical; If \code{TRUE}, the style exposures in the 
 #' exposure matrix are lagged by one time period. Default is \code{TRUE},
 #' @param resid.scaleType character; Only valid when fit.method is set to WLS or 
@@ -289,22 +290,23 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   # order data.frame by date.var
   spec1 <- specFfm(data = data, asset.var = asset.var, ret.var = ret.var, 
-                   date.var = date.var, exposure.vars = exposure.vars,weight.var = weight.var,
+                   date.var = date.var, exposure.vars = exposure.vars,
+                   weight.var = weight.var,
                    addIntercept = addIntercept , rob.stats = rob.stats)
   
   # Standardize the returns if stdReturn = TRUE
   if (stdReturn) {
-    standardizeReturns(specObj = spec1, GARCH.params = GARCH.params )
+    standardizeReturns(specObj = spec1, GARCH.params = GARCH.params)
   }
   
   
   
   # check number & type of exposure; convert character exposures to dummy vars
-  which.numeric <- sapply(data[,exposure.vars,drop=FALSE], is.numeric)
+  which.numeric <- sapply(data.frame(data)[,exposure.vars,drop=FALSE], is.numeric)
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
   if ((length(exposures.char) > 1) && !addIntercept) {
-    stop("Invalid args: two categorical factor model without Market(Interecept) is currently not handled")
+    stop("Invalid args: two categorical factor model with Market(Interecept) is currently not handled")
   }
   
   if (length(exposures.char) > 2)
@@ -319,7 +321,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   }
   
   
-  spec1 = standardizeExposures(specObj = spec1, Std.Type = z.score  , lambda = lambda )
+  spec1 = standardizeExposures(specObj = spec1, Std.Type = z.score, lambda = lambda)
   
   
   

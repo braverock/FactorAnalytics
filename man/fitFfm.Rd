@@ -70,7 +70,8 @@ estimated. Default is \code{FALSE}.}
 "crossSection", or "timeSeries". Default is \code{"none"}.}
 
 \item{addIntercept}{logical; If \code{TRUE}, intercept is added in the 
-exposure matrix. Default is \code{FALSE},}
+exposure matrix. Note, if 2 or more variables are categorical, this must be
+false. Default is \code{FALSE}.}
 
 \item{lagExposures}{logical; If \code{TRUE}, the style exposures in the 
 exposure matrix are lagged by one time period. Default is \code{TRUE},}
