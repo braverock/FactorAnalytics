@@ -8,18 +8,18 @@
 #' object.  Default values for the stocksCRSP and scoresSPGMI component names,
 #' marketcap group, and number of stocks in the marketcap group can be
 #' changed by the user  
-#' @param stocksCRSP 
-#' @param scoresSPGMI 
-#' @param dateSet 
-#' @param stockItems 
-#' @param factorItems 
-#' @param capChoice 
-#' @param Nstocks 
+#' @param stocksCRSP xxx
+#' @param scoresSPGMI xxx
+#' @param dateSet xxx
+#' @param stockItems xxx
+#' @param factorItems xxx
+#' @param capChoice xxx 
+#' @param Nstocks xxx
 #'
 #' @return
 #' @export
 #'
-#' @examples
+#'
 selectCRSPandSPGMI <- function(stocksCRSP,scoresSPGMI,
                                dateSet = c("2006-01-31","2010-12-31"), 
                                stockItems = c("Date","TickerLast","CapGroup","Sector","Return",
