@@ -954,8 +954,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   if (!identical(colnames(beta) , colnames(factor.returns))){
     # we need to clean up.. easier to do it on the beta rather than the 
     # factor returns ... (factor.cov) follows factor.returns
-    colnames(beta) <- sub(pattern = specObj$exposures.char,
-                          colnames(beta),replacement = "")
+    colnames(beta) <- sub(pattern = paste0(specObj$exposures.char,collapse = "|"), colnames(beta),replacement = "")
+
     # the names of the beta matrix have a prefix when we have the flag
     # add intercept F and have an exposure variable that is a character.
     # now that we have cleaned it up we can rearrange the columns
