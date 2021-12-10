@@ -49,19 +49,17 @@
 #' 
 #' ## First load CRSP and SPGMI data sets
 #' data(stocksCRSP)
-#' data(scoresSPGMI)
-#' 
+#' data(factorsSPGMI)
 #' ## merge by intersection variables
-#' intersecting_vars <- intersect(names(stocksCRSP), names(scoresSPGMI))
-#'    stocks_factors <- merge(stocksCRSP, scoresSPGMI, by = intersecting_vars)
-#' 
+#' intersecting_vars <- intersect(names(stocksCRSP), names(factorsSPGMI))
+#'    stocks_factors <- merge(stocksCRSP, factorsSPGMI, by = intersecting_vars)
 #' ## Remove observations with missing Sector/GICS 
 #'       NA_index <- is.na(stocks_factors$GICS) & is.na(stocks_factors$Sector)
 #' stocks_factors <- stocks_factors[!NA_index]  
-#' 
 #' ## Setindex for faster processing
 #' data.table::setindexv(stocks_factors, c("Date","TickerLast"))
-#'                                                      
+#'
+#'                                                       
 #' # fit a fundamental factor model
 #' 
 #' exposure_vars = c("Sector", "AnnVol12M", "BP", "EP", "LogMktCap", "PM12M1M")
@@ -71,7 +69,7 @@
 #'                     ret.var = "Return", 
 #'                     date.var = "Date", 
 #'                     exposure.vars = exposure_vars,
-#'                     fit.method = "WLS", 
+#'                     fit.method = "W-Rob", 
 #'                     z.score = "crossSection")
 #'               
 #' decomp <- portVolDecomp(fit.cross)
@@ -80,8 +78,6 @@
 #' decomp             
 #'  
 #' @export    
-
-
 portVolDecomp <- function(object, ...){
   # check input object validity
   if (!inherits(object, c("tsfm", "ffm"))) {
