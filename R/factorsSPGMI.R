@@ -1,10 +1,10 @@
-#' scoresSPGMI
+#' factorsSPGMI
 #'
 #' 14 SPGMI monthly scores (alpha factors) for 300 stocks 1993 to 2015
 #' 
 #' @docType data
 #'
-#' @usage data('scoresSPGMI')
+#' @usage data('factorsSPGMI')
 #'
 #' @format A data.frame with 82800 observations on 21 variables:
 #' \itemize{
@@ -33,15 +33,14 @@
 #'  \item \strong{SEV:} type `num`. Ratio of sales to enterprise value
 #' }
 #' 
+#' @keywords datasets
+#' 
 #' @source Standard and Poors Global Market Intelligence (SPGMI). NOTE: SPGMI
 #' data is not covered by the GPL. Redistribution of the SPGMI data is not
 #' permitted, and use of the data in derivative works is not permitted without
 #' the written permission of CRSP.
 #' 
 #' @examples  
-#' 
-#' data(scoresSPGMI)
-#' names(scoresSPGMI)
-#' dim(scoresSPGMI)
-#' head(scoresSPGMI,2)
-"scoresSPGMI"
+#' str(factorsSPGMI)
+#' head(factorsSPGMI, 5)
+"factorsSPGMI"
