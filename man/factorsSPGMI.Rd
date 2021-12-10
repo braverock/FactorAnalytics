@@ -46,6 +46,7 @@ data('factorsSPGMI')
 }
 \examples{
  
+data(factorsSPGMI)
 str(factorsSPGMI)
 head(factorsSPGMI, 5)
 }

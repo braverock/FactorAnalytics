@@ -41,6 +41,7 @@
 #' the written permission of CRSP.
 #' 
 #' @examples  
+#' data(factorsSPGMI)
 #' str(factorsSPGMI)
 #' head(factorsSPGMI, 5)
 "factorsSPGMI"
