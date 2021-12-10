@@ -21,14 +21,22 @@
 #'
 #' @return A merged data.frame consisting of selected stocks and factors
 #' 
-#' @export
-#'
 #'@examples
 #'data(stocksCRSP)
 #'data(factorsSPGMI)
 #'
-#'stocks_factors <- selectCRSPandSPGMI()
+#'stocks_factors <- selectCRSPandSPGMI(stocks = stocksCRSP, factors = factorsSPGMI,
+#'                                     dateSet = c("2006-01-31", "2010-12-31"), 
+#'                                     stockItems = c("Date", "TickerLast", 
+#'                                                    "CapGroup", "Sector", 
+#'                                                    "Return", "Ret13WkBill",
+#'                                                    "mktIndexCRSP"),
+#'                                     factorItems = c("BP", "LogMktCap", "SEV"), 
+#'                                     capChoice = "SmallCap",
+#'                                     Nstocks = 20)
 #'
+#'str(stocks_factors)
+#'@export
 selectCRSPandSPGMI <- function(stocks = stocksCRSP, factors = factorsSPGMI,
                                dateSet = c("2006-01-31","2010-12-31"), 
                                stockItems = c("Date", "TickerLast", "CapGroup",
