@@ -5,8 +5,8 @@
 \title{Select CRSP Stocks and SPGMI Factors}
 \usage{
 selectCRSPandSPGMI(
-  stocksCRSP,
-  scoresSPGMI,
+  stocks = stocksCRSP,
+  factors = factorsSPGMI,
   dateSet = c("2006-01-31", "2010-12-31"),
   stockItems = c("Date", "TickerLast", "CapGroup", "Sector", "Return", "Ret13WkBill",
     "mktIndexCRSP"),
@@ -16,9 +16,9 @@ selectCRSPandSPGMI(
 )
 }
 \arguments{
-\item{stocksCRSP}{xxx}
+\item{stocks}{xxx}
 
-\item{scoresSPGMI}{xxx}
+\item{factors}{xxx}
 
 \item{dateSet}{xxx}
 
@@ -31,7 +31,7 @@ selectCRSPandSPGMI(
 \item{Nstocks}{xxx}
 }
 \value{
-
+A merged data.frame consisting of selected stocks and factors
 }
 \description{
 Select and merge a set of CRSP stocks and SPGMI factors and
@@ -39,7 +39,14 @@ SPGMI factors over a range of dates between January 1993 and December 2015
 }
 \details{
 The date range is specified by a beginning Date object and an ending Date 
-object.  Default values for the stocksCRSP and scoresSPGMI component names,
+object.  Default values for the stocks and factors component names,
 marketcap group, and number of stocks in the marketcap group can be
 changed by the user
+}
+\examples{
+data(stocksCRSP)
+data(factorsSPGMI)
+
+stocks_factors <- selectCRSPandSPGMI()
+
 }
