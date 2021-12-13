@@ -110,30 +110,46 @@ plot.ffm can infer \code{asset.name} without user input.
 }
 \examples{
 
-# load data from the database
-data("factorDataSetDjia5Yrs")
+# load data 
+data(stocksCRSP)
+data(factorsSPGMI)
+
+stocks_factors <- selectCRSPandSPGMI(stocks = stocksCRSP, factors = factorsSPGMI,
+                                    dateSet = c("2006-01-31", "2010-12-31"), 
+                                    stockItems = c("Date", "TickerLast", 
+                                                   "CapGroup", "Sector", 
+                                                   "Return", "Ret13WkBill",
+                                                   "mktIndexCRSP"),
+                                    factorItems = c("BP", "LogMktCap", "SEV"), 
+                                    capChoice = "SmallCap",
+                                    Nstocks = 20)
 
 # fit a fundamental factor model
-exposure.vars <- c("P2B", "MKTCAP")
-fit.style.sector <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", 
-                           ret.var="RETURN", date.var="DATE", 
-                           exposure.vars=exposure.vars)
 
-# for group plots (default), user can select plot option from menu prompt
-# menu is repeated to get multiple types of plots based on the same fit
-# plot(fit.style.sector)
+fit.style.sector <- fitFfm(data = stocks_factors, 
+                           asset.var = "TickerLast", 
+                           ret.var = "Return", 
+                           date.var = "Date", 
+                           exposure.vars = c("BP", "LogMktCap")
+                           )
+                           
+# For group plots (default), one can select plot option from prompt menu.
+# The menu is repeated to produce multiple plots based on the same fit
 
-# choose specific plot option(s) using which
+plot(fit.style.sector)
+
 # plot all factor exposures from the last time period for 1st 10 assets
-plot(fit.style.sector, which=2, f.sub=1:2, a.sub=1:10)
+
+plot(fit.style.sector, which = 2, f.sub = 1:2, a.sub = 1:10)
 
 # plot factor model residuals scatterplot matrix, with histograms, density
 # overlays, correlations and significance stars
-plot(fit.style.sector, which=6)
+plot(fit.style.sector, which = 6)
 
-# for individual plots: set plot.single=TRUE and specify asset.name
-# histogram of residuals from an individual asset's factor model fit
-plot(fit.style.sector, plot.single=TRUE, asset.name="AA", which=12)
+# For individual plots: define `plot.single=TRUE` and specify `asset.name`.
+# This will display a histogram of residuals from the asset's factor model fit
+
+plot(fit.style.sector, plot.single = TRUE, asset.name = "ALCO", which = 12)
 
 }
 \seealso{
