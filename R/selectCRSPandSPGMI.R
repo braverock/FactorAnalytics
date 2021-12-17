@@ -11,13 +11,18 @@
 #' 
 #' @importFrom utils globalVariables
 #' 
-#' @param stocks xxx
-#' @param factors xxx
-#' @param dateSet xxx
-#' @param stockItems xxx
-#' @param factorItems xxx
-#' @param capChoice xxx 
-#' @param Nstocks xxx
+#' @param stocks A data.table of stock returns and related data 
+#' @param factors A data.table of factors and related data
+#' @param dateSet A character vector providing a start data and an end 
+#' date, having the same form as c("2006-01-31", "2010-12-31")
+#' @param stockItems A character vector that is a subset of the names
+#' of stocks data.table
+#' @param factorItems A character vector that is a subset of the names
+#' of factors data.table
+#' @param capChoice One of the market capitalization group names
+#' "Smallcap", "Smallcap", "MidCap", "LargeCap".  
+#' @param Nstocks Number of stocks in one of the marketcap groups, not
+#' to exceed the number of stocks in the chosen group.
 #'
 #' @return A merged data.frame consisting of selected stocks and factors
 #' 

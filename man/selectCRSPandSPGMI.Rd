@@ -16,19 +16,24 @@ selectCRSPandSPGMI(
 )
 }
 \arguments{
-\item{stocks}{xxx}
+\item{stocks}{A data.table of stock returns and related data}
 
-\item{factors}{xxx}
+\item{factors}{A data.table of factors and related data}
 
-\item{dateSet}{xxx}
+\item{dateSet}{A character vector providing a start data and an end 
+date, having the same form as c("2006-01-31", "2010-12-31")}
 
-\item{stockItems}{xxx}
+\item{stockItems}{A character vector that is a subset of the names
+of stocks data.table}
 
-\item{factorItems}{xxx}
+\item{factorItems}{A character vector that is a subset of the names
+of factors data.table}
 
-\item{capChoice}{xxx}
+\item{capChoice}{One of the marketcap group names "Smallcap",
+"Smallcap","MidCap", "LargeCap".}
 
-\item{Nstocks}{xxx}
+\item{Nstocks}{Number of stocks in one of the marketcap groups, not
+to exceed the number of stocks in the chosen group.}
 }
 \value{
 A merged data.frame consisting of selected stocks and factors
