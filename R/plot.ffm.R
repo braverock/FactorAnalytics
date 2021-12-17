@@ -122,9 +122,9 @@
 #'                                     capChoice = "SmallCap",
 #'                                     Nstocks = 20)
 #' 
-#' # fit a fundamental factor model
+#' # fit a fundamental factor model with style variables BP and LogMktCap
 #' 
-#' fit.style.sector <- fitFfm(data = stocks_factors, 
+#' fit.style <- fitFfm(data = stocks_factors, 
 #'                            asset.var = "TickerLast", 
 #'                            ret.var = "Return", 
 #'                            date.var = "Date", 
@@ -134,20 +134,21 @@
 #' # For group plots (default), one can select plot option from prompt menu.
 #' # The menu is repeated to produce multiple plots based on the same fit
 #' 
-#' plot(fit.style.sector)
+#' # plot(fit.style) # Not run, but user should try it out
+#'
 #'
 #' # plot all factor exposures from the last time period for 1st 10 assets
 #' 
-#' plot(fit.style.sector, which = 2, f.sub = 1:2, a.sub = 1:10)
+#' plot(fit.style, which = 2, f.sub = 1:2, a.sub = 1:10)
 #'
 #' # plot factor model residuals scatterplot matrix, with histograms, density
 #' # overlays, correlations and significance stars
-#' plot(fit.style.sector, which = 6)
+#' plot(fit.style, which = 6)
 #'
 #' # For individual plots: define `plot.single=TRUE` and specify `asset.name`.
 #' # This will display a histogram of residuals from the asset's factor model fit
 #' 
-#' plot(fit.style.sector, plot.single = TRUE, asset.name = "ALCO", which = 12)
+#' plot(fit.style, plot.single = TRUE, asset.name = "ALCO", which = 12)
 #'
 #' @method plot ffm
 #' @export
