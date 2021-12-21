@@ -7,10 +7,8 @@
 #' @details This function use the PortfolioAnalytics, ROI,
 #' and ROI.plugin.quadprog packages
 #' 
-#' @importFrom PortfolioAnalytics portfoliospec add.constraint add.objective
-#' optimize.portfolio
-#' @importFrom ROI
-#' @importFrom ROI.plugin.quadprog
+#' @importFrom PortfolioAnalytics portfolio.spec add.constraint add.objective optimize.portfolio
+#' @importFrom ROI Q_objective
 #' 
 #' @param returns A K-dimensional xts time series of returns
 #'
@@ -28,23 +26,28 @@
 #' data(stocksCRSP)
 #' data(factorsSPGMI)
 #' stocks <- selectCRSPandSPGMI(stocksCRSP,factorsSPGMI)
-#' returnMat = tapply(stocks[["Return"]],list(stocks$Date,stocks$Ticker),I)
-#' returns = xts(returnMat,as.yearmon(rownames(returnMat)))
+#' returnMat = tapply(stocks[["Return"]],list(stocks$Date, stocks$Ticker), I)
+#' returns = xts(returnMat, as.yearmon(rownames(returnMat)))
 #' wtsGmvLO <- portWeights(returns)
-
 #' @export
-
 portWeights <- function(returns)
 {
-  library(PortfolioAnalytics)
-  library(ROI)
-  library(ROI.plugin.quadprog)
+  #library(PortfolioAnalytics)
+  #library(ROI)
+  #library(ROI.plugin.quadprog)
   funds <- colnames(returns)
-  pspec.base <- portfolio.spec(funds)
-  pspec.fi <- add.constraint(portfolio=pspec.base,type="full_investment")
-  pspec.uc <- add.objective(portfolio=pspec.fi,type="risk",name="var")
-  pspec.lo <- add.constraint(portfolio=pspec.uc,type="long_only")
-  opt.lo <- optimize.portfolio(returns,pspec.lo,optimize_method="quadprog")
+  pspec.base <- PortfolioAnalytics::portfolio.spec(funds)
+  pspec.fi <- PortfolioAnalytics::add.constraint(portfolio = pspec.base, 
+                                                 type="full_investment")
+  pspec.uc <- PortfolioAnalytics::add.objective(portfolio = pspec.fi,
+                                                type = "risk",
+                                                name = "var")
+  pspec.lo <- PortfolioAnalytics::add.constraint(portfolio = pspec.uc,
+                                                 type="long_only")
+  opt.lo <- PortfolioAnalytics::optimize.portfolio(returns, 
+                                                   pspec.lo, 
+                                                   optimize_method = "quadprog")
   wtsGmvLO <- round(opt.lo$weights,digits = 4)
+  
   wtsGmvLO
 }
