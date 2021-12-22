@@ -29,8 +29,8 @@ of stocks data.table}
 \item{factorItems}{A character vector that is a subset of the names
 of factors data.table}
 
-\item{capChoice}{One of the marketcap group names "Smallcap",
-"Smallcap","MidCap", "LargeCap".}
+\item{capChoice}{One of the market capitalization group names
+"Smallcap", "Smallcap", "MidCap", "LargeCap".}
 
 \item{Nstocks}{Number of stocks in one of the marketcap groups, not
 to exceed the number of stocks in the chosen group.}

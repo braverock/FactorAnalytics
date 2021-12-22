@@ -5,15 +5,17 @@
 \alias{factorsSPGMI}
 \title{factorsSPGMI}
 \format{
-A data.frame with 82800 observations on 21 variables:
+A data.frame containing 14 SPGMI monthly factor exposures (alpha
+factors) for 300 stocks from 1993 to 2015 = 276 months of observations on 21
+variables that include the 14 factor exposures, for each of 300 stocks
 \itemize{
  \item \strong{Date:} type `Date`.
- \item \strong{TickerLast:} type `chr`. This is the ticker at the last date
- \item \strong{Ticker:} type `chr`. This is the actual ticker at each month
- \item \strong{Company:} type `chr`. The name of company with TickerLast
+ \item \strong{Ticker:} type `chr`. This is the ticker as of December 2015
+ \item \strong{TickerHist:} type `chr`. This is the actual ticker each month
+ \item \strong{Company:} type `chr`. The name of company 
  \item \strong{CapGroup:} type `chr`. The market capitalization group of the
- company, MicroCap, SmallCap, MidCap or LargeCap
- \item \strong{GICS:} type `chr`. 6 digit S&P GICS code
+ company, one of the following: MicroCap, SmallCap, MidCap or LargeCap
+ \item \strong{GICS:} type `chr`. 8 digit S&P GICS code
  \item \strong{Sector:} type `chr`. One of 10 sectors specified by the first
  two digits of the GICS code
  \item \strong{AnnVol12M:} type `num`. Stock nnualized 12 month volatility
@@ -42,7 +44,7 @@ the written permission of CRSP.
 data('factorsSPGMI')
 }
 \description{
-14 SPGMI monthly scores (alpha factors) for 300 stocks 1993 to 2015
+14 SPGMI monthly alpha factors for 300 stocks from 1993 to 2015
 }
 \examples{
  
