@@ -175,33 +175,45 @@
 #'
 #' @examples
 #'
+#'#' # load data 
+#'data(stocksCRSP)
+#'data(factorsSPGMI)
+#'
+#'stocks_factors <- selectCRSPandSPGMI(stocks = stocksCRSP, factors = factorsSPGMI,
+#'                                     dateSet = c("2006-01-31", "2010-12-31"), 
+#'                                     stockItems = c("Date", "TickerLast", 
+#'                                                    "CapGroup", "Sector", 
+#'                                                    "Return", "Ret13WkBill",
+#'                                                    "mktIndexCRSP"),
+#'                                     factorItems = c("BP", "LogMktCap", "SEV"), 
+#'                                     capChoice = "SmallCap",
+#'                                     Nstocks = 20)
 #' 
-#' # Load fundamental and return data
-#'  data("factorDataSetDjia5Yrs")
+#' # fit a fundamental factor model with style variables BP and LogMktCap
 #' 
-#' # fit a fundamental factor model
-#' exposure.vars <- c("P2B", "MKTCAP")
-#' fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' names(fit)
+#'fundamental_model <- fitFfm(data = stocks_factors, 
+#'                            asset.var = "TickerLast", 
+#'                            ret.var = "Return", 
+#'                            date.var = "Date", 
+#'                            exposure.vars = c("BP", "LogMktCap")
+#'                            )
 #' 
-#' # fit a Industry Factor Model with Intercept
-#' exposure.vars <- c("SECTOR","P2B")
-#' fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'                date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
-#'                
-#' # Fit a SECTOR+COUNTRY+Style model with Intercept
-#' # Create a COUNTRY column with just 3 countries
+#'   summary(fundamental_model)
 #' 
-#'  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
-#'  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
+#' # Fit a Fundamental Sector Factor Model with Intercept
 #'  
-#'  # fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'  #                 date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
+#'  sector_model <- fitFfm(data = stocks_factors, 
+#'                         asset.var = "TickerLast", 
+#'                         ret.var = "Return", 
+#'                         date.var = "Date", 
+#'                         exposure.vars = c("Sector", "BP"),
+#'                         addIntercept = TRUE)
+#' 
+#'  summary(sector_model)
+#' 
+#'                
 #' 
 #' @export
-
-
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                    weight.var = NULL, 
                    fit.method = c("LS","WLS","Rob","W-Rob"), 
