@@ -1,49 +1,97 @@
 #' factorsSPGMI
 #'
-#' 14 SPGMI monthly alpha factors for 300 stocks from 1993 to 2015
+#' 14 SPGMI monthly factor exposures for 300 stocks from 1993 to 2015
 #' 
 #' @docType data
 #'
 #' @usage data('factorsSPGMI')
 #'
 #' @format A data.frame containing 14 SPGMI monthly factor exposures (alpha
-#' factors) for 300 stocks from 1993 to 2015 = 276 months of observations on 21
+#' factors) for 300 stocks from 1993 to 2015 (276 months) of observations on 21
 #' variables that include the 14 factor exposures, for each of 300 stocks
 #' \itemize{
 #'  \item \strong{Date:} type `Date`.
 #'  \item \strong{Ticker:} type `chr`. This is the ticker as of December 2015
-#'  \item \strong{TickerHist:} type `chr`. This is the actual ticker each month
-#'  \item \strong{Company:} type `chr`. The name of company 
+#'  \item \strong{TickerHist:} type `chr`. This is the ticker each month
+#'  \item \strong{Company:} type `chr`. The name of the company 
 #'  \item \strong{CapGroup:} type `chr`. The market capitalization group of the
 #'  company, one of the following: MicroCap, SmallCap, MidCap or LargeCap
-#'  \item \strong{GICS:} type `chr`. 8 digit S&P GICS code
-#'  \item \strong{Sector:} type `chr`. One of 10 sectors specified by the first
-#'  two digits of the GICS code
-#'  \item \strong{AnnVol12M:} type `num`. Stock nnualized 12 month volatility
-#'  \item \strong{Beta60M:} type `num`. Stock beta computed using 60 months
-#'  \item \strong{BP:} type `num`. Stock book to price ratio
-#'  \item \strong{EP:} type `num`. Stock earnings to price ratio
-#'  \item \strong{LogMktCap:} type `num`. Log of stock market cap in $M
-#'  \item \strong{PM12M1M:} type `num`. Stock return from previous 12 months to
-#'  previous 1 month
-#'  \item \strong{CFROIC:} type `num`. Ratio of company's cash flow to return on
-#'  invested capital
-#'  \item \strong{Chg1YAstTo:} type `num`. One year change in sales turnover
-#'  \item \strong{EBITDAEV:} type `num`. Ratio of EBITDA to enterprise value
-#'  \item \strong{FCFP:} type `num`. Ratio of free cash flow to price
-#'  \item \strong{PM1M:} type `num`. Stock return over previous one month
-#'  \item \strong{SEV:} type `num`. Ratio of sales to enterprise value
+#'  \item \strong{GICS:} type `chr`. An 8 digit S&P GICS code, the first two
+#'  digits of which are codes for 11 GICS sectors
+#'  \item \strong{Sector:} type `chr`. One of 9  of the 11 GICS sectors, with
+#'  Energy and Real Estate sectors excluded
+#'  \item \strong{AnnVol12M:} type `num`. Annualized Volatility of Monthly
+#'  Stock Returns (Last Twelve Months)
+#'  \item \strong{Beta60M:} type `num`.	60 Month OLS Beta relative to the
+#'  S&P 500 estimated using Monthly Total Returns
+#'  \item \strong{BP:} type `num`. Most Recent Book Value of
+#'  Common Equity divided by Market Value of Common Equity
+#'  \item \strong{EP:} type `num`. Sum of trailing four quarters Earnings per
+#'  Share divided by Current Price per share
+#'  \item \strong{LogMktCap:} type `num`. Natural Logarithm of Current Market
+#'  Capitalization in $
+#'  \item \strong{PM12M1M:} type `num`. Price relative change from time t-12 to
+#'  time t-1: PM12M1M(t) = (P(t-1)-P(t-12))/P(t-12) = P(t-1)/P(t-12) – 1
+#'  \item \strong{AccrualRatioCF:} type `num`. Ratio of Accruals to Net
+#'  Operating Assets, where Accruals = Income Before Extraordinary Items minus
+#'  Net Operating Cash Flow minus Net Investing Cash Flow, and Net Operating
+#'  Assets = Total Assets – Total Liabilities – Cash and Short-Term Investments 
+#'  + Short- and Long-Term Debt.  Both numerator and denominator are computed
+#'  over the trailing four quarters
+#'  \item \strong{AstAdjChg1YOCF:} type `num`. One-Year Change in Trailing
+#'  Four Quarter Operating Cash Flow divided by Trailing Four Quarter
+#'  Average(Total Assets)
+#'  \item \strong{CFROIC:} type `num`. Trailing Four Quarter Operating Cash Flow
+#'  divided by Trailing Four Quarter Average of Invested Capital where Invested
+#'  Capital = Sum of Long-Term Debt, Preferred Stock, Common Equity and Minority
+#'  Interests – Treasury Stock 
+#'  \item \strong{Chg1YAstTo:} type `num`. Percentage change over 12 months in
+#'  Trailing Four Quarter Revenues divided by Trailing Four Quarter Average of
+#'  Total Assets
+#'  \item \strong{EBITDAEV:} type `num`. Trailing Four Quarter EBITDA divided by
+#'  Average of Trailing Four Quarter Enterprise Value where Enterprise Value =
+#'  Book Value of Equity + Market Value of Debt
+#'  \item \strong{FCFP:} type `num`. Trailing Four Quarter Free Cash Flow
+#'  divided by Trailing Four Quarter Average of Market Value of Equity
+#'  \item \strong{PM1M:} type `num`. Trailing 1-Month Price Return.  Relative
+#'  price change from time t-1 to t: PM1M(t) =  (P(t) – P(t-1)) / P(t-1),
+#'  commonly called one period return R(t)
+#'  \item \strong{SEV:} type `num`. Trailing Four Quarter Sales divided by
+#'  Average of Trailing Four Quarter Enterprise Value, where Enterprise Value =
+#'  Market Value of Equity + Market Value of Debt
 #' }
 #' 
-#' @keywords datasets
+#' @references
+#' A standard corporate finance textbook:  Ross, Westerfield, Jaffe and
+#' Jordan (2019). Corporate Finance, McGraw-Hill Education.
+#' CFA: \url{https://alphabetaprep.com/cfa-level-1/financial-ratio-analysis/}
+#' 
+#' @details
+#' We often use the term "factor exposures" for the values of the 14 factors,
+#' while SPGMI refers to them as "alpha factors", or sometimes as "scores". 
+#' Our names for the the 14 factors are identical to those used by SPGMI in
+#' their AFL library.  For an introduction to the AFL library see:
+#' \url{https://www.spglobal.com/marketintelligence/en/solutions/alpha-factor-library}
+#' 
+#' The four CapGroup categorizations of the stocks were determined using the
+#' three capitalization breakpoints $xxxM, $yyyM, $zzzM. For details concerning.
+#' 
+#' For this factorsSPGMI data set there are stocks for 9 of the 11 GICS sectors,
+#' with no stocks for the Energy and RealEstate sectors.
+#'  
+#' GICS is a joint product of SPGMI and MSCI.
+#' For details, see the GICS Global Industry Classification Standard document
+#' (The GICS MAP Book) available at \url{https://www.spglobal.com}, and the MSCI
+#' GICS Methodology 2020 document available at \url{https://www.msci.com/}.
 #' 
 #' @source Standard and Poors Global Market Intelligence (SPGMI). NOTE: SPGMI
-#' data is not covered by the GPL. Redistribution of the SPGMI data is not
+#' data is not covered by the GPL. Redistribution of this SPGMI data is not
 #' permitted, and use of the data in derivative works is not permitted without
-#' the written permission of CRSP.
+#' the written permission of SPGMI
 #' 
 #' @examples  
 #' data(factorsSPGMI)
-#' str(factorsSPGMI)
-#' head(factorsSPGMI, 5)
+#' names(factorsSPGMI)
+#' head(factorsSPGMI, 2)
+#' str(factorsSPGMI) # WILL ADD MORE EXAMLE CODE 
 "factorsSPGMI"
