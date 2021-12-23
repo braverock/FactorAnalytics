@@ -1,17 +1,10 @@
 
-load("~/R/FactorAnalytics/sandbox/data/factorsSPGMI-missing-GICS.rda")
-load("~/R/FactorAnalytics/sandbox/data/stocksCRSP-missings-GICS.rda")
-
-# Old GICS
-library(readxl)
-GICS_v1 <- read_excel("sandbox/data-raw/stocksTickers310GICS_v1.xlsx", 
-                      col_types = c("text", "text", "numeric", "text", 
-                                    "text", "text", "date", "date"), 
-                      skip = 2)
+data(factorsSPGMI)
 
 # New govind GICS file
 library(data.table)
 GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI.csv')
+
 # format
 GICS_govind$`Start date` <- as.Date(GICS_govind$`Start date`,
                                     format = "%m/%d/%Y")
@@ -41,24 +34,32 @@ sum(is.na(SPGMI_repair$Sector.y))
 # See which specific companies these relate to
 unique(SPGMI_repair[is.na(SPGMI_repair$GICS.y), c("Ticker", "Company", "TickerLast")])
 
-# drop old GICS columns with NAs and fill them in with 
-SPGMI_repair <- SPGMI_repair[,-c("GICS.x","Sector.x")]
+# drop old GICS columns with NAs as well as StartDate and EndDate.
+SPGMI_repair <- SPGMI_repair[,-c("GICS.x","Sector.x","StartDate","EndDate")]
   names(SPGMI_repair) <- c("Ticker","Company", "Date", "TickerLast","CapGroup",
                            "AnnVol12M","Beta60M","BP","EP","LogMktCap","PM12M1M",        
                            "AccrualRatioCF","AstAdjChg1YOCF","CFROIC","Chg1YAstTo",
-                           "EBITDAEV","FCFP","PM1M","SEV","GICS","Sector",
-                           "StartDate","EndDate")
+                           "EBITDAEV","FCFP","PM1M","SEV","GICS","Sector")
 
 # row bind back into the original data set
   SPGMI_allGICS <- factorsSPGMI[!is.na(factorsSPGMI$GICS), ]
-SPGMI_allGICS$StartDate <- NA  
-SPGMI_allGICS$EndDate <- NA  
 
 SPGMI_complete <- rbind(SPGMI_allGICS, SPGMI_repair)
+
+# test the results of the process for NAs on the right GICS_govind side. 
+# 1911 identified.
+sum(is.na(SPGMI_complete$GICS))
+sum(is.na(SPGMI_complete$Sector))
+# See which specific companies these relate to
+NA_index <- is.na(SPGMI_complete$GICS)
+unique( SPGMI_complete[NA_index, c("Ticker", "Company", "TickerLast")] )
+
+# how many sectors do we have now?
+unique( SPGMI_complete$Sector)
 
   ########
  # CRSP #
 ########
   
   sum(unique(stocksCRSP$TickerLast) %in% unique(GICS_govind$Ticker))
-setdiff(unique(GICS_govind$Ticker), unique(stocksCRSP$TickerLast))
+setdiff(unique(GICS_govind$Ticker), unique(SPGMI_allGICS$TickerLast))
