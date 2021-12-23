@@ -11,6 +11,7 @@
   a.sub = 1:6,
   plot.single = FALSE,
   asset.name,
+  asset.variable,
   colorset = c("royalblue", "dimgray", "olivedrab", "firebrick", "goldenrod",
     "mediumorchid", "deepskyblue", "chocolate", "darkslategray"),
   legend.loc = "topleft",
@@ -66,6 +67,8 @@ individual asset's factor model. The type of plot is given by
 
 \item{asset.name}{name of the individual asset to be plotted. Is necessary
 if \code{x} contains multiple asset fits and \code{plot.single=TRUE}.}
+
+\item{asset.variable}{the name of asset variable.}
 
 \item{colorset}{color palette to use for all the plots. The 1st element will
 be used for individual time series plots or the 1st object plotted, the 2nd
