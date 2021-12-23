@@ -80,7 +80,9 @@
 #' with no stocks for the Energy and RealEstate sectors, as follows:
 #' 
 #' GICS Code  SPGMI Sector Name   factorsSPGMI Name
+#' 
 #'    10      Energy              Energy
+#'    
 #'    15      Materials           Materials
 #'  
 #' GICS is a joint product of SPGMI and MSCI.
