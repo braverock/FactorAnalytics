@@ -73,8 +73,8 @@ data('factorsSPGMI')
 14 SPGMI monthly factor exposures for 300 stocks from 1993 to 2015
 }
 \details{
-We often use the term "factor exposures" for the values of the 14 factors,
-while SPGMI refers to them as "alpha factors", or sometimes as "scores". 
+The term "factor exposures" is often used for the values of the 14 factors,
+which SPGMI refer to as "scores" or sometimes as "alpha factors". 
 Our names for the the 14 factors are identical to those used by SPGMI in
 their AFL library.  For an introduction to the AFL library see:
 \url{https://www.spglobal.com/marketintelligence/en/solutions/alpha-factor-library}
@@ -83,7 +83,11 @@ The four CapGroup categorizations of the stocks were determined using the
 three capitalization breakpoints $xxxM, $yyyM, $zzzM. For details concerning.
 
 For this factorsSPGMI data set there are stocks for 9 of the 11 GICS sectors,
-with no stocks for the Energy and RealEstate sectors.
+with no stocks for the Energy and RealEstate sectors, as follows:
+
+GICS Code  SPGMI Sector Name   factorsSPGMI Name
+   10      Energy              Energy
+   15      Materials           Materials
  
 GICS is a joint product of SPGMI and MSCI.
 For details, see the GICS Global Industry Classification Standard document
