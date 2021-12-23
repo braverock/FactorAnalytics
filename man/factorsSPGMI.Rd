@@ -82,14 +82,32 @@ their AFL library.  For an introduction to the AFL library see:
 The four CapGroup categorizations of the stocks were determined using the
 three capitalization breakpoints $xxxM, $yyyM, $zzzM. For details concerning.
 
-For this factorsSPGMI data set there are stocks for 9 of the 11 GICS sectors,
-with no stocks for the Energy and RealEstate sectors, as follows:
+The factorsSPGMI data contains stocks in 8 of the 11 GICS sectors, with no
+stocks in the Financials, Utilities and Real Estate sectors.  On each of the
+next 11 lines we list the two digit GICS code that defines the GICS sectors,
+followed by GICS sector name and factorsSPGMI sector name, in that order:
 
-GICS Code  SPGMI Sector Name   factorsSPGMI Name
-
-   10      Energy              Energy
+10 Energy -> Energy
    
-   15      Materials           Materials
+15 Materials -> Materials
+   
+20 Industrials -> Industrials
+
+25 Consumer Discretionary -> ConsumDisc
+
+30 Consumer Staples -> ConsumStap
+
+35 Health Care -> HealthCare  
+
+40 Financials -> None available
+
+45 Information Technology -> InfoTech
+
+50 Communication Services -> ComServices
+
+55 Utilities -> None available
+
+60 Real Estate -> None available
  
 GICS is a joint product of SPGMI and MSCI.
 For details, see the GICS Global Industry Classification Standard document
