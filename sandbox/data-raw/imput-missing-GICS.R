@@ -110,24 +110,3 @@ gics_mis_df <- unique(gics_mismatch[,c("Company", "TickerLast", "Ticker.x","Tick
                                        "Start date", "End Date")])
 View(gics_mis_df)
 
-  ########
- # CRSP #
-########
-  
-data("stocksCRSP")
-library(data.table)
-GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI.csv')
-
-# Format and clean GICS #
-GICS_govind$GICS <- as.character(GICS_govind$GICS)
-GICS_govind$Sector <- ifelse(GICS_govind$Sector == "", NA, GICS_govind$Sector)
-GICS_govind$`Start date` <- as.Date(GICS_govind$`Start date`,
-                                    format = "%m/%d/%Y")
-GICS_govind$`End Date` <- as.Date(GICS_govind$`End Date`,
-                                  format = "%m/%d/%Y")
-# remove less relevant descriptors variables
-GICS_govind <- GICS_govind[,-c("CIQ Company ID", "CIQ Company Name")]
-
-
-  sum(unique(stocksCRSP$TickerLast) %in% unique(GICS_govind$Ticker))
-setdiff(unique(GICS_govind$Ticker), unique(stocksCRSP$TickerLast))
