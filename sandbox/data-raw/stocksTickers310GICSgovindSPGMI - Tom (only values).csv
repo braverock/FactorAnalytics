@@ -1,0 +1,313 @@
+,,,,,,,,,,
+,,,,,,,,,,"** If 'End date' column NULL means valid as of Today i.e., Latest"
+Ticker,Company Name,CIQ Company ID,CIQ Company Name,GICS code,2 digit GICS Coide,GICS Descriptor,Sector,Factor Analytics Sector Name,Start date,End Date
+AAN,AARONS INC,681042236,"The Aaron's Company, Inc.",25504060,25,Homefurnishing Retail,Consumer Discretionay,ConsumDisc,12/2/2020,NULL
+ABM,A B M INDUSTRIES INC,250079,ABM Industries Incorporated,20201050,20,Environmental & Facilities Services,Industrials,Industrials,5/2/2005,NULL
+ABT,ABBOTT LABORATORIES,247483,Abbott Laboratories,35101010,35,Health Care Equipment,Health Care,HealthCare,1/2/2013,NULL
+ADBE,ADOBE INC,24321,Adobe Inc.,45103010,45,Application Software,Information Technology,InfoTech,12/6/2005,NULL
+ADI,ANALOG DEVICES INC,251411,"Analog Devices, Inc.",45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,NULL
+ADM,ARCHER DANIELS MIDLAND CO,251704,Archer-Daniels-Midland Company,30202010,30,Agricultural Products,Consumer Staple,ConsumStap,1/16/1997,NULL
+ADP,AUTOMATIC DATA PROCESSING INC,126269,"Automatic Data Processing, Inc.",45102020,45,Data Processing & Outsourced Services,Information Technology,InfoTech,5/1/2003,NULL
+AE,ADAMS RESOURCES & ENERGY INC,247978,"Adams Resources & Energy, Inc.",10102030,10,Oil & Gas Refining & Marketing,Energy,Energy,11/30/2007,NULL
+AEGN,AEGION CORP,280123,Aegion Corporation,20103010,20,Construction & Engineering,Industrials,Industrials,9/4/2001,5/18/2021
+AIN,ALBANY INTERNATIONAL CORP NEW,248608,Albany International Corp.,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1986,NULL
+AIT,APPLIED INDUSTRIAL TECHS INC,254679,"Applied Industrial Technologies, Inc.",20107010,20,Trading Companies & Distributors,Industrials,Industrials,10/1/2002,NULL
+ALCO,ALICO INC,248533,"Alico, Inc.",30202010,30,Agricultural Products,Consumer Staple,ConsumStap,8/31/1985,NULL
+ALOG,ANALOGIC CORP,250788,Analogic Corporation,35101010,35,Health Care Equipment,Health Care,HealthCare,5/1/2003,6/26/2018
+ALOT,ASTRONOVA INC,251995,"AstroNova, Inc.",45202030,45,"Technology Hardware, Storage & Peripherals",Information Technology,InfoTech,3/1/2014,NULL
+AMAT,APPLIED MATERIALS INC,251230,"Applied Materials, Inc.",45301010,45,Semiconductor Equipment,Information Technology,InfoTech,5/1/2003,NULL
+AMD,ADVANCED MICRO DEVICES INC,168864,"Advanced Micro Devices, Inc.",45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,NULL
+AME,AMETEK INC NEW,31860,"AMETEK, Inc.",20104010,20,Electrical Components & Equipment,Industrials,Industrials,12/31/1985,NULL
+AMGN,AMGEN INC,24816,Amgen Inc.,35201010,35,Biotechnology,Health Care,HealthCare,3/31/1986,NULL
+AMOT,ALLIED MOTION TECHNOLOGIES INC,177779,Allied Motion Technologies Inc.,20104010,20,Electrical Components & Equipment,Industrials,Industrials,4/30/2008,NULL
+AMWD,AMERICAN WOODMARK CORP,250549,American Woodmark Corporation,20102010,20,Building Products,Industrials,Industrials,4/30/1986,NULL
+AON,AON PLC NEW,119853,Aon plc,40301010,40,Insurance Brokers,Financials,None,6/28/1996,NULL
+AOS,SMITH A O CORP,997111,A. O. Smith Corporation,20102010,20,Building Products,Industrials,Industrials,6/1/2010,NULL
+APA,APACHE CORP,169838,APA Corporation,10102020,10,Oil & Gas Exploration & Production,Energy,Energy,12/31/1985,NULL
+APC,ANADARKO PETROLEUM CORP,251349,Anadarko Petroleum Corporation,10102020,10,Oil & Gas Exploration & Production,Energy,Energy,12/31/1985,8/8/2019
+APD,AIR PRODUCTS & CHEMICALS INC,248356,"Air Products and Chemicals, Inc.",15101040,15,Industrial Gases,Materials,Materials,6/15/1985,NULL
+APOG,APOGEE ENTERPRISES INC,251050,"Apogee Enterprises, Inc.",20102010,20,Building Products,Industrials,Industrials,2/28/1986,NULL
+ARG,AIRGAS INC,24504,"Airgas, Inc.",15101040,15,Industrial Gases,Materials,Materials,3/31/1986,5/23/2016
+ARKR,ARK RESTAURANTS CORP,251829,Ark Restaurants Corp.,25301040,25,Restaurants,Consumer Discretionay,ConsumDisc,9/30/1985,NULL
+ASEI,AMERICAN SCIENCE & ENGR INC,250710,"American Science and Engineering, Inc.",20101010,20,Aerospace & Defense,Industrials,Industrials,6/29/2007,9/13/2016
+ASH,ASHLAND GLOBAL HOLDINGS INC,252339,Ashland Global Holdings Inc.,15101050,15,Specialty Chemicals,Materials,Materials,2/1/2012,NULL
+ASNA,ASCENA RETAIL GROUP INC,267344,"Mahwah Bergen Retail Group, Inc.",25504010,25,Apparel Retail,Consumer Discretionay,ConsumDisc,7/31/1985,NULL
+ASTE,ASTEC INDUSTRIES INC,251951,"Astec Industries, Inc.",20106010,20,Construction Machinery & Heavy Trucks,Industrials,Industrials,6/30/2000,NULL
+ATRI,ATRION CORP,168945,Atrion Corporation,35101020,35,Health Care Supplies,Health Care,HealthCare,12/31/1997,NULL
+ATW,ATWOOD OCEANICS INC,252257,"Atwood Oceanics, Inc.",10101010,10,Oil & Gas Drilling,Energy,Energy,9/30/1985,11/15/2017
+AVD,AMERICAN VANGUARD CORP,250532,American Vanguard Corporation,15101030,15,Fertilizers & Agricultural Chemicals,Materials,Materials,7/31/1985,NULL
+AVHI,A V HOMES INC,252551,"AV Homes, Inc.",25201030,25,Homebuilding,Consumer Discretionay,ConsumDisc,2/1/2017,10/3/2018
+AVP,AVON PRODUCTS INC,763825,Avcorp Industries Inc.,20101010,20,Aerospace & Defense,Industrials,Industrials,9/30/1992,NULL
+AVT,AVNET INC,253018,"Avnet, Inc.",45203030,45,Technology Distributors,Information Technology,InfoTech,5/1/2003,NULL
+AVY,AVERY DENNISON CORP,252978,Avery Dennison Corporation,15103020,15,Paper Packaging,Materials,Materials,8/1/2013,NULL
+AXE,ANIXTER INTERNATIONAL INC,281893,Anixter International Inc.,45203030,45,Technology Distributors,Information Technology,InfoTech,5/1/2003,6/22/2020
+AXLL,AXIALL CORP,177251,Axiall Corporation,15101010,15,Commodity Chemicals,Materials,Materials,12/31/1985,8/31/2016
+AZZ,A Z Z INC,252588,AZZ Inc.,20104020,20,Heavy Electrical Equipment,Industrials,Industrials,2/29/1992,NULL
+B,BARNES GROUP INC,254193,Barnes Group Inc.,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1993,NULL
+BA,BOEING CO,370857,The Boeing Company,20101010,20,Aerospace & Defense,Industrials,Industrials,6/15/1985,NULL
+BAX,BAXTER INTERNATIONAL INC,254571,Baxter International Inc.,35101010,35,Health Care Equipment,Health Care,HealthCare,6/15/1985,NULL
+BC,BRUNSWICK CORP,171649,Brunswick Corporation,25202010,25,Leisure Products,Consumer Discretionay,ConsumDisc,6/15/1985,NULL
+BCPC,BALCHEM CORP,253076,Balchem Corporation,15101050,15,Specialty Chemicals,Materials,Materials,12/31/2001,NULL
+BCR,BARD C R INC,254131,"C. R. Bard, Inc.",35101010,35,Health Care Equipment,Health Care,HealthCare,6/15/1985,12/29/2017
+BDX,BECTON DICKINSON & CO,103678,"Becton, Dickinson and Company",35101010,35,Health Care Equipment,Health Care,HealthCare,6/15/1985,NULL
+BGG,BRIGGS & STRATTON CORP,256523,Briggs & Stratton Corporation,20106020,20,Industrial Machinery,Industrials,Industrials,6/15/1985,NULL
+BIG,BIG LOTS INC,26949,"Big Lots, Inc.",25503020,25,General Merchandise Stores,Consumer Discretionay,ConsumDisc,1/31/1986,NULL
+BLL,BALL CORP,170352,Ball Corporation,15103010,15,Metal & Glass Containers,Materials,Materials,6/15/1985,NULL
+BMI,BADGER METER INC,253478,"Badger Meter, Inc.",45203010,45,Electronic Equipment & Instruments,Information Technology,InfoTech,11/1/2011,NULL
+BMS,BEMIS CO INC,255132,Amcor Flexibles North America Inc.,15103020,15,Paper Packaging,Materials,Materials,12/31/1985,6/11/2019
+BMY,BRISTOL MYERS SQUIBB CO,25798,Bristol-Myers Squibb Company,35202010,35,Pharmaceuticals,Health Care,HealthCare,6/15/1985,NULL
+BOBE,BOB EVANS FARMS INC,255524,"Bob Evans Farms, Inc.",30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,10/1/2017,1/16/2018
+BOOM,D M C GLOBAL INC,34668,DMC Global Inc.,10101020,10,Oil & Gas Equipment & Services,Energy,Energy,4/1/2019,NULL
+BRC,BRADY CORP,171296,Brady Corporation,20201010,20,Commercial Printing,Industrials,Industrials,5/1/2014,NULL
+CA,C A INC,262913,"CA, Inc.",45103020,45,Systems Software,Information Technology,InfoTech,3/31/1986,11/6/2018
+CAG,CONAGRA BRANDS INC,26893,"Conagra Brands, Inc.",30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,6/15/1985,NULL
+CAH,CARDINAL HEALTH INC,172207,"Cardinal Health, Inc.",35102010,35,Health Care Distributors,Health Care,HealthCare,3/31/1986,NULL
+CAL,CALERES INC,256893,"Caleres, Inc.",25504010,25,Apparel Retail,Consumer Discretionay,ConsumDisc,3/1/2007,NULL
+CASY,CASEYS GENERAL STORES INC,258629,"Casey's General Stores, Inc.",30101030,30,Food Retail,Consumer Staple,ConsumStap,4/30/1986,NULL
+CAT,CATERPILLAR INC,259378,Caterpillar Inc.,20106010,20,Construction Machinery & Heavy Trucks,Industrials,Industrials,6/15/1985,NULL
+CATO,CATO CORP NEW,258697,The Cato Corporation,25504010,25,Apparel Retail,Consumer Discretionay,ConsumDisc,1/31/1986,NULL
+CBB,CINCINNATI BELL INC NEW,168151,Cincinnati Bell Inc.,50101020,50,Integrated Telecommunication Services,Communication Services,ComServices,12/31/1985,9/7/2021
+CBM,CAMBREX CORP,258332,Cambrex Corporation,35203010,35,Life Sciences Tools & Services,Health Care,HealthCare,5/1/2006,12/4/2019
+CBRL,CRACKER BARREL OLD COUNTRY STORE,264897,"Cracker Barrel Old Country Store, Inc.",25301040,25,Restaurants,Consumer Discretionay,ConsumDisc,7/31/1985,NULL
+CCF,CHASE CORP,172593,Chase Corporation,15101050,15,Specialty Chemicals,Materials,Materials,5/31/2010,NULL
+CDNS,CADENCE DESIGN SYSTEMS INC,25941,"Cadence Design Systems, Inc.",45103010,45,Application Software,Information Technology,InfoTech,12/31/1986,NULL
+CELG,CELGENE CORP,258769,Celgene Corporation,35201010,35,Biotechnology,Health Care,HealthCare,12/31/1986,11/21/2019
+CERN,CERNER CORP,259627,Cerner Corporation,35103010,35,Health Care Technology,Health Care,HealthCare,5/1/2006,NULL
+CHD,CHURCH & DWIGHT INC,261105,"Church & Dwight Co., Inc.",30301010,30,Household Products,Consumer Staple,ConsumStap,12/31/1985,NULL
+CHDN,CHURCHILL DOWNS INC,260619,Churchill Downs Incorporated,25301010,25,Casinos & Gaming,Consumer Discretionay,ConsumDisc,1/31/1986,NULL
+CHE,CHEMED CORP NEW,260583,Chemed Corporation,35102015,35,Health Care Services,Health Care,HealthCare,4/1/2004,NULL
+CL,COLGATE PALMOLIVE CO,262247,Colgate-Palmolive Company,30301010,30,Household Products,Consumer Staple,ConsumStap,6/15/1985,NULL
+CLC,CLARCOR INC,261326,CLARCOR Inc.,20106020,20,Industrial Machinery,Industrials,Industrials,11/30/1985,2/28/2017
+CLH,CLEAN HARBORS INC,26565,"Clean Harbors, Inc.",20201050,20,Environmental & Facilities Services,Industrials,Industrials,2/28/1987,NULL
+CLX,CLOROX CO,89450,The Clorox Company,30301010,30,Household Products,Consumer Staple,ConsumStap,6/15/1985,NULL
+CMTL,COMTECH TELECOMMUNICATIONS CORP,262961,Comtech Telecommunications Corp.,45201020,45,Communications Equipment,Information Technology,InfoTech,7/31/1985,NULL
+CNMD,CONMED CORP,263232,CONMED Corporation,35101010,35,Health Care Equipment,Health Care,HealthCare,12/31/1986,NULL
+COG,CABOT OIL & GAS CORP,258181,Coterra Energy Inc.,10102020,10,Oil & Gas Exploration & Production,Energy,Energy,9/30/1989,NULL
+COHU,COHU INC,262125,"Cohu, Inc.",45301010,45,Semiconductor Equipment,Information Technology,InfoTech,5/1/2003,NULL
+COP,CONOCOPHILLIPS,296527,ConocoPhillips,10102020,10,Oil & Gas Exploration & Production,Energy,Energy,5/1/2012,NULL
+CRS,CARPENTER TECHNOLOGY CORP,258937,Carpenter Technology Corporation,15104050,15,Steel,Materials,Materials,6/30/1985,NULL
+CRUS,CIRRUS LOGIC INC,26515,"Cirrus Logic, Inc.",45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,NULL
+CSCO,CISCO SYSTEMS INC,19691,"Cisco Systems, Inc.",45201020,45,Communications Equipment,Information Technology,InfoTech,5/1/2003,NULL
+CSH,CASH AMERICA INTERNATIONAL INC,883098,CENIT Aktiengesellschaft,45103010,45,Application Software,Information Technology,InfoTech,6/30/1999,NULL
+CSL,CARLISLE COMPANIES,258791,Carlisle Companies Incorporated,20102010,20,Building Products,Industrials,Industrials,8/1/2021,NULL
+CSX,C S X CORP,257948,CSX Corporation,20304010,20,Railroads,Industrials,Industrials,6/15/1985,NULL
+CTAS,CINTAS CORP,260725,Cintas Corporation,20201070,20,Diversified Support Services,Industrials,Industrials,9/2/2008,NULL
+CTB,COOPER TIRE & RUBBER CO,263686,Cooper Tire & Rubber Company,25101020,25,Tires & Rubber,Consumer Discretionay,ConsumDisc,12/31/1985,6/7/2021
+CTS,C T S CORP,386024,Cognizant Technology Solutions Corporation,45102010,45,IT Consulting & Other Services,Information Technology,InfoTech,12/31/1996,NULL
+CTWS,CONNECTICUT WATER SERVICE INC,263264,"Connecticut Water Service, Inc.",55104010,55,Water Utilities,Utilities,Utilities,12/31/1985,10/10/2019
+CUB,CUBIC CORP,265154,Cubic Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,9/30/1985,5/25/2021
+CVX,CHEVRON CORP NEW,98506,Chevron Corporation,10102010,10,Integrated Oil & Gas,Energy,Energy,6/15/1985,NULL
+CW,CURTISS WRIGHT CORP,265386,Curtiss-Wright Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,12/31/1985,NULL
+CWT,CALIFORNIA WATER SERVICE GROUP,257568,California Water Service Group,55104010,55,Water Utilities,Utilities,Utilities,12/31/1985,NULL
+CY,CYPRESS SEMICONDUCTOR CORP,27307,Cypress Semiconductor Corporation,45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,4/17/2020
+DBD,DIEBOLD NIXDORF INC,266767,"Diebold Nixdorf, Incorporated",45202030,45,"Technology Hardware, Storage & Peripherals",Information Technology,InfoTech,3/3/2014,NULL
+DDS,DILLARDS INC,266847,"Dillard's, Inc.",25503010,25,Department Stores,Consumer Discretionay,ConsumDisc,1/31/1986,NULL
+DE,DEERE & CO,266112,Deere & Company,20106015,20,Agricultural & Farm Machinery,Industrials,Industrials,3/3/2014,NULL
+DHR,DANAHER CORP,265621,Danaher Corporation,35203010,35,Life Sciences Tools & Services,Health Care,HealthCare,11/1/2021,NULL
+DLX,DELUXE CORP,266430,Deluxe Corporation,20201010,20,Commercial Printing,Industrials,Industrials,4/1/2005,NULL
+DOV,DOVER CORP,174901,Dover Corporation,20106020,20,Industrial Machinery,Industrials,Industrials,10/1/1985,NULL
+DOW,DOW CHEMICAL CO,327097967,The Dow Chemical Company,15101050,15,Specialty Chemicals,Materials,Materials,-,-
+DXYN,DIXIE GROUP INC,266937,"The Dixie Group, Inc.",25201020,25,Home Furnishings,Consumer Discretionay,ConsumDisc,10/1/1994,NULL
+DY,DYCOM INDUSTRIES INC,268141,"Dycom Industries, Inc.",20103010,20,Construction & Engineering,Industrials,Industrials,6/2/2008,NULL
+EA,ELECTRONIC ARTS INC,27963,Electronic Arts Inc.,50202020,50,Interactive Home Entertainment,Communication Services,ComServices,10/1/2018,NULL
+EAT,BRINKER INTERNATIONAL INC,260858,"Brinker International, Inc.",25301040,25,Restaurants,Consumer Discretionay,ConsumDisc,6/30/1985,NULL
+ECOL,U S ECOLOGY INC NEW,249726,"US Ecology, Inc.",20201050,20,Environmental & Facilities Services,Industrials,Industrials,12/31/1985,NULL
+EFX,EQUIFAX INC,175749,Equifax Inc.,20202020,20,Research & Consulting Services,Industrials,Industrials,9/2/2008,NULL
+EMC,E M C CORP MA,108715889,DELL EMC,45202030,45,"Technology Hardware, Storage & Peripherals",Information Technology,InfoTech,3/1/2014,9/7/2016
+EMR,EMERSON ELECTRIC CO,269231,Emerson Electric Co.,20104010,20,Electrical Components & Equipment,Industrials,Industrials,6/15/1985,NULL
+EOG,EOG RESOURCES INC,269660,"EOG Resources, Inc.",10102020,10,Oil & Gas Exploration & Production,Energy,Energy,12/31/1989,NULL
+ESIO,ELECTRO SCIENTIFIC INDS INC,268713,"Electro Scientific Industries, Inc.",45203010,45,Electronic Equipment & Instruments,Information Technology,InfoTech,7/1/2002,2/7/2019
+ESL,ESTERLINE TECHNOLOGIES CORP,270315,Esterline Technologies Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,10/1/2002,3/14/2019
+ESND,ESSENDANT INC,36012,Essendant Inc.,20201060,20,Office Services & Supplies,Industrials,Industrials,12/31/1998,2/1/2019
+ETN,EATON CORP PLC,175265,Eaton Corporation plc,20104010,20,Electrical Components & Equipment,Industrials,Industrials,12/3/2012,NULL
+EXPD,EXPEDITORS INTERNATIONAL WA INC,270071,"Expeditors International of Washington, Inc.",20301010,20,Air Freight & Logistics,Industrials,Industrials,12/31/1985,NULL
+FAST,FASTENAL COMPANY,270747,Fastenal Company,20107010,20,Trading Companies & Distributors,Industrials,Industrials,12/1/1995,NULL
+FDX,FEDEX CORP,124423,FedEx Corporation,20301010,20,Air Freight & Logistics,Industrials,Industrials,6/15/1985,NULL
+FELE,FRANKLIN ELECTRIC INC,273729,"Franklin Electric Co., Inc.",20106020,20,Industrial Machinery,Industrials,Industrials,5/1/2016,NULL
+FISV,FISERV INC,128209,"Fiserv, Inc.",45102020,45,Data Processing & Outsourced Services,Information Technology,InfoTech,5/1/2003,NULL
+FL,FOOT LOCKER INC,315394,"Foot Locker, Inc.",25504010,25,Apparel Retail,Consumer Discretionay,ConsumDisc,7/31/2003,NULL
+FLS,FLOWSERVE CORP,267555,Flowserve Corporation,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1985,NULL
+FLXS,FLEXSTEEL INDUSTRIES INC,273056,"Flexsteel Industries, Inc.",25201020,25,Home Furnishings,Consumer Discretionay,ConsumDisc,6/30/1985,NULL
+FMC,F M C CORP,28606,FMC Corporation,15101030,15,Fertilizers & Agricultural Chemicals,Materials,Materials,8/1/2015,NULL
+FOE,FERRO CORP,176102,Ferro Corporation,15101050,15,Specialty Chemicals,Materials,Materials,12/31/1985,NULL
+FUL,FULLER H B CO,273981,H.B. Fuller Company,15101050,15,Specialty Chemicals,Materials,Materials,11/30/1985,NULL
+GD,GENERAL DYNAMICS CORP,274561,General Dynamics Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,6/15/1985,NULL
+GEF,GREIF INC,377361,"Greif, Inc.",15103010,15,Metal & Glass Containers,Materials,Materials,10/31/1985,NULL
+GGG,GRACO INC,29113,Graco Inc.,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1985,NULL
+GHC,GRAHAM HOLDINGS CO,91675,Graham Holdings Company,25302010,25,Education Services,Consumer Discretionay,ConsumDisc,1/2/2014,NULL
+GHM,GRAHAM CORP,177455,Graham Corporation,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1985,NULL
+GIII,G III APPAREL GROUP INC,274166,"G-III Apparel Group, Ltd.",25203010,25,"Apparel, Accessories & Luxury Goods",Consumer Discretionay,ConsumDisc,7/31/1989,NULL
+GIS,GENERAL MILLS INC,274715,"General Mills, Inc.",30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,6/15/1985,NULL
+GNCMA,G C I LIBERTY INC,215858913,"GCI Liberty, Inc.",50101010,50,Alternative Carriers,Communication Services,ComServices,7/1/2019,12/21/2020
+GNTX,GENTEX CORP,274926,Gentex Corporation,25101010,25,Auto Parts & Equipment,Consumer Discretionay,ConsumDisc,12/31/1985,NULL
+GPC,GENUINE PARTS CO,275034,Genuine Parts Company,25501010,25,Distributors,Consumer Discretionay,ConsumDisc,11/1/2002,NULL
+GPS,GAP INC,274265,"The Gap, Inc.",25504010,25,Apparel Retail,Consumer Discretionay,ConsumDisc,6/6/1990,NULL
+GPX,G P STRATEGIES CORP,53312016,Gasporox AB (publ),45203010,45,Electronic Equipment & Instruments,Information Technology,InfoTech,6/1/2017,NULL
+GRC,GORMAN RUPP CO,275858,The Gorman-Rupp Company,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1985,NULL
+GWW,GRAINGER W W INC,276060,"W.W. Grainger, Inc.",20107010,20,Trading Companies & Distributors,Industrials,Industrials,6/28/1996,NULL
+HAR,HARMAN INTL INDS INC NEW,410154,Harmony Gold Mining Company Limited,15104030,15,Gold,Materials,Materials,6/30/1995,NULL
+HAS,HASBRO INC,277746,"Hasbro, Inc.",25202010,25,Leisure Products,Consumer Discretionay,ConsumDisc,6/15/1985,NULL
+HD,HOME DEPOT INC,278679,"The Home Depot, Inc.",25504030,25,Home Improvement Retail,Consumer Discretionay,ConsumDisc,1/31/1986,NULL
+HELE,HELEN OF TROY LTD,277500,Helen of Troy Limited,25201040,25,Household Appliances,Consumer Discretionay,ConsumDisc,2/28/1986,NULL
+HES,HESS CORP,249841,Hess Corporation,10102020,10,Oil & Gas Exploration & Production,Energy,Energy,4/1/2015,NULL
+HFC,HOLLYFRONTIER CORP,178254,HollyFrontier Corporation,10102030,10,Oil & Gas Refining & Marketing,Energy,Energy,7/31/1985,NULL
+HL,HECLA MINING CO,278111,Hecla Mining Company,15104045,15,Silver,Materials,Materials,3/1/2014,NULL
+HNGR,HANGER INC,29272,"Hanger, Inc.",35102020,35,Health Care Facilities,Health Care,HealthCare,5/24/1999,NULL
+HOLX,HOLOGIC INC,108544,"Hologic, Inc.",35101010,35,Health Care Equipment,Health Care,HealthCare,9/30/1989,NULL
+HON,HONEYWELL INTERNATIONAL INC,1340740,Honeywell International Inc.,20105010,20,Industrial Conglomerates,Industrials,Industrials,9/1/2016,NULL
+HP,HELMERICH & PAYNE INC,278341,"Helmerich & Payne, Inc.",10101010,10,Oil & Gas Drilling,Energy,Energy,9/30/1985,NULL
+HPQ,H P INC,108856,HP Inc.,45202030,45,"Technology Hardware, Storage & Peripherals",Information Technology,InfoTech,3/3/2014,NULL
+HRB,BLOCK H & R INC,276601,"H&R Block, Inc.",25302020,25,Specialized Consumer Services,Consumer Discretionay,ConsumDisc,5/2/2005,NULL
+HRL,HORMEL FOODS CORP,279042,Hormel Foods Corporation,30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,10/31/1985,NULL
+HSC,HARSCO CORP,277575,Harsco Corporation,20201050,20,Environmental & Facilities Services,Industrials,Industrials,1/1/2020,NULL
+HSY,HERSHEY CO,98873,The Hershey Company,30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,6/15/1985,NULL
+HTLD,HEARTLAND EXPRESS INC,277383,"Heartland Express, Inc.",20304020,20,Trucking,Industrials,Industrials,12/31/1985,NULL
+HWKN,HAWKINS INC,277171,"Hawkins, Inc.",15101010,15,Commodity Chemicals,Materials,Materials,9/30/1985,NULL
+HWM,HOWMET AEROSPACE INC,416264458,Howmet Aerospace Inc.,20101010,20,Aerospace & Defense,Industrials,Industrials,11/1/2016,NULL
+IBM,INTERNATIONAL BUSINESS MACHS COR,112350,International Business Machines Corporation,45102010,45,IT Consulting & Other Services,Information Technology,InfoTech,5/3/2010,NULL
+IDTI,INTEGRATED DEVICE TECHNOLOGY,518807,Renesas Electronics America Inc.,45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,4/1/2019
+IEP,ICAHN ENTERPRISES L P,250592,Icahn Enterprises L.P.,20105010,20,Industrial Conglomerates,Industrials,Industrials,11/5/2014,NULL
+IEX,IDEX CORP,29728,IDEX Corporation,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1988,NULL
+IFF,INTERNATIONAL FLAVORS & FRAG INC,281407,International Flavors & Fragrances Inc.,15101050,15,Specialty Chemicals,Materials,Materials,6/28/1996,NULL
+IIVI,II VI INC,309779,II-VI Incorporated,45203015,45,Electronic Components,Information Technology,InfoTech,4/1/2014,NULL
+INTC,INTEL CORP,21127,Intel Corporation,45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,NULL
+IP,INTERNATIONAL PAPER CO,61036,International Paper Company,15103020,15,Paper Packaging,Materials,Materials,1/1/2016,NULL
+ITT,I T T INC,280322,ITT Inc.,20106020,20,Industrial Machinery,Industrials,Industrials,11/1/2011,NULL
+ITW,ILLINOIS TOOL WORKS INC,280561,Illinois Tool Works Inc.,20106020,20,Industrial Machinery,Industrials,Industrials,12/31/1985,NULL
+J,JACOBS ENGINEERING GROUP INC,282159,Jacobs Engineering Group Inc.,20202020,20,Research & Consulting Services,Industrials,Industrials,3/1/2021,NULL
+JBHT,HUNT J B TRANSPORT SERVICES INC,278576,"J.B. Hunt Transport Services, Inc.",20304020,20,Trucking,Industrials,Industrials,10/1/2004,NULL
+JCI,JOHNSON CONTROLS INTL PLC,282590,Johnson Controls International plc,20102010,20,Building Products,Industrials,Industrials,10/28/2016,NULL
+JJSF,J & J SNACK FOODS CORP,281651,J & J Snack Foods Corp.,30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,9/30/1985,NULL
+JKHY,HENRY JACK & ASSOC INC,277617,"Jack Henry & Associates, Inc.",45102020,45,Data Processing & Outsourced Services,Information Technology,InfoTech,12/1/2010,NULL
+JNJ,JOHNSON & JOHNSON,139677,Johnson & Johnson,35202010,35,Pharmaceuticals,Health Care,HealthCare,6/15/1985,NULL
+JOUT,JOHNSON OUTDOORS INC,282032,Johnson Outdoors Inc.,25202010,25,Leisure Products,Consumer Discretionay,ConsumDisc,6/30/1986,NULL
+JWN,NORDSTROM INC,32215,"Nordstrom, Inc.",25503010,25,Department Stores,Consumer Discretionay,ConsumDisc,1/7/1987,NULL
+K,KELLOGG CO,283356,Kellogg Company,30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,6/15/1985,NULL
+KAMN,KAMAN CORP,282415,Kaman Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,7/1/2020,NULL
+KBH,K B HOME,283234,KB Home,25201030,25,Homebuilding,Consumer Discretionay,ConsumDisc,11/30/1985,NULL
+KLAC,K L A CORP,282225,KLA Corporation,45301010,45,Semiconductor Equipment,Information Technology,InfoTech,5/1/2003,NULL
+KLIC,KULICKE & SOFFA INDS INC,283588,"Kulicke and Soffa Industries, Inc.",45301010,45,Semiconductor Equipment,Information Technology,InfoTech,5/1/2003,NULL
+KMB,KIMBERLY CLARK CORP,283857,Kimberly-Clark Corporation,30301010,30,Household Products,Consumer Staple,ConsumStap,12/7/1994,NULL
+KMT,KENNAMETAL INC,283484,Kennametal Inc.,20106020,20,Industrial Machinery,Industrials,Industrials,6/30/1985,NULL
+KO,COCA COLA CO,26642,The Coca-Cola Company,30201030,30,Soft Drinks,Consumer Staple,ConsumStap,6/15/1985,NULL
+KR,KROGER COMPANY,284342,The Kroger Co.,30101030,30,Food Retail,Consumer Staple,ConsumStap,6/15/1985,NULL
+KSU,KANSAS CITY SOUTHERN,30472,Kansas City Southern,20304010,20,Railroads,Industrials,Industrials,12/31/1985,NULL
+LABL,MULTI COLOR CORP,289484,Multi-Color Corporation,20201010,20,Commercial Printing,Industrials,Industrials,3/31/1987,7/2/2019
+LB,L BRANDS INC,873904,Laurentian Bank of Canada,40101010,40,Diversified Banks,Financials,None,2/1/2020,NULL
+LCII,L C I INDUSTRIES,267368,LCI Industries,25101010,25,Auto Parts & Equipment,Consumer Discretionay,ConsumDisc,12/31/1994,NULL
+LDL,LYDALL INC,20354344,Groupe LDLC société anonyme,25502020,25,Internet & Direct Marketing Retail,Consumer Discretionay,ConsumDisc,8/31/2005,NULL
+LDR,LANDAUER INC,711292079,Lode Resources Ltd,15104020,15,Diversified Metals & Mining,Materials,Materials,4/29/2021,NULL
+LEG,LEGGETT & PLATT INC,30760,"Leggett & Platt, Incorporated",25201020,25,Home Furnishings,Consumer Discretionay,ConsumDisc,12/31/1985,NULL
+LEN,LENNAR CORP,30763,Lennar Corporation,25201030,25,Homebuilding,Consumer Discretionay,ConsumDisc,11/30/1985,NULL
+LLTC,LINEAR TECHNOLOGY CORP,30843,Linear Technology Corporation,45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,3/13/2017
+LLY,LILLY ELI & CO,285467,Eli Lilly and Company,35202010,35,Pharmaceuticals,Health Care,HealthCare,6/15/1985,NULL
+LMT,LOCKHEED MARTIN CORP,285827,Lockheed Martin Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,6/15/1985,NULL
+LNCE,SNYDERS LANCE INC,180017,"Snyder's-Lance, Inc.",30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,12/31/1985,3/27/2018
+LNN,LINDSAY CORP,285016,Lindsay Corporation,20106015,20,Agricultural & Farm Machinery,Industrials,Industrials,3/3/2014,NULL
+LOW,LOWES COMPANIES INC,180871,"Lowe's Companies, Inc.",25504030,25,Home Improvement Retail,Consumer Discretionay,ConsumDisc,6/15/1985,NULL
+LRCX,LAM RESH CORP,30655,Lam Research Corporation,45301010,45,Semiconductor Equipment,Information Technology,InfoTech,5/1/2003,NULL
+LUMN,CENTURYLINK INC,260149,"Lumen Technologies, Inc.",50101010,50,Alternative Carriers,Communication Services,ComServices,10/12/2017,NULL
+LUV,SOUTHWEST AIRLINES CO,31726,Southwest Airlines Co.,20302010,20,Airlines,Industrials,Industrials,12/31/1985,NULL
+MAS,MASCO CORP,181478,Masco Corporation,20102010,20,Building Products,Industrials,Industrials,6/15/1985,NULL
+MAT,MATTEL INC,31197,"Mattel, Inc.",25202010,25,Leisure Products,Consumer Discretionay,ConsumDisc,6/15/1985,NULL
+MATX,MATSON INC,248450,"Matson, Inc.",20303010,20,Marine,Industrials,Industrials,12/31/1985,NULL
+MCD,MCDONALDS CORP,139488,McDonald's Corporation,25301040,25,Restaurants,Consumer Discretionay,ConsumDisc,6/15/1985,NULL
+MCS,MARCUS CORP,180950,The Marcus Corporation,50202010,50,Movies & Entertainment,Communication Services,ComServices,10/1/2018,NULL
+MDC,M D C HOLDINGS INC,181003,"M.D.C. Holdings, Inc.",25201030,25,Homebuilding,Consumer Discretionay,ConsumDisc,12/31/1985,NULL
+MENT,MENTOR GRAPHICS CORP,31380,Mentor Graphics Corporation,45103010,45,Application Software,Information Technology,InfoTech,12/31/1985,3/31/2017
+MERC,MERCER INTERNATIONAL INC,251849,Mercer International Inc.,15105020,15,Paper Products,Materials,Materials,12/31/1993,NULL
+MKC,MCCORMICK & CO INC,181176,"McCormick & Company, Incorporated",30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,11/30/1985,NULL
+MLHR,MILLER HERMAN INC,31089912,Miller Herman Workplace Resource,20201060,20,Office Services & Supplies,Industrials,Industrials,5/31/1986,NULL
+MMM,3M CO,289194,3M Company,20105010,20,Industrial Conglomerates,Industrials,Industrials,6/15/1985,NULL
+MO,ALTRIA GROUP INC,296308,"Altria Group, Inc.",30203010,30,Tobacco,Consumer Staple,ConsumStap,6/15/1985,NULL
+MOD,MODINE MANUFACTURING CO,288838,Modine Manufacturing Company,25101010,25,Auto Parts & Equipment,Consumer Discretionay,ConsumDisc,3/31/1986,NULL
+MRK,MERCK & CO INC NEW,288502,"Merck & Co., Inc.",35202010,35,Pharmaceuticals,Health Care,HealthCare,6/15/1985,NULL
+MSEX,MIDDLESEX WATER CO,288070,Middlesex Water Company,55104010,55,Water Utilities,Utilities,Utilities,12/31/1985,NULL
+MSI,MOTOROLA SOLUTIONS INC,99186,"Motorola Solutions, Inc.",45201020,45,Communications Equipment,Information Technology,InfoTech,6/28/1996,NULL
+MTRN,MATERION CORP,256977,Materion Corporation,15104020,15,Diversified Metals & Mining,Materials,Materials,12/31/1985,NULL
+MTSC,M T S SYSTEMS CORP,137411,MTS Systems Corporation,45203010,45,Electronic Equipment & Instruments,Information Technology,InfoTech,9/30/1985,4/8/2021
+MTW,MANITOWOC CO INC,286163,"The Manitowoc Company, Inc.",20106010,20,Construction Machinery & Heavy Trucks,Industrials,Industrials,5/2/2005,NULL
+MUR,MURPHY OIL CORP,290060,Murphy Oil Corporation,10102020,10,Oil & Gas Exploration & Production,Energy,Energy,9/3/2013,NULL
+MYE,MYERS INDUSTRIES INC,290177,"Myers Industries, Inc.",15103010,15,Metal & Glass Containers,Materials,Materials,12/31/1987,NULL
+MYL,MYLAN N V,38011370,Mallee Resources Limited,15104020,15,Diversified Metals & Mining,Materials,Materials,10/29/2015,NULL
+NBL,NOBLE ENERGY INC,20357102,National Bank Limited,40101010,40,Diversified Banks,Financials,None,10/10/2005,NULL
+NEM,NEWMONT CORP,291795,Newmont Corporation,15104030,15,Gold,Materials,Materials,5/20/1987,NULL
+NEOG,NEOGEN CORP,339683,Neogen Corporation,35101020,35,Health Care Supplies,Health Care,HealthCare,5/31/2005,NULL
+NEWP,NEWPORT CORP,95164,Newport Corp.,45203010,45,Electronic Equipment & Instruments,Information Technology,InfoTech,7/31/1985,5/3/2016
+NKE,NIKE INC,291981,"NIKE, Inc.",25203020,25,Footwear,Consumer Discretionay,ConsumDisc,5/31/1986,NULL
+NLOK,NORTONLIFELOCK INC,35000,NortonLifeLock Inc.,45103020,45,Systems Software,Information Technology,InfoTech,3/31/1989,NULL
+NOC,NORTHROP GRUMMAN CORP,97199,Northrop Grumman Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,6/15/1985,NULL
+NSC,NORFOLK SOUTHERN CORP,292268,Norfolk Southern Corporation,20304010,20,Railroads,Industrials,Industrials,6/15/1985,NULL
+NUE,NUCOR CORP,184945,Nucor Corporation,15104050,15,Steel,Materials,Materials,6/15/1985,NULL
+NWL,NEWELL BRANDS INC,291703,Newell Brands Inc.,25201050,25,Housewares & Specialties,Consumer Discretionay,ConsumDisc,12/31/1985,NULL
+OMC,OMNICOM GROUP INC,96161,Omnicom Group Inc.,50201010,50,Advertising,Communication Services,ComServices,10/1/2018,NULL
+OMI,OWENS & MINOR INC NEW,294382,"Owens & Minor, Inc.",35102010,35,Health Care Distributors,Health Care,HealthCare,12/31/1985,NULL
+OSK,OSHKOSH CORP,294167,Oshkosh Corporation,20106010,20,Construction Machinery & Heavy Trucks,Industrials,Industrials,9/30/1985,NULL
+OXY,OCCIDENTAL PETROLEUM CORP,293286,Occidental Petroleum Corporation,10102010,10,Integrated Oil & Gas,Energy,Energy,6/15/1985,NULL
+PBI,PITNEY BOWES INC,297018,Pitney Bowes Inc.,20201060,20,Office Services & Supplies,Industrials,Industrials,6/15/1985,NULL
+PCAR,PACCAR INC,294721,PACCAR Inc,20106010,20,Construction Machinery & Heavy Trucks,Industrials,Industrials,6/15/1985,NULL
+PCP,PRECISION CASTPARTS CORP,33627,RathGibson LLC,20106020,20,Industrial Machinery,Industrials,Industrials,6/8/2006,4/23/2014
+PDCE,P D C ENERGY INC,296104,"PDC Energy, Inc.",10102020,10,Oil & Gas Exploration & Production,Energy,Energy,12/31/2001,NULL
+PEP,PEPSICO INC,32854,"PepsiCo, Inc.",30201030,30,Soft Drinks,Consumer Staple,ConsumStap,6/15/1985,NULL
+PFE,PFIZER INC,162270,Pfizer Inc.,35202010,35,Pharmaceuticals,Health Care,HealthCare,6/15/1985,NULL
+PG,PROCTER & GAMBLE CO,33328,The Procter & Gamble Company,30301010,30,Household Products,Consumer Staple,ConsumStap,6/15/1985,NULL
+PII,POLARIS INC,297441,Polaris Inc.,25202010,25,Leisure Products,Consumer Discretionay,ConsumDisc,12/31/1987,NULL
+PIR,PIER 1 IMPORTS INC,5466933,The People's Insurance Company (Group) of China Limited,40301040,40,Property & Casualty Insurance,Financials,None,12/12/2012,NULL
+PKE,PARK AEROSPACE CORP,295050,Park Aerospace Corp.,20101010,20,Aerospace & Defense,Industrials,Industrials,8/1/2019,NULL
+PKI,PERKINELMER INC,268363,"PerkinElmer, Inc.",35203010,35,Life Sciences Tools & Services,Health Care,HealthCare,5/1/2006,NULL
+PLXS,PLEXUS CORP,102348,Plexus Corp.,45203020,45,Electronic Manufacturing Services,Information Technology,InfoTech,5/1/2003,NULL
+PNR,PENTAIR PLC,295688,Pentair plc,20106020,20,Industrial Machinery,Industrials,Industrials,6/1/1991,NULL
+POWL,POWELL INDUSTRIES INC,297711,"Powell Industries, Inc.",20104010,20,Electrical Components & Equipment,Industrials,Industrials,10/31/1985,NULL
+R,RYDER SYSTEMS INC,33956,"Ryder System, Inc.",20304020,20,Trucking,Industrials,Industrials,5/1/2006,NULL
+RBC,REGAL BELOIT CORP,299702,Regal Rexnord Corporation,20104010,20,Electrical Components & Equipment,Industrials,Industrials,7/1/2002,NULL
+RDC,ROWAN COMPANIES PLC,300794,Rowan Companies Limited,10101010,10,Oil & Gas Drilling,Energy,Energy,6/15/1985,4/11/2019
+RES,R P C INC,188005,"RPC, Inc.",10101020,10,Oil & Gas Equipment & Services,Energy,Energy,12/31/2000,NULL
+RGR,STURM RUGER & CO INC,305647,"Sturm, Ruger & Company, Inc.",25202010,25,Leisure Products,Consumer Discretionay,ConsumDisc,12/31/1985,NULL
+ROST,ROSS STORES INC,33926,"Ross Stores, Inc.",25504010,25,Apparel Retail,Consumer Discretionay,ConsumDisc,9/4/2001,NULL
+RTN,RAYTHEON CO,876834,The Restaurant Group plc,25301040,25,Restaurants,Consumer Discretionay,ConsumDisc,7/3/1989,NULL
+RTX,RAYTHEON TECHNOLOGIES CORP,159230,Raytheon Technologies Corporation,20101010,20,Aerospace & Defense,Industrials,Industrials,6/15/1985,NULL
+SAFM,SANDERSON FARMS INC,301820,"Sanderson Farms, Inc.",30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,3/29/2002,NULL
+SCL,STEPAN CO,305102,Stepan Company,15101050,15,Specialty Chemicals,Materials,Materials,12/31/1985,NULL
+SEE,SEALED AIR CORP NEW,382724,Sealed Air Corporation,15103020,15,Paper Packaging,Materials,Materials,12/31/1985,NULL
+SHW,SHERWIN WILLIAMS CO,303104,The Sherwin-Williams Company,15101050,15,Specialty Chemicals,Materials,Materials,6/1/2010,NULL
+SJM,SMUCKER J M CO,303591,The J. M. Smucker Company,30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,4/30/1986,NULL
+SKYW,SKYWEST INC,303803,"SkyWest, Inc.",20302010,20,Airlines,Industrials,Industrials,3/31/1986,NULL
+SLB,SCHLUMBERGER LTD,301966,Schlumberger Limited,10101020,10,Oil & Gas Equipment & Services,Energy,Energy,6/15/1985,NULL
+SMP,STANDARD MOTOR PRODUCTS INC,304714,"Standard Motor Products, Inc.",25101010,25,Auto Parts & Equipment,Consumer Discretionay,ConsumDisc,12/31/1985,NULL
+SNA,SNAP ON INC,303646,Snap-on Incorporated,20106020,20,Industrial Machinery,Industrials,Industrials,10/1/2009,NULL
+SPLS,STAPLES INC,34740,"Staples, Inc.",25504040,25,Specialty Stores,Consumer Discretionay,ConsumDisc,4/30/1989,10/16/2017
+SPXC,S P X CORP,274818,SPX Corporation,20106020,20,Industrial Machinery,Industrials,Industrials,5/25/2001,NULL
+STJ,ST JUDE MEDICAL INC,875419,St. James's Place plc,40203010,40,Asset Management & Custody Banks,Financials,None,9/1/2017,NULL
+SUP,SUPERIOR INDUSTRIES INTL INC,306072,"Superior Industries International, Inc.",25101010,25,Auto Parts & Equipment,Consumer Discretionay,ConsumDisc,12/31/1985,NULL
+SWK,STANLEY BLACK & DECKER INC,304977,"Stanley Black & Decker, Inc.",20106020,20,Industrial Machinery,Industrials,Industrials,6/1/2011,NULL
+SWKS,SKYWORKS SOLUTIONS INC,1462309,"Skyworks Solutions, Inc.",45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,NULL
+SXI,STANDEX INTERNATIONAL CORP,304857,Standex International Corporation,20106020,20,Industrial Machinery,Industrials,Industrials,2/1/2013,NULL
+SYK,STRYKER CORP,94614,Stryker Corporation,35101010,35,Health Care Equipment,Health Care,HealthCare,12/31/1985,NULL
+SYY,SYSCO CORP,189096,Sysco Corporation,30101020,30,Food Distributors,Consumer Staple,ConsumStap,6/30/1985,NULL
+T,A T & T INC,100231,AT&T Inc.,50101020,50,Integrated Telecommunication Services,Communication Services,ComServices,6/15/1985,NULL
+TAP,MOLSON COORS BEVERAGE CO,263765,Molson Coors Beverage Company,30201010,30,Brewers,Consumer Staple,ConsumStap,6/15/1985,NULL
+TG,TREDEGAR CORP,189282,Tredegar Corporation,15101010,15,Commodity Chemicals,Materials,Materials,12/1/2011,NULL
+TGNA,TEGNA INC,20571,TEGNA Inc.,50201020,50,Broadcasting,Communication Services,ComServices,10/1/2018,NULL
+THC,TENET HEALTHCARE CORP,107911,Tenet Healthcare Corporation,35102020,35,Health Care Facilities,Health Care,HealthCare,6/15/1985,NULL
+TIF,TIFFANY & CO NEW,35576,Tiffany & Co.,25504040,25,Specialty Stores,Consumer Discretionay,ConsumDisc,1/31/1987,1/7/2021
+TSN,TYSON FOODS INC,190636,"Tyson Foods, Inc.",30202030,30,Packaged Foods & Meats,Consumer Staple,ConsumStap,4/1/2002,NULL
+TSS,TOTAL SYSTEM SERVICES INC,969885,InnoTec TSS AG,20102010,20,Building Products,Industrials,Industrials,11/26/1990,NULL
+TT,TRANE TECHNOLOGIES PLC,280944,Trane Technologies plc,20102010,20,Building Products,Industrials,Industrials,3/3/2020,NULL
+TTI,TETRA TECHNOLOGIES INC,35290,"TETRA Technologies, Inc.",10101020,10,Oil & Gas Equipment & Services,Energy,Energy,9/1/2000,NULL
+TXN,TEXAS INSTRUMENTS INC,140283,Texas Instruments Incorporated,45301020,45,Semiconductors,Information Technology,InfoTech,5/1/2003,NULL
+UHS,UNIVERSAL HEALTH SERVICES INC,36040,"Universal Health Services, Inc.",35102020,35,Health Care Facilities,Health Care,HealthCare,12/31/1985,NULL
+UNF,UNIFIRST CORP,309966,UniFirst Corporation,20201070,20,Diversified Support Services,Industrials,Industrials,8/2/2010,NULL
+UNP,UNION PACIFIC CORP,310078,Union Pacific Corporation,20304010,20,Railroads,Industrials,Industrials,6/15/1985,NULL
+UNT,UNIT CORP,216596631,Unimot S.A.,10102040,10,Oil & Gas Storage & Transportation,Energy,Energy,6/27/2014,NULL
+UVV,UNIVERSAL CORPORATION,191216,Universal Corporation,30203010,30,Tobacco,Consumer Staple,ConsumStap,7/1/1996,NULL
+VAR,VARIAN MEDICAL SYSTEMS INC,4484118,Variscan Mines Limited,15104020,15,Diversified Metals & Mining,Materials,Materials,5/31/2012,NULL
+VFC,V F CORP,191328,V.F. Corporation,25203010,25,"Apparel, Accessories & Luxury Goods",Consumer Discretionay,ConsumDisc,6/15/1985,NULL
+VMC,VULCAN MATERIALS CO,312769,Vulcan Materials Company,15102010,15,Construction Materials,Materials,Materials,12/31/1985,NULL
+VZ,VERIZON COMMUNICATIONS INC,415798,Verizon Communications Inc.,50101020,50,Integrated Telecommunication Services,Communication Services,ComServices,6/15/1985,NULL
+WDFC,WD 40 CO,312452,WD-40 Company,30301010,30,Household Products,Consumer Staple,ConsumStap,9/4/2001,NULL
+WGO,WINNEBAGO INDUSTRIES INC,314960,"Winnebago Industries, Inc.",25102010,25,Automobile Manufacturers,Consumer Discretionay,ConsumDisc,8/31/1985,NULL
+WHR,WHIRLPOOL CORP,314515,Whirlpool Corporation,25201040,25,Household Appliances,Consumer Discretionay,ConsumDisc,6/15/1985,NULL
+WMT,WALMART INC,313055,Walmart Inc.,30101040,30,Hypermarkets & Super Centers,Consumer Staple,ConsumStap,5/1/2003,NULL
+WTS,WATTS WATER TECHNOLOGIES INC,313108,"Watts Water Technologies, Inc.",20106020,20,Industrial Machinery,Industrials,Industrials,6/30/1986,NULL
+WY,WEYERHAEUSER CO,107633,Weyerhaeuser Company,60101080,60,Specialized REITs,Real Estate,RealEstate,9/1/2016,NULL
+XOM,EXXON MOBIL CORP,406338,Exxon Mobil Corporation,10102010,10,Integrated Oil & Gas,Energy,Energy,6/15/1985,NULL
