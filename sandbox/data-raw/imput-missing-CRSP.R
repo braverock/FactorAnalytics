@@ -53,3 +53,59 @@ CRSP_complete <- CRSP_complete[,-c("GICS Descriptor","Start date","End Date")]
 apply(CRSP_complete, 2, function(x) sum(is.na(x)))
 # Results: 0 missing values except "Sector", which has 13524
 
+#################################
+### Save Results to pkg /data ##
+###############################
+# Check for object efficiency, and hack away a few kbs.
+attributes(CRSP_complete)
+# rownames appear to be characters which spend more bites than integers
+str(attr(CRSP_complete, "row.names"))
+class(attr(CRSP_complete, "row.names")) == "integer"
+
+# save results to stocksCRSP, and write to data/ folder.
+stocksCRSP <- CRSP_complete
+save(stocksCRSP, file = "data/stocksCRSP.rda", compress = "xz", 
+     compression_level = 9)
+
+# Explore missing Sectors 
+sum(is.na(stocksCRSP$Sector)) # 13,524 observations with missing sectors
+# Lets see which specific securities
+sectors_missing <- stocksCRSP[is.na(stocksCRSP$Sector),]
+sec_missing_df <- unique(sectors_missing[,c("Company", "TickerLast", 
+                                            "GICS", "Sector")])
+View(sec_missing_df)
+
+
+
+
+#####################################################################
+# Explore legacy mismatches between TickerLast, Ticker and GICS. ##
+###################################################################
+# merge by company name
+load("~/R/FactorAnalytics/sandbox/data/legacy-stocksCRSP-missing-GICS.rda")
+SPGMI_repair <- merge(x = stocksCRSP, y = GICS_govind, 
+                      by.x = "Company",
+                      by.y = "Company Name")
+
+# Ticker mismatches and changes over time
+sum(SPGMI_repair$TickerLast != SPGMI_repair$Ticker.x) # 11,529 aren't equal
+sum(SPGMI_repair$Ticker.y != SPGMI_repair$Ticker.x) # 11,529 aren't equal
+sum(SPGMI_repair$TickerLast != SPGMI_repair$Ticker.y) # all equal
+# which ones observations have changed overtime or aren't equal?
+ticker_mismatch <- SPGMI_repair[SPGMI_repair$Ticker.y != SPGMI_repair$Ticker.x,]
+tkr_mismatch_df <- unique(ticker_mismatch[,c("Company", 
+                                             "TickerLast", "Ticker.x", "Ticker.y", 
+                                             "GICS.x", "GICS.y", 
+                                             "Sector.x", "Sector.y", 
+                                             "Start date", "End Date")])
+View(tkr_mismatch_df)
+
+# any GICS mismatches between stocksCRSP$GICS & GICS_govind$GICS?
+gics_mismatch <- SPGMI_repair[SPGMI_repair$GICS.x != SPGMI_repair$GICS.y,]
+
+gics_mis_df <- unique(gics_mismatch[,c("Company", "TickerLast", "Ticker.x","Ticker.y", 
+                                       "GICS.x", "Sector.x", "GICS.y", "Sector.y", 
+                                       "Start date", "End Date")])
+View(gics_mis_df)
+
+
