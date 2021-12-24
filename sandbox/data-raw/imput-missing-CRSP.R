@@ -1,18 +1,15 @@
 ############
 # Load data #
 ##############
-# load existing SPGMI data
-data(factorsSPGMI)
-# load the GICS file
+# load existing CRSP data
+data("stocksCRSP")
 library(data.table)
 GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI - Tom (only values).csv',
                      skip=2)
-#########################
+
 # Format and clean GICS #
-#########################
 GICS_govind$GICS <- as.character(GICS_govind$`GICS code`)
 GICS_govind$Sector <- ifelse(GICS_govind$Sector == "", NA, GICS_govind$Sector)
-
 GICS_govind$`Start date` <- as.Date(GICS_govind$`Start date`,
                                     format = "%m/%d/%Y")
 GICS_govind$`End Date` <- as.Date(GICS_govind$`End Date`,
@@ -20,66 +17,70 @@ GICS_govind$`End Date` <- as.Date(GICS_govind$`End Date`,
 # remove less relevant descriptors variables
 GICS_govind <- GICS_govind[,-c("CIQ Company ID", "CIQ Company Name")]
 
-# tests for completeness #
-sum(unique(factorsSPGMI$TickerLast) %in% unique(GICS_govind$Ticker))
-setdiff(unique(GICS_govind$Ticker),unique(factorsSPGMI$TickerLast))
+# Initial tests for completeness #
+sum(unique(stocksCRSP$TickerLast) %in% unique(GICS_govind$Ticker))
+setdiff(unique(GICS_govind$Ticker), unique(stocksCRSP$TickerLast))
 
-  ##############################################
- # Imput GICS into missing factorsSPGMI$GICS #
+##############################################
+# Imput GICS into missing stocksCRSP$GICS #
 ############################################
 
-SPGMI_noGICS <- factorsSPGMI[is.na(factorsSPGMI$GICS), ]
+CRSP_noGICS <- stocksCRSP[is.na(stocksCRSP$GICS), ]
 # merge on the two variables that are complete
-SPGMI_repair <- merge(x = SPGMI_noGICS, y = GICS_govind, 
+CRSP_repair <- merge(x = CRSP_noGICS, y = GICS_govind, 
                       by.x = c("TickerLast","Company"),
-                      by.y = c("Ticker","Company Name"))
+                      by.y = c("Ticker","Company Name")
+                     )
 
 # test the results of the process for NAs on the right GICS_govind side. 
-sum(is.na(SPGMI_repair$GICS.x)) # should be 13800
-sum(is.na(SPGMI_repair$Sector.x)) # should be 13800
-sum(is.na(SPGMI_repair$GICS.y)) # should be 13800
-sum(is.na(SPGMI_repair$Sector.y)) # should be 0
+sum(is.na(CRSP_repair$GICS.x)) # should be 13800
+sum(is.na(CRSP_repair$Sector.x)) # should be 13800
+sum(is.na(CRSP_repair$GICS.y)) # should be 0
+sum(is.na(CRSP_repair$Sector.y)) # should be 13524
 
 # drop merged GICS.x and Sector.x of all NAs
-SPGMI_repair <- SPGMI_repair[,-c("GICS.x","Sector.x")]
+CRSP_repair <- CRSP_repair[,-c("GICS.x","Sector.x")]
 # rename GICS.y and Sector.y to GICS and Sector
-colnames(SPGMI_repair)[which(colnames(SPGMI_repair) =='GICS.y')] <- "GICS"
-colnames(SPGMI_repair)[which(colnames(SPGMI_repair) =='Sector.y')] <- "Sector"
-# With formatted columns, now row bind onto factorsSPGMI data that is complete
- SPGMI_allGICS <- factorsSPGMI[!is.na(factorsSPGMI$GICS), ]
-SPGMI_complete <- rbind(SPGMI_allGICS, SPGMI_repair, fill=TRUE)
- # Return names and order or original factorsSPGMI state
- # drop left over columns from GICS govind.  
-vars <- !names(SPGMI_complete) %in% 
-         c("GICS code", "2 digit GICS Coide", "GICS Descriptor", 
-           "Factor Analytics Sector Name", "Start date","End Date")
-SPGMI_complete <- SPGMI_complete[,..vars]
+colnames(CRSP_repair)[which(colnames(CRSP_repair) =='GICS.y')] <- "GICS"
+colnames(CRSP_repair)[which(colnames(CRSP_repair) =='Sector.y')] <- "Sector"
+# With formatted columns, now row bind onto stocksCRSP data that is complete
+CRSP_allGICS <- stocksCRSP[!is.na(stocksCRSP$GICS), ]
+CRSP_complete <- rbind(CRSP_allGICS, CRSP_repair, fill=TRUE)
+# Return names and order or original stocksCRSP state
+# drop "GICS Descriptor" "Start date" "End Date"  
+vars <- !names(CRSP_complete) %in% 
+  c("GICS code", "2 digit GICS Coide", "GICS Descriptor", 
+    "Factor Analytics Sector Name", "Start date","End Date")
+CRSP_complete <- CRSP_complete[,..vars]
 
-
- # test the results of the process for NAs #
-apply(SPGMI_complete, 2, function(x) sum(is.na(x)))
-# Results: 0 missing values 
+# test the results of the process for NAs #
+apply(CRSP_complete, 2, function(x) sum(is.na(x)))
 
 #################################
 ### Save Results to pkg /data ##
 ###############################
 # Check for object efficiency, and hack away a few kbs.
-attributes(SPGMI_complete)
-# check that rownames are not chars
-str(attr(SPGMI_complete, "row.names"))
-class(attr(SPGMI_complete, "row.names")) == "integer"
+attributes(CRSP_complete)
+# rownames appear to be characters which spend more bites than integers
+str(attr(CRSP_complete, "row.names"))
+class(attr(CRSP_complete, "row.names")) == "integer"
 
-# save results to factorsSPGMI, and write to data/ folder.
-factorsSPGMI <- SPGMI_complete
-save(factorsSPGMI, file = "data/factorsSPGMI.rda", compress = "xz", 
+# save results to stocksCRSP, and write to data/ folder.
+stocksCRSP <- CRSP_complete
+save(stocksCRSP, file = "data/stocksCRSP.rda", compress = "xz", 
      compression_level = 9)
+
+# Explore missing Sectors 
+sum(is.na(stocksCRSP$Sector)) # 0 observations with missing sectors
+
+
 
 #####################################################################
 # Explore legacy mismatches between TickerLast, Ticker and GICS. ##
 ###################################################################
 # merge by company name
-load("~/R/FactorAnalytics/sandbox/data/legacay-factorsSPGMI-missing-GICS.rda")
-SPGMI_repair <- merge(x = factorsSPGMI, y = GICS_govind, 
+load("~/R/FactorAnalytics/sandbox/data/legacy-stocksCRSP-missing-GICS.rda")
+SPGMI_repair <- merge(x = stocksCRSP, y = GICS_govind, 
                       by.x = "Company",
                       by.y = "Company Name")
 
@@ -96,11 +97,12 @@ tkr_mismatch_df <- unique(ticker_mismatch[,c("Company",
                                              "Start date", "End Date")])
 View(tkr_mismatch_df)
 
-# any GICS mismatches between factorsSPGMI$GICS & GICS_govind$GICS?
+# any GICS mismatches between stocksCRSP$GICS & GICS_govind$GICS?
 gics_mismatch <- SPGMI_repair[SPGMI_repair$GICS.x != SPGMI_repair$GICS.y,]
 
 gics_mis_df <- unique(gics_mismatch[,c("Company", "TickerLast", "Ticker.x","Ticker.y", 
                                        "GICS.x", "Sector.x", "GICS.y", "Sector.y", 
                                        "Start date", "End Date")])
 View(gics_mis_df)
+
 
