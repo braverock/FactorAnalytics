@@ -209,7 +209,7 @@ methods.
 }
 \examples{
 
-#' # load data 
+# load data 
 data(stocksCRSP)
 data(factorsSPGMI)
 
