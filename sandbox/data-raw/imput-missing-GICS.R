@@ -1,17 +1,14 @@
 ############
 # Load data #
 ##############
-
 # load existing SPGMI data
 data(factorsSPGMI)
 # load the GICS file
 library(data.table)
 GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI.csv')
-
 #########################
 # Format and clean GICS #
 #########################
-
 GICS_govind$GICS <- as.character(GICS_govind$GICS)
 GICS_govind$Sector <- ifelse(GICS_govind$Sector == "", NA, GICS_govind$Sector)
 
@@ -22,9 +19,7 @@ GICS_govind$`End Date` <- as.Date(GICS_govind$`End Date`,
 # remove less relevant descriptors variables
 GICS_govind <- GICS_govind[,-c("CIQ Company ID", "CIQ Company Name")]
 
-##########################
 # tests for completeness #
-##########################
 sum(unique(factorsSPGMI$TickerLast) %in% unique(GICS_govind$Ticker))
 setdiff(unique(GICS_govind$Ticker),unique(factorsSPGMI$TickerLast))
 
@@ -57,11 +52,13 @@ SPGMI_complete <- rbind(SPGMI_allGICS, SPGMI_repair, fill=TRUE)
 SPGMI_complete <- SPGMI_complete[,-c("GICS Descriptor","Start date","End Date")]
 
  # test the results of the process for NAs #
-
 apply(SPGMI_complete, 2, function(x) sum(is.na(x)))
 # Results: 0 missing values except "Sector", which has 13524
 
-# Check for object efficiency, and hack away a few kbs where you can!
+#################################
+### Save Results to pkg /data ##
+###############################
+# Check for object efficiency, and hack away a few kbs.
 attributes(SPGMI_complete)
 # rownames appear to be characters which spend more bites than integers
 str(row.names(SPGMI_complete))
@@ -74,14 +71,23 @@ factorsSPGMI <- SPGMI_complete
 save(factorsSPGMI, file = "data/factorsSPGMI.rda", compress = "xz", 
      compression_level = 9)
 
-#####################################################################
-# Explore mismatches between TickerLast, Ticker.x/y and GICS.x/y ##
-###################################################################
+# Explore missing Sectors 
+sum(is.na(factorsSPGMI$Sector)) # 13,524 observations with missing sectors
+# Lets see which specific securities
+sectors_missing <- factorsSPGMI[is.na(factorsSPGMI$Sector),]
+sec_missing_df <- unique(sectors_missing[,c("Company", "TickerLast", 
+                                             "GICS", "Sector")])
+View(sec_missing_df)
 
+
+#####################################################################
+# Explore legacy mismatches between TickerLast, Ticker and GICS. ##
+###################################################################
 # merge by company name
+load("~/R/FactorAnalytics/sandbox/data/legacay-factorsSPGMI-missing-GICS.rda")
 SPGMI_repair <- merge(x = factorsSPGMI, y = GICS_govind, 
-                      by.x = c("Company"),
-                      by.y = c("Company Name"))
+                      by.x = "Company",
+                      by.y = "Company Name")
 
 # Ticker mismatches and changes over time
 sum(SPGMI_repair$TickerLast != SPGMI_repair$Ticker.x) # 11,529 aren't equal
@@ -100,13 +106,28 @@ View(tkr_mismatch_df)
 gics_mismatch <- SPGMI_repair[SPGMI_repair$GICS.x != SPGMI_repair$GICS.y,]
 
 gics_mis_df <- unique(gics_mismatch[,c("Company", "TickerLast", "Ticker.x","Ticker.y", 
-                                "GICS.x", "Sector.x", "GICS.y", "Sector.y", 
-                                 "Start date", "End Date")])
+                                       "GICS.x", "Sector.x", "GICS.y", "Sector.y", 
+                                       "Start date", "End Date")])
 View(gics_mis_df)
 
   ########
  # CRSP #
 ########
   
+data("stocksCRSP")
+library(data.table)
+GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI.csv')
+
+# Format and clean GICS #
+GICS_govind$GICS <- as.character(GICS_govind$GICS)
+GICS_govind$Sector <- ifelse(GICS_govind$Sector == "", NA, GICS_govind$Sector)
+GICS_govind$`Start date` <- as.Date(GICS_govind$`Start date`,
+                                    format = "%m/%d/%Y")
+GICS_govind$`End Date` <- as.Date(GICS_govind$`End Date`,
+                                  format = "%m/%d/%Y")
+# remove less relevant descriptors variables
+GICS_govind <- GICS_govind[,-c("CIQ Company ID", "CIQ Company Name")]
+
+
   sum(unique(stocksCRSP$TickerLast) %in% unique(GICS_govind$Ticker))
-setdiff(unique(GICS_govind$Ticker), unique(SPGMI_allGICS$TickerLast))
+setdiff(unique(GICS_govind$Ticker), unique(stocksCRSP$TickerLast))
