@@ -65,11 +65,12 @@ apply(SPGMI_complete, 2, function(x) sum(is.na(x)))
 attributes(SPGMI_complete)
 # rownames appear to be characters which spend more bites than integers
 str(row.names(SPGMI_complete))
-# reassign as integers
+# reassign as integers and check.
 attr(SPGMI_complete, "row.names") <- as.integer(row.names(SPGMI_complete))
+class(attr(SPGMI_complete, "row.names")) == "integer"
+
 # save results to factorsSPGMI, and write to data/ folder.
 factorsSPGMI <- SPGMI_complete
-
 save(factorsSPGMI, file = "data/factorsSPGMI.rda", compress = "xz", 
      compression_level = 9)
 
