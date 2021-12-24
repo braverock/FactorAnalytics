@@ -4,10 +4,11 @@
 # load existing CRSP data
 data("stocksCRSP")
 library(data.table)
-GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI.csv')
+GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI - Tom (only values).csv',
+                     skip=2)
 
 # Format and clean GICS #
-GICS_govind$GICS <- as.character(GICS_govind$GICS)
+GICS_govind$GICS <- as.character(GICS_govind$`GICS code`)
 GICS_govind$Sector <- ifelse(GICS_govind$Sector == "", NA, GICS_govind$Sector)
 GICS_govind$`Start date` <- as.Date(GICS_govind$`Start date`,
                                     format = "%m/%d/%Y")
@@ -47,11 +48,13 @@ CRSP_allGICS <- stocksCRSP[!is.na(stocksCRSP$GICS), ]
 CRSP_complete <- rbind(CRSP_allGICS, CRSP_repair, fill=TRUE)
 # Return names and order or original stocksCRSP state
 # drop "GICS Descriptor" "Start date" "End Date"  
-CRSP_complete <- CRSP_complete[,-c("GICS Descriptor","Start date","End Date")]
+vars <- !names(CRSP_complete) %in% 
+  c("GICS code", "2 digit GICS Coide", "GICS Descriptor", 
+    "Factor Analytics Sector Name", "Start date","End Date")
+CRSP_complete <- CRSP_complete[,..vars]
 
 # test the results of the process for NAs #
 apply(CRSP_complete, 2, function(x) sum(is.na(x)))
-# Results: 0 missing values except "Sector", which has 13524
 
 #################################
 ### Save Results to pkg /data ##
@@ -68,13 +71,7 @@ save(stocksCRSP, file = "data/stocksCRSP.rda", compress = "xz",
      compression_level = 9)
 
 # Explore missing Sectors 
-sum(is.na(stocksCRSP$Sector)) # 13,524 observations with missing sectors
-# Lets see which specific securities
-sectors_missing <- stocksCRSP[is.na(stocksCRSP$Sector),]
-sec_missing_df <- unique(sectors_missing[,c("Company", "TickerLast", 
-                                            "GICS", "Sector")])
-View(sec_missing_df)
-
+sum(is.na(stocksCRSP$Sector)) # 0 observations with missing sectors
 
 
 
