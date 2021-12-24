@@ -5,11 +5,12 @@
 data(factorsSPGMI)
 # load the GICS file
 library(data.table)
-GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI.csv')
+GICS_govind <- fread('sandbox/data-raw/stocksTickers310GICSgovindSPGMI - Tom (only values).csv',
+                     skip=2)
 #########################
 # Format and clean GICS #
 #########################
-GICS_govind$GICS <- as.character(GICS_govind$GICS)
+GICS_govind$GICS <- as.character(GICS_govind$`GICS code`)
 GICS_govind$Sector <- ifelse(GICS_govind$Sector == "", NA, GICS_govind$Sector)
 
 GICS_govind$`Start date` <- as.Date(GICS_govind$`Start date`,
@@ -36,8 +37,8 @@ SPGMI_repair <- merge(x = SPGMI_noGICS, y = GICS_govind,
 # test the results of the process for NAs on the right GICS_govind side. 
 sum(is.na(SPGMI_repair$GICS.x)) # should be 13800
 sum(is.na(SPGMI_repair$Sector.x)) # should be 13800
-sum(is.na(SPGMI_repair$GICS.y)) # should be 0
-sum(is.na(SPGMI_repair$Sector.y)) # should be 13524
+sum(is.na(SPGMI_repair$GICS.y)) # should be 13800
+sum(is.na(SPGMI_repair$Sector.y)) # should be 0
 
 # drop merged GICS.x and Sector.x of all NAs
 SPGMI_repair <- SPGMI_repair[,-c("GICS.x","Sector.x")]
@@ -48,37 +49,30 @@ colnames(SPGMI_repair)[which(colnames(SPGMI_repair) =='Sector.y')] <- "Sector"
  SPGMI_allGICS <- factorsSPGMI[!is.na(factorsSPGMI$GICS), ]
 SPGMI_complete <- rbind(SPGMI_allGICS, SPGMI_repair, fill=TRUE)
  # Return names and order or original factorsSPGMI state
- # drop "GICS Descriptor" "Start date" "End Date"  
-SPGMI_complete <- SPGMI_complete[,-c("GICS Descriptor","Start date","End Date")]
+ # drop left over columns from GICS govind.  
+vars <- !names(SPGMI_complete) %in% 
+         c("GICS code", "2 digit GICS Coide", "GICS Descriptor", 
+           "Factor Analytics Sector Name", "Start date","End Date")
+SPGMI_complete <- SPGMI_complete[,..vars]
+
 
  # test the results of the process for NAs #
 apply(SPGMI_complete, 2, function(x) sum(is.na(x)))
-# Results: 0 missing values except "Sector", which has 13524
+# Results: 0 missing values 
 
 #################################
 ### Save Results to pkg /data ##
 ###############################
 # Check for object efficiency, and hack away a few kbs.
 attributes(SPGMI_complete)
-# rownames appear to be characters which spend more bites than integers
-str(row.names(SPGMI_complete))
-# reassign as integers and check.
-attr(SPGMI_complete, "row.names") <- as.integer(row.names(SPGMI_complete))
+# check that rownames are not chars
+str(attr(SPGMI_complete, "row.names"))
 class(attr(SPGMI_complete, "row.names")) == "integer"
 
 # save results to factorsSPGMI, and write to data/ folder.
 factorsSPGMI <- SPGMI_complete
 save(factorsSPGMI, file = "data/factorsSPGMI.rda", compress = "xz", 
      compression_level = 9)
-
-# Explore missing Sectors 
-sum(is.na(factorsSPGMI$Sector)) # 13,524 observations with missing sectors
-# Lets see which specific securities
-sectors_missing <- factorsSPGMI[is.na(factorsSPGMI$Sector),]
-sec_missing_df <- unique(sectors_missing[,c("Company", "TickerLast", 
-                                             "GICS", "Sector")])
-View(sec_missing_df)
-
 
 #####################################################################
 # Explore legacy mismatches between TickerLast, Ticker and GICS. ##
