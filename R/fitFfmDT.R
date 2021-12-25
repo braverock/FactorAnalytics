@@ -105,7 +105,7 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     # this would produce 0 variance whcih causes the weight to blow up iin 
     # WLS...  I check for the number of companies per date becuase we fit a model 
     # for each day... 
-    if (min( data[ , .N, by = c(date.var, obj$exposures.char)]$N) == 1 )
+    if (min(  obj$dataDT[ , .N, by = c(date.var, obj$exposures.char)]$N) == 1 )
         stop("
              There is at least one ", obj$exposures.char, " that has one observation which will cause a 
              problem with computing residual variance.")
