@@ -53,8 +53,12 @@ selectCRSP <- function(stocks = stocksCRSP,
   stockDat <- stockDat[, .SD , .SDcols = colNames]
   stockDat <- stockDat[!is.na(Sector)] # 250 stocks for now
   stockDat <- stockDat[CapGroup == capChoice]
-  stockDat <- stockDat[Date >= dateSet[1] & Date <= dateSet[2]]
-  tickerSet <- unique(stockDat[ ,TickerLast])[1:Nstocks]
-  stockDat <- stockDat[TickerLast %in% tickerSet, ]
+  if(!is.null(dateSet)){
+    stockDat <- stockDat[Date >= dateSet[1] & Date <= dateSet[2]]
+  }
+  if(!is.null(Nstocks)){
+    tickerSet <- unique(stockDat[ ,TickerLast])[1:Nstocks]
+    stockDat <- stockDat[TickerLast %in% tickerSet, ]
+  }
   stockDat
 }
