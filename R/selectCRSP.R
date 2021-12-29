@@ -4,10 +4,12 @@
 #' January 1993 and December 2015
 #'
 #' @details
-#' The date range is specified by a beginning Date object and an ending Date 
-#' object.  Default values for the stocks component names,
-#' marketcap group, and number of stocks in the marketcap group can be
-#' changed by the user  
+#' The default values for dateSet, stockItems, capChoice and Nstocks can be
+#' changed by the user. A user choice dateSet = NULL results selecting stocks
+#' for the entire stocksCRSP time range from 1993-01-31 to 2015-12-32. A user
+#' choice Nstocks = NULL, results in the selecting the maximum number of stocks
+#' availabe subject to the value of capChoice. NOTE: In next revision of this
+#' data set, the possible values of capChoice will be extended.
 #' 
 #' @importFrom utils globalVariables
 #' 
