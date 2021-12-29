@@ -24,7 +24,7 @@
 #' @param Nstocks Number of stocks in one of the marketcap groups, not
 #' to exceed the number of stocks in the chosen group.
 #'
-#' @return A merged data.frame consisting of selected stocks and factors
+#' @return A merged data.table consisting of selected stocks and factors
 #' 
 #'@examples
 #'data(stocksCRSP)

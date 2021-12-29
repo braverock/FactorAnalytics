@@ -36,7 +36,7 @@ of factors data.table}
 to exceed the number of stocks in the chosen group.}
 }
 \value{
-A merged data.frame consisting of selected stocks and factors
+A merged data.table consisting of selected stocks and factors
 }
 \description{
 Select and merge a set of CRSP stocks and SPGMI factors and
