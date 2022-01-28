@@ -20,6 +20,11 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.statet.docmlet.resourceProjects.WikitextBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>de.walware.statet.base.StatetNature</nature>
@@ -27,5 +32,6 @@
 		<nature>org.eclipse.statet.ide.resourceProjects.Statet</nature>
 		<nature>org.eclipse.statet.r.resourceProjects.R</nature>
 		<nature>org.eclipse.statet.docmlet.resourceProjects.Tex</nature>
+		<nature>org.eclipse.statet.docmlet.resourceProjects.Wikitext</nature>
 	</natures>
 </projectDescription>
