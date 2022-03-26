@@ -123,5 +123,32 @@ fmCov.sfm <- function(object, use="pairwise.complete.obs", ...) {
 fmCov.ffm <- function(object, use="pairwise.complete.obs", ...) {
   
   # already computed via fitFfm function
-  return(object$return.cov)
-}
+	
+	# get parameters and factors from factor model
+	beta <- as.matrix(object$beta)
+	# convert NAs to 0 to enable matrix multiplication
+	beta[is.na(beta)] <- 0
+	sig2.e = object$resid.var
+	factor <- as.matrix(object$data[, object$factor.names])
+	factor.cov = object$factor.cov
+	# factor covariance matrix 
+	if (is.null(factor.cov)) {
+		factor.cov = cov(factor, use=use, ...) 
+	} else {
+		identical(dim(factor.cov), as.integer(c(ncol(factor), ncol(factor))))
+	}
+	
+	# residual covariance matrix D
+	if (length(sig2.e) > 1) {
+		D.e = diag(sig2.e)
+	} else {
+		D.e =  as.vector(sig2.e)
+	}
+	
+	cov.fm = beta %*% factor.cov %*% t(beta) + D.e
+	
+	if (any(diag(chol(cov.fm))==0)) {
+		warning("Covariance matrix is not positive definite!")
+	}
+	
+	return(cov.fm)}
