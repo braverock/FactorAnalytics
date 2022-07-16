@@ -23,31 +23,31 @@ License: GPL-2
 Depends: 
     R (>= 3.5)
 Imports:
-    data.table,
-    xts,
-    zoo,
-    PerformanceAnalytics,
-    leaps,
-    lars,
-    sandwich,
-    lattice,
-    sn,
     boot,
-    foreach,
-    parallel,
+    data.table,
     doSNOW,
+    foreach,
+    lars,
+    lattice,
+    leaps,
+    parallel,
+    PerformanceAnalytics,
     RCurl,
+    RobStatTM,
+    robustbase,
+    sandwich,
+    sn,
     tseries,
-	robustbase,
-	RobStatTM
+    xts,
+    zoo
 Suggests:
-    R.rsp, 
-    tinytest,
     corrplot,
+    HH,
     lmtest,
+    R.rsp,
     rugarch,
     strucchange,
-    HH
+    tinytest
 VignetteBuilder: R.rsp
 URL: https://github.com/braverock/FactorAnalytics
 RoxygenNote: 7.1.2
