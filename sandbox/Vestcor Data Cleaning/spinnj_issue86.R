@@ -37,8 +37,9 @@ stocksCRSP_tmp$Sector <- sector_table$GoodSectors[match(stocksCRSP_tmp$Sector,se
 unique(factorsSPGMI_tmp$Sector) # contains 11 sectors with no dupes
 unique(stocksCRSP_tmp$Sector) # contains 11 sectors with no dupes
 
-# save data (not yet run)
-#factorsSPGMI <- factorsSPGMI_tmp
-#stocksCRSP <- stocksCRSP_tmp
-#save(factorsSPGMI,file="./data/factorsSPGMI.rda")
-#save(stocksCRSP,file="./data/stocksCRSP.rda")
+# save data
+factorsSPGMI <- factorsSPGMI_tmp
+stocksCRSP <- stocksCRSP_tmp
+# added compression args, using xz algorithm of the highest level
+save(factorsSPGMI, file="./data/factorsSPGMI.rda", compress = "xz", compression_level = 9)
+save(stocksCRSP, file="./data/stocksCRSP.rda", compress = "xz", compression_level = 9)
