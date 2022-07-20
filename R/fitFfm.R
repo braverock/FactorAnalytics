@@ -300,7 +300,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   
   # check number & type of exposure; convert character exposures to dummy vars
-  which.numeric <- sapply(data[,exposure.vars,drop=FALSE], is.numeric)
+  which.numeric <- sapply(data.frame(data)[, c(exposure.vars), drop=FALSE], is.numeric)
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
   if ((length(exposures.char) > 1) && !addIntercept) {
