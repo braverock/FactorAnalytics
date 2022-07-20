@@ -80,7 +80,8 @@
 #' @param z.score method for exposure standardization; one of "none", 
 #' "crossSection", or "timeSeries". Default is \code{"none"}.
 #' @param addIntercept logical; If \code{TRUE}, intercept is added in the 
-#' exposure matrix. Default is \code{FALSE},
+#' exposure matrix. Note, if 2 or more variables are categorical, this must be
+#' false. Default is \code{FALSE}.
 #' @param lagExposures logical; If \code{TRUE}, the style exposures in the 
 #' exposure matrix are lagged by one time period. Default is \code{TRUE},
 #' @param resid.scaleType character; Only valid when fit.method is set to WLS or 
@@ -174,33 +175,45 @@
 #'
 #' @examples
 #'
+#' # load data 
+#'data(stocksCRSP)
+#'data(factorsSPGMI)
+#'
+#'stocks_factors <- selectCRSPandSPGMI(stocks = stocksCRSP, factors = factorsSPGMI,
+#'                                     dateSet = c("2006-01-31", "2010-12-31"), 
+#'                                     stockItems = c("Date", "TickerLast", 
+#'                                                    "CapGroup", "Sector", 
+#'                                                    "Return", "Ret13WkBill",
+#'                                                    "mktIndexCRSP"),
+#'                                     factorItems = c("BP", "LogMktCap", "SEV"), 
+#'                                     capChoice = "SmallCap",
+#'                                     Nstocks = 20)
 #' 
-#' # Load fundamental and return data
-#'  data("factorDataSetDjia5Yrs")
+#' # fit a fundamental factor model with style variables BP and LogMktCap
 #' 
-#' # fit a fundamental factor model
-#' exposure.vars <- c("P2B", "MKTCAP")
-#' fit <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'               date.var="DATE", exposure.vars=exposure.vars)
-#' names(fit)
+#'fundamental_model <- fitFfm(data = stocks_factors, 
+#'                            asset.var = "TickerLast", 
+#'                            ret.var = "Return", 
+#'                            date.var = "Date", 
+#'                            exposure.vars = c("BP", "LogMktCap")
+#'                            )
 #' 
-#' # fit a Industry Factor Model with Intercept
-#' exposure.vars <- c("SECTOR","P2B")
-#' fit1 <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'                date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
-#'                
-#' # Fit a SECTOR+COUNTRY+Style model with Intercept
-#' # Create a COUNTRY column with just 3 countries
+#'   summary(fundamental_model)
 #' 
-#'  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ),rep("GERMANY", 1 )), 11), 60)
-#'  exposure.vars= c("SECTOR", "COUNTRY","P2B", "MKTCAP")
+#' # Fit a Fundamental Sector Factor Model with Intercept
 #'  
-#'  # fit.MICM <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", ret.var="RETURN", 
-#'  #                 date.var="DATE", exposure.vars=exposure.vars, addIntercept=TRUE)
+#'  sector_model <- fitFfm(data = stocks_factors, 
+#'                         asset.var = "TickerLast", 
+#'                         ret.var = "Return", 
+#'                         date.var = "Date", 
+#'                         exposure.vars = c("Sector", "BP"),
+#'                         addIntercept = TRUE)
+#' 
+#'  summary(sector_model)
+#' 
+#'                
 #' 
 #' @export
-
-
 fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars, 
                    weight.var = NULL, 
                    fit.method = c("LS","WLS","Rob","W-Rob"), 
@@ -289,22 +302,23 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   
   # order data.frame by date.var
   spec1 <- specFfm(data = data, asset.var = asset.var, ret.var = ret.var, 
-                   date.var = date.var, exposure.vars = exposure.vars,weight.var = weight.var,
+                   date.var = date.var, exposure.vars = exposure.vars,
+                   weight.var = weight.var,
                    addIntercept = addIntercept , rob.stats = rob.stats)
   
   # Standardize the returns if stdReturn = TRUE
   if (stdReturn) {
-    standardizeReturns(specObj = spec1, GARCH.params = GARCH.params )
+    standardizeReturns(specObj = spec1, GARCH.params = GARCH.params)
   }
   
   
   
   # check number & type of exposure; convert character exposures to dummy vars
-  which.numeric <- sapply(data.frame(data)[, c(exposure.vars), drop=FALSE], is.numeric)
+  which.numeric <- sapply(data.frame(data)[,exposure.vars,drop=FALSE], is.numeric)
   exposures.num <- exposure.vars[which.numeric]
   exposures.char <- exposure.vars[!which.numeric]
   if ((length(exposures.char) > 1) && !addIntercept) {
-    stop("Invalid args: two categorical factor model without Market(Interecept) is currently not handled")
+    stop("Invalid args: two categorical factor model with Market(Interecept) is currently not handled")
   }
   
   if (length(exposures.char) > 2)
@@ -319,7 +333,7 @@ fitFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
   }
   
   
-  spec1 = standardizeExposures(specObj = spec1, Std.Type = z.score  , lambda = lambda )
+  spec1 = standardizeExposures(specObj = spec1, Std.Type = z.score, lambda = lambda)
   
   
   

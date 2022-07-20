@@ -49,35 +49,35 @@
 #' 
 #' ## First load CRSP and SPGMI data sets
 #' data(stocksCRSP)
-#' data(scoresSPGMI)
-#' 
+#' data(factorsSPGMI)
 #' ## merge by intersection variables
-#' variables_intersect <- intersect(names(stocksCRSP), names(scoresSPGMI))
-#' CRSP_SPGMI <- merge(stocksCRSP, scoresSPGMI, by = variables_intersect)
-#' 
+#' intersecting_vars <- intersect(names(stocksCRSP), names(factorsSPGMI))
+#'    stocks_factors <- merge(stocksCRSP, factorsSPGMI, by = intersecting_vars)
 #' ## Remove observations with missing Sector/GICS 
-#' NA_index <- is.na(CRSP_SPGMI$GICS) & is.na(CRSP_SPGMI$Sector)
-#' CRSP_SPGMI <- CRSP_SPGMI[!NA_index]  
-#' 
+#'       NA_index <- is.na(stocks_factors$GICS) & is.na(stocks_factors$Sector)
+#' stocks_factors <- stocks_factors[!NA_index]  
 #' ## Setindex for faster processing
-#' data.table::setindexv(CRSP_SPGMI, c("Date","TickerLast"))
-#'                                                      
+#' data.table::setindexv(stocks_factors, c("Date","TickerLast"))
+#'
+#'                                                       
 #' # fit a fundamental factor model
 #' 
-#' exposure.vars = c("Sector","AnnVol12M","BP", "EP", "LogMktCap", "PM12M1M")
+#' exposure_vars = c("Sector", "AnnVol12M", "BP", "EP", "LogMktCap", "PM12M1M")
 #' 
-#' fit.cross <- fitFfm(data = CRSP_SPGMI, 
-#'               exposure.vars = exposure.vars,
-#'               date.var = "Date", ret.var = "Return", asset.var = "TickerLast", 
-#'               fit.method="WLS", z.score = "crossSection")
+#' fit.cross <- fitFfm(data = stocks_factors, 
+#'                     asset.var = "TickerLast", 
+#'                     ret.var = "Return", 
+#'                     date.var = "Date", 
+#'                     exposure.vars = exposure_vars,
+#'                     fit.method = "W-Rob", 
+#'                     z.score = "crossSection")
 #'               
-#' decomp = portVolDecomp(fit.cross) 
+#' decomp <- portVolDecomp(fit.cross)
+#' 
 #' # get the factor contributions of risk 
 #' decomp             
 #'  
 #' @export    
-
-
 portVolDecomp <- function(object, ...){
   # check input object validity
   if (!inherits(object, c("tsfm", "ffm"))) {

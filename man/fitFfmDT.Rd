@@ -59,3 +59,10 @@ components:
 \description{
 This function fits a fundamental factor model
 }
+\details{
+this function operates on the data inside the specObj fits a fundamental factor
+model to the data
+}
+\seealso{
+\code{\link{specFfm()}} for information on the definition of the specFfm object.
+}

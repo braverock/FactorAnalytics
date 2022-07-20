@@ -26,3 +26,10 @@ the ffM spec object with exposures z-scored
 \description{
 function to calculate z-scores for numeric exposure using weights weight.var
 }
+\details{
+this function operates on the data inside the specObj and applies a 
+standardization to it.  The user can choose CrossSectional or timeSeries standardization
+}
+\seealso{
+\code{\link{specFfm()}} for information on the definition of the specFfm object.
+}

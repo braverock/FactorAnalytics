@@ -1,108 +1,108 @@
-# on:
-#  push:
-#    branches: [main, master]
-#  pull_request:
-#    branches: [main, master]
+ on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
-#name: R-CMD-check
+name: R-CMD-check
 
-#jobs:
-#  R-CMD-check:
-#    runs-on: ${{ matrix.config.os }}
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
 
-#    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        config:
-#          - {os: macOS-latest,   r: 'release'}
-#          - {os: windows-latest, r: 'release'}
-#          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-#          - {os: ubuntu-latest,   r: 'release'}
-#          - {os: ubuntu-latest,   r: 'oldrel-1'}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: macOS-latest,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,   r: 'release'}
+          - {os: ubuntu-latest,   r: 'oldrel-1'}
         
-#    env:
-#      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-#      R_KEEP_PKG_SOURCE: yes
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
 
-#    steps:
-#      - name: Notify slack success
-#        if: success()
-#        id: slack # IMPORTANT: reference this step ID value in future Slack steps
-#        env:
-#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-#        uses: voxmedia/github-action-slack-notify-build@v1
-#        with:
-#          channel_id: C01MS7ECQ8Z
-#          status: STARTING
-#          color: warning
+    steps:
+      - name: Notify slack success
+        if: success()
+        id: slack  IMPORTANT: reference this step ID value in future Slack steps
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: C01MS7ECQ8Z
+          status: STARTING
+          color: warning
           
-#      - name: Check for and install Git Large File Storage (LFS)
-#        run: |
-#          git lfs install  
+      - name: Check for and install Git Large File Storage (LFS)
+        run: |
+          git lfs install  
  
-#      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       
-#      - name: generate Git Large File Storage (lfs) file list
-#        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-#      - name: restore lfs cache
-#        uses: actions/cache@v2
-#        id: lfs-cache
-#        with:
-#          path: .git/lfs
-#          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
-#      - name: pull lfs files
-#        run: git lfs pull 
+      - name: generate Git Large File Storage (lfs) file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+      - name: restore lfs cache
+        uses: actions/cache@v2
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
+      - name: pull lfs files
+        run: git lfs pull 
       
-#      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@v1
       
-#      - uses: r-lib/actions/setup-tinytex@v1
-#      - run: tlmgr --version
-#      - name: Install Ghostscript on Linux
-#        if: runner.os == 'Linux'
-#        run: sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes ghostscript
-#      - name: Install Ghostscript on macOS
-#        if: runner.os == 'macOS'
-#        run: brew install ghostscript
-#      - name: Install Ghostscript on Windows
-#        if: runner.os == 'Windows'
-#        run: choco install ghostscript --no-progress
+      - uses: r-lib/actions/setup-tinytex@v1
+      - run: tlmgr --version
+      - name: Install Ghostscript on Linux
+        if: runner.os == 'Linux'
+        run: sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes ghostscript
+      - name: Install Ghostscript on macOS
+        if: runner.os == 'macOS'
+        run: brew install ghostscript
+      - name: Install Ghostscript on Windows
+        if: runner.os == 'Windows'
+        run: choco install ghostscript --no-progress
       
-#      - uses: r-lib/actions/setup-r@v1
-#        with:
-#          r-version: ${{ matrix.config.r }}
-#          http-user-agent: ${{ matrix.config.http-user-agent }}
-#          use-public-rspm: true
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
           
           
-#      - uses: r-lib/actions/setup-r-dependencies@v1
-#        with:
-#          extra-packages: rcmdcheck
+      - uses: r-lib/actions/setup-r-dependencies@v1
+        with:
+          extra-packages: rcmdcheck
           
-#      - uses: r-lib/actions/check-r-package@v1
+      - uses: r-lib/actions/check-r-package@v1
 
-#      - name: Notify slack success
-#        if: success()
-#        env:
-#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-#        uses: voxmedia/github-action-slack-notify-build@v1
-#        with:
-          # Updates existing message from the first step
-#          message_id: ${{ steps.slack.outputs.message_id }}
-#          channel_id: C01MS7ECQ8Z
-#          status: SUCCESS
-#          color: good
+      - name: Notify slack success
+        if: success()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+           Updates existing message from the first step
+          message_id: ${{ steps.slack.outputs.message_id }}
+          channel_id: C01MS7ECQ8Z
+          status: SUCCESS
+          color: good
 
-#      - name: Notify slack fail
-#        if: failure()
-#        env:
-#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-#        uses: voxmedia/github-action-slack-notify-build@v1
-#        with:
-          # Updates existing message from the first step
-#          message_id: ${{ steps.slack.outputs.message_id }}
-#          channel_id: C01MS7ECQ8Z
-#          status: FAILED
-#          color: danger
+      - name: Notify slack fail
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+           Updates existing message from the first step
+          message_id: ${{ steps.slack.outputs.message_id }}
+          channel_id: C01MS7ECQ8Z
+          status: FAILED
+          color: danger
 

@@ -21,3 +21,9 @@ for (i in c("scoresSPGMI", "stocksCRSP")) {
 
 # issue with name in stock and Stocks.df.rda. Keep for compatibility
 save(stock, file = "data//Stocks.df.rda", compress = "xz", compression_level = 9)
+
+# Change of socresSPGMI to factorsSPGMI
+factorsSPGMI <- scoresSPGMI
+save(factorsSPGMI, file = "data/factorsSPGMI.rda", compress = "xz", 
+     compression_level = 9)
+

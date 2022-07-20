@@ -74,5 +74,3 @@ tsPlotMP = function (ret, add.grid = FALSE, layout = NULL, type = "l", yname = "
 			panel = panel)
 	print(pl)
 }
-
-                                                  

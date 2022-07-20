@@ -111,20 +111,20 @@ fit1 <- fitFfm(data = factorDataSetDjia5Yrs, asset.var = "TICKER",
                
 # Fit a SECTOR+COUNTRY+Style model with Intercept
 # Create a COUNTRY column with just 3 countries
-
- factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ), rep("GERMANY", 1 )), 11), 60)
- 
- fit.MICM <- fitFfm(data = factorDataSetDjia5Yrs, 
-                    asset.var = "TICKER",
-                    exposure.vars = c("SECTOR", "COUNTRY","P2B", "MKTCAP"),
-                    ret.var = "RETURN", 
-                    date.var = "DATE", 
-                    addIntercept = TRUE)
- 
+#
+#  factorDataSetDjia5Yrs$COUNTRY = rep(rep(c(rep("US", 1 ), rep("GERMANY", 1 )), 11), 60)
+# 
+#  fit.MICM <- fitFfm(data = factorDataSetDjia5Yrs, 
+#                    asset.var = "TICKER",
+#                    exposure.vars = c("SECTOR", "COUNTRY","P2B", "MKTCAP"),
+#                    ret.var = "RETURN", 
+#                    date.var = "DATE", 
+#                    addIntercept = FALSE)
+#  
  # Load library 'HH' to access the Likert option
- library("HH")                   
- stats = fmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96,
-                  whichPlot = "significantTstatsLikert")
+#  library("HH")                   
+#  stats = fmTstats(fit.MICM, isPlot = TRUE, z.alpha =1.96,
+#                   whichPlot = "significantTstatsLikert")
 }
 \author{
 Avinash Acharya and Doug Martin

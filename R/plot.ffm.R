@@ -81,8 +81,8 @@
 #' in \code{plot}. Default is 1.
 #' @param lwd set the line width, same as in \code{\link{plot}}. Default is 2.
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.
+#' @param asset.variable the name of asset variable. 
 #' @param ... further arguments to be passed to other plotting functions.
-#' 
 #' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 #'
 #' @seealso \code{\link{fitFfm}}, \code{\link{residuals.ffm}},
@@ -108,36 +108,53 @@
 #'
 #' @examples
 #'
-#' # load data from the database
-#' data("factorDataSetDjia5Yrs")
+#' # load data 
+#'data(stocksCRSP)
+#'data(factorsSPGMI)
+#'
+#'stocks_factors <- selectCRSPandSPGMI(stocks = stocksCRSP, factors = factorsSPGMI,
+#'                                     dateSet = c("2006-01-31", "2010-12-31"), 
+#'                                     stockItems = c("Date", "TickerLast", 
+#'                                                    "CapGroup", "Sector", 
+#'                                                    "Return", "Ret13WkBill",
+#'                                                    "mktIndexCRSP"),
+#'                                     factorItems = c("BP", "LogMktCap", "SEV"), 
+#'                                     capChoice = "SmallCap",
+#'                                     Nstocks = 20)
 #' 
-#' # fit a fundamental factor model
-#' exposure.vars <- c("P2B", "MKTCAP")
-#' fit.style.sector <- fitFfm(data=factorDataSetDjia5Yrs, asset.var="TICKER", 
-#'                            ret.var="RETURN", date.var="DATE", 
-#'                            exposure.vars=exposure.vars)
+#' # fit a fundamental factor model with style variables BP and LogMktCap
+#' 
+#' fit.style <- fitFfm(data = stocks_factors, 
+#'                            asset.var = "TickerLast", 
+#'                            ret.var = "Return", 
+#'                            date.var = "Date", 
+#'                            exposure.vars = c("BP", "LogMktCap")
+#'                            )
+#'                            
+#' # For group plots (default), one can select plot option from prompt menu.
+#' # The menu is repeated to produce multiple plots based on the same fit
+#' 
+#' # plot(fit.style) # Not run, but user should try it out
 #'
-#' # for group plots (default), user can select plot option from menu prompt
-#' # menu is repeated to get multiple types of plots based on the same fit
-#' # plot(fit.style.sector)
 #'
-#' # choose specific plot option(s) using which
 #' # plot all factor exposures from the last time period for 1st 10 assets
-#' plot(fit.style.sector, which=2, f.sub=1:2, a.sub=1:10)
+#' 
+#' plot(fit.style, which = 2, f.sub = 1:2, a.sub = 1:10)
 #'
 #' # plot factor model residuals scatterplot matrix, with histograms, density
 #' # overlays, correlations and significance stars
-#' plot(fit.style.sector, which=6)
+#' plot(fit.style, which = 6)
 #'
-#' # for individual plots: set plot.single=TRUE and specify asset.name
-#' # histogram of residuals from an individual asset's factor model fit
-#' plot(fit.style.sector, plot.single=TRUE, asset.name="AA", which=12)
+#' # For individual plots: define `plot.single=TRUE` and specify `asset.name`.
+#' # This will display a histogram of residuals from the asset's factor model fit
+#' 
+#' plot(fit.style, plot.single = TRUE, asset.name = "ALCO", which = 12)
 #'
 #' @method plot ffm
 #' @export
 
 plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
-                     plot.single=FALSE, asset.name,
+                     plot.single=FALSE, asset.name, asset.variable,
                      colorset=c("royalblue","dimgray","olivedrab","firebrick",
                                 "goldenrod","mediumorchid","deepskyblue",
                                 "chocolate","darkslategray"),
@@ -348,8 +365,8 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              "1L" = {
                ## Distribution of factor returns
                main <- "Distribution of factor returns"
-               PerformanceAnalytics::chart.Boxplot(x$factor.returns[,f.sub], colorset="black", lwd=1, main=main, xlab="Factor returns", ylab="",
-                             legend.loc=legend.loc, pch=NULL, las=las, ...)
+               PerformanceAnalytics::chart.Boxplot(x$factor.returns[,f.sub], colorset="black", lwd=1, main=main, xlab="Factor returns", 
+                             legend.loc=legend.loc, pch=NULL, las=las,...)
              },
              "2L" = {
                ## Factor exposures from the last period
@@ -373,20 +390,29 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                for (i in a.sub) {
                  asset <- x$asset.names[i]
                  fitted.ret <- fitted(x)[,asset]
-                 asset.ret <- subset(x$data, asset.name==asset)[,c(x$date.var,x$ret.var)]
+                 asset.ret <- subset(x$data, get(asset.variable)==asset)[,c(x$date.var,x$ret.var)]
                  asset.ret.xts <- xts::as.xts(asset.ret[,2], order.by=zoo::index(fitted.ret))
                  plotData <- merge.xts(asset.ret.xts, fitted.ret)
                  colnames(plotData) <- c("Actual","Fitted")
                  main <- paste("Actual and Fitted:", asset)
-                 PerformanceAnalytics::chart.TimeSeries(plotData, colorset=colorset, lwd=lwd, main=main, xlab="",
-                                  ylab="Asset returns", legend.loc=legend.loc, pch=NULL, las=las, ...)
+                 
+                 print(PerformanceAnalytics::chart.TimeSeries(plotData, 
+                                                        colorset = colorset, 
+                                                        lwd = lwd, 
+                                                        main = main, 
+                                                        xlab = "",
+                                                        ylab = "Asset returns", 
+                                                        legend.loc = legend.loc, 
+                                                        pch = NULL, 
+                                                        las = las, 
+                                                        ...))
                }
                par(mfrow=c(1,1))
              },
              "4L" ={
                ## Time-series of R-squared values
-               PerformanceAnalytics::chart.TimeSeries(x$r2, main="Time-series of R-squared values", xlab="", ylab="R-squared",
-                                colorset=colorset, lwd=lwd, pch=NULL, las=las, ...)
+               print(PerformanceAnalytics::chart.TimeSeries(x$r2, main="Time-series of R-squared values", xlab="", ylab="R-squared",
+                                colorset=colorset, lwd=lwd, pch=NULL, las=las, ...))
              },
              "5L" = {
                ## Residual variance across assets
@@ -415,7 +441,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                pcSd.fm <- fmSdDecomp(x)$pcSd[a.sub,c(f.sub,k+1)]
                plot(
                  lattice::barchart(pcSd.fm, main="Factor % Contribution to SD", xlab="",
-                          auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE),
+                          auto.key=list(space="bottom",columns=min(ncol(pcSd.fm),3),points=FALSE,rectangles=TRUE),
                           par.settings=list(superpose.polygon=list(col=colorset)),
                           panel=function(...){panel.grid(h=0, v=-1); panel.barchart(...)}, ...)
                )
@@ -425,7 +451,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                pcES.fm <- fmEsDecomp(x)$pcES[a.sub,c(f.sub,k+1)]
                plot(
                  lattice::barchart(pcES.fm, main="Factor % Contribution to ES", xlab="",
-                          auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE),
+                          auto.key=list(space="bottom",columns=min(ncol(pcES.fm),3),points=FALSE,rectangles=TRUE),
                           par.settings=list(superpose.polygon=list(col=colorset)),
                           panel=function(...){panel.grid(h=0, v=-1); panel.barchart(...)}, ...)
                )
@@ -435,7 +461,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                pcVaR.fm <- fmVaRDecomp(x)$pcVaR[a.sub,c(f.sub,k+1)]
                plot(
                  lattice::barchart(pcVaR.fm, main="Factor % Contribution to VaR", xlab="",
-                          auto.key=list(space="bottom",columns=3,points=FALSE,rectangles=TRUE),
+                          auto.key=list(space="bottom",columns=min(ncol(pcVaR.fm),3),points=FALSE,rectangles=TRUE),
                           par.settings=list(superpose.polygon=list(col=colorset)),
                           panel=function(...){panel.grid(h=0, v=-1);
                             panel.barchart(...)}, ...)
@@ -444,8 +470,8 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
              "12L" ={
                ## Time series of factor returns
                factor.ret <- x$factor.returns[,f.sub]
-               PerformanceAnalytics::chart.TimeSeries(factor.ret, main="Time-series of factor returns", xlab="", ylab="Factor returns",
-                                colorset=colorset, lwd=lwd, pch=NULL, legend.loc=legend.loc, las=las, ...)
+               print(PerformanceAnalytics::chart.TimeSeries(factor.ret, main="Time-series of factor returns", xlab="", ylab="Factor returns",
+                                colorset=colorset, lwd=lwd, pch=NULL, legend.loc=legend.loc, las=las, ...))
                
              },
              invisible()

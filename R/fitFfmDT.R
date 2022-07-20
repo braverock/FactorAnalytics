@@ -101,7 +101,17 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
     obj$model.styleOnly = TRUE
   } else {
     obj$model.styleOnly = FALSE
+    # this would prevent the issue of having one company in a sector..
+    # this would produce 0 variance whcih causes the weight to blow up iin 
+    # WLS...  I check for the number of companies per date becuase we fit a model 
+    # for each day... 
+    if (min(  obj$dataDT[ , .N, by = c(date.var, obj$exposures.char)]$N) == 1 )
+        stop("
+             There is at least one ", obj$exposures.char, " that has one observation which will cause a 
+             problem with computing residual variance.")
   }
+  
+  
   obj$rob.stats <- rob.stats
   obj$addIntercept <- addIntercept
   obj$lagged <- FALSE
@@ -116,7 +126,9 @@ specFfm <- function(data, asset.var, ret.var, date.var, exposure.vars,
 #'  by one time period.
 #' @param specObj an ffm specification object of of class \code{"ffmSpec"}
 #' @return specObj an ffm spec Object that has been lagged
-#' 
+#' @details this function operates on the data inside the specObj and applies a lag to 
+#' it
+#' @seealso \code{\link{specFfm()}} for information on the definition of the specFfm object.
 #' @export
 #'
 lagExposures <- function(specObj){
@@ -161,7 +173,10 @@ lagExposures <- function(specObj){
 #' variances. Default is 0.9
 #' 
 #' @return the ffM spec object with exposures z-scored
+#' @details this function operates on the data inside the specObj and applies a 
+#' standardization to it.  The user can choose CrossSectional or timeSeries standardization
 #' 
+#' @seealso \code{\link{specFfm()}} for information on the definition of the specFfm object.
 #' @export
 #'
 standardizeExposures <- function(specObj, 
@@ -249,7 +264,10 @@ standardizeExposures <- function(specObj,
 #' @param benchmark we might need market returns
 #' @param rfRate risk free rate
 #' @param isBenchExcess toggle to select whether to calculate excess returns
-#' 
+#' @details this function operates on the data inside the specObj and residualizes
+#' the returns to create residual return using regressions of returns on a 
+#' benchmark.
+#' @seealso \code{\link{specFfm()}} for information on the definition of the specFfm object.
 #' @importFrom xts is.xts
 #' 
 #' @export
@@ -326,7 +344,9 @@ residualizeReturns <- function(specObj, benchmark, rfRate, isBenchExcess = F ){
 #' @param GARCH.params fixed Garch(1,1) parameters
 #' 
 #' @return an ffmSpec Object with the standardized returns added
-#' 
+#' @details this function operates on the data inside the specObj and standardizes
+#' the returns to create scaled return.
+#' @seealso \code{\link{specFfm()}} for information on the definition of the specFfm object.
 #' @export
 standardizeReturns <- function(specObj, 
                                GARCH.params = list(omega = 0.09, 
@@ -415,7 +435,9 @@ standardizeReturns <- function(specObj,
 #' components:
 #' \item{DATE}{length-T vector of dates.}
 #' \item{R_matrix}{The K+1 by K restriction matrix where K is the number of categorical variables for each date.}
-#'
+#' @details this function operates on the data inside the specObj fits a fundamental factor
+#' model to the data 
+#' @seealso \code{\link{specFfm()}} for information on the definition of the specFfm object.
 #' @importFrom RobStatTM lmrobdetMM
 #' @importFrom stats complete.cases
 #' 
@@ -685,7 +707,11 @@ fitFfmDT <- function(ffMSpecObj,
 #' @param full.resid.cov an option to calculate the full residual covariance or not
 #' 
 #' @return a structure of class ffm holding all the information
+#' @details this function operates on the specObje data and the output of fitFfm
+#' to get information on the fundamental factor.
 #' 
+#' @seealso \code{\link{specFfm}} and \code{\link{fitFfmDT}} for information on the definition of the specFfm 
+#' object and the usage of fitFfmDT.
 #' @importFrom RobStatTM covRob
 #' @importFrom data.table rbindlist dcast as.xts.data.table last
 #' @importFrom stats coefficients
@@ -954,8 +980,8 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   if (!identical(colnames(beta) , colnames(factor.returns))){
     # we need to clean up.. easier to do it on the beta rather than the 
     # factor returns ... (factor.cov) follows factor.returns
-    colnames(beta) <- sub(pattern = specObj$exposures.char,
-                          colnames(beta),replacement = "")
+    colnames(beta) <- sub(pattern = paste0(specObj$exposures.char,collapse = "|"), colnames(beta),replacement = "")
+
     # the names of the beta matrix have a prefix when we have the flag
     # add intercept F and have an exposure variable that is a character.
     # now that we have cleaned it up we can rearrange the columns

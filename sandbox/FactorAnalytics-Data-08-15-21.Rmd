@@ -2,7 +2,10 @@
 title: "FactorAnalytics Package Data notes"
 author: "Doug Martin, edits by Justin M. Shea"
 date: "8/15/2021"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}

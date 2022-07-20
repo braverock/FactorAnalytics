@@ -1,8 +1,8 @@
 Package: FactorAnalytics
 Type: Package
 Title: Factor Analytics for Asset Return Data
-Version: 2.2.6
-Date: 2021-10-31
+Version: 2.3.0
+Date: 2021-12-24
 Author: Eric Zivot, Doug Martin, Sangeetha
      Srinivasan, Avinash Acharya, Yi-An Chen,
      Mido Shammaa, Lingjie Yi, Kirk Li, and
@@ -23,31 +23,31 @@ License: GPL-2
 Depends: 
     R (>= 3.5)
 Imports:
-    data.table,
-    xts,
-    zoo,
-    PerformanceAnalytics,
-    leaps,
-    lars,
-    sandwich,
-    lattice,
-    sn,
     boot,
-    foreach,
-    parallel,
+    data.table,
     doSNOW,
+    foreach,
+    lars,
+    lattice,
+    leaps,
+    parallel,
+    PerformanceAnalytics,
     RCurl,
+    RobStatTM,
+    robustbase,
+    sandwich,
+    sn,
     tseries,
-	robustbase,
-	RobStatTM
+    xts,
+    zoo
 Suggests:
-    R.rsp, 
-    tinytest,
     corrplot,
+    HH,
     lmtest,
+    R.rsp,
     rugarch,
     strucchange,
-    HH
+    tinytest
 VignetteBuilder: R.rsp
 URL: https://github.com/braverock/FactorAnalytics
 RoxygenNote: 7.2.0
