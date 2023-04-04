@@ -16,7 +16,7 @@ Description: Linear factor model fitting for asset returns (three major types-
     simulating returns and backfilling unequal histories. The package authors 
     would like to thank S&P GLOBAL MARKET INTELLIGENCE for kindly contributing 
     fundamental data on 300 publicly traded companies to this open source package. 
-    Commonly referred to as "alpha factors" or "scores", the variables are 
+    Commonly referred to as "alpha factors" or "scores", the variables were 
     generously provided for educational use with functions contained in this 
     FactorAnalytics package. 
 License: GPL-2
