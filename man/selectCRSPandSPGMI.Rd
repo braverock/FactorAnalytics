@@ -20,7 +20,7 @@ selectCRSPandSPGMI(
 
 \item{factors}{A data.table of factors and related data}
 
-\item{dateSet}{A character vector providing a start data and an end 
+\item{dateSet}{A character vector providing a start data and an end
 date, having the same form as c("2006-01-31", "2010-12-31")}
 
 \item{stockItems}{A character vector that is a subset of the names
@@ -43,24 +43,27 @@ Select and merge a set of CRSP stocks and SPGMI factors and
 SPGMI factors over a range of dates between January 1993 and December 2015
 }
 \details{
-The date range is specified by a beginning Date object and an ending Date 
+The date range is specified by a beginning Date object and an ending Date
 object.  Default values for the stocks and factors component names,
 marketcap group, and number of stocks in the marketcap group can be
 changed by the user
 }
 \examples{
+
+\dontrun{
 data(stocksCRSP)
 data(factorsSPGMI)
 
 stocks_factors <- selectCRSPandSPGMI(stocks = stocksCRSP, factors = factorsSPGMI,
-                                    dateSet = c("2006-01-31", "2010-12-31"), 
-                                    stockItems = c("Date", "TickerLast", 
-                                                   "CapGroup", "Sector", 
+                                    dateSet = c("2006-01-31", "2010-12-31"),
+                                    stockItems = c("Date", "TickerLast",
+                                                   "CapGroup", "Sector",
                                                    "Return", "Ret13WkBill",
                                                    "mktIndexCRSP"),
-                                    factorItems = c("BP", "LogMktCap", "SEV"), 
+                                    factorItems = c("BP", "LogMktCap", "SEV"),
                                     capChoice = "SmallCap",
                                     Nstocks = 20)
 
 str(stocks_factors)
+}
 }

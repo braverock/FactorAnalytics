@@ -2,10 +2,7 @@
 % Please edit documentation in R/fmmc.R
 \name{.fmmc.proc}
 \alias{.fmmc.proc}
-\title{This is the main implementation of the Factor Model Monte Carlo method. It returns
-a fmmc object that contains the joint empirical density of factors and returns. This
-fmmc object can be reused to for calucluting risk and performance estimates along
-with standard errors for the estimates}
+\title{Implementation of the Factor Model Monte Carlo method.}
 \usage{
 .fmmc.proc(R, factors, ...)
 }
@@ -17,23 +14,24 @@ with standard errors for the estimates}
 \item{...}{allows passing parameters to FactorAnalytics.}
 }
 \description{
-This is the main implementation of the Factor Model Monte Carlo method. It returns
-a fmmc object that contains the joint empirical density of factors and returns. This
-fmmc object can be reused to for calucluting risk and performance estimates along
-with standard errors for the estimates
+Implementation of the Factor Model Monte Carlo method.
 }
 \details{
+Returns a fmmc object that contains the joint empirical density of factors and returns. This
+fmmc object can be reused to for calculating risk and performance estimates along
+with standard errors for the estimates
+
 This method takes in data, factors and residual type. It then does the following
 1. Fit a time series factor model to the data using user supplied selection and
    fit variables or it defaults them to stepwise and OLS respectively. If any
    of the betas are NA then the corresponding factors are dropped
-2. If the residual type beisdes empirical is specified then it fits the
-   corresponding distribution to the residuals and simulates from the fitted 
+2. If the residual type besides empirical is specified then it fits the
+   corresponding distribution to the residuals and simulates from the fitted
    distribution. The number of NA's in the simulated sample are the same as
    original residuals.
 3. It then merges factors and non-NA residuals for each asset to create a full
    outer join of the factors and residuals. We use this joined data to create new
-   simulated returns. Returns together with factors define a joint emperical density.
+   simulated returns. Returns together with factors define a joint empirical density.
 }
 \author{
 Rohit Arora

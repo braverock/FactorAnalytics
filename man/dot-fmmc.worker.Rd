@@ -17,7 +17,7 @@
 Worker function that acts between the fmmc procedure and calling method.
 }
 \details{
-This method takes in data as single time series and factors as xts objects 
+This method takes in data as single time series and factors as xts objects
 It then calls the actual estimation procedure.
 }
 \author{

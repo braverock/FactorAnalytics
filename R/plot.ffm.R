@@ -27,9 +27,9 @@
 #' @importFrom zoo index
 #' @importFrom sn dst rst st.mple
 #' @importFrom lattice panel.barchart panel.grid barchart
-#' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram 
+#' @importFrom PerformanceAnalytics chart.TimeSeries chart.ACFplus chart.Histogram
 #' chart.QQPlot chart.Correlation chart.Boxplot
-#' 
+#'
 #' @param x an object of class \code{ffm} produced by \code{fitFfm}.
 #' @param which a number to indicate the type of plot. If multiple plots are
 #' required, specify a subset from 1:12 for group plots and 1:13 for individual
@@ -81,7 +81,7 @@
 #' in \code{plot}. Default is 1.
 #' @param lwd set the line width, same as in \code{\link{plot}}. Default is 2.
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.
-#' @param asset.variable the name of asset variable. 
+#' @param asset.variable the name of asset variable.
 #' @param ... further arguments to be passed to other plotting functions.
 #' @author Eric Zivot, Sangeetha Srinivasan and Yi-An Chen
 #'
@@ -108,37 +108,38 @@
 #'
 #' @examples
 #'
-#' # load data 
+#'\dontrun{
+#' # load data
 #'data(stocksCRSP)
 #'data(factorsSPGMI)
 #'
 #'stocks_factors <- selectCRSPandSPGMI(stocks = stocksCRSP, factors = factorsSPGMI,
-#'                                     dateSet = c("2006-01-31", "2010-12-31"), 
-#'                                     stockItems = c("Date", "TickerLast", 
-#'                                                    "CapGroup", "Sector", 
+#'                                     dateSet = c("2006-01-31", "2010-12-31"),
+#'                                     stockItems = c("Date", "TickerLast",
+#'                                                    "CapGroup", "Sector",
 #'                                                    "Return", "Ret13WkBill",
 #'                                                    "mktIndexCRSP"),
-#'                                     factorItems = c("BP", "LogMktCap", "SEV"), 
+#'                                     factorItems = c("BP", "LogMktCap", "SEV"),
 #'                                     capChoice = "SmallCap",
 #'                                     Nstocks = 20)
-#' 
+#'
 #' # fit a fundamental factor model with style variables BP and LogMktCap
-#' 
-#' fit.style <- fitFfm(data = stocks_factors, 
-#'                            asset.var = "TickerLast", 
-#'                            ret.var = "Return", 
-#'                            date.var = "Date", 
+#'
+#' fit.style <- fitFfm(data = stocks_factors,
+#'                            asset.var = "TickerLast",
+#'                            ret.var = "Return",
+#'                            date.var = "Date",
 #'                            exposure.vars = c("BP", "LogMktCap")
 #'                            )
-#'                            
+#'
 #' # For group plots (default), one can select plot option from prompt menu.
 #' # The menu is repeated to produce multiple plots based on the same fit
-#' 
+#'
 #' # plot(fit.style) # Not run, but user should try it out
 #'
 #'
 #' # plot all factor exposures from the last time period for 1st 10 assets
-#' 
+#'
 #' plot(fit.style, which = 2, f.sub = 1:2, a.sub = 1:10)
 #'
 #' # plot factor model residuals scatterplot matrix, with histograms, density
@@ -147,8 +148,9 @@
 #'
 #' # For individual plots: define `plot.single=TRUE` and specify `asset.name`.
 #' # This will display a histogram of residuals from the asset's factor model fit
-#' 
+#'
 #' plot(fit.style, plot.single = TRUE, asset.name = "ALCO", which = 12)
+#' }
 #'
 #' @method plot ffm
 #' @export
@@ -159,14 +161,14 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                                 "goldenrod","mediumorchid","deepskyblue",
                                 "chocolate","darkslategray"),
                      legend.loc="topleft", las=1, lwd=2, maxlag=15, ...) {
-  
+
   which.vec <- which
   which <- which[1]
-  
+
   meth <- x$fit.method # one of "LS", "WLS", "Rob" or "W-Rob"
-  
+
   if (plot.single==TRUE) {
-    
+
     if (missing(asset.name) && length(x$asset.names)>1) {
       stop("Missing input: 'asset.name' is required if plot.single is TRUE and
            the factor model fits multiple assets.")
@@ -191,7 +193,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     dp.st <- st.mple(x=matrix(1,nrow(Residuals)), y=as.vector(Residuals), opt.method="BFGS")$dp
     den.st <- dst(xval, dp=dp.st)
     dp.st <- signif(dp.st, 2)
-    
+
     # plot selection
     repeat {
       if (is.null(which)) {
@@ -211,16 +213,16 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  "QQ-plot of residuals"),
                title="\nMake a plot selection (or 0 to exit):")
       }
-      
+
       par(las=las) # default horizontal axis labels
-      
+
       switch(which,
              "1L" = {
                ##  Time series plot of actual and fitted asset returns
-      PerformanceAnalytics::chart.TimeSeries(plotData[,1:2], 
+      PerformanceAnalytics::chart.TimeSeries(plotData[,1:2],
                             main = paste("Actual and fitted asset returns:", i),
-                            colorset = colorset, xlab = "", ylab = "Returns", 
-                            lwd = lwd, legend.loc = legend.loc, pch = NULL, 
+                            colorset = colorset, xlab = "", ylab = "Returns",
+                            lwd = lwd, legend.loc = legend.loc, pch = NULL,
                             las = las, ...)
              }, "2L" = {
                ## Actual vs. fitted asset returns
@@ -318,7 +320,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
       } else {which=NULL}
     }
   } else { # start of group asset plots
-    
+
     n <- length(x$asset.names)
     if (n<=1 || length(a.sub) < 2) {
       stop("Error: Two or more assets required for group plots.")
@@ -339,7 +341,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
     if (is.character(a.sub)) {
       f.sub <- which(x$asset.names==a.sub)
     }
-    
+
     # plot selection
     repeat {
       if (is.null(which)) {
@@ -358,14 +360,14 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  "Time series of factor returns"),
                title="\nMake a plot selection (or 0 to exit):")
       }
-      
+
       par(las=las) # default horizontal axis labels
-      
+
       switch(which,
              "1L" = {
                ## Distribution of factor returns
                main <- "Distribution of factor returns"
-               PerformanceAnalytics::chart.Boxplot(x$factor.returns[,f.sub], colorset="black", lwd=1, main=main, xlab="Factor returns", 
+               PerformanceAnalytics::chart.Boxplot(x$factor.returns[,f.sub], colorset="black", lwd=1, main=main, xlab="Factor returns",
                              legend.loc=legend.loc, pch=NULL, las=las,...)
              },
              "2L" = {
@@ -395,16 +397,16 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                  plotData <- merge.xts(asset.ret.xts, fitted.ret)
                  colnames(plotData) <- c("Actual","Fitted")
                  main <- paste("Actual and Fitted:", asset)
-                 
-                 print(PerformanceAnalytics::chart.TimeSeries(plotData, 
-                                                        colorset = colorset, 
-                                                        lwd = lwd, 
-                                                        main = main, 
+
+                 print(PerformanceAnalytics::chart.TimeSeries(plotData,
+                                                        colorset = colorset,
+                                                        lwd = lwd,
+                                                        main = main,
                                                         xlab = "",
-                                                        ylab = "Asset returns", 
-                                                        legend.loc = legend.loc, 
-                                                        pch = NULL, 
-                                                        las = las, 
+                                                        ylab = "Asset returns",
+                                                        legend.loc = legend.loc,
+                                                        pch = NULL,
+                                                        las = las,
                                                         ...))
                }
                par(mfrow=c(1,1))
@@ -472,7 +474,7 @@ plot.ffm <- function(x, which=NULL, f.sub=1:2, a.sub=1:6,
                factor.ret <- x$factor.returns[,f.sub]
                print(PerformanceAnalytics::chart.TimeSeries(factor.ret, main="Time-series of factor returns", xlab="", ylab="Factor returns",
                                 colorset=colorset, lwd=lwd, pch=NULL, legend.loc=legend.loc, las=las, ...))
-               
+
              },
              invisible()
       )

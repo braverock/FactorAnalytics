@@ -2,9 +2,7 @@
 % Please edit documentation in R/fmmc.R
 \name{.fmmc.default.args}
 \alias{.fmmc.default.args}
-\title{Functions to compute estimates and their standard errors using fmmc
-
-Control default arguments. Usually for FactorAnalytics.}
+\title{Functions to compute estimates and their standard errors using fmmc}
 \usage{
 .fmmc.default.args(...)
 }
@@ -13,14 +11,12 @@ Control default arguments. Usually for FactorAnalytics.}
 }
 \description{
 Functions to compute estimates and their standard errors using fmmc
-
-Control default arguments. Usually for FactorAnalytics.
 }
 \details{
 This method takes in the additional arguments list and checks if parameters
 are set. Then it defaults values if they are unset. Currently it controls the
-fit.method(default: OLS) and variable.selection(default: subsets). If 
+fit.method(default: OLS) and variable.selection(default: subsets). If
 variable.selection is set to values other than subsets/none then it will
-default to subsets. 
+default to subsets.
 arguments for FactorAnalytics
 }

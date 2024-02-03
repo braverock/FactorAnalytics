@@ -2,13 +2,13 @@
 % Please edit documentation in R/fmmc.R
 \name{.fmmc.se}
 \alias{.fmmc.se}
-\title{Main function to calculate the risk/performance estimate and calculate the 
+\title{Main function to calculate the risk/performance estimate and calculate the
 standard error of the estimate using bootstrapping.}
 \usage{
 .fmmc.se(fmmcObj, nboot = 50, estimate.func, cl = NULL)
 }
 \arguments{
-\item{fmmcObj}{object returned by fmmc proc. This is a comprehensive object 
+\item{fmmcObj}{object returned by fmmc proc. This is a comprehensive object
 with all data for factors and returns.}
 
 \item{nboot}{number of bootstap samples. Not sure how many repetations are
@@ -21,11 +21,11 @@ the perfomance/risk measure.}
 \item{cl}{A cluster for running across multiple cores}
 }
 \description{
-Main function to calculate the risk/performance estimate and calculate the 
+Main function to calculate the risk/performance estimate and calculate the
 standard error of the estimate using bootstrapping.
 }
 \details{
-bootstrapping in our  case can be painfully slow, so we exploit the parallel 
+bootstrapping in our  case can be painfully slow, so we exploit the parallel
 capabilities of boot function. All cores on your machine are used.
 We use the boot call from the boot library for calculating the estimate and
 its standard error.

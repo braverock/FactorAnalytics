@@ -33,7 +33,7 @@ Main function to calculate the standard errror of the estimate
 }
 \details{
 This method takes in a list of fmmc objects and a callback function to compute
-an estimate. The first argument of the callback function must be the data 
+an estimate. The first argument of the callback function must be the data
 bootstrapped using fmmc procedure. The remaining arguments can be suitably
 bound to the parameters as needed. This function can also be used to calculate
 the standard error using the se flag.

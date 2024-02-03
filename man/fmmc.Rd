@@ -29,7 +29,7 @@ time series with different starting dates are merged together. It then
 computes FMMC objects as described in Jiang and Martin (2013)
 }
 \references{
-Yindeng Jiang and Richard Doug Martin. Better Risk and Performance 
+Yindeng Jiang and Richard Doug Martin. Better Risk and Performance
 Estimates with Factor Model Monte Carlo. SSRN Electronic Journal, July 2013.
 }
 \author{

@@ -2,8 +2,7 @@
 % Please edit documentation in R/fmmc.R
 \name{.fmmc.boot}
 \alias{.fmmc.boot}
-\title{Statistic function for the boot call. It calculates the risk or performnace
-meeasure by using the estimatation function in its argument list.}
+\title{#' @title  Statistic function for the boot call.}
 \usage{
 .fmmc.boot(data, indices, args)
 }
@@ -16,15 +15,14 @@ meeasure by using the estimatation function in its argument list.}
 the perfomance/risk measure.}
 }
 \description{
-Statistic function for the boot call. It calculates the risk or performnace
-meeasure by using the estimatation function in its argument list.
+Calculates the risk or performance measure by using the estimation function in its argument list.
 }
 \details{
 This method works as follows.
 1. Get data with factors and returns.
 2. Subset T rows from the data.
 3. Discard first TR-TR1 of the asset returns by setting them to NA
-4. calls .fmmc.proc method over the new data set to get a new joint empirical 
+4. calls .fmmc.proc method over the new data set to get a new joint empirical
    distribution of returns and factors
 5. We use the new returns with the estimation function to calculate the
    risk or performance measure.
