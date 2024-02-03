@@ -17,9 +17,9 @@ Function lag the style exposures in the exposure matrix
  by one time period.
 }
 \details{
-this function operates on the data inside the specObj and applies a lag to 
+this function operates on the data inside the specObj and applies a lag to
 it
 }
 \seealso{
-\code{\link{specFfm()}} for information on the definition of the specFfm object.
+\code{\link{specFfm}} for information on the definition of the specFfm object.
 }

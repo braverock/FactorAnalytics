@@ -25,5 +25,5 @@ this function operates on the data inside the specObj and standardizes
 the returns to create scaled return.
 }
 \seealso{
-\code{\link{specFfm()}} for information on the definition of the specFfm object.
+\code{\link{specFfm}} for information on the definition of the specFfm object.
 }

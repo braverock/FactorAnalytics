@@ -42,8 +42,8 @@ correlation, location and univariate scale are computed as appropriate (see
 Details). Default is \code{FALSE}.}
 }
 \description{
-Factor models have a few parameters that describe how the 
+Factor models have a few parameters that describe how the
 fitting is done.  This function summarizes them and returns a spec object for
-cross-sectional regressions.  It also preps the data. An object of class 
+cross-sectional regressions.  It also preps the data. An object of class
 \code{"ffmSpec"} is returned.
 }

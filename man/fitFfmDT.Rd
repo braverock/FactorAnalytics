@@ -16,7 +16,7 @@ fitFfmDT(
 )
 }
 \arguments{
-\item{ffMSpecObj}{a specFFm object}
+\item{ffMSpecObj}{a \link{specFfm} object}
 
 \item{fit.method}{method for estimating factor returns; one of "LS", "WLS"
 "ROB" or "W-ROB". See details. Default is "LS".}
@@ -25,13 +25,13 @@ fitFfmDT(
 
 \item{lambda}{the ewma parameter}
 
-\item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta. 
-Default values are (0.09, 0.1, 0.81) respectively. Valid only when 
+\item{GARCH.params}{list containing GARCH parameters omega, alpha, and beta.
+Default values are (0.09, 0.1, 0.81) respectively. Valid only when
 \code{GARCH.MLE} is set to \code{FALSE}. Estimation outsourced to the
  rugarch package, please load it first.}
 
 \item{GARCH.MLE}{boolean input (TRUE|FALSE), default value = \code{FALSE}. This
-argument allows one to choose to compute GARCH parameters by maximum 
+argument allows one to choose to compute GARCH parameters by maximum
 likelihood estimation. Estimation outsourced to the rugarch
 package, please load it.}
 
@@ -64,5 +64,5 @@ this function operates on the data inside the specObj fits a fundamental factor
 model to the data
 }
 \seealso{
-\code{\link{specFfm()}} for information on the definition of the specFfm object.
+\code{\link{specFfm}} for information on the definition of the specFfm object.
 }

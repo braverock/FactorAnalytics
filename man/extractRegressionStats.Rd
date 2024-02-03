@@ -24,6 +24,6 @@ this function operates on the specObje data and the output of fitFfm
 to get information on the fundamental factor.
 }
 \seealso{
-\code{\link{specFfm}} and \code{\link{fitFfmDT}} for information on the definition of the specFfm 
+\code{\link{specFfm}} and \code{\link{fitFfmDT}} for information on the definition of the specFfm
 object and the usage of fitFfmDT.
 }

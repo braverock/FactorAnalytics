@@ -16,7 +16,7 @@ calcFLAM(
 \arguments{
 \item{specObj}{an object as the output from specFfm function}
 
-\item{modelStats}{output of the extractRegressionStats functions. 
+\item{modelStats}{output of the extractRegressionStats functions.
 Contains fit statistics of the factor model.}
 
 \item{fitResults}{output from fitFfmDT}
@@ -24,7 +24,7 @@ Contains fit statistics of the factor model.}
 \item{analysis}{type character, choice of c("none", "ISM","NEW"). Default = "none".
 Corresponds to methods used in the analysis of fundamental law of active management.}
 
-\item{targetedVol}{numeric; the targeted portfolio volatility in the analysis. 
+\item{targetedVol}{numeric; the targeted portfolio volatility in the analysis.
 Default is 0.06.}
 
 \item{...}{additional arguments}

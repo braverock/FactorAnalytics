@@ -20,9 +20,9 @@ residualizeReturns(specObj, benchmark, rfRate, isBenchExcess = F)
 }
 \details{
 this function operates on the data inside the specObj and residualizes
-the returns to create residual return using regressions of returns on a 
+the returns to create residual return using regressions of returns on a
 benchmark.
 }
 \seealso{
-\code{\link{specFfm()}} for information on the definition of the specFfm object.
+\code{\link{specFfm}} for information on the definition of the specFfm object.
 }

@@ -17,7 +17,7 @@ standardizeExposures(
 "CrossSection", or "TimeSeries".
 Default is \code{"none"}.}
 
-\item{lambda}{lambda value to be used for the EWMA estimation of residual 
+\item{lambda}{lambda value to be used for the EWMA estimation of residual
 variances. Default is 0.9}
 }
 \value{
@@ -27,9 +27,9 @@ the ffM spec object with exposures z-scored
 function to calculate z-scores for numeric exposure using weights weight.var
 }
 \details{
-this function operates on the data inside the specObj and applies a 
+this function operates on the data inside the specObj and applies a
 standardization to it.  The user can choose CrossSectional or timeSeries standardization
 }
 \seealso{
-\code{\link{specFfm()}} for information on the definition of the specFfm object.
+\code{\link{specFfm}} for information on the definition of the specFfm object.
 }
