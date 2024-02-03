@@ -26,15 +26,6 @@ Plenty of documentation exists for cloning github repos and building R packages 
 Note a bug in `remotes`/`devtools` prevents the package from being loaded using `install_github("braverock/FactorAnalytics")`. Please see [r-lib/remotes/issues/637](https://github.com/r-lib/remotes/issues/637).
 
 
-## Fundamental Factor Scores from S&P Global Market Intelligence
- 
-S&P Global Market Intelligence has kindly provided firm fundamentals data
-referred to as “scores” or “alpha factors” for educational use in the open source FactorAnalytics R package. The data is contained in the R data frame object “factorDataSPGMI” consisting of the following cross-section of scores for approximately 300 stocks from 1990-2015: `AccrualRatioCF`, `AnnVol12M`, `Beta60M`, `BP`, `Chg1YEPS`, `DivP`, `EBITDAEV`, `EP`, `EQ-style`,
-`LogMktCap`, `PM12M1M`, `ROE`. This data greatly facilitates the educational value to users of the fundamental factor model in FactorAnalytics. The package developers wish to thank S&P Global Market Intelligence for kindly contributing this data, which will improving learning outcomes for all.
-
-
-
-
 ## Presentations and vignettes on FactorAnalytics
 
 ### Fundamental Factor Models vignette
