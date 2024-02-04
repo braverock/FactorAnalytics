@@ -52,21 +52,21 @@ repRisk(object, ...)
 \arguments{
 \item{object}{fit object of class \code{tsfm}, or \code{ffm}.}
 
-\item{...}{other optional arguments passed to \code{\link[stats]{quantile}} and 
+\item{...}{other optional arguments passed to \code{\link[stats]{quantile}} and
 optional arguments passed to \code{\link[stats]{cov}}}
 
-\item{weights}{a vector of weights of the assets in the portfolio, names of 
-the vector should match with asset names. Default is NULL, in which case an 
+\item{weights}{a vector of weights of the assets in the portfolio, names of
+the vector should match with asset names. Default is NULL, in which case an
 equal weights will be used.}
 
-\item{risk}{one of 'Sd' (standard deviation), 'VaR' (Value-at-Risk) or 'ES' (Expected Tail 
+\item{risk}{one of 'Sd' (standard deviation), 'VaR' (Value-at-Risk) or 'ES' (Expected Tail
 Loss or Expected Shortfall for calculating risk decompositon. Default is 'Sd'}
 
-\item{decomp}{one of 'FMCR' (factor marginal contribution to risk), 
+\item{decomp}{one of 'FMCR' (factor marginal contribution to risk),
 'FCR' 'factor contribution to risk' or 'FPCR' (factor percent contribution to risk).}
 
 \item{digits}{digits of number in the resulting table. Default is NULL, in which case digtis = 3 will be
-used for decomp = ( 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when 
+used for decomp = ( 'FMCR', 'FCR'), digits = 1 will be used for decomp = 'FPCR'. Used only when
 isPrint = 'TRUE'}
 
 \item{invert}{a logical variable to change VaR/ES to positive number, default
@@ -77,13 +77,13 @@ or plot}
 
 \item{p}{tail probability for calculation. Default is 0.05.}
 
-\item{type}{one of "np" (non-parametric) or "normal" for calculating VaR & Es. 
+\item{type}{one of "np" (non-parametric) or "normal" for calculating VaR & Es.
 Default is "np".}
 
 \item{use}{an optional character string giving a method for computing factor
-covariances in the presence of missing values. This must be (an 
-abbreviation of) one of the strings "everything", "all.obs", 
-"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is 
+covariances in the presence of missing values. This must be (an
+abbreviation of) one of the strings "everything", "all.obs",
+"complete.obs", "na.or.complete", or "pairwise.complete.obs". Default is
 "pairwise.complete.obs".}
 
 \item{sliceby}{one of 'factor' (slice/condition by factor) or 'asset' (slice/condition by asset) or 'riskType'
@@ -99,28 +99,28 @@ Used only when isPlot = 'TRUE'}
 
 \item{axis.cex}{a number indicating the amount by which axis in the plot(s) should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 
-\item{portfolio.only}{logical variable to choose if to calculate portfolio only decomposition, in which case multiple risk measures are 
+\item{portfolio.only}{logical variable to choose if to calculate portfolio only decomposition, in which case multiple risk measures are
 allowed.}
 }
 \value{
-A table containing 
-\item{decomp = 'FMCR'}{(N + 1) * (K + 1) matrix of marginal contributions to risk of portfolio 
-return as well assets return, with first row of values for the portfolio and the remaining rows for 
+A table containing
+\item{decomp = 'FMCR'}{(N + 1) * (K + 1) matrix of marginal contributions to risk of portfolio
+return as well assets return, with first row of values for the portfolio and the remaining rows for
 the assets in the portfolio, with  (K + 1) columns containing values for the K risk factors and the
 residual respectively}
-\item{decomp = 'FCR'}{(N + 1) * (K + 2) matrix of component contributions to risk of portfolio 
-return as well assets return, with first row of values for the portfolio and the remaining rows for 
+\item{decomp = 'FCR'}{(N + 1) * (K + 2) matrix of component contributions to risk of portfolio
+return as well assets return, with first row of values for the portfolio and the remaining rows for
 the assets in the portfolio, with  first column containing portfolio and asset risk values and remaining
 (K + 1) columns containing values for the K risk factors and the residual respectively}
-\item{decomp = 'FPCR'}{(N + 1) * (K + 1) matrix of percentage component contributions to risk 
-of portfolio return as well assets return, with first row of values for the portfolio and the remaining rows for 
+\item{decomp = 'FPCR'}{(N + 1) * (K + 1) matrix of percentage component contributions to risk
+of portfolio return as well assets return, with first row of values for the portfolio and the remaining rows for
 the assets in the portfolio, with  (K + 1) columns containing values for the K risk factors and the
 residual respectively}
 Where, K is the number of factors, N is the number of assets.
 }
 \description{
-Compute the factor contributions to standard deviation (SD), Value-at-Risk (VaR), 
-Expected Tail Loss or Expected Shortfall (ES) of the return of individual asset within a portfolio 
+Compute the factor contributions to standard deviation (SD), Value-at-Risk (VaR),
+Expected Tail Loss or Expected Shortfall (ES) of the return of individual asset within a portfolio
 return of a portfolio based on Euler's theorem, given the fitted factor model.
 }
 \examples{
@@ -130,15 +130,15 @@ data(managers, package = 'PerformanceAnalytics')
 
 fit.macro <- fitTsfm(asset.names = colnames(managers[,(1:6)]),
                      factor.names = colnames(managers[,(7:9)]),
-                     rf.name = colnames(managers[,10]), 
+                     rf.name = colnames(managers[,10]),
                      data = managers)
-                     
-report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR', 
+
+report <- repRisk(fit.macro, risk = "ES", decomp = 'FPCR',
                   nrowPrint = 10)
-report 
+report
 
 # plot
-repRisk(fit.macro, risk = "ES", decomp = 'FPCR', isPrint = FALSE, 
+repRisk(fit.macro, risk = "ES", decomp = 'FPCR', isPrint = FALSE,
         isPlot = TRUE)
 
 # Fundamental Factor Model
@@ -150,32 +150,32 @@ dat = dat[dat$DATE >=zoo::as.yearmon("2008-01-01") & dat$DATE <= zoo::as.yearmon
 
 # Load long-only GMV weights for the return data
 data("wtsStocks145GmvLo")
-wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)  
-                                                     
+wtsStocks145GmvLo = round(wtsStocks145GmvLo,5)
+
 # fit a fundamental factor model
 exposure.vars = c("SECTOR","ROE","BP","PM12M1M","SIZE","ANNVOL1M", "EP")
-fit.cross <- fitFfm(data = dat, 
+fit.cross <- fitFfm(data = dat,
                     exposure.vars = exposure.vars,
-                    date.var = "DATE", 
-                    ret.var = "RETURN", 
-                    asset.var = "TICKER", 
-                    fit.method="WLS", 
+                    date.var = "DATE",
+                    ret.var = "RETURN",
+                    asset.var = "TICKER",
+                    fit.method="WLS",
                     z.score = "crossSection")
-              
+
 repRisk(fit.cross, risk = "Sd", decomp = 'FCR', nrowPrint = 10,
-        digits = 4) 
-        
-# get the factor contributions of risk 
-repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-        nrowPrint = 10)       
-           
+        digits = 4)
+
+# get the factor contributions of risk
+repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR',
+        nrowPrint = 10)
+
 # portfolio only decomposition
-repRisk(fit.cross, wtsStocks145GmvLo, risk = c("VaR", "ES"), decomp = 'FPCR', 
-        portfolio.only = TRUE)    
-           
+repRisk(fit.cross, wtsStocks145GmvLo, risk = c("VaR", "ES"), decomp = 'FPCR',
+        portfolio.only = TRUE)
+
 # plot
-repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR', 
-        isPrint = FALSE, nrowPrint = 15, isPlot = TRUE, layout = c(4,2))  
+repRisk(fit.cross, wtsStocks145GmvLo, risk = "Sd", decomp = 'FPCR',
+        isPrint = FALSE, nrowPrint = 15, isPlot = TRUE, layout = c(4,2))
 }
 \seealso{
 \code{\link{fitTsfm}}, \code{\link{fitFfm}}

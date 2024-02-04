@@ -25,6 +25,7 @@ Imports:
     lars,
     lattice,
     leaps,
+    methods,
     parallel,
     PerformanceAnalytics,
     RCurl,

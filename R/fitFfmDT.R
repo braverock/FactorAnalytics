@@ -193,7 +193,7 @@ standardizeExposures <- function(specObj,
   weight.var <- specObj$weight.var
   dataDT <- data.table::copy(specObj$dataDT) # hard_copy
   # we did have a copy but do we really need a full  copy, reference should be oka here
-  if (class(specObj) != "ffmSpec") {
+  if (is(specObj) != "ffmSpec") {
     stop("specObj must be class ffmSpec")
   }
   Std.Type = toupper(Std.Type[1])
@@ -711,6 +711,8 @@ fitFfmDT <- function(ffMSpecObj,
 #' @details this function operates on the specObje data and the output of fitFfm
 #' to get information on the fundamental factor.
 #'
+#' @importFrom methods is
+#'
 #' @seealso \code{\link{specFfm}} and \code{\link{fitFfmDT}} for information on the definition of the specFfm
 #' object and the usage of fitFfmDT.
 #' @importFrom RobStatTM covRob
@@ -999,14 +1001,7 @@ extractRegressionStats <- function(specObj, fitResults, full.resid.cov=FALSE){
   class(result) <- "ffm"
   return(result)
 
-
-
-
 }
-
-
-
-
 
 #' @title calcFLAM
 #'
@@ -1287,7 +1282,7 @@ convert.ffmSpec <- function(SpecObj, FitObj, RegStatsObj, ...) {
 
   # clean up
 
-  class(ffmObj) <- "ffm"
+class(ffmObj) <- "ffm"
 
   return(ffmObj)
 

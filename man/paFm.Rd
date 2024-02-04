@@ -20,37 +20,37 @@ factors.}
 portfolio.}
 }
 \description{
-Decompose total returns into returns attributed to factors and 
-specific returns. An object of class \code{"pafm"} is generated, with 
+Decompose total returns into returns attributed to factors and
+specific returns. An object of class \code{"pafm"} is generated, with
 methods for generic functions \code{plot}, \code{summary} and \code{print}.
 }
 \details{
-Total returns can be decomposed into returns attributed to factors 
+Total returns can be decomposed into returns attributed to factors
 and specific returns. \cr \eqn{R_t = \sum  b_k * f_kt + u_t, t=1...T} \cr
-\code{b_k} is exposure to factor k and \code{f_kt} is factor k's return at 
-time t. The return attributed to factor k is \code{b_k * f_kt} and specific 
+\code{b_k} is exposure to factor k and \code{f_kt} is factor k's return at
+time t. The return attributed to factor k is \code{b_k * f_kt} and specific
 return is \code{u_t}.
 }
 \examples{
 data(managers, package = 'PerformanceAnalytics')
-fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]), 
-               factor.names=c("EDHEC LS EQ","SP500 TR"), 
+fit <- fitTsfm(asset.names=colnames(managers[, (1:6)]),
+               factor.names=c("EDHEC LS EQ","SP500 TR"),
                data=managers)
 # without benchmark
 paFm(fit)
 
 }
 \references{
-Grinold, R. and Kahn, R. (1999) Active Portfolio Management: A 
-Quantitative Approach for Producing Superior Returns and Controlling Risk. 
+Grinold, R. and Kahn, R. (1999) Active Portfolio Management: A
+Quantitative Approach for Producing Superior Returns and Controlling Risk.
 McGraw-Hill.
 }
 \seealso{
-\code{\link{fitTsfm}}, \code{\link{fitFfm}} 
+\code{\link{fitTsfm}}, \code{\link{fitFfm}}
 for the factor model fitting functions.
 
-The \code{pafm} methods for generic functions: 
-\code{\link{plot.pafm}}, \code{\link{print.pafm}} and 
+The \code{pafm} methods for generic functions:
+\code{\link{plot.pafm}}, \code{\link{print.pafm}} and
 \code{\link{summary.pafm}}.
 }
 \author{
