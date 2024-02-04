@@ -1,7 +1,7 @@
 Package: FactorAnalytics
 Type: Package
 Title: Factor Analytics for Asset Return Data
-Version: 2.4.0
+Version: 2.4.1
 Date: 2024-02-03
 Author: Eric Zivot, Doug Martin, Sangeetha
      Srinivasan, Avinash Acharya, Yi-An Chen,
