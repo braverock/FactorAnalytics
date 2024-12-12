@@ -66,14 +66,11 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install -y ghostscript
 
-      - name: Debug Homebrew Environment
+      - name: Verify pkg-config
         if: runner.os == 'macOS'
         run: |
-          echo "HOMEBREW_PREFIX: $HOMEBREW_PREFIX"
-          brew --prefix
-          brew config
-          which pkg-config
-          which ghostscript
+          pkg-config --version
+          pkg-config --cflags --libs zlib
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -83,6 +80,7 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: rcmdcheck
+          extra-packages: pkg-config
       - uses: r-lib/actions/check-r-package@v2
 
 
