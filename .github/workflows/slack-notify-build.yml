@@ -77,24 +77,32 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
 
-      - name: GHA Slack Notify Build
-        if: success()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+      - name: Notify Slack - Build Started
         uses: justinr636/github-action-slack-notify-build@v1
         with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01MS7ECQ8Z
+          channel: app-alerts
+          status: STARTED
+          color: warning
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+
+      - name: Notify Slack - Build Success
+        if: success()
+        uses: justinr636/github-action-slack-notify-build@v1
+        with:
+          channel: app-alerts
           status: SUCCESS
           color: good
-
-      - name: GHA Slack Notify Build
-        if: failure()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+
+      - name: Notify Slack - Build Failure
+        if: failure()
         uses: justinr636/github-action-slack-notify-build@v1
         with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01MS7ECQ8Z
+          channel: app-alerts
           status: FAILED
           color: danger
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+
