@@ -79,7 +79,7 @@ jobs:
           use-public-rspm: true
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck pkg-config
+          extra-packages: rcmdcheck
       - uses: r-lib/actions/check-r-package@v2
 
 
