@@ -64,11 +64,15 @@ jobs:
           echo "HOMEBREW_PREFIX: $(brew --prefix)"
           echo "HOMEBREW_CELLAR: $(brew --cellar)"
 
-      - name: Update Homebrew and Reinstall pkg-config
+      - name: Set Homebrew Prefix
         if: runner.os == 'macOS'
-        run: |
-          brew update
-          brew reinstall pkg-config
+        run: echo "HOMEBREW_PREFIX=/opt/homebrew" >> $GITHUB_ENV
+
+        - name: Initialize Homebrew
+          if: runner.os == 'macOS'
+          run: |
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+            brew update
 
 
       - name: Install Ghostscript on Windows
