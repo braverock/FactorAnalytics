@@ -26,12 +26,12 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - name: Notify Slack - Build Starting
+      - name: GH Notify Slack - Build Starting
         id: slack
         if: always()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+        uses: justinr636/github-action-slack-notify-build@v1
         with:
           channel_id: C01MS7ECQ8Z
           status: STARTING
@@ -59,7 +59,7 @@ jobs:
       - uses: r-lib/actions/setup-tinytex@v2
       - run: tlmgr --version
 
-            - name: Install Ghostscript on Linux
+      - name: Install Ghostscript on Linux
         if: runner.os == 'Linux'
         run: sudo apt-get install -y ghostscript
 
@@ -70,7 +70,6 @@ jobs:
       - name: Install Ghostscript on Windows
         if: runner.os == 'Windows'
         run: choco install ghostscript --no-progress
-
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -83,6 +82,7 @@ jobs:
           extra-packages: rcmdcheck
 
       - uses: r-lib/actions/check-r-package@v2
+
 
       - name: GHA Slack Notify Build
         if: success()
