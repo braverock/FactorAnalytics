@@ -66,7 +66,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install -y ghostscript
 
-      - name: Verify pkg-config
+      - name: Verify macOS pkg-config homebrew
         if: runner.os == 'macOS'
         run: |
           pkg-config --version
@@ -79,8 +79,7 @@ jobs:
           use-public-rspm: true
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck
-          extra-packages: pkg-config
+          extra-packages: rcmdcheck pkg-config
       - uses: r-lib/actions/check-r-package@v2
 
 
