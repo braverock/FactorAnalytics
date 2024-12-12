@@ -58,14 +58,17 @@ jobs:
       - run: tlmgr --version
 
 
-      - name: Ensure macOS pkgconf is installed
+      - name: Print Homebrew Environment Variables
         if: runner.os == 'macOS'
         run: |
-          if ! brew list pkgconf &>/dev/null; then
-            brew install pkgconf
-          else
-            echo "pkgconf is already installed."
-          fi
+          echo "HOMEBREW_PREFIX: $(brew --prefix)"
+          echo "HOMEBREW_CELLAR: $(brew --cellar)"
+
+      - name: Update Homebrew and Reinstall pkg-config
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew reinstall pkg-config
 
 
       - name: Install Ghostscript on Windows
