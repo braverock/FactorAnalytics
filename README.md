@@ -1,6 +1,9 @@
 
 # Factor Analytics for asset return data
 
+![R-CMD-check](https://github.com/braverock/FactorAnalytics/actions/workflows/r-cmd-check.yml/badge.svg)
+
+
 The FactorAnalytics project is an open source package containing fitting and analysis methods for the three main types of factor models commonly used in conjunction with portfolio construction, optimization and risk management. These include:
 - fundamental factor models
 - time series factor models
