@@ -1,19 +1,23 @@
 Package: FactorAnalytics
 Type: Package
 Title: Factor Analytics for Asset Return Data
-Version: 2.4.1
-Date: 2024-02-03
+Version: 2.4.2
+Date: 2024-12-12
 Author: Eric Zivot, Doug Martin, Sangeetha
      Srinivasan, Avinash Acharya, Yi-An Chen,
      Mido Shammaa, Lingjie Yi, Kirk Li, and
      Justin M. Shea
-Maintainer: Justin M. Shea <jshea@roosevelt.edu>
-Description: Linear factor model fitting for asset returns (three major types-
-    time series, fundamental and statistical factor models); related risk
-    (volatility, VaR and ES) and performance attribution (factor-contributed vs
-    idiosyncratic returns); tabular displays of risk and performance reports;
-    factor model Monte Carlo, single and multiple imputation methods for 
-    simulating returns and backfilling unequal histories.
+Maintainer: Justin M. Shea <jshea01@uic.edu>
+Description: This package combines the work of several researchers focused on
+  asset pricing using linear factor models, spanning the course of more than a 
+  decade. While the project has matured on github and versions of it are used in 
+  production at varous investment firms, we are finally adding it to CRAN for
+  ease of access to a wider R user base. The package contains linear factor models 
+  for fitting asset returns (three major types-time series, fundamental and statistical factor models); 
+  related risk (volatility, VaR and ES) and performance attribution 
+  (factor-contributed vs idiosyncratic returns); tabular displays of risk and 
+  performance reports; factor model Monte Carlo, single and multiple imputation 
+  methods for simulating returns and backfilling unequal histories.
 License: GPL-2
 Depends: 
     R (>= 3.5)
