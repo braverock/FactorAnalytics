@@ -16,47 +16,47 @@
 
 \item{x}{an object of class \code{summary.ffm}.}
 
-\item{digits}{number of significants digits to use when printing. 
+\item{digits}{number of significants digits to use when printing.
 Default is 3.}
 
-\item{labels}{option to print labels and legend in the summary. Default is 
-\code{TRUE}. When \code{FALSE}, only the coefficient matrx with standard 
+\item{labels}{option to print labels and legend in the summary. Default is
+\code{TRUE}. When \code{FALSE}, only the coefficient matrx with standard
 errors is printed.}
 }
 \value{
-Returns an object of class \code{summary.ffm}. 
-The print method for class \code{summary.ffm} outputs the call, 
-coefficients (with standard errors and t-statistics), r-squared and 
-residual volatilty (under the homoskedasticity assumption) for all assets. 
+Returns an object of class \code{summary.ffm}.
+The print method for class \code{summary.ffm} outputs the call,
+coefficients (with standard errors and t-statistics), r-squared and
+residual volatilty (under the homoskedasticity assumption) for all assets.
 
 Object of class \code{summary.ffm} is a list of length N + 2 containing:
 \item{call}{the function call to \code{fitFfm}}
-\item{sum.list}{list of summaries of the T fit objects (of class \code{lm} or 
+\item{sum.list}{list of summaries of the T fit objects (of class \code{lm} or
 \code{lmRob}) for each time period in the factor model.}
 }
 \description{
-\code{summary} method for object of class \code{ffm}. 
-Returned object is of class {summary.ffm}.
+\code{summary} method for object of class \code{ffm}.
+Returned object is of class \code{summary.ffm}.
 }
 \details{
-The default \code{summary} method for a fitted \code{lm} object 
-computes the standard errors and t-statistics under the assumption of 
+The default \code{summary} method for a fitted \code{lm} object
+computes the standard errors and t-statistics under the assumption of
 homoskedasticty.
 
-Note: This gives a summary of the fited factor returns at each time period. 
-If \code{T} is large, you might prefer the more succint summary produced by 
+Note: This gives a summary of the fited factor returns at each time period.
+If \code{T} is large, you might prefer the more succint summary produced by
 \code{\link{print.ffm}}.
 }
 \examples{
 data("factorDataSetDjia5Yrs")
 
 # fit a fundamental factor model
-fit <- fitFfm(data = factorDataSetDjia5Yrs, 
-              asset.var = "TICKER", 
-              ret.var = "RETURN", 
-              date.var = "DATE", 
+fit <- fitFfm(data = factorDataSetDjia5Yrs,
+              asset.var = "TICKER",
+              ret.var = "RETURN",
+              date.var = "DATE",
               exposure.vars = c("P2B", "MKTCAP"))
-              
+
 names(fit)
 
 # summary of factor returns estimated in each time period

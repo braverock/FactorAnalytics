@@ -16,30 +16,30 @@
 
 \item{x}{an object of class \code{summary.tsfmUpDn}.}
 
-\item{digits}{number of significants digits to use when printing. 
+\item{digits}{number of significants digits to use when printing.
 Default is 3.}
 }
 \value{
-Returns an object of class \code{summary.tsfmUpDn}. This object contains 
+Returns an object of class \code{summary.tsfmUpDn}. This object contains
 a list object of \code{Up} and \code{Dn} for up market and down market respectively.
-   
-The print method for class \code{summary.tsfmUpDn} outputs the call, 
-coefficients (with standard errors and t-statistics), r-squared and 
-residual volatilty (under the homoskedasticity assumption) for all assets in up and 
-down market. 
+
+The print method for class \code{summary.tsfmUpDn} outputs the call,
+coefficients (with standard errors and t-statistics), r-squared and
+residual volatilty (under the homoskedasticity assumption) for all assets in up and
+down market.
 
 Object of class \code{summary.tsfmUpDn} is a list of 2 containing:
 \item{Up}{A list of the up market fitted object. It is a class of \code{summary.tsfm}}
 \item{Dn}{A list of the down market fitted object. It is a class of \code{summary.tsfm}}
 }
 \description{
-\code{summary} method for object of class \code{tsfmUpDn}. 
-Returned object is of class {summary.tsfmUpDn}. This function provides a \code{summary}
+\code{summary} method for object of class \code{tsfmUpDn}.
+Returned object is of class \code{summary.tsfmUpDn}. This function provides a \code{summary}
 method to an object returned by a wrapper function \code{fitTsfmUpDn}.
 }
 \details{
 Since \code{fitTsfmUpDn} fits both up market and down market,
-\code{summary.tsfmUpDn} applies \code{summary.tsfm} for both markets fitted 
+\code{summary.tsfmUpDn} applies \code{summary.tsfm} for both markets fitted
 objects and combines the coefficients interested together.
 }
 \examples{
@@ -49,9 +49,9 @@ data(managers, package = 'PerformanceAnalytics')
 # example: Up and down market factor model with LS fit
 fitUpDn <- fitTsfmUpDn(asset.names = colnames(managers[,(1:6)]),
                        mkt.name = "SP500 TR",
-                       data = managers, 
+                       data = managers,
                        fit.method = "LS")
- 
+
  summary(fitUpDn)
 
 }

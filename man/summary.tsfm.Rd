@@ -12,50 +12,50 @@
 \arguments{
 \item{object}{an object of class \code{tsfm} returned by \code{fitTsfm}.}
 
-\item{se.type}{one of "Default", "HC" or "HAC" option for computing HC/HAC 
-standard errors and t-statistics. Default is "Default". If "HC" or "HAC" 
-options are selected, you will need to first load the suggested `lmtest` 
+\item{se.type}{one of "Default", "HC" or "HAC" option for computing HC/HAC
+standard errors and t-statistics. Default is "Default". If "HC" or "HAC"
+options are selected, you will need to first load the suggested `lmtest`
 package.}
 
 \item{...}{futher arguments passed to or from other methods.}
 
 \item{x}{an object of class \code{summary.tsfm}.}
 
-\item{digits}{number of significants digits to use when printing. 
+\item{digits}{number of significants digits to use when printing.
 Default is 3.}
 
-\item{labels}{option to print labels and legend in the summary. Default is 
-\code{TRUE}. When \code{FALSE}, only the coefficient matrx with standard 
+\item{labels}{option to print labels and legend in the summary. Default is
+\code{TRUE}. When \code{FALSE}, only the coefficient matrx with standard
 errors is printed.}
 }
 \value{
-Returns an object of class \code{summary.tsfm}. 
-The print method for class \code{summary.tsfm} outputs the call, 
-coefficients (with standard errors and t-statistics), r-squared and 
-residual volatilty (under the homoskedasticity assumption) for all assets. 
+Returns an object of class \code{summary.tsfm}.
+The print method for class \code{summary.tsfm} outputs the call,
+coefficients (with standard errors and t-statistics), r-squared and
+residual volatilty (under the homoskedasticity assumption) for all assets.
 
 Object of class \code{summary.tsfm} is a list of length N + 2 containing:
 \item{call}{the function call to \code{fitTsfm}}
-\item{se.type}{standard error type as input} 
-\item{sum.list}{list of summaries of the N fit objects (of class \code{lm}, 
+\item{se.type}{standard error type as input}
+\item{sum.list}{list of summaries of the N fit objects (of class \code{lm},
 \code{lmRob} or \code{lars}) for each asset in the factor model.}
 }
 \description{
-\code{summary} method for object of class \code{tsfm}. 
-Returned object is of class {summary.tsfm}.
+\code{summary} method for object of class \code{tsfm}.
+Returned object is of class \code{summary.tsfm}.
 }
 \details{
-The default \code{summary} method for a fitted \code{lm} object 
-computes the standard errors and t-statistics under the assumption of 
-homoskedasticty. Argument \code{se.type} gives the option to compute 
-heteroskedasticity-consistent (HC) or 
-heteroskedasticity-autocorrelation-consistent (HAC) standard errors and 
-t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful 
+The default \code{summary} method for a fitted \code{lm} object
+computes the standard errors and t-statistics under the assumption of
+homoskedasticty. Argument \code{se.type} gives the option to compute
+heteroskedasticity-consistent (HC) or
+heteroskedasticity-autocorrelation-consistent (HAC) standard errors and
+t-statistics using \code{\link[lmtest]{coeftest}}. This option is meaningful
 only if \code{fit.method = "LS" or "DLS"}.
 
-Standard errors are currently not available for 
-\code{variable.selection="lars"} as there seems to be no consensus on a 
-statistically valid method of calculating standard errors for the lasso 
+Standard errors are currently not available for
+\code{variable.selection="lars"} as there seems to be no consensus on a
+statistically valid method of calculating standard errors for the lasso
 predictions.
 }
 \examples{
@@ -63,13 +63,13 @@ predictions.
 data(managers, package = 'PerformanceAnalytics')
 
 fit <- fitTsfm(asset.names=colnames(managers[,(1:6)]),
-               factor.names=colnames(managers[,7:9]), 
+               factor.names=colnames(managers[,7:9]),
                data=managers)
 
 # summary of factor model fit for all assets
 summary(fit)
 
-# Summary of factor model, using lmtest 
+# Summary of factor model, using lmtest
 library(lmtest)
 summary(fit, "HAC")
 

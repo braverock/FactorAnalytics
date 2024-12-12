@@ -77,7 +77,7 @@
 #' "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright",
 #' "right", or "center". Default is "bottomright". Use \code{legend.loc=NULL}
 #' to suppress the legend.
-#' @param las one of {0, 1, 2, 3} to set the direction of axis labels, same as
+#' @param las one of \code{0, 1, 2, 3} to set the direction of axis labels, same as
 #' in \code{plot}. Default is 1.
 #' @param lwd set the line width, same as in \code{\link{plot}}. Default is 2.
 #' @param maxlag optional number of lags to be calculated for ACF. Default is 15.

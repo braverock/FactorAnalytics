@@ -79,7 +79,7 @@ element for the 2nd object in the plot and so on.}
 "right", or "center". Default is "bottomright". Use \code{legend.loc=NULL}
 to suppress the legend.}
 
-\item{las}{one of {0, 1, 2, 3} to set the direction of axis labels, same as
+\item{las}{one of \code{0, 1, 2, 3} to set the direction of axis labels, same as
 in \code{plot}. Default is 1.}
 
 \item{lwd}{set the line width, same as in \code{\link{plot}}. Default is 2.}
