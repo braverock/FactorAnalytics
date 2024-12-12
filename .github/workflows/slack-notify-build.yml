@@ -68,6 +68,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
+          brew upgrade
           brew reinstall pkg-config
 
 
