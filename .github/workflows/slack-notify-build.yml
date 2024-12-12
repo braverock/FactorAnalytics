@@ -1,11 +1,10 @@
- name: R-CMD-check
- on:
+name: R-CMD-check
+
+on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
-
 
 jobs:
   R-CMD-check:
@@ -16,20 +15,20 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
+          - {os: macOS-latest, r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - name: Notify slack success
-        if: success()
-        id: slack  IMPORTANT: reference this step ID value in future Slack steps
+      - name: Notify Slack - Build Starting
+        id: slack
+        if: always()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
         uses: voxmedia/github-action-slack-notify-build@v1
@@ -38,36 +37,33 @@ jobs:
           status: STARTING
           color: warning
 
-      - name: Check for and install Git Large File Storage (LFS)
-        run: |
-          git lfs install
+      - name: Check and Install Git LFS
+        run: git lfs install
 
       - uses: actions/checkout@v2
 
-      - name: generate Git Large File Storage (lfs) file list
+      - name: Generate Git LFS File List
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-      - name: restore lfs cache
+
+      - name: Restore LFS Cache
         uses: actions/cache@v2
-        id: lfs-cache
         with:
           path: .git/lfs
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
-      - name: pull lfs files
+
+      - name: Pull LFS Files
         run: git lfs pull
 
       - uses: r-lib/actions/setup-pandoc@v1
 
       - uses: r-lib/actions/setup-tinytex@v1
       - run: tlmgr --version
-      - name: Install Ghostscript on Linux
-        if: runner.os == 'Linux'
-        run: sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes ghostscript
-      - name: Install Ghostscript on macOS
-        if: runner.os == 'macOS'
-        run: brew install ghostscript
-      - name: Install Ghostscript on Windows
-        if: runner.os == 'Windows'
-        run: choco install ghostscript --no-progress
+
+      - name: Install Ghostscript
+        run: |
+          if [ "${{ runner.os }}" == 'Linux' ]; then sudo apt-get install -y ghostscript; fi
+          if [ "${{ runner.os }}" == 'macOS' ]; then brew install ghostscript; fi
+          if [ "${{ runner.os }}" == 'Windows' ]; then choco install ghostscript --no-progress; fi
 
       - uses: r-lib/actions/setup-r@v1
         with:
@@ -75,34 +71,30 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck
 
       - uses: r-lib/actions/check-r-package@v1
 
-      - name: Notify slack success
+      - name: Notify Slack - Build Success
         if: success()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
         uses: voxmedia/github-action-slack-notify-build@v1
         with:
-           Updates existing message from the first step
           message_id: ${{ steps.slack.outputs.message_id }}
           channel_id: C01MS7ECQ8Z
           status: SUCCESS
           color: good
 
-      - name: Notify slack fail
+      - name: Notify Slack - Build Failure
         if: failure()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
         uses: voxmedia/github-action-slack-notify-build@v1
         with:
-           Updates existing message from the first step
           message_id: ${{ steps.slack.outputs.message_id }}
           channel_id: C01MS7ECQ8Z
           status: FAILED
           color: danger
-
