@@ -58,21 +58,14 @@ jobs:
       - run: tlmgr --version
 
 
-      - name: Print Homebrew Environment Variables
+      - name: Debug Homebrew Environment
         if: runner.os == 'macOS'
         run: |
-          echo "HOMEBREW_PREFIX: $(brew --prefix)"
-          echo "HOMEBREW_CELLAR: $(brew --cellar)"
-
-      - name: Set Homebrew Prefix
-        if: runner.os == 'macOS'
-        run: echo "HOMEBREW_PREFIX=/opt/homebrew" >> $GITHUB_ENV
-
-        - name: Initialize Homebrew
-          if: runner.os == 'macOS'
-          run: |
-            eval "$(/opt/homebrew/bin/brew shellenv)"
-            brew update
+          echo "HOMEBREW_PREFIX: $HOMEBREW_PREFIX"
+          brew --prefix
+          brew config
+          which pkg-config
+          which ghostscript
 
 
       - name: Install Ghostscript on Windows
